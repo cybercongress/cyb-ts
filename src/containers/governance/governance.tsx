@@ -9,12 +9,12 @@ import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import dateFormat from 'dateformat';
 import { useQuery } from '@tanstack/react-query';
 
+import Loader2 from 'src/components/ui/Loader2';
 import { getProposals } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { CardStatisics, MainContainer } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
-import Loader2 from 'src/components/ui/Loader2';
 import styles from './components/styles.module.scss';
 
 type KeyOfProposalStatus = keyof typeof ProposalStatus;
@@ -226,7 +226,7 @@ function Governance() {
     ));
 
   return (
-    <MainContainer width="100%">
+    <MainContainer>
       <>
         <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
 

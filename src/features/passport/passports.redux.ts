@@ -193,7 +193,7 @@ export const selectAccountsPassports = createSelector(
 export const selectCurrentPassport = createSelector(
   selectCurrentAddress,
   (state: RootState) => state.passports,
-  (address, passports) => (address ? passports[address] : undefined)
+  (address, passports) => (address ? passports[address]?.data : undefined)
 );
 
 export const { deleteAddress, addAddress } = slice.actions;

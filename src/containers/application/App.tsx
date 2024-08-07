@@ -2,27 +2,27 @@ import { useEffect } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
 import { AppDispatch } from 'src/redux/store';
-import { initPocket, selectCurrentAddress } from 'src/redux/features/pocket';
+import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 
-import { useGetCommunity } from 'src/pages/robot/_refactor/account/hooks';
-import { setCommunity } from 'src/redux/features/currentAccount';
 import { getPassport } from 'src/features/passport/passports.redux';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useBackend } from 'src/contexts/backend/backend';
-import AdviserContainer from '../../features/adviser/AdviserContainer';
 
-import styles from './styles.scss';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
 
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { initCyblog } from 'src/utils/logging/bootstrap';
+
+import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
 import { PreviousPageProvider } from 'src/contexts/previousPage';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
+import AdviserContainer from '../../features/adviser/AdviserContainer';
+import styles from './styles.scss';
 
 export const PORTAL_ID = 'portal';
 
@@ -82,6 +82,10 @@ function App() {
   }, [location.pathname]);
 
   useEffect(() => {
+    dispatch(setTimeHistoryRoute(location.pathname));
+  }, [location.pathname, dispatch]);
+
+  useEffect(() => {
     if (ipfsError && !location.pathname.includes('/drive')) {
       adviserContext.setAdviser(
         <p>
@@ -118,9 +122,9 @@ function App() {
           )}
 
           {![
-            routes.home.path,
-            routes.teleport.path,
-            cybernetRoutes.verse.path,
+            /* routes.home.path, */
+            /* routes.teleport.path, */
+            // cybernetRoutes.verse.path,
           ].some((path) => {
             return matchPath(path, location.pathname);
           }) && <AdviserContainer />}

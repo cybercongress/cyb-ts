@@ -9,8 +9,6 @@ const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 require('dotenv').config();
 
-console.log(process.env.CHAIN_ID);
-
 if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
   console.log('*** IPFS Version ***');
@@ -20,8 +18,6 @@ const config = {
   devtool: 'cheap-module-source-map',
   entry: {
     main: [path.join(__dirname, 'src', 'index.tsx')],
-    // helia: 'helia',
-    // cozodb: 'cyb-cozo-lib-wasm',
   },
   output: {
     filename: '[name].js',
@@ -203,6 +199,10 @@ const config = {
         test: /\.(graphql|gql)$/,
         exclude: /node_modules/,
         use: 'graphql-tag/loader',
+      },
+      {
+        test: /\.rn$/,
+        type: 'asset/source',
       },
     ],
   },

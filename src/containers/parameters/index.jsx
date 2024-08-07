@@ -3,7 +3,7 @@ import { Pane } from '@cybercongress/gravity';
 import { useParams } from 'react-router-dom';
 import { useAdviser } from 'src/features/adviser/context';
 import { getParamNetwork } from '../../utils/search/utils';
-import { Loading, Tabs } from '../../components';
+import { Loading, MainContainer, Tabs } from '../../components';
 import {
   BandwidthParam,
   SlashingParam,
@@ -95,7 +95,7 @@ function ParamNetwork() {
   }
 
   return (
-    <main className="block-body">
+    <MainContainer>
       <Tabs
         selected={param}
         options={Object.entries(paramsTabs).map(([key, item]) => ({
@@ -125,7 +125,7 @@ function ParamNetwork() {
         {param === 'wasm' && <WasmParam />}
         {param === 'dmn' && <DmnParam data={dataParam.dmn} />}
       </Pane>
-    </main>
+    </MainContainer>
   );
 }
 

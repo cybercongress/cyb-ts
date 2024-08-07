@@ -1,9 +1,9 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import ErrorScreen from './ErrorScreen/ErrorScreen';
 
 interface Props {
-  fallback: JSX.Element;
-  children: JSX.Element;
+  fallback?: JSX.Element;
+  children: React.ReactNode;
 }
 
 type State = {

@@ -1,14 +1,21 @@
 /* eslint-disable react/no-children-prop */
 import { useEffect, useState } from 'react';
-import { Pane, Text, ActionBar } from '@cybercongress/gravity';
+import { Pane, Text } from '@cybercongress/gravity';
 import { Link, useParams } from 'react-router-dom';
-import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 
-import { ContainerGradientText, IconStatus, Item } from '../../components';
+import { useGovParam } from 'src/hooks/governance/params/useGovParams';
+import { useAppSelector } from 'src/redux/hooks';
+import {
+  ActionBar,
+  ContainerGradientText,
+  IconStatus,
+  Item,
+  MainContainer,
+} from '../../components';
 
 import {
   getStakingPool,
@@ -22,12 +29,9 @@ import ActionBarDetail from './actionBarDatail';
 import { formatNumber } from '../../utils/utils';
 
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
-import useSetActiveAddress from '../../hooks/useSetActiveAddress';
-import { MainContainer } from '../portal/components';
 import ProposalsRoutes from './proposalsRoutes';
 
 import styles from './proposalsDetail.module.scss';
-import { useGovParam } from 'src/hooks/governance/params/useGovParams';
 
 const finalTallyResult = (item) => {
   const finalVotes = {
@@ -55,9 +59,14 @@ const finalTallyResult = (item) => {
   return finalVotes;
 };
 
-function ProposalsDetail({ defaultAccount }) {
+function ProposalsDetail() {
   const { proposalId } = useParams();
-  const { addressActive } = useSetActiveAddress(defaultAccount);
+
+  const currentAccount = useAppSelector((state) => state.pocket.defaultAccount);
+
+  const { bech32: addressActive, keys } = currentAccount?.account?.cyber || {};
+  const isOwner = keys === 'keplr';
+
   const [proposals, setProposals] = useState({});
   const [updateFunc, setUpdateFunc] = useState(0);
   const [tally, setTally] = useState({
@@ -170,7 +179,7 @@ function ProposalsDetail({ defaultAccount }) {
 
   return (
     <>
-      <MainContainer width="100%">
+      <MainContainer>
         <Pane display="flex" alignItems="center">
           <Text fontSize="25px" color="#fff">
             {proposals.title && ` #${proposalId} ${proposals.title}`}
@@ -274,8 +283,8 @@ function ProposalsDetail({ defaultAccount }) {
           updateFunc={updateFunc}
         />
       </MainContainer>
-      {addressActive !== null &&
-      addressActive.keys === 'keplr' &&
+      {addressActive &&
+      isOwner &&
       location.pathname === `/senate/${proposalId}/voters` ? (
         <ActionBarDetail
           id={proposalId}
@@ -287,31 +296,16 @@ function ProposalsDetail({ defaultAccount }) {
         />
       ) : (
         !addressActive && (
-          <ActionBar>
-            <Pane>
-              <Link
-                style={{
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  display: 'block',
-                }}
-                className="btn"
-                to="/keys"
-              >
-                connect
-              </Link>
-            </Pane>
-          </ActionBar>
+          <ActionBar
+            button={{
+              text: 'connect',
+              link: '/keys',
+            }}
+          />
         )
       )}
     </>
   );
 }
 
-const mapStateToProps = (store) => {
-  return {
-    defaultAccount: store.pocket.defaultAccount,
-  };
-};
-
-export default connect(mapStateToProps)(ProposalsDetail);
+export default ProposalsDetail;

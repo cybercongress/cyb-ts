@@ -187,6 +187,7 @@ function Slider({
     if (isHadleFocused && !draggingMode) {
       return;
     }
+    setDraggingMode(true);
     setValueSilder(position);
     requestAnimationFrame(() => {
       const value = positionToPercents(position);
@@ -233,7 +234,7 @@ function Slider({
             </>
           )}
           <button type="button" className={styles.buttonIcon}>
-            <img src={imgSwap} alt="swap" />
+            <img src={imgSwap} alt="swap" draggable="false" />
           </button>
         </div>
       );
@@ -250,7 +251,7 @@ function Slider({
             value={valueSilder}
             min={scaleMin}
             max={scaleMax}
-            step={0.1}
+            step={1}
             handle={renderCustomHandle}
             onChange={(pos) => onSliderChange(pos)}
             marks={scaleMarks}

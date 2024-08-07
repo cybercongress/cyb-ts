@@ -5,6 +5,10 @@ import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
 import { CID_TWEET } from 'src/constants/app';
 import { LCD_URL } from 'src/constants/config';
 import { LinksType, LinksTypeFilter } from 'src/containers/Search/types';
+import { ParticleCid } from 'src/types/base';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { getIpfsHash } from '../ipfs/helpers';
+import { encodeSlash } from '../utils';
 
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
@@ -706,6 +710,9 @@ export const getCredit = async (address) => {
     return null;
   }
 };
+
+export const getSearchQuery = async (query: ParticleCid | string) =>
+  query.match(PATTERN_IPFS_HASH) ? query : getIpfsHash(encodeSlash(query));
 
 export const searchByHash = async (
   client: CyberClient,

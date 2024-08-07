@@ -5,6 +5,7 @@ import { entityToDto, snakeToCamel } from 'src/utils/dto';
 
 import { Column, IDBResult } from './types/types';
 import { DbEntity } from './types/entities';
+import { serializeString } from 'src/utils/string';
 
 export function dbResultToDtoList<T>(dbResult: IDBResult): T[] {
   const { headers, rows } = dbResult;
@@ -89,10 +90,14 @@ export const entityToArray = (
     .map((col) => {
       const key = col.column as keyof DbEntity;
       const value = obj[key];
+
+      if (/<[a-z]+\d*;\d+>/i.test(col.type)) {
+        return `[${value}]`;
+      }
       return col.type === 'Json'
         ? `parse_json('${JSON.stringify(value)}')`
         : col.type === 'String'
-        ? `"${value}"`
+        ? `"${serializeString(value)}"`
         : value;
     })
     .join(', ')}]`;

@@ -1,0 +1,35 @@
+.sideBar {
+  position: fixed;
+  top: 130px;
+  left: 0;
+  width: 170px;
+  backdrop-filter: blur(7px);
+  background: #0000008c;
+  color: #fff;
+  transition: 0.3s;
+  z-index: 4;
+  opacity: 0.9;
+  box-shadow: 1px 0 20px 2px #000;
+}
+
+.sideBarHide {
+  left: -170px;
+}
+
+.toggleBtn {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  backdrop-filter: blur(7px);
+  background: #0000008c;
+  left: 100%;
+  top: 50%;
+  transform: translate(0, -50%);
+  border-radius: 0px 5px 5px 0px;
+  box-shadow: 0px 0px 5px 2px #ffffff54;
+
+  &>div>div {
+    background-color: var(--blue-light);
+  }
+}

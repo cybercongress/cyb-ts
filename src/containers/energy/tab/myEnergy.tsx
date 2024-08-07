@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 // TODO: finish
 type Props = {
-  balacesResource: {
+  balancesResource: {
     milliampere: number | null;
     millivolt: number | null;
   };
@@ -15,7 +15,7 @@ type Props = {
   loadingAuthAccounts: unknown;
 };
 
-function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }: Props) {
+function MyEnergy({ slotsData, balancesResource, loadingAuthAccounts }: Props) {
   return (
     <div>
       <div
@@ -42,8 +42,8 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }: Props) {
           <Card
             title={<DenomArr denomValue="milliampere" />}
             value={
-              balacesResource.milliampere
-                ? formatNumber(balacesResource.milliampere)
+              balancesResource.milliampere
+                ? formatNumber(balancesResource.milliampere)
                 : 0
             }
             stylesContainer={{ maxWidth: '200px' }}
@@ -54,8 +54,8 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }: Props) {
           <Card
             title={<DenomArr denomValue="millivolt" />}
             value={
-              balacesResource.millivolt
-                ? formatNumber(balacesResource.millivolt)
+              balancesResource.millivolt
+                ? formatNumber(balancesResource.millivolt)
                 : 0
             }
             stylesContainer={{ maxWidth: '200px' }}
@@ -66,9 +66,9 @@ function MyEnergy({ slotsData, balacesResource, loadingAuthAccounts }: Props) {
           <Card
             title="W"
             value={
-              balacesResource.millivolt && balacesResource.milliampere
+              balancesResource.millivolt && balancesResource.milliampere
                 ? formatNumber(
-                    balacesResource.millivolt * balacesResource.milliampere
+                    balancesResource.millivolt * balancesResource.milliampere
                   )
                 : 0
             }

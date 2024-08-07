@@ -2,7 +2,7 @@ import QueueManager from '../QueueManager';
 import { BehaviorSubject, of } from 'rxjs';
 import { CybIpfsNode } from '../../ipfs/types';
 import { QueueStrategy } from '../QueueStrategy';
-import { IDeferredDbSaver } from '../types';
+import { I } from '../types';
 import { valuesExpected } from 'src/utils/test-utils/test-utils';
 import { fetchIpfsContent } from 'src/services/ipfs/utils/utils-ipfs';
 
@@ -22,7 +22,6 @@ import { fetchIpfsContent } from 'src/services/ipfs/utils/utils-ipfs';
 //   };
 // });
 
-jest.mock('../../backend/services/DeferredDbSaver/DeferredDbSaver'); // adjust the path as needed
 jest.mock('../../ipfs/utils/ipfsCacheDb');
 
 jest.mock('src/services/ipfs/utils/cluster.ts', () => ({ add: jest.fn() }));
@@ -105,14 +104,10 @@ describe('QueueManager without timers', () => {
 
   beforeEach(() => {
     // setup QueueManager instance before each test
-    const deferredDbSaverMock: IDeferredDbSaver = {
-      enqueueIpfsContent: jest.fn(),
-      enqueueLinks: jest.fn(),
-    };
+
     queueManager = new QueueManager(of(mockNode), {
       strategy: queueStrategy,
       queueDebounceMs: 1,
-      defferedDbSaver: deferredDbSaverMock,
     });
   });
 

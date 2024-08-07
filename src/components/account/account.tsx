@@ -6,10 +6,10 @@ import { routes } from 'src/routes';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import cx from 'classnames';
 import { BECH32_PREFIX_VALOPER } from 'src/constants/config';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { trimString } from '../../utils/utils';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 import styles from './account.module.scss';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import Tooltip from '../tooltip/tooltip';
 
 function useGetValidatorInfo(address: string) {
@@ -18,11 +18,7 @@ function useGetValidatorInfo(address: string) {
   const { data } = useQuery(
     ['validatorInfo', address],
     async () => {
-      if (!queryClient) {
-        return null;
-      }
-
-      const response = await queryClient.validator(address);
+      const response = await queryClient!.validator(address);
       return response;
     },
     {

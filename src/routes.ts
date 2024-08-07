@@ -42,6 +42,15 @@ export const routes = {
       sense: {
         path: '/robot/sense',
       },
+      energy: {
+        path: '/robot/energy',
+      },
+      brain: {
+        path: '/robot/brain',
+      },
+      soul: {
+        path: '/robot/soul',
+      },
     },
   },
   robotPassport: {
@@ -50,6 +59,11 @@ export const routes = {
   },
   portal: {
     path: '/portal',
+    routes: {
+      map: {
+        path: '/portal/map',
+      },
+    },
   },
   search: {
     path: '/search',

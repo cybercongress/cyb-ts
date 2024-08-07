@@ -4,16 +4,15 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { getRankGrade, searchByHash } from 'src/utils/search/utils';
 import { mapLinkToLinkDto } from 'src/services/CozoDb/mapping';
 import { coinDecimals } from 'src/utils/utils';
-import { useBackend } from 'src/contexts/backend/backend';
 
 import { LinksTypeFilter } from '../types';
 import { merge } from './shared';
+import { enqueueLinksSave } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
 
 const PER_PAGE_LIMIT = 10;
 
 const useSearch = (hash: string, { skip = false } = {}) => {
   const cid = hash;
-  const { defferedDbApi } = useBackend();
 
   const queryClient = useQueryClient();
 
@@ -29,17 +28,14 @@ const useSearch = (hash: string, { skip = false } = {}) => {
     ['useSearch', cid],
     async ({ pageParam = 0 }: { pageParam?: number }) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const response = await searchByHash(
-        queryClient,
-        cid,
-        pageParam,
-        PER_PAGE_LIMIT
-      );
-      const result = response?.result || [];
-      result &&
-        defferedDbApi?.importCyberlinks(
-          result.map((l) => mapLinkToLinkDto(hash, l.particle))
+      const response = await searchByHash(queryClient, cid, pageParam);
+
+      if (response?.result) {
+        enqueueLinksSave(
+          response.result.map((l) => mapLinkToLinkDto(hash, l.particle))
         );
+      }
+
       return { data: response, page: pageParam };
     },
     {

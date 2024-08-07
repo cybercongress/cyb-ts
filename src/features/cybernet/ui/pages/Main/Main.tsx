@@ -2,17 +2,17 @@ import Display from 'src/components/containerGradient/Display/Display';
 import { LinkWindow } from 'src/components';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import { Stars } from 'src/containers/portal/components';
 import { cybernetRoutes } from '../../routes';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import styles from './Main.module.scss';
 import useCurrentAccountStake from '../../hooks/useCurrentAccountStake';
-import useDelegate from '../../hooks/useDelegate';
-import ContractsTable from './ContractsTable/ContractsTable';
 import useCybernetTexts from '../../useCybernetTexts';
+import useDelegate from '../../hooks/useDelegate';
 import { useCybernet } from '../../cybernet.context';
+import ContractsTable from './ContractsTable/ContractsTable';
 import Banner from './Banner/Banner';
-import { Stars } from 'src/containers/portal/components';
 
 function Main() {
   const address = useCurrentAddress();

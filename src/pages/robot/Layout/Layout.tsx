@@ -1,41 +1,31 @@
 import { Outlet } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
 import Loader2 from 'src/components/ui/Loader2';
-import useMenuCounts from './useMenuCounts';
-
-import RobotHeader from './RobotHeader/RobotHeader';
+import { MainContainer } from 'src/components';
 import { useRobotContext } from '../robot.context';
 import WrappedActionBar from './WrappedActionBar';
-import styles from './Layout.module.scss';
-import RobotMenu from './RobotMenu/RobotMenu';
+import useMenuCounts from './useMenuCounts';
+import RobotHeader from './RobotHeader/RobotHeader';
 
 function Layout() {
-  const { address, isOwner, isLoading, nickname } = useRobotContext();
+  const { address, isLoading, nickname, isOwner } = useRobotContext();
 
   const counts = useMenuCounts(address);
 
+  const title = `robot ${nickname || address || ''}`;
+
   return (
-    <div className={styles.wrapper}>
-      <Helmet>
-        <title>robot {nickname || address || ''}</title>
-      </Helmet>
+    <MainContainer title={title}>
+      {isLoading ? (
+        <Loader2 />
+      ) : (
+        <>
+          {!isOwner && <RobotHeader menuCounts={counts} />}
+          <Outlet />
 
-      <RobotMenu counts={counts} />
-      <main>
-        {isLoading ? (
-          <Loader2 />
-        ) : (
-          <>
-            {!isOwner && <RobotHeader />}
-
-            <Outlet />
-
-            <WrappedActionBar />
-          </>
-        )}
-      </main>
-      <RobotMenu counts={counts} isRight />
-    </div>
+          <WrappedActionBar />
+        </>
+      )}
+    </MainContainer>
   );
 }
 

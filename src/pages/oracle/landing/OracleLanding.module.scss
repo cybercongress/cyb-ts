@@ -1,4 +1,6 @@
-$mobile-breakpoint: 480px;
+@import '../../../layouts/variables.module.scss';
+
+$mobile-breakpoint: 1279px;
 
 :export {
   mobileBreakpoint: $mobile-breakpoint;
@@ -9,7 +11,7 @@ $mobile-breakpoint: 480px;
   flex-direction: column;
   justify-content: space-between;
   // header, footer widths, TODO: use variables
-  min-height: calc(100vh - 120px - 60px - 100px + 45px);
+  min-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
 
   padding: 0 10px;
 
@@ -138,7 +140,7 @@ $mobile-breakpoint: 480px;
 
 .graphWrapper {
   position: fixed;
-  left: 10px;
+  left: 0px;
   bottom: 10px;
   z-index: 3;
 
@@ -148,7 +150,7 @@ $mobile-breakpoint: 480px;
 
   overflow: hidden;
 
-  border-radius: 10px;
+  border-radius: 50% 50% 50% 0;
   border: 1px solid rgba(118, 255, 3, 0.1);
 
   .enlargeBtn {
