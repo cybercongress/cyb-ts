@@ -3,8 +3,8 @@ import React from 'react';
 import { formatNumber } from 'src/utils/utils';
 import getPrefixNumber from 'src/utils/getPrefixNumber';
 import cx from 'classnames';
-import hydrogen from '../../image/hydrogen.svg';
 import Tooltip from '../tooltip/tooltip';
+import hydrogen from '../../image/hydrogen.svg';
 import styles from './IconsNumber.module.scss';
 
 enum TypesEnum {

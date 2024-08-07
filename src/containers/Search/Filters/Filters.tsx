@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import styles from './Filters.module.scss';
+import { useState } from 'react';
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
-import { LinksTypeFilter, SortBy } from '../types';
-import { initialContentTypeFilterState } from '../constants';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
-import { Account, Tooltip } from 'src/components';
+import { Tooltip } from 'src/components';
 import { AccountInput } from 'src/pages/teleport/components/Inputs';
-import useCurrentAddress from 'src/hooks/useCurrentAddress';
+
 import { AvataImgIpfs } from 'src/containers/portal/components/avataIpfs';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import useCurrentPassport from 'src/features/passport/hooks/useCurrentPassport';
+import { initialContentTypeFilterState } from '../constants';
+import { LinksTypeFilter, SortBy } from '../types';
+import styles from './Filters.module.scss';
 
 enum NeuronFilterType {
   me = 'me',

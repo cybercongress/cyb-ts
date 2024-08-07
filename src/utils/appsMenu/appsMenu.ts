@@ -7,11 +7,11 @@ import senate from 'images/temple/senate.png';
 import portal from 'images/space-pussy.svg';
 import oracle from 'images/temple/oracle.png';
 import warp from 'images/temple/warp.png';
-import congress from 'images/congress.png';
 import { routes } from 'src/routes';
 import { Networks } from 'src/types/networks';
-import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { CHAIN_ID } from 'src/constants/config';
+import congress from 'images/congress.png';
+import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 
 const getMenuItems = () => {
   const listItemMenu = [
@@ -32,8 +32,8 @@ const getMenuItems = () => {
       // subItems: myRobotLinks,
     },
     {
-      name: 'Oracle',
-      to: '/',
+      name: 'Explorer',
+      to: '/oracle/stats',
       icon: oracle,
       subItems: [
         {
@@ -72,8 +72,9 @@ const getMenuItems = () => {
     },
     { name: 'Nebula', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
-      name: 'Teleport',
-      to: '/teleport',
+      name: 'Swap',
+      to: '/teleport/swap',
+      subItems: [],
       icon: teleport,
       active: false,
       subItems: [
@@ -116,8 +117,18 @@ const getMenuItems = () => {
         },
       ],
     },
+    // {
+    //   name: 'Pools',
+    //   icon: warp,
+    //   to: '/warp',
+    //   subItems: [
+    //     { name: 'Add liquidity', to: '/warp/add-liquidity' },
+    //     { name: 'Create pool', to: '/warp/create-pool' },
+    //     { name: 'Sub liquidity', to: '/warp/sub-liquidity' },
+    //   ],
+    // },
     {
-      name: 'Sphere',
+      name: 'Stake',
       icon: shpere,
       to: routes.sphere.path,
       subItems: [
@@ -128,7 +139,7 @@ const getMenuItems = () => {
         },
       ],
     },
-    { name: 'HFR', icon: hfr, to: '/hfr', subItems: [] },
+    { name: 'Investmint', icon: hfr, to: '/hfr', subItems: [] },
     // { name: 'Lifeforms', to: '/contracts', subItems: [] },
     // {
     //   name: 'Hub',
@@ -139,7 +150,8 @@ const getMenuItems = () => {
     //     { name: 'Add network', to: '/networks/add' },
     //   ],
     // },
-    { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
+    // { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
+    { name: 'Governance', icon: senate, to: '/senate', subItems: [] },
 
     CHAIN_ID === Networks.BOSTROM
       ? {
@@ -236,7 +248,7 @@ const getMenuItems = () => {
     // },
   ];
 
-  if (CHAIN_ID === Networks.BOSTROM || CHAIN_ID === Networks.SPACE_PUSSY) {
+  if (CHAIN_ID === Networks.BOSTROM) {
     listItemMenu.splice(2, 0, {
       name: 'Portal',
       icon: portal,

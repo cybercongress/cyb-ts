@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 function useCybernetTexts() {
   const { selectedContract } = useCybernet();
 
-  const type = selectedContract?.type;
+  const type = selectedContract?.metadata?.name === 'graph' ? 'graph' : 'ml';
 
   const getText = useCallback(
     (key: Texts, isPlural?: boolean) => {

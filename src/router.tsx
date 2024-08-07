@@ -50,12 +50,11 @@ import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
 import Teleport from './pages/teleport/Teleport';
-import OracleLanding from './pages/oracle/landing/OracleLanding';
 import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
-// import Cybernet from './features/cybernet/ui/Cybernet';
+import Cybernet from './features/cybernet/ui/Cybernet';
 import Settings from './pages/Settings/Settings';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
@@ -116,7 +115,9 @@ function AppRouter() {
     <WrappedRouter>
       <Routes>
         <Route path={routes.home.path} element={<App />}>
-          <Route index element={<OracleLanding />} />
+          <Route index element={<Cybernet />} />
+          {/*           
+          <Route index element={<OracleLanding />} /> */}
           <Route path="/ide" element={<FreestyleIde />} />
 
           <Route path="/robot/*" element={<Robot />} />
@@ -217,7 +218,7 @@ function AppRouter() {
 
           <Route path="/nebula" element={<Nebula />} />
 
-          {/* <Route path="/cyberver/*" element={<Cybernet />} /> */}
+          <Route path="/cyberver/*" element={<Cybernet />} />
 
           <Route path="/keys" element={<Keys />} />
 
