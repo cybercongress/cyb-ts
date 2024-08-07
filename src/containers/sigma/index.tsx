@@ -7,14 +7,14 @@ import TokenChange from 'src/components/TokenChange/TokenChange';
 import { routes } from 'src/routes';
 import Display from 'src/components/containerGradient/Display/Display';
 import { useAppSelector } from 'src/redux/hooks';
+import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
+import useCurrentPassport from 'src/features/passport/hooks/useCurrentPassport';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { SigmaContext } from './SigmaContext';
 
 import { CardPassport } from './components';
 import ActionBarPortalGift from '../portal/gift/ActionBarPortalGift';
 import STEP_INFO from '../portal/gift/utils';
-import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import useCurrentPassport from 'src/features/passport/hooks/useCurrentPassport';
-import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 const valueContext = {
   totalCap: 0,

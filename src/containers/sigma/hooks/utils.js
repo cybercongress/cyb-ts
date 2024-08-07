@@ -4,9 +4,15 @@ import BigNumber from 'bignumber.js';
 import { useQuery } from '@tanstack/react-query';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
 import { BECH32_PREFIX_VALOPER, BASE_DENOM } from 'src/constants/config';
-import { useStake as useVerseStake } from 'src/features/cybernet/ui/hooks/useCurrentAccountStake';
-import { CYBERVER_CONTRACTS } from 'src/features/cybernet/constants';
-import { useQueryClient } from 'src/contexts/queryClient';
+import {
+  useStake as useVerseStake,
+  useStake as useVerseStake,
+} from 'src/features/cybernet/ui/hooks/useCurrentAccountStake';
+import {
+  CYBERVER_CONTRACTS,
+  CYBERVER_CONTRACTS,
+} from 'src/features/cybernet/constants';
+import { useQueryClient, useQueryClient } from 'src/contexts/queryClient';
 
 import { isPussyChain } from 'src/utils/chains/pussy';
 import { fromBech32 } from '../../../utils/utils';

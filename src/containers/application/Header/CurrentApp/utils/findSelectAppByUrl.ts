@@ -12,6 +12,7 @@ const findSelectAppByUrl = (
   let pathname = url;
   const isRobot = url.includes('@') || url.includes('neuron/');
   const isOracle = url.includes('oracle');
+  const isCyberver = url.includes('cyberver');
 
   const itemsMenuObj = reduceRobotSubItems(passport, address);
 
@@ -21,6 +22,10 @@ const findSelectAppByUrl = (
 
   if (isOracle) {
     pathname = routes.oracle.path;
+  }
+
+  if (isCyberver) {
+    pathname = '/cyberver';
   }
 
   const value = findApp(itemsMenuObj, pathname);

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
+
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import {
   SubnetHyperParameters,
   SubnetInfo,
