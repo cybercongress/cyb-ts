@@ -34,7 +34,6 @@ function AdviserMeta({ cid, type, size }: Props) {
             >
               🦠
             </Link>
-            {/* </span> */}
             {/* <Rank hash={cid} rank={rank} /> */}
           </div>
         )}
