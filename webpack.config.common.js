@@ -9,8 +9,6 @@ const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 require('dotenv').config();
 
-console.log(process.env.CHAIN_ID);
-
 if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
   console.log('*** IPFS Version ***');

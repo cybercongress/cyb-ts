@@ -1,29 +1,29 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Link } from 'react-router-dom';
 import { Delegator, SubnetNeuron } from 'src/features/cybernet/types';
-import { cybernetRoutes } from '../../../../../routes';
 import Table from 'src/components/Table/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { routes } from 'src/routes';
 import { Account, Tooltip } from 'src/components';
-import { useCurrentSubnet } from '../../../subnet.context';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { useAppData } from 'src/contexts/appData';
-import GradeSetterInput from '../../../GradeSetterInput/GradeSetterInput';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import useCybernetTexts from 'src/features/cybernet/ui/useCybernetTexts';
 import {
   useCurrentContract,
   useCybernet,
 } from 'src/features/cybernet/ui/cybernet.context';
-import { getColor } from '../../Weights/WeightsTable/WeightsTable';
-import colorStyles from '../../Weights/WeightsTable/temp.module.scss';
 import { checkIsMLVerse } from 'src/features/cybernet/ui/utils/verses';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 import { tableIDs } from 'src/components/Table/tableIDs';
 import { useDelegates } from 'src/features/cybernet/ui/hooks/useDelegate';
 import { SubnetPreviewGroup } from 'src/features/cybernet/ui/components/SubnetPreview/SubnetPreview';
+import colorStyles from '../../Weights/WeightsTable/temp.module.scss';
+import { getColor } from '../../Weights/WeightsTable/WeightsTable';
+import GradeSetterInput from '../../../GradeSetterInput/GradeSetterInput';
+import { useCurrentSubnet } from '../../../subnet.context';
+import { cybernetRoutes } from '../../../../../routes';
 
 type Props = {};
 
@@ -250,10 +250,9 @@ function SubnetNeuronsTable({}: Props) {
 
                     handleSave(hotkey, netuid, +block, address);
                   }}
-                  to={
-                    routes.oracle.ask.getLink(metadata.particle) +
-                    `?neuron=${hotkey}&subnet=${netuid}`
-                  }
+                  to={`${routes.oracle.ask.getLink(
+                    metadata.particle
+                  )}?neuron=${hotkey}&subnet=${netuid}`}
                 >
                   <Tooltip
                     tooltip={`check what job have been done by this ${getText(
