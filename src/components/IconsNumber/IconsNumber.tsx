@@ -53,7 +53,7 @@ export default function IconsNumber({ value, type, isVertical }: Props) {
     .dp(0, BigNumber.ROUND_FLOOR)
     .toNumber();
 
-  const i = new Array(prefix).fill(icons[type]).map((el, i) => {
+  const i = new Array(prefix || 1).fill(icons[type]).map((el, i) => {
     // maybe fix
     if (typeof el === 'object') {
       return React.cloneElement(el, { key: i });
@@ -64,12 +64,12 @@ export default function IconsNumber({ value, type, isVertical }: Props) {
 
   return (
     <span className={styles.wrapper}>
-      {number}{' '}
+      {number}
       <Tooltip
         tooltip={
           <span className={styles.tooltipWrapper}>
-            {formatNumber(value?.toLocaleString()?.replaceAll(',', ' ')) || 0}
-            {icons[type]}
+            {formatNumber(value?.toLocaleString()?.replaceAll(',', ' ')) || 0}{' '}
+            {icons[type]} {type}
           </span>
         }
       >
