@@ -38,20 +38,32 @@ function createCozoDb() {
   const cyblogCh = createCyblogChannel({ thread: 'cozo' });
 
   const loadCozoDb = async () => {
-    db = await CozoDb.new_from_indexed_db(
-      DB_NAME,
-      DB_STORE_NAME,
-      onIndexedDbWrite
-    );
+    if (!process.env.IS_TAURI) {
+      console.log('[CozoDB] going to get new from indexedDB');
+      db = await CozoDb.new_from_indexed_db(
+        DB_NAME,
+        DB_STORE_NAME,
+        onIndexedDbWrite
+      );
+    }
+
+    console.log('[CozoDB] going to init db schema');
     await initDbSchema();
   };
 
   async function init(onWrite?: OnWrite): Promise<void> {
     onIndexedDbWrite = onWrite;
-    await initCozoDb();
-    await loadCozoDb();
+    if (!process.env.IS_TAURI) {
+      await initCozoDb();
+    }
 
-    await performHardReset();
+    console.log('[CozoDB] going to load cozo db');
+    await loadCozoDb();
+    console.log('[CozoDB] cozo db loaded');
+
+    if (!process.env.IS_TAURI) {
+      await performHardReset();
+    }
   }
 
   const getRelations = async (): Promise<string[]> => {
@@ -166,15 +178,28 @@ function createCozoDb() {
     // console.log(`DB Version ${version}`);
   };
 
+  const runHttpCommand = (command: string, immutable = false) =>
+    fetch('http://127.0.0.1:3031/run_command', {
+      method: 'POST',
+      body: JSON.stringify({ command, immutable }),
+      headers: { 'Content-Type': 'application/json' },
+    }).then((response) => response.json());
+
+  const runWasmCommand = (command: string, immutable = false) =>
+    db!.run(command, '', immutable).then((resultStr) => JSON.parse(resultStr));
+
   const runCommand = async (
     command: string,
     immutable = false
   ): Promise<IDBResult> => {
-    if (!db) {
+    if (!db && !process.env.IS_TAURI) {
       throw new Error('DB is not initialized');
     }
-    const resultStr = await db.run(command, '', immutable);
-    const result = JSON.parse(resultStr);
+    const result = await (process.env.IS_TAURI
+      ? runHttpCommand(command, immutable)
+      : runWasmCommand(command, immutable));
+
+    console.log('[CozoDB] command result:', result);
 
     if (!result.ok) {
       console.log('----> runCommand error ', command, result);

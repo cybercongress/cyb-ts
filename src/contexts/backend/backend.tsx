@@ -1,11 +1,6 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { proxy, Remote } from 'comlink';
-import React, {
-  useContext,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import RxBroadcastChannelListener from 'src/services/backend/channels/RxBroadcastChannelListener';
 import { backgroundWorkerInstance } from 'src/services/backend/workers/background/service';
@@ -28,15 +23,20 @@ import { Option } from 'src/types';
 import { createSenseApi, SenseApi } from './services/senseApi';
 
 const setupStoragePersistence = async () => {
-  let isPersistedStorage = await navigator.storage.persisted();
-  if (!isPersistedStorage) {
-    try {
-      await navigator.permissions.query({ name: 'persistent-storage' });
-    } catch (error) {
-      console.log('❌ setupStoragePersistence permission failed', error);
-    }
+  let isPersistedStorage: boolean;
+  try {
     isPersistedStorage = await navigator.storage.persisted();
+    if (!isPersistedStorage) {
+      await navigator.permissions.query({ name: 'persistent-storage' });
+      isPersistedStorage = true;
+    }
+  } catch (error) {
+    console.log('[Backend] failed to get persistence status', error);
+    isPersistedStorage = false;
   }
+
+  console.log('[Backend] isPersistedStorage', isPersistedStorage);
+
   const message = isPersistedStorage
     ? `🔰 storage is persistent`
     : `⚠️ storage is non-persitent`;
@@ -97,6 +97,9 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   const isSyncInitialized = useAppSelector(
     (state) => state.backend.services.sync.status === 'started'
   );
+  const [needPFSInitialize, setNeedPFSInitialize] = useState(
+    !!process.env.IS_TAURI
+  );
 
   const myAddress = useAppSelector(selectCurrentAddress);
 
@@ -109,7 +112,11 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
     return Array.from(new Set([...friends, ...following]));
   }, [friends, following]);
 
-  const isReady = isDbInitialized && isIpfsInitialized && isSyncInitialized;
+  const isReady =
+    isDbInitialized &&
+    isIpfsInitialized &&
+    isSyncInitialized &&
+    !needPFSInitialize;
   const [embeddingApi$, setEmbeddingApi] =
     useState<Option<Observable<EmbeddingApi>>>(undefined);
   // const embeddingApiRef = useRef<Observable<EmbeddingApi>>();
@@ -162,7 +169,7 @@ function BackendProvider({ children }: { children: React.ReactNode }) {
   }, [isReady]);
 
   useEffect(() => {
-    if (window.__TAURI__) {
+    if (process.env.IS_TAURI) {
       console.log('[Backend] need initialize IPFS for TAURI env');
       (async () => {
         try {

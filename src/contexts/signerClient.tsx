@@ -140,28 +140,28 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      // if (window.__TAURI__ || !window.keplr) {
-      console.log('Init signing client');
-      try {
-        const mnemonic = localStorage.getItem('cyb:mnemonic');
-        if (mnemonic) {
-          const signer = await getOfflineSigner(mnemonic);
-          const clientJs = await createClient(signer);
+      if (process.env.IS_TAURI || !window.keplr) {
+        console.log('Init signing client');
+        try {
+          const mnemonic = localStorage.getItem('cyb:mnemonic');
+          if (mnemonic) {
+            const signer = await getOfflineSigner(mnemonic);
+            const clientJs = await createClient(signer);
 
-          window.signer = signer;
-          window.signingClient = clientJs;
+            window.signer = signer;
+            window.signingClient = clientJs;
 
-          console.log('Signer is set');
+            console.log('Signer is set');
 
-          setSigner(signer);
-          setSigningClient(clientJs);
-          setSignerReady(true);
-          console.log('Signing client init success');
+            setSigner(signer);
+            setSigningClient(clientJs);
+            setSignerReady(true);
+            console.log('Signing client init success');
+          }
+        } catch (e) {
+          console.error('Failed to init signer client:', e);
         }
-      } catch (e) {
-        console.error('Failed to init signer client:', e);
       }
-      // }
     })();
   }, []);
 

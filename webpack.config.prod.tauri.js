@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -11,6 +12,14 @@ module.exports = merge(commonConfig, {
     filename: '[name].[contenthash:8].js',
     chunkFilename: '[name].[contenthash:8].chunk.js',
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      ...commonConfig.plugins.find(
+        (plugin) => plugin.constructor.name === 'DefinePlugin'
+      ).definitions,
+      'process.env.IS_TAURI': JSON.stringify(true),
+    }),
+  ],
   optimization: {
     nodeEnv: 'production',
     concatenateModules: true,
@@ -33,14 +42,14 @@ module.exports = merge(commonConfig, {
       }),
       ...(!process.env.IPFS_DEPLOY
         ? [
-          new CompressionWebpackPlugin({
-            filename: '[path][base].gz',
-            algorithm: 'gzip',
-            test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg+$|\.wasm?.+$/,
-            threshold: 10240,
-            minRatio: 0.8,
-          }),
-        ]
+            new CompressionWebpackPlugin({
+              filename: '[path][base].gz',
+              algorithm: 'gzip',
+              test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg+$|\.wasm?.+$/,
+              threshold: 10240,
+              minRatio: 0.8,
+            }),
+          ]
         : []),
     ],
   },

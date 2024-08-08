@@ -2,10 +2,10 @@ import cozoDb from 'src/services/CozoDb/cozoDb';
 import { DbEntity } from 'src/services/CozoDb/types/entities';
 import { GetCommandOptions } from 'src/services/CozoDb/types/types';
 
+import migrate from 'src/services/CozoDb/migrations/migrations';
 import { exposeWorkerApi } from '../factoryMethods';
 import BroadcastChannelSender from '../../channels/BroadcastChannelSender';
 import { ServiceStatus } from '../../types/services';
-import migrate from 'src/services/CozoDb/migrations/migrations';
 
 const createDbWorkerApi = () => {
   let isInitialized = false;

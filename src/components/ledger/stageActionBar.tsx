@@ -5,6 +5,9 @@ import { BondStatus } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { useBackend } from 'src/contexts/backend/backend';
 import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
 import { KEY_TYPE } from 'src/pages/Keys/types';
+import { ConnectMethod } from 'src/pages/Keys/ActionBar/types';
+import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { Option } from 'src/types';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
@@ -19,9 +22,6 @@ import ActionBar from '../actionBar';
 import ButtonIcon from '../buttons/ButtonIcon';
 import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 import AddFileButton from '../buttons/AddFile/AddFile';
-import { ConnectMethod } from 'src/pages/Keys/ActionBar/types';
-import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
-import { Option } from 'src/types';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgWallet = require('../../image/wallet-outline.svg');
@@ -428,7 +428,7 @@ export function ConnectAddress({
           />
         )}
 
-        {/* {(!keplr || window.__TAURI__) && ( */}
+        {/* {(!keplr || process.env.IS_TAURI) && ( */}
 
         <ButtonIcon
           onClick={() => selectMethodFunc('wallet')}
@@ -437,7 +437,7 @@ export function ConnectAddress({
           text="wallet"
         />
 
-        {/* {!keplr && !window.__TAURI__ && (
+        {/* {!keplr && !process.env.IS_TAURI && (
           <LinkWindow to="https://www.keplr.app/">
             <Pane marginRight={5} width={34} height={30}>
               <img

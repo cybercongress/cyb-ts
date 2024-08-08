@@ -209,7 +209,7 @@ const Bootloader = () => {
 };
 
 function bootstrap() {
-  if ('serviceWorker' in navigator && !window.__TAURI__) {
+  if ('serviceWorker' in navigator && !process.env.IS_TAURI) {
     console.log('Going to install service worker');
 
     window.addEventListener('load', () => {

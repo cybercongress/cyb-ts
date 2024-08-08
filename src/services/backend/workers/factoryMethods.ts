@@ -13,7 +13,7 @@ type WorkerType = SharedWorker | Worker;
 const isSharedWorkersSupported = typeof SharedWorker !== 'undefined';
 
 const isSharedWorkerUsed =
-  isSharedWorkersSupported && !process.env.IS_DEV && !window.__TAURI__;
+  isSharedWorkersSupported && !process.env.IS_DEV && !process.env.IS_TAURI;
 
 // apply serializers for custom types
 function installTransferHandlers() {

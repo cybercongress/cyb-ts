@@ -26,7 +26,7 @@ export const getIpfsOpts = () => {
     ipfsOpts = { ...ipfsOpts, ...lsTypeIpfsData };
   }
 
-  if (window?.__TAURI__) {
+  if (process.env.IS_TAURI) {
     ipfsOpts.ipfsNodeType = IPFSNodes.EXTERNAL;
   }
 
