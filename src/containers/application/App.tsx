@@ -1,26 +1,35 @@
 import { useEffect } from 'react';
-import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
+import {
+  Link,
+  Outlet,
+  matchPath,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 
-import { AppDispatch } from 'src/redux/store';
-import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
+import { initPocket } from 'src/redux/features/pocket';
+import { AppDispatch } from 'src/redux/store';
 
-import { getPassport } from 'src/features/passport/passports.redux';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { useAdviser } from 'src/features/adviser/context';
-import { routes } from 'src/routes';
-import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useBackend } from 'src/contexts/backend/backend';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
+import { useAdviser } from 'src/features/adviser/context';
+import { getPassport } from 'src/features/passport/passports.redux';
+import { routes } from 'src/routes';
 
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import AdviserContainer from 'src/features/adviser/AdviserContainer';
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { initCyblog } from 'src/utils/logging/bootstrap';
+import { setNavigate } from 'src/utils/shareNavigation';
+
+
 
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
-import { initCyblog } from 'src/utils/logging/bootstrap';
-import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
 import { PreviousPageProvider } from 'src/contexts/previousPage';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
-import AdviserContainer from '../../features/adviser/AdviserContainer';
+import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
 import styles from './styles.scss';
 
 export const PORTAL_ID = 'portal';
@@ -42,10 +51,15 @@ function App() {
   useSenseManager();
 
   const { ipfsError } = useBackend();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(initPocket());
   }, []);
+
+  useEffect(() => {
+    setNavigate(navigate);
+  }, [navigate]);
 
   useEffect(() => {
     if (!address || !queryClient) {

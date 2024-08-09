@@ -1,6 +1,7 @@
 import SenseRoutingWrapper from 'src/features/sense/ui/SenseRoutingWrapper';
 import Taverna from 'src/containers/taverna';
 import { useAppSelector } from 'src/redux/hooks';
+import { useRobotContext } from './robot.context';
 
 function SensePage() {
   const keys = useAppSelector(

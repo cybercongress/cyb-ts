@@ -6,8 +6,8 @@ import {
 } from '@reduxjs/toolkit';
 import { Citizenship } from 'src/types/citizenship';
 import { CyberClient } from '@cybercongress/cyber-js';
-import { RootState } from 'src/redux/store';
-import { AppThunk } from 'src/redux/types';
+import type { RootState } from 'src/redux/store';
+import type { AppThunk } from 'src/redux/types';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Accounts } from 'src/types/defaultAccount';
 import { PASSPORT_NOT_EXISTS_ERROR } from './constants';

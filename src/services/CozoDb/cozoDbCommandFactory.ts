@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { Column, DBSchema, GetCommandOptions } from './types/types';
 import { DbEntity } from './types/entities';
 import { entityToArray } from './utils';

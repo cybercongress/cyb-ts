@@ -1,7 +1,7 @@
 import cx from 'classnames';
-import { $TsFixMe } from 'src/types/tsfix';
 import React, { ComponentProps } from 'react';
 import { Link } from 'react-router-dom';
+import { $TsFixMe } from 'src/types/tsfix';
 import { Dots } from '../ui/Dots';
 import styles from './Button.module.scss';
 

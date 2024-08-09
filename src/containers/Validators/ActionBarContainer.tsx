@@ -169,7 +169,6 @@ function ActionBarContainer({
   const { signer, signingClient } = useSigningClient();
   const { validators: validatorsAll } = useGetHeroes();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txType, setTxType] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -360,10 +359,6 @@ function ActionBarContainer({
     }
     return false;
   }, [balance]);
-
-  const handleHistory = (to) => {
-    navigate(to);
-  };
 
   const amountChangeHandler = (values: string) => {
     setAmount(values);

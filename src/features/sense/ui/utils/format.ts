@@ -4,10 +4,10 @@ import {
   MsgSendTransaction,
 } from 'src/services/backend/services/indexer/types';
 
-import { SenseItem } from '../../redux/sense.redux';
 import { isParticle } from 'src/features/particle/utils';
 import { EntityToDto } from 'src/types/dto';
 import { CID_FOLLOW } from 'src/constants/app';
+import { SenseItem } from '../../redux/sense.redux';
 
 // eslint-disable-next-line import/prefer-default-export, import/no-unused-modules
 export function formatSenseItemDataToUI(
@@ -21,7 +21,7 @@ export function formatSenseItemDataToUI(
   isAmountSendToMyAddress: boolean;
   isFollow: boolean;
 } {
-  const { type, memo, meta, id } = senseItem;
+  const { type, memo, meta } = senseItem ?? {};
 
   let amount: Coin[] | undefined;
   let isAmountSendToMyAddress = false;
@@ -41,7 +41,7 @@ export function formatSenseItemDataToUI(
     }
 
     case 'cosmos.bank.v1beta1.MsgMultiSend': {
-      const v = meta as MsgMultiSendTransaction['value'];
+      const v = meta as unknown as MsgMultiSendTransaction['value'];
 
       const a = v.outputs.find(
         (output) => output.address === currentAddress

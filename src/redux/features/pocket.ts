@@ -1,15 +1,15 @@
 import { Dispatch } from 'redux';
 import { localStorageKeys } from 'src/constants/localStorageKeys';
 
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import {
   Account,
   AccountValue,
   Accounts,
   DefaultAccount,
 } from 'src/types/defaultAccount';
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { POCKET } from '../../utils/config';
-import { RootState } from '../store';
+import type { RootState } from '../store';
 
 type SliceState = {
   actionBar: {

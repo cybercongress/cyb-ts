@@ -13,6 +13,8 @@ import senseReducer from '../../features/sense/redux/sense.redux';
 import warpReducer from '../features/warp';
 import ibcDenomReducer from '../features/ibcDenom';
 import hubReducer from '../../pages/Hub/redux/hub';
+import signerReducer from '../features/signer';
+import actionBarReducer from '../features/action-bar';
 import timeHistoryReducer from '../../features/TimeHistory/redux/TimeHistory.redux';
 
 const rootReducer = {
@@ -28,6 +30,8 @@ const rootReducer = {
   ibcDenom: ibcDenomReducer,
   scripting: scriptingReducer,
   hub: hubReducer,
+  signer: signerReducer,
+  actionBar: actionBarReducer,
   timeHistory: timeHistoryReducer,
 };
 
