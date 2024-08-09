@@ -48,14 +48,15 @@ pub fn run_command(db: &mut DbInstance, script: &str, immutable: bool) -> Result
         .run_script(&script, Default::default(), mutability)
         .map_err(|e| e.to_string())?;
 
-    let mut result_json = serde_json::to_value(result).map_err(|e| e.to_string())?;
+    println!("Result: {:?}", result);
+
+    let mut result_json = result.into_json();
 
     if let Some(result_obj) = result_json.as_object_mut() {
         result_obj.insert("ok".to_string(), json!(true));
     }
 
-    let serialized_result = serde_json::to_string(&result_json)
-        .map_err(|e| format!("Failed to serialize result: {}", e))?;
+    let serialized_result = result_json.to_string();
 
     Ok(serialized_result)
 }

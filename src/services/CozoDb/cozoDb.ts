@@ -192,6 +192,8 @@ function createCozoDb() {
     command: string,
     immutable = false
   ): Promise<IDBResult> => {
+    console.log('[CozoDB] command', command);
+
     if (!db && !process.env.IS_TAURI) {
       throw new Error('DB is not initialized');
     }
