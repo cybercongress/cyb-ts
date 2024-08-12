@@ -4,7 +4,8 @@ import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import useCyberlinks from './useCyberlinks';
 import { PORTAL_ID } from '../../../containers/application/App';
-import LinksGraph from './CyberlinksGraph';
+import GraphNew from '../GraphNew/GraphNew';
+import CyberlinksGraph from './CyberlinksGraph';
 
 type Props = {
   address?: string;
@@ -20,6 +21,7 @@ function CyberlinksGraphContainer({
   size,
   limit,
   data,
+  isNew,
 }: Props) {
   const { data: fetchData, loading } = useCyberlinks(
     { address },
@@ -30,6 +32,8 @@ function CyberlinksGraphContainer({
   );
 
   const currentAddress = useAppSelector(selectCurrentAddress);
+
+  const Comp = isNew ? GraphNew : CyberlinksGraph;
 
   const content = loading ? (
     <div
@@ -53,7 +57,7 @@ function CyberlinksGraphContainer({
       </p>
     </div>
   ) : (
-    <LinksGraph
+    <Comp
       data={data || fetchData}
       size={size}
       currentAddress={currentAddress}

@@ -2,6 +2,7 @@ import { Tabs } from 'src/components';
 import { Route, Routes, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { useRobotContext } from '../robot.context';
 import TreedView from './ui/TreedView';
 import styles from './Brain.module.scss';
@@ -11,6 +12,7 @@ import { LIMIT_GRAPH } from './utils';
 enum TabsKey {
   list = 'list',
   graph = 'graph',
+  graph2 = 'graph2',
 }
 
 function Brain() {
@@ -47,6 +49,10 @@ function Brain() {
               key: TabsKey.list,
               to: './list',
             },
+            {
+              key: TabsKey.graph2,
+              to: './graph2',
+            },
           ]}
           selected={selected}
         />
@@ -62,6 +68,18 @@ function Brain() {
         ))}
 
         <Route path="list" element={<TreedView address={address} />} />
+
+        <Route
+          path="graph2"
+          element={
+            <CyberlinksGraphContainer
+              toPortal
+              limit={99999}
+              isNew
+              address={address}
+            />
+          }
+        />
       </Routes>
     </div>
   );
