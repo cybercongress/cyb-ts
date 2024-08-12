@@ -4,4 +4,13 @@
 
 .wrapper {
   height: 100%;
+  position: relative;
+}
+
+.total {
+  top: 200px;
+  color: white;
+  left: 50%;
+  position: absolute;
+  z-index: 11;
 }

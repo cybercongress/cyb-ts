@@ -52,6 +52,7 @@ function Brain() {
             {
               key: TabsKey.graph2,
               to: './graph2',
+              text: 'graph new',
             },
           ]}
           selected={selected}

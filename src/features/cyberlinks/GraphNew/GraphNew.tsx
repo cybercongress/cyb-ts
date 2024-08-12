@@ -120,13 +120,13 @@ export default function GraphNew({ address, data, size }) {
 
   return (
     <div className={styles.wrapper}>
+      <div className={styles.total}>
+        <p>total nodes {nodes.length} </p>
+      </div>
       <GraphHoverInfo
         node={hoverNode}
-        // left={nodePostion?.[0]}
-        // top={nodePostion?.[1]}
-        left={500}
-        top={500}
-        // camera={fgRef.current?.camera()}
+        left={nodePostion?.x}
+        top={nodePostion?.y}
         size={size || window.innerWidth}
       />
 
@@ -142,21 +142,43 @@ export default function GraphNew({ address, data, size }) {
             ref={cosmograph}
             // spaceSize={size}
             className={styles.cosmographStyle}
-            showTopLabels
-            showTopLabelsLimit={10}
+            // showTopLabels={}
+            // showTopLabelsLimit={10}
             showFPSMonitor
+            // disableSimulation
             backgroundColor="transparent"
             showDynamicLabels={false}
+            linkArrows={false}
+            linkWidth={2}
+            onClick={() => {
+              debugger;
+              cosmograph.current?.pause();
+            }}
             showLabelsFor={showLabelsFor}
+            showHoveredNodeLabel={false}
             nodeLabelColor="white"
             hoveredNodeLabelColor="white"
+            // nodeLabelAccessor={(n) => {
+            //   return (
+            //     <>
+            //       <div>{n.id}</div>
+            //       <div>{n.value}</div>
+            //     </>
+            //   );
+            // }}
             nodeSize={(n) => n.size ?? null}
             // nodeColor={nodeColor}
             nodeColor={(d) => d.color}
             linkColor={(d) => d.color}
-            onNodeMouseOver={(n, _, position) => {
+            onNodeMouseOver={(n, _, _1, e) => {
               setHoverNode(n);
-              setNodePostion(position);
+
+              if (e) {
+                setNodePostion({
+                  x: e.clientX,
+                  y: e.clientY,
+                });
+              }
             }}
             onNodeMouseOut={() => {
               setHoverNode(null);
@@ -165,7 +187,7 @@ export default function GraphNew({ address, data, size }) {
             // linkWidth={(l: Link) => l.width ?? null}
             // linkColor={(l: Link) => l.color ?? null}
             curvedLinks
-            onClick={onCosmographClick}
+            // onClick={onCosmographClick}
           />
         )}
         <div className="sidebarStyle">
