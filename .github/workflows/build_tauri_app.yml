@@ -3,7 +3,7 @@ name: 'publish_tauri_app'
 on:
   push:
     branches:
-      - feat/tauri-app
+      - feat/tauri-app_build_action
   workflow_dispatch:
 
 jobs:
@@ -58,6 +58,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         with:
+          tauriScript: true
           tagName: cyb-tauri-${{ github.sha }}
           releaseName: 'App ${{ github.sha }}'
           releaseBody: 'See the assets to download this version and install.'
