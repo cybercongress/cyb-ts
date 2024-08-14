@@ -8,16 +8,21 @@ import {
   Input,
   ActionBar,
 } from 'src/components';
-import { LEDGER, CYBER, PATTERN_CYBER } from 'src/utils/config';
+import { LEDGER } from 'src/utils/config';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useDispatch } from 'react-redux';
 import { addAddressPocket } from 'src/redux/features/pocket';
 import { AccountValue } from 'src/types/defaultAccount';
+import { CHAIN_ID } from 'src/constants/config';
+import { KEY_TYPE } from '../types';
+import ActionBarSecrets from './actionBarSecrets';
 
 const { STAGE_INIT, HDPATH, STAGE_ERROR } = LEDGER;
 
 const STAGE_ADD_ADDRESS_USER = 2.1;
 const STAGE_ADD_ADDRESS_OK = 2.2;
+const STAGE_ADD_SECRETS = 100;
 
 const checkAddress = (obj, network, address) =>
   Object.keys(obj).some((k) => {
@@ -31,7 +36,6 @@ function ActionBarConnect({
   updateAddress,
   updateFuncActionBar,
   onClickBack,
-  selectAccount,
 }) {
   const { signer } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
@@ -57,12 +61,14 @@ function ActionBarConnect({
     }
   }, [valueInputAddres]);
 
-  const connctAddress = () => {
+  const connectAddress = () => {
     switch (selectMethod) {
-      case 'keplr':
+      case KEY_TYPE.keplr:
         connectKeplr();
         break;
-
+      case KEY_TYPE.secrets:
+        onClickToggleSecrets();
+        break;
       default:
         onClickAddAddressUser();
         break;
@@ -81,15 +87,22 @@ function ActionBarConnect({
     setStage(STAGE_ADD_ADDRESS_USER);
   };
 
+  const onClickToggleSecrets = () => {
+    setStage(STAGE_ADD_SECRETS);
+  };
+
+  const onClickAddSecrets = () => {
+    console.log('onClickAddSecrets');
+  };
+
   const onClickAddAddressUserToLocalStr = async () => {
     const accounts = { bech32: valueInputAddres, keys: 'read-only' };
-
 
     setTimeout(() => {
       dispatch(addAddressPocket(accounts));
     }, 100);
 
-        setStage(STAGE_ADD_ADDRESS_OK);
+    setStage(STAGE_ADD_ADDRESS_OK);
 
     clearState();
     if (updateAddress) {
@@ -103,7 +116,7 @@ function ActionBarConnect({
   const connectKeplr = async () => {
     if (signer) {
       const { bech32Address, pubKey, name } = await signer.keplr.getKey(
-        CYBER.CHAIN_ID
+        CHAIN_ID
       );
       const pk = Buffer.from(pubKey).toString('hex');
 
@@ -144,7 +157,7 @@ function ActionBarConnect({
         selectMethodFunc={selectMethodFunc}
         selectMethod={selectMethod}
         selectNetwork={selectNetwork}
-        connctAddress={connctAddress}
+        connectAddress={connectAddress}
         keplr={signer}
         onClickBack={onClickBack}
       />
@@ -179,6 +192,10 @@ function ActionBarConnect({
         </Pane>
       </ActionBar>
     );
+  }
+
+  if (stage === STAGE_ADD_SECRETS) {
+    return <ActionBarSecrets onClickBack={() => setStage(STAGE_INIT)} />;
   }
 
   if (stage === STAGE_ADD_ADDRESS_OK) {

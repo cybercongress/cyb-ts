@@ -67,7 +67,7 @@ const configTerraKeplr = () => ({
     average: 0.015,
     high: 0.015,
   },
-  features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx'],
+  features: ['ibc-transfer'],
   explorerUrlToTx: 'https://finder.terra.money/columbus-5/tx/{txHash}',
 });
 

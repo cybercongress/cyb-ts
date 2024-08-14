@@ -5,7 +5,7 @@ import {
   IpfsFileStats,
   IpfsNode,
   IpfsNodePrperties,
-} from '../../ipfs';
+} from '../../types';
 import { create as createJsIpfsClient, IPFS } from 'ipfs-core';
 import { stringToCid, stringToIpfsPath } from '../../utils/cid';
 import { multiaddr } from '@multiformats/multiaddr';
@@ -20,7 +20,7 @@ class JsIpfsNode implements IpfsNode {
     return { gatewayUrl: CYBER_GATEWAY_URL };
   }
 
-  private _isStarted: boolean = false;
+  private _isStarted = false;
 
   get isStarted() {
     return this._isStarted;

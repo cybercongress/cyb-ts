@@ -1,22 +1,25 @@
-import React, { useMemo, useRef } from 'react';
 import cx from 'classnames';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useMemo, useRef } from 'react';
 import { usePopperTooltip } from 'react-popper-tooltip';
+import { Link, useLocation } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { routes } from 'src/routes';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import Pill from 'src/components/Pill/Pill';
+import { useSigningClient } from 'src/contexts/signerClient';
+import useIsOnline from 'src/hooks/useIsOnline';
+import { useAppSelector } from 'src/redux/hooks';
+import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import { useBackend } from 'src/contexts/backend/backend';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
 import styles from './SwitchAccount.module.scss';
-import networkStyles from '../SwitchNetwork/SwitchNetwork.module.scss';
+import networkStyles from '../CurrentApp/CurrentApp.module.scss';
 import useMediaQuery from '../../../../hooks/useMediaQuery';
 import robot from '../../../../image/temple/robot.png';
 import Karma from '../../Karma/Karma';
-import { setDefaultAccount } from '../../../../redux/features/pocket';
-import { useBackend } from 'src/contexts/backend';
 
 // should be refactored
 function AccountItem({
@@ -57,7 +60,7 @@ function AccountItem({
         networkStyles.btnContainerText
       )}
     >
-      <div className={cx(networkStyles.containerKrmaName, styles.content)}>
+      <div className={cx(networkStyles.containerInfoSwitch, styles.content)}>
         {name && (
           <span
             className={cx(networkStyles.btnContainerText, {
@@ -87,13 +90,14 @@ function AccountItem({
 }
 
 function SwitchAccount() {
+  const { signerReady } = useSigningClient();
   const { isIpfsInitialized } = useBackend();
+  const isOnline = useIsOnline();
   const mediaQuery = useMediaQuery('(min-width: 768px)');
 
   const [controlledVisible, setControlledVisible] = React.useState(false);
 
   const { defaultAccount, accounts } = useAppSelector((state) => state.pocket);
-  const dispatch = useAppDispatch();
 
   const useGetAddress = defaultAccount?.account?.cyber?.bech32 || null;
 
@@ -115,13 +119,11 @@ function SwitchAccount() {
 
   const useGetCidAvatar = passport?.extension.avatar;
   const useGetName = passport?.extension.nickname || defaultAccount?.name;
+  const isReadOnly = defaultAccount.account?.cyber.keys === 'read-only';
 
   const onClickChangeActiveAcc = async (key: string) => {
-    dispatch(
-      setDefaultAccount({
-        name: key,
-      })
-    );
+    const broadcastChannel = new BroadcastChannelSender();
+    broadcastChannel.postSetDefaultAccount(key);
     setControlledVisible(false);
   };
 
@@ -151,15 +153,24 @@ function SwitchAccount() {
 
   return (
     <div style={{ position: 'relative', fontSize: '20px' }} ref={containerRef}>
-      <div
-        className={styles.containerSwichAccount}
-        style={{
-          gridTemplateColumns:
-            !useGetName || !mediaQuery || !useGetAddress ? '1fr' : '1fr 105px',
-        }}
-      >
+      <div className={styles.containerSwichAccount}>
+        {(!useGetAddress || !mediaQuery) && (
+          <Link
+            className={networkStyles.btnContainerText}
+            to={routes.settings.path}
+          >
+            {mediaQuery ? 'Settings' : '⚙️'}
+          </Link>
+        )}
         {mediaQuery && useGetAddress && (
-          <div className={networkStyles.containerKrmaName}>
+          <div
+            className={cx(
+              networkStyles.containerInfoSwitch,
+              isReadOnly || !signerReady
+                ? networkStyles.containerInfoSwitchGapUnSet
+                : undefined
+            )}
+          >
             {useGetName && (
               <button
                 onClick={() => setControlledVisible((item) => !item)}
@@ -171,6 +182,11 @@ function SwitchAccount() {
                 {/* {multipleAccounts && '>'} */}
               </button>
             )}
+            {isReadOnly && <Pill color="yellow" text="read only" />}
+            {!isReadOnly && !signerReady && isOnline && (
+              <Pill color="red" text="switch keplr" />
+            )}
+            {!isOnline && <Pill color="red" text="offline" />}
             <Karma address={useGetAddress} />
           </div>
         )}
@@ -184,8 +200,10 @@ function SwitchAccount() {
         >
           <div
             className={cx(styles.containerAvatarConnect, {
-              [styles.containerAvatarConnectFalse]: !isIpfsInitialized,
-              [styles.containerAvatarConnectTrueGreen]: isIpfsInitialized,
+              [styles.containerAvatarConnectFalse]:
+                !isIpfsInitialized || !isOnline,
+              [styles.containerAvatarConnectTrueGreen]:
+                isIpfsInitialized && isOnline,
             })}
           >
             <AvataImgIpfs
@@ -223,9 +241,9 @@ function SwitchAccount() {
                   image={require('../../../../image/sigma.png')}
                 />
                 <AccountItem
-                  name="keys"
+                  name="settings"
                   setControlledVisible={setControlledVisible}
-                  link={routes.keys.path}
+                  link={routes.settings.path}
                   image={require('./keys.png')}
                 />
               </div>

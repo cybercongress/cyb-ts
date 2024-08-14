@@ -14,6 +14,9 @@ import store from '../src/redux/store';
 import { Provider } from 'react-redux';
 window.React = React;
 
+// reuse from main app somehow
+window.cyb = {};
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

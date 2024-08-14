@@ -6,24 +6,30 @@ import { toListOfObjects } from 'src/services/CozoDb/utils';
 import { saveAs } from 'file-saver';
 
 import { Pane, Text } from '@cybercongress/gravity';
-import { Button as CybButton, Dots, Loading, Select } from 'src/components';
+import {
+  Button,
+  Button as CybButton,
+  Dots,
+  Input,
+  Loading,
+  Select,
+} from 'src/components';
 import FileInputButton from './FileInputButton';
 import { useAppSelector } from 'src/redux/hooks';
 import Display from 'src/components/containerGradient/Display/Display';
 
-import { useBackend } from 'src/contexts/backend';
-import {
-  SyncEntry,
-  SyncProgress,
-  WorkerState,
-} from 'src/services/backend/types';
+import { useBackend } from 'src/contexts/backend/backend';
 
-import styles from './drive.scss';
-
-import cozoPresets from './cozo_presets.json';
 import { Link } from 'react-router-dom';
 import { Colors } from 'src/components/containerGradient/types';
 import classNames from 'classnames';
+import BackendStatus from './BackendStatus';
+import cozoPresets from './cozo_presets.json';
+
+import styles from './drive.scss';
+import { EmbeddinsDbEntity } from 'src/services/CozoDb/types/entities';
+import useEmbeddingApi from 'src/hooks/useEmbeddingApi';
+import { useScripting } from 'src/contexts/scripting/scripting';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -37,68 +43,24 @@ const presetsAsSelectOptions = [
 
 const diffMs = (t0: number, t1: number) => `${(t1 - t0).toFixed(1)}ms`;
 
-function SyncEntryStatus({
-  entry,
-  status,
-}: {
-  entry: SyncEntry;
-  status: SyncProgress;
-}) {
-  if (status.progress === 0) {
-    return (
-      <div>
-        {`▫️ ${entry} items pending`}
-        <Dots />
-      </div>
-    );
-  }
-  if (status.done) {
-    return <div>{`☑️ ${entry} items synchronized.`}</div>;
-  }
-  if (status.error) {
-    return (
-      <div>{`❌ ${entry} items syncronization failed - ${status.error}`}</div>
-    );
-  }
-  return (
-    <div>
-      {`⏳ ${status.progress} ${entry} items syncronized`}
-      <Dots />
-    </div>
-  );
-}
-function SyncInfo({ syncState }: { syncState: WorkerState }) {
-  return (
-    <div>
-      <div className={styles.logs}>
-        <div>sync db in progress:</div>
-        <div className={styles.logItems}>
-          {Object.keys(syncState.entryStatus).map((name) => (
-            <SyncEntryStatus
-              key={`log_${name}`}
-              entry={name}
-              status={syncState.entryStatus[name]}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Drive() {
   const [queryText, setQueryText] = useState('');
   const [isLoaded, setIsLoaded] = useState(true);
   const [inProgress, setInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+  const [searchEmbedding, setSearchEmbedding] = useState('');
+  // const [summarizeCid, setSummarizeCid] = useState('');
+  const [outputText, setOutputText] = useState('');
+  // const [questionText, setQuestionText] = useState('');
+  const [embeddingsProcessStatus, setEmbeddingsProcessStatus] = useState('');
+
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
-  const { startSyncTask, dbApi, isReady } = useBackend();
-  const { syncState, dbPendingWrites } = useAppSelector(
-    (store) => store.backend
-  );
+  const { cozoDbRemote, isReady, ipfsApi } = useBackend();
+  const { embeddingApi } = useScripting();
+  // const embeddingApi = useEmbeddingApi();
 
-  console.log('-----syncStatus', syncState, dbPendingWrites);
+  // console.log('-----syncStatus', syncState, dbPendingWrites);
 
   function runQuery(queryArg?: string) {
     const query = queryArg || queryText.trim();
@@ -111,10 +73,10 @@ function Drive() {
         setTimeout(async () => {
           try {
             const t0 = performance.now();
-            const result = await dbApi!.runCommand(query);
+            const result = await cozoDbRemote!.runCommand(query);
             const t1 = performance.now();
 
-            if (result.ok === true) {
+            try {
               setStatusMessage(
                 `finished with ${result.rows.length} rows in ${diffMs(t0, t1)}`
               );
@@ -161,11 +123,11 @@ function Drive() {
               });
 
               setQueryResults({ rows: rowsNormalized, cols });
-            } else {
-              console.error('Query failed', result);
+            } catch (e: DBResultError | any) {
+              console.error('Query failed', e);
               setStatusMessage(`finished with errors`);
-              if (result.display) {
-                setErrorMessage(result.display);
+              if (e.display) {
+                setErrorMessage(e.display);
               }
             }
           } catch (e) {
@@ -180,25 +142,27 @@ function Drive() {
     }
   }
 
-  const importIpfs = async () => startSyncTask!();
-
   const exportReations = async () => {
-    const result = await dbApi!.exportRelations(['pin', 'particle', 'link']);
+    const result = await cozoDbRemote!.exportRelations([
+      'pin',
+      'particle',
+      'link',
+    ]);
     console.log('---export data', result);
-    if (result.ok) {
+    try {
       const blob = new Blob([JSON.stringify(result.data)], {
         type: 'text/plain;charset=utf-8',
       });
       saveAs(blob, 'export.json');
-    } else {
-      console.log('CozoDb: Failed to import', result);
+    } catch (e) {
+      console.log('cozoDb: Failed to import', e);
     }
   };
 
   const importReations = async (file: any) => {
     const content = await file.text();
 
-    const res = await dbApi!.importRelations(content);
+    const res = await cozoDbRemote!.importRelations(content);
     console.log('----import result', res);
   };
 
@@ -206,6 +170,77 @@ function Drive() {
     setQueryText(value);
     runQuery(value);
   };
+
+  // const createParticleEmbeddingsClick = async () => {
+  //   const data = await cozoDbRemote?.runCommand(
+  //     '?[cid, text] := *particle{cid, mime, text, blocks, size, size_local, type}, mime="text/plain"',
+  //     true
+  //   );
+
+  //   let index = 0;
+  //   const totalItems = data!.rows.length;
+  //   setEmbeddingsProcessStatus(`Starting... Total particles (0/${totalItems})`);
+
+  //   // eslint-disable-next-line no-restricted-syntax
+  //   for await (const row of data!.rows) {
+  //     const [cid, text] = row;
+  //     const vec = await mlApi?.createEmbedding(text as string);
+  //     const res = await cozoDbRemote?.executePutCommand('embeddings', [
+  //       {
+  //         cid,
+  //         vec,
+  //       } as EmbeddinsDbEntity,
+  //     ]);
+  //     index++;
+  //     setEmbeddingsProcessStatus(
+  //       `Processing particles (${index}/${totalItems})....`
+  //     );
+  //   }
+  //   setEmbeddingsProcessStatus(
+  //     `Embeddings complete for (0/${totalItems}) particles!`
+  //   );
+  // };
+
+  const searchByEmbeddingsClick = async () => {
+    const vec = await embeddingApi?.createEmbedding(searchEmbedding);
+    const queryText = `
+    e[dist, cid] := ~embeddings:semantic{cid | query: vec([${vec}]), bind_distance: dist, k: 20, ef: 50}
+    ?[dist, cid, text] := e[dist, cid], *particle{cid, text}
+    `;
+    setQueryText(queryText);
+    runQuery(queryText);
+  };
+
+  // const summarizeClick = async () => {
+  //   const text = (await ipfsApi!.fetchWithDetails(summarizeCid, 'text'))
+  //     ?.content;
+  //   const output = await mlApi?.getSummary(text!);
+  //   setOutputText(output);
+
+  // };
+
+  // const questionClick = async () => {
+  //   const text = (await ipfsApi!.fetchWithDetails(summarizeCid, 'text'))
+  //     ?.content;
+  //   const output = await mlApi?.getQA(questionText, text!);
+  //   setOutputText(output);
+
+  // };
+
+  function onSearchEmbeddingChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target;
+    setSearchEmbedding(value);
+  }
+
+  // function onSummarizeCidChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //   const { value } = event.target;
+  //   setSummarizeCid(value);
+  // }
+
+  // function onQuestionChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //   const { value } = event.target;
+  //   setQuestionText(value);
+  // }
 
   return (
     <>
@@ -236,31 +271,47 @@ function Drive() {
             <Link to="/search/brain%20feedback">brain feedback</Link>
           </p>
         </Display>
-        <Pane
-          width="100%"
-          display="flex"
-          marginBottom={20}
-          padding={10}
-          justifyContent="center"
-          alignItems="center"
-          flexDirection="column"
-        >
-          {syncState?.status && (
-            <Text color="#fff" fontSize="20px" lineHeight="30px" padding="10px">
-              backend status - {syncState?.status}{' '}
-              {syncState.lastError && `(${syncState.lastError})`}
-            </Text>
-          )}
-          {syncState?.status === 'syncing' && (
-            <SyncInfo syncState={syncState} />
-          )}
-          {(syncState?.status === 'idle' || syncState?.status === 'error') && (
-            <CybButton disabled={!isLoaded || !isReady} onClick={importIpfs}>
-              sync drive
-            </CybButton>
-          )}
-        </Pane>
+        <BackendStatus />
+        <Pane width="100%">
+          {/* <div className={styles.centerPanel}>
+            <Button small onClick={createParticleEmbeddingsClick}>
+              🤖 create particle embeddings
+            </Button>
+            <div>{embeddingsProcessStatus}</div>
+          </div>
 
+          <div className={styles.buttonPanel}>
+            <Input
+              value={summarizeCid}
+              onChange={(e) => onSummarizeCidChange(e)}
+              placeholder="enter cid:<tokens>"
+            />
+            <Button small onClick={summarizeClick}>
+              🔖 Summarize CID content
+            </Button>
+          </div>
+          <div className={styles.buttonPanel}>
+            <Input
+              value={questionText}
+              onChange={(e) => onQuestionChange(e)}
+              placeholder="enter question..."
+            />
+            <Button small onClick={questionClick}>
+              🔮 Ask question about CID content
+            </Button>
+          </div> */}
+          <div>{outputText}</div>
+          <div className={styles.buttonPanel}>
+            <Input
+              value={searchEmbedding}
+              onChange={(e) => onSearchEmbeddingChange(e)}
+              placeholder="enter sentence...."
+            />
+            <Button small onClick={searchByEmbeddingsClick}>
+              🧬 Search by embedding
+            </Button>
+          </div>
+        </Pane>
         <Pane width="100%">
           <textarea
             placeholder="Enter your query here..."

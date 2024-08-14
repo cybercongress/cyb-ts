@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import TabItem, { Position } from './TabItem/TabItem';
 import style from './Tabs.module.scss';
 
@@ -5,10 +6,10 @@ type optionsProps = {
   to?: string;
   onClick?: () => void;
   key: string;
-  text?: string;
+  text?: ReactNode;
 };
 
-export type Props = {
+type Props = {
   options: optionsProps[];
   selected: string;
 };

@@ -2,12 +2,14 @@ import React from 'react';
 import { $TsFixMeFunc } from 'src/types/tsfix';
 
 import { routes } from 'src/routes';
-import { CYBER } from 'src/utils/config';
 import { useLocation } from 'react-router-dom';
 import { Networks } from 'src/types/networks';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { trimString } from 'src/utils/utils';
+import { CHAIN_ID } from 'src/constants/config';
 import ButtonIcon from '../buttons/ButtonIcon';
 import styles from './styles.module.scss';
 import Button from '../btnGrd';
@@ -39,10 +41,12 @@ type Props = {
     onClick?: () => void;
     link?: string;
     disabled?: boolean;
+    pending?: boolean;
   };
 };
 
 function ActionBar({ children, text, onClickBack, button }: Props) {
+  const { signerReady } = useSigningClient();
   const location = useLocation();
 
   const { defaultAccount, commander } = useAppSelector((store) => {
@@ -56,8 +60,14 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   const { passport } = usePassportByAddress(address);
 
   const noAccount = !defaultAccount.account;
-  const noPassport = CYBER.CHAIN_ID === Networks.BOSTROM && !passport;
+  const noPassport = CHAIN_ID === Networks.BOSTROM && !passport;
 
+  const exception =
+    (!location.pathname.includes('/keys') &&
+      !location.pathname.includes('/drive') &&
+      // !location.pathname.includes('/oracle') &&
+      location.pathname !== '/') ||
+    location.pathname === '/oracle/learn';
   // TODO: not show while loading passport
 
   if (commander.isFocused) {
@@ -76,11 +86,8 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   if (
     (noAccount || noPassport) &&
     // maybe change to props
-    ((location.pathname !== routes.keys.path &&
-      !location.pathname.includes('/drive') &&
-      !location.pathname.includes('/oracle') &&
-      location.pathname !== '/') ||
-      location.pathname === '/oracle/learn')
+    exception &&
+    !location.pathname.includes(routes.gift.path)
   ) {
     return (
       <ActionBarContainer>
@@ -93,9 +100,28 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
     );
   }
 
+  if (
+    !signerReady &&
+    exception &&
+    !location.pathname.includes(routes.gift.path)
+  ) {
+    const activeAddress =
+      defaultAccount.account?.cyber.name ||
+      trimString(defaultAccount.account?.cyber.bech32, 10, 4);
+
+    return (
+      <ActionBarContainer>
+        <span>
+          choose {defaultAccount.account?.cyber.name ? 'account' : 'address'}{' '}
+          <span className={styles.chooseAccount}>{activeAddress}</span> in keplr
+        </span>
+      </ActionBarContainer>
+    );
+  }
+
   const content = text || children;
 
-  return (
+  const contentPortal = (
     <ActionBarContainer>
       {/* <Telegram /> */}
 
@@ -114,6 +140,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
       {button?.text && (
         <Button
           disabled={button.disabled}
+          pending={button.pending}
           link={button.link}
           onClick={button.onClick}
         >
@@ -123,6 +150,12 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
       {/* <GitHub /> */}
     </ActionBarContainer>
   );
+
+  // const portalEl = document.getElementById('portalActionBar');
+
+  // return portalEl ? createPortal(contentPortal, portalEl) : contentPortal;
+
+  return contentPortal;
 }
 
 export default ActionBar;

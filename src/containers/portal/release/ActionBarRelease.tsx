@@ -6,14 +6,16 @@ import { Nullable } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
 import { useQueryClient } from 'src/contexts/queryClient';
 import BigNumber from 'bignumber.js';
-import Soft3MessageFactory from 'src/soft.js/api/msgs';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { GIFT_ICON } from '../utils';
 import { Dots, BtnGrd, ActionBar, Account } from '../../../components';
-import { PATTERN_CYBER, CYBER } from '../../../utils/config';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { trimString } from '../../../utils/utils';
 import { TxHash } from '../hook/usePingTxs';
 import { CurrentRelease } from './type';
 import mssgsClaim from '../utilsMsgs';
+import { useAdviser } from 'src/features/adviser/context';
+import { CHAIN_ID } from 'src/constants/config';
 
 const releaseMsg = (giftAddress: string) => {
   return {
@@ -59,12 +61,13 @@ function ActionBarRelease({
   const [step, setStep] = useState(STEP_INIT);
   const { signer, signingClient } = useSigningClient();
   const queryClient = useQueryClient();
+  const { setAdviser } = useAdviser();
 
   const getRelease = useCallback(async () => {
     try {
       if (signer && signingClient && currentRelease) {
         const { isNanoLedger, bech32Address: addressKeplr } =
-          await signer.keplr.getKey(CYBER.CHAIN_ID);
+          await signer.keplr.getKey(CHAIN_ID);
 
         const msgs = [];
 
@@ -91,6 +94,13 @@ function ActionBarRelease({
           availableRelease(isNanoLedger),
           queryClient
         );
+
+        if (isNanoLedger) {
+          setAdviser(
+            "Ledger Nano-S is temporarily not supported, but don't worry, you can release your gift later",
+            'red'
+          );
+        }
 
         if (!msgsBroadcast.length) {
           return;
@@ -129,7 +139,14 @@ function ActionBarRelease({
       setStep(STEP_INIT);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signer, signingClient, currentRelease, queryClient, availableRelease]);
+  }, [
+    signer,
+    signingClient,
+    currentRelease,
+    queryClient,
+    availableRelease,
+    setAdviser,
+  ]);
 
   useEffect(() => {
     const checkAddress = async () => {

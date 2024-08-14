@@ -1,5 +1,5 @@
 // import { getNodeAutoDialInterval } from './utils-ipfs';
-import { IpfsNodeType, IpfsNode, CybIpfsNode, IpfsOptsType } from '../ipfs';
+import { IpfsNodeType, IpfsNode, CybIpfsNode, IpfsOptsType } from '../types';
 import KuboNode from './impl/kubo';
 import HeliaNode from './impl/helia';
 import JsIpfsNode from './impl/js-ipfs';
@@ -41,8 +41,6 @@ export async function initIpfsNode(
   // TODO: REFACT
   //   instance.connMgrGracePeriod = await getNodeAutoDialInterval(instance);
   // window.ipfs = instance;
-
-  console.log('----init', ipfsNodeType);
 
   await instance.reconnectToSwarm();
   return instance;

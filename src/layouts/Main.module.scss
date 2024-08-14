@@ -1,12 +1,31 @@
 .wrapper {
   footer {
-    a {
-      position: fixed;
-      z-index: 2;
-      right: 5vw;
-      bottom: 35px;
-      display: flex;
-      align-items: center;
+    display: flex;
+    position: fixed;
+    z-index: 2;
+    width: 100%;
+    bottom: 0px;
+    background-color: #000;
+
+    // a {
+    //   position: fixed;
+    //   z-index: 2;
+    //   right: 5vw;
+    //   bottom: 35px;
+    //   display: flex;
+    //   align-items: center;
+    // }
+  }
+
+  .Time {
+    display: flex;
+    position: fixed;
+    right: 1vw;
+    height: 40px;
+    bottom: 0px;
+
+    @media (max-width: 540px) {
+      right: 2vw;
     }
   }
 }

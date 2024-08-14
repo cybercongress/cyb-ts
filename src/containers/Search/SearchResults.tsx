@@ -1,41 +1,57 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import {
+  matchPath,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useDevice } from 'src/contexts/device';
-import { IpfsContentType } from 'src/utils/ipfs/ipfs';
+
+import Display from 'src/components/containerGradient/Display/Display';
 import Spark from 'src/components/search/Spark/Spark';
 import Loader2 from 'src/components/ui/Loader2';
-import { getIpfsHash } from '../../utils/search/utils';
-import { encodeSlash } from '../../utils/utils';
-import { NoItems } from '../../components';
+import { useDevice } from 'src/contexts/device';
+import { IpfsContentType } from 'src/services/ipfs/types';
+
+import useIsOnline from 'src/hooks/useIsOnline';
 import ActionBarContainer from './ActionBarContainer';
-import { PATTERN_IPFS_HASH } from '../../utils/config';
-import { MainContainer } from '../portal/components';
+import Filters from './Filters/Filters';
+import styles from './SearchResults.module.scss';
 import FirstItems from './_FirstItems.refactor';
+import { initialContentTypeFilterState } from './constants';
+import { getSearchQuery } from 'src/utils/search/utils';
 import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
-import Filters from './Filters/Filters';
-import Display from 'src/components/containerGradient/Display/Display';
-import styles from './SearchResults.module.scss';
-
-export const initialContentTypeFilterState = {
-  text: false,
-  image: false,
-  video: false,
-  pdf: false,
-  link: false,
-  // audio: false,
-};
+import { routes } from 'src/routes';
 
 const sortByLSKey = 'search-sort';
+const NEURON_SEARCH_KEY = 'neuron';
 
-function SearchResults() {
+type Props = {
+  query?: string;
+  noCommentText?: React.ReactNode;
+  actionBarTextBtn?: string;
+};
+
+function SearchResults({
+  query: propQuery,
+  noCommentText,
+  actionBarTextBtn,
+}: Props) {
   const { query: q, cid } = useParams();
 
-  const query = q || cid || '';
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [neuron, setNeuron] = useState(searchParams.get(NEURON_SEARCH_KEY));
+
+  const location = useLocation();
+
+  const query = propQuery || q || cid || '';
+  const isOnline = useIsOnline();
 
   const [keywordHash, setKeywordHash] = useState('');
   console.debug(query, keywordHash);
+
   const [rankLink, setRankLink] = useState(null);
 
   const [contentType, setContentType] = useState<{
@@ -46,9 +62,22 @@ function SearchResults() {
     initialContentTypeFilterState
   );
   const [sortBy, setSortBy] = useState(
-    localStorage.getItem(sortByLSKey) || SortBy.rank
+    neuron
+      ? SortBy.date
+      : (localStorage.getItem(sortByLSKey) as SortBy | null) || SortBy.rank
   );
+
   const [linksTypeFilter, setLinksTypeFilter] = useState(LinksTypeFilter.all);
+
+  const noResultsText = isOnline
+    ? noCommentText || (
+        <>
+          there are no answers or questions to this particle{' '}
+          {neuron && 'for this neuron'}
+          <br /> be the first and create one
+        </>
+      )
+    : "ther's nothing to show, wait until you're online";
 
   const {
     data: items,
@@ -58,7 +87,7 @@ function SearchResults() {
     isInitialLoading,
     refetch,
     fetchNextPage: next,
-  } = useSearchData(keywordHash, {
+  } = useSearchData(keywordHash, neuron, {
     sortBy,
     linksType: linksTypeFilter,
   });
@@ -77,15 +106,9 @@ function SearchResults() {
     setContentType({});
 
     (async () => {
-      let keywordHashTemp = '';
+      const keywordHash = await getSearchQuery(query);
 
-      if (query.match(PATTERN_IPFS_HASH)) {
-        keywordHashTemp = query;
-      } else {
-        keywordHashTemp = await getIpfsHash(encodeSlash(query));
-      }
-
-      setKeywordHash(keywordHashTemp);
+      setKeywordHash(keywordHash);
     })();
   }, [query]);
 
@@ -143,6 +166,26 @@ function SearchResults() {
         total={total}
         total2={items.length}
         contentType={contentType}
+        neuronFilter={{
+          value: neuron,
+          setValue: (address) => {
+            setNeuron(address);
+            setSortBy(SortBy.date);
+
+            // TODO: need to check on senate page
+            if (matchPath(routes.oracle.ask.path, location.pathname)) {
+              setSearchParams((prevParams) => {
+                if (address) {
+                  prevParams.set(NEURON_SEARCH_KEY, address);
+                } else {
+                  prevParams.delete(NEURON_SEARCH_KEY);
+                }
+
+                return prevParams;
+              });
+            }
+          },
+        }}
       />
 
       <div className={styles.search}>
@@ -165,16 +208,14 @@ function SearchResults() {
             <p>{error.message}</p>
           </Display>
         ) : (
-          <Display color="white">
-            there are no answers or questions to this particle <br /> be the
-            first and create one
-          </Display>
+          <Display color="white">{noResultsText}</Display>
         )}
       </div>
 
       {!mobile && (
         <div className={styles.actionBar}>
           <ActionBarContainer
+            textBtn={actionBarTextBtn}
             keywordHash={keywordHash}
             update={() => {
               refetch();

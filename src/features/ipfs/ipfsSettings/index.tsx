@@ -1,14 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  ContainerGradientText,
-  Input,
-  ActionBar,
-  Button,
-} from 'src/components';
+import { Input, Button, Display, DisplayTitle } from 'src/components';
 import { Pane } from '@cybercongress/gravity';
 
 import { useAdviser } from 'src/features/adviser/context';
 import Select from 'src/containers/warp/components/Select';
+import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import BtnPassport from '../../../containers/portal/pasport/btnPasport';
 import {
   updateIpfsStateUrl,
@@ -21,9 +17,9 @@ import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
-import { useBackend } from 'src/contexts/backend';
-import { IPFSNodes } from 'src/services/ipfs/ipfs.d.ts';
-import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
+import { useBackend } from 'src/contexts/backend/backend';
+import { IPFSNodes } from 'src/services/ipfs/types';
+import { getIpfsOpts } from 'src/services/ipfs/config';
 
 const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.EMBEDDED, IPFSNodes.HELIA];
 
@@ -31,7 +27,7 @@ function IpfsSettings() {
   const [valueSelect, setValueSelect] = useState(IPFSNodes.HELIA);
   const [valueInput, setValueInput] = useState('');
   const [valueInputGateway, setValueInputGateway] = useState('');
-  const { isIpfsInitialized, ipfsError: failed, loadIpfs } = useBackend();
+  const { isIpfsInitialized, ipfsError: failed, ipfsApi } = useBackend();
 
   useEffect(() => {
     const lsTypeIpfs = localStorage.getItem('ipfsState');
@@ -80,7 +76,10 @@ function IpfsSettings() {
   }, [valueInputGateway]);
 
   const onClickReConnect = () => {
-    loadIpfs();
+    ipfsApi
+      ?.stop()
+      .then(() => ipfsApi?.start(getIpfsOpts()))
+      .then();
   };
 
   const stateProps = {
@@ -99,7 +98,7 @@ function IpfsSettings() {
   }
 
   return (
-    <ContainerGradientText>
+    <Display title={<DisplayTitle title="drive" />}>
       <div style={{ display: 'grid', gap: '20px' }}>
         <Drive />
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -198,7 +197,7 @@ function IpfsSettings() {
           <Button onClick={console.log}>Sync drive</Button>
         </ActionBar> */}
       </div>
-    </ContainerGradientText>
+    </Display>
   );
 }
 

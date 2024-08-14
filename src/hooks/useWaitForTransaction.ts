@@ -1,56 +1,50 @@
 import { IndexedTx } from '@cosmjs/stargate';
-import { useCallback, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
 
 // from
 // https://wagmi.sh/react/hooks/useWaitForTransaction
 
-type Props = {
+export type Props = {
   hash: string | null | undefined;
   onSuccess?: (response: IndexedTx) => void;
 };
 
-function useWaitForTransaction({ hash, onSuccess }: Props) {
-  const [data, setData] = useState<any>();
-  const [error, setError] = useState<string>();
-  const [isLoading, setIsLoading] = useState(false);
+const NO_RESPONSE_ERROR = 'No response';
 
+function useWaitForTransaction({ hash, onSuccess }: Props) {
   const queryClient = useQueryClient();
 
-  const getTx = useCallback(async () => {
-    if (!queryClient || !hash) {
-      return;
-    }
+  const { data, isFetching, error } = useQuery(
+    ['tx', hash],
+    async () => {
+      const response = await queryClient!.getTx(hash!);
 
-    setIsLoading(true);
-
-    try {
-      const response = await queryClient.getTx(hash as string);
-
-      if (response) {
-        if (response.code) {
-          setError(response.rawLog);
-        } else {
-          setData(response);
-          onSuccess && onSuccess(response);
-        }
-      } else {
-        setTimeout(getTx, 1500);
+      if (!response) {
+        // seems not working with retry and retryDelay
+        throw new Error(NO_RESPONSE_ERROR);
+      } else if (response.code !== 0) {
+        throw new Error(response.rawLog);
       }
-    } catch (error) {
-      setError(error);
-    }
-    setIsLoading(false);
-  }, [queryClient, hash, onSuccess]);
 
-  useEffect(() => {
-    getTx();
-  }, [getTx]);
+      return response;
+    },
+    {
+      enabled: Boolean(queryClient && hash),
+      retry: (_, error) => {
+        return error.message === NO_RESPONSE_ERROR;
+      },
+      retryDelay: 2500,
+      onSuccess: (response) => {
+        onSuccess && onSuccess(response);
+      },
+    }
+  );
 
   return {
     data,
-    error,
-    isLoading,
+    error: error?.message,
+    isLoading: isFetching,
   };
 }
 

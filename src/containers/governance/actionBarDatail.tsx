@@ -6,27 +6,32 @@ import { coins } from '@cosmjs/launchpad';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import {
+  VoteOption,
+  ProposalStatus,
+} from 'cosmjs-types/cosmos/gov/v1beta1/gov';
+import {
+  DEFAULT_GAS_LIMITS,
+  BASE_DENOM,
+  MEMO_KEPLR,
+} from 'src/constants/config';
+import {
   TransactionSubmitted,
   Confirmed,
   TransactionError,
   ActionBarContentText,
   Dots,
-  CheckAddressInfo,
   ButtonImgText,
   Account,
   Input,
   BtnGrd,
+  DenomArr,
+  Select,
 } from '../../components';
 
 import { getTxs } from '../../utils/search/utils';
+// import styles from './ActionBarDetail.module.scss';
 
-import {
-  LEDGER,
-  CYBER,
-  PROPOSAL_STATUS,
-  DEFAULT_GAS_LIMITS,
-  VOTE_OPTION,
-} from '../../utils/config';
+import { LEDGER } from '../../utils/config';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgCyber = require('../../image/blue-circle.png');
@@ -38,7 +43,6 @@ const {
   STAGE_CONFIRMED,
   STAGE_ERROR,
 } = LEDGER;
-const LEDGER_TX_ACOUNT_INFO = 10;
 
 function ActionBarDetail({ proposals, id, addressActive, update }) {
   const queryClient = useQueryClient();
@@ -106,27 +110,27 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
           setStage(STAGE_SUBMITTED);
 
           if (
-            proposals.status === PROPOSAL_STATUS.PROPOSAL_STATUS_VOTING_PERIOD
+            proposals.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
           ) {
             response = await signingClient.voteProposal(
               address,
               id,
               valueSelect,
               fee,
-              CYBER.MEMO_KEPLR
+              MEMO_KEPLR
             );
           }
 
           if (
-            proposals.status === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD
+            proposals.status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
           ) {
-            const amount = coins(parseFloat(valueDeposit), CYBER.DENOM_CYBER);
+            const amount = coins(parseFloat(valueDeposit), BASE_DENOM);
             response = await signingClient.depositProposal(
               address,
               id,
               amount,
               fee,
-              CYBER.MEMO_KEPLR
+              MEMO_KEPLR
             );
           }
 
@@ -172,12 +176,13 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
 
   if (
     stage === STAGE_INIT &&
-    proposals.status === PROPOSAL_STATUS.PROPOSAL_STATUS_DEPOSIT_PERIOD
+    proposals.status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
   ) {
     return (
       <ActionBar>
         <ActionBarContentText>
           <Pane marginRight={10}>send Deposit</Pane>
+          <DenomArr denomValue={BASE_DENOM} onlyImg />
           <div style={{ margin: '0 10px' }}>
             <NumericFormat
               value={valueDeposit}
@@ -190,7 +195,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
               allowLeadingZeros
             />
           </div>
-          <Pane>{CYBER.DENOM_CYBER.toUpperCase()}</Pane>
         </ActionBarContentText>
         <BtnGrd
           text="Deposit"
@@ -203,24 +207,29 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
 
   if (
     stage === STAGE_INIT &&
-    proposals.status === PROPOSAL_STATUS.PROPOSAL_STATUS_VOTING_PERIOD
+    proposals.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
   ) {
     return (
       <ActionBar>
         <ActionBarContentText>
-          <select
-            style={{ height: 42, width: '200px' }}
-            className="select-green"
-            value={valueSelect}
-            onChange={(e) => setValueSelect(e.target.value)}
-          >
-            <option value={VOTE_OPTION.VOTE_OPTION_YES}>Yes</option>
-            <option value={VOTE_OPTION.VOTE_OPTION_NO}>No</option>
-            <option value={VOTE_OPTION.VOTE_OPTION_ABSTAIN}>Abstain</option>
-            <option value={VOTE_OPTION.VOTE_OPTION_NO_WITH_VETO}>
-              NoWithVeto
-            </option>
-          </select>
+          <Select
+            color="green"
+            width={200}
+            options={[
+              { value: String(VoteOption.VOTE_OPTION_YES), text: 'Yes' },
+              { value: String(VoteOption.VOTE_OPTION_NO), text: 'No' },
+              {
+                value: String(VoteOption.VOTE_OPTION_ABSTAIN),
+                text: 'Abstain',
+              },
+              {
+                value: String(VoteOption.VOTE_OPTION_NO_WITH_VETO),
+                text: 'No With Veto',
+              },
+            ]}
+            valueSelect={String(valueSelect)}
+            onChangeSelect={(value) => setValueSelect(Number(value))}
+          />
         </ActionBarContentText>
         <ButtonImgText
           text={
@@ -244,10 +253,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
         />
       </ActionBar>
     );
-  }
-
-  if (stage === LEDGER_TX_ACOUNT_INFO) {
-    return <CheckAddressInfo />;
   }
 
   if (stage === STAGE_SUBMITTED) {

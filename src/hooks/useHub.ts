@@ -1,20 +1,29 @@
 import { CyberClient } from '@cybercongress/cyber-js';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
+import { CHAIN_ID } from 'src/constants/config';
+import {
+  HUB_CHANNELS,
+  HUB_NETWORKS,
+  HUB_TOKENS,
+} from 'src/constants/hubContracts';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { setChannels, setNetworks, setTokens } from 'src/pages/Hub/redux/hub';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { Option } from 'src/types';
-import { Channel, Network, Token } from 'src/types/hub';
-import { CYBER, HUB_CONTRACTS } from 'src/utils/config';
-import networkList, { NetworkCons } from 'src/utils/networkListIbc';
-
-type ObjectKey<T> = {
-  [key: string]: T;
-};
+import {
+  Channel,
+  ChannelList,
+  Network,
+  NetworkList,
+  Token,
+  TokenList,
+} from 'src/types/hub';
 
 const enum TypeFetcher {
-  NETWORKS = 'NETWORKS',
-  TOKENS = 'TOKENS',
-  CHANNELS = 'CHANNELS',
+  NETWORKS = HUB_NETWORKS,
+  TOKENS = HUB_TOKENS,
+  CHANNELS = HUB_CHANNELS,
 }
 
 const QUERY_MSG = {
@@ -26,13 +35,15 @@ const fetcher = (client: Option<CyberClient>, type: TypeFetcher) => {
     return undefined;
   }
 
-  return client.queryContractSmart(HUB_CONTRACTS[type], QUERY_MSG);
+  return client.queryContractSmart(type, QUERY_MSG);
 };
 
 export function useNetworks() {
+  const dispatch = useAppDispatch();
+  const { networks: networksStorage } = useAppSelector((state) => state.hub);
   const queryClient = useQueryClient();
-  const [networks, setNetworks] =
-    useState<Option<ObjectKey<Network>>>(undefined);
+  const [networksData, setNetworksData] =
+    useState<Option<NetworkList>>(networksStorage);
   const { data } = useQuery(
     ['hub-networks'],
     () => fetcher(queryClient, TypeFetcher.NETWORKS),
@@ -42,23 +53,27 @@ export function useNetworks() {
   );
 
   useEffect(() => {
-    const objectMappedResult: ObjectKey<Network> = {};
+    const objectMappedResult: NetworkList = {};
     if (data) {
       data.entries.forEach((row: Network) => {
         objectMappedResult[row.chain_id] = row;
       });
     }
     if (Object.keys(objectMappedResult).length > 0) {
-      setNetworks(objectMappedResult);
+      setNetworksData(objectMappedResult);
+      dispatch(setNetworks(objectMappedResult));
     }
-  }, [data]);
+  }, [data, dispatch]);
 
-  return { networks };
+  return { networks: networksData };
 }
 
 export function useTokens() {
+  const dispatch = useAppDispatch();
+  const { tokens: tokensStorage } = useAppSelector((state) => state.hub);
   const queryClient = useQueryClient();
-  const [tokens, setTokens] = useState<Option<ObjectKey<Token>>>(undefined);
+  const [tokensData, setTokensData] =
+    useState<Option<TokenList>>(tokensStorage);
   const { data } = useQuery(
     ['hub-tokens'],
     () => fetcher(queryClient, TypeFetcher.TOKENS),
@@ -68,10 +83,10 @@ export function useTokens() {
   );
 
   useEffect(() => {
-    const objectMappedResult: ObjectKey<Token> = {};
+    const objectMappedResult: TokenList = {};
     if (data) {
       data.entries.forEach((row: Token) => {
-        if (row.chain_id === CYBER.CHAIN_ID) {
+        if (row.chain_id === CHAIN_ID) {
           const { contract } = row;
           const ticker =
             contract.indexOf('native') !== -1
@@ -82,18 +97,21 @@ export function useTokens() {
       });
 
       if (Object.keys(objectMappedResult).length > 0) {
-        setTokens(objectMappedResult);
+        setTokensData(objectMappedResult);
+        dispatch(setTokens(objectMappedResult));
       }
     }
-  }, [data]);
+  }, [data, dispatch]);
 
-  return { tokens };
+  return { tokens: tokensData };
 }
 
 export function useChannels() {
+  const dispatch = useAppDispatch();
+  const { channels: channelsStorage } = useAppSelector((state) => state.hub);
   const queryClient = useQueryClient();
-  const [channels, setChannels] =
-    useState<Option<ObjectKey<Channel>>>(undefined);
+  const [channelsData, setChannelsData] =
+    useState<Option<ChannelList>>(channelsStorage);
   const { data } = useQuery(
     ['hub-channels'],
     () => fetcher(queryClient, TypeFetcher.CHANNELS),
@@ -103,7 +121,7 @@ export function useChannels() {
   );
 
   useEffect(() => {
-    const objectMappedResult: ObjectKey<Channel> = {};
+    const objectMappedResult: ChannelList = {};
     if (data) {
       data.entries.forEach((row: Channel) => {
         if (row.active === 'true') {
@@ -112,10 +130,11 @@ export function useChannels() {
       });
 
       if (Object.keys(objectMappedResult).length > 0) {
-        setChannels(objectMappedResult);
+        setChannelsData(objectMappedResult);
+        dispatch(setChannels(objectMappedResult));
       }
     }
-  }, [data]);
+  }, [data, dispatch]);
 
-  return { channels };
+  return { channels: channelsData };
 }

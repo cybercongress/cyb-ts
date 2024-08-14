@@ -1,22 +1,13 @@
 import {
-  JsonTransaction,
   TransactionSubmitted,
   Confirmed,
-  ConnectLadger,
-  Cyberlink,
   StartStageSearchActionBar,
   Delegate,
   ActionBarSend,
-  GovernanceStartStageActionBar,
-  CommunityPool,
-  TextProposal,
   RewardsDelegators,
   ReDelegate,
   TransactionError,
   ActionBarContentText,
-  CheckAddressInfo,
-  GovernanceChangeParam,
-  GovernanceSoftwareUpgrade,
   ConnectAddress,
 } from './ledger/stageActionBar';
 import Account from './account/account';
@@ -54,27 +45,26 @@ import ButtonSwap from './ButtonSwap';
 import Slider from './Slider/Slider';
 import CreatedAt from './CreatedAt/CreatedAt';
 import Tabs from './Tabs/Tabs';
+import Time from './time/time';
+import Row, { RowsContainer } from './Row/Row';
+import Display from './containerGradient/Display/Display';
+import DisplayTitle from './containerGradient/DisplayTitle/DisplayTitle';
+import { Color } from './LinearGradientContainer/LinearGradientContainer';
+import Dot from './Dot/Dot';
 
 const BtnGrd = Button;
 
 // eslint-disable-next-line import/no-unused-modules
 export {
-  GovernanceChangeParam,
   Account,
   CardTemplate,
   StatusTooltip,
   MsgType,
-  JsonTransaction,
   TransactionSubmitted,
   Confirmed,
-  ConnectLadger,
-  Cyberlink,
   StartStageSearchActionBar,
   Delegate,
   ActionBarSend,
-  GovernanceStartStageActionBar,
-  CommunityPool,
-  TextProposal,
   RewardsDelegators,
   ReDelegate,
   TransactionError,
@@ -82,8 +72,6 @@ export {
   Vitalik,
   BandwidthBar,
   ActionBarContentText,
-  CheckAddressInfo,
-  GovernanceSoftwareUpgrade,
   ConnectAddress,
   ButtonImgText,
   Rank,
@@ -114,6 +102,13 @@ export {
   Slider,
   CreatedAt,
   Tabs,
+  Time,
+  Row,
+  RowsContainer,
+  Display,
+  DisplayTitle,
+  Color,
+  Dot,
 };
 
 export { Dots } from './ui/Dots';

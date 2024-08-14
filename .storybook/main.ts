@@ -47,6 +47,21 @@ const config: StorybookConfig = {
         ),
         ...config.plugins,
       ],
+
+      module: {
+        ...config.module,
+        rules: [
+          ...config.module.rules,
+          {
+            test: /\.cozo$/,
+            use: 'raw-loader',
+          },
+          {
+            test: /\.rn$/,
+            type: 'asset/source',
+          },
+        ],
+      },
     };
   },
   docs: {

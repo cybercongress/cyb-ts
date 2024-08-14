@@ -4,8 +4,8 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 const WorkerUrlPlugin = require('worker-url/plugin');
+const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 require('dotenv').config();
 
@@ -18,8 +18,6 @@ const config = {
   devtool: 'cheap-module-source-map',
   entry: {
     main: [path.join(__dirname, 'src', 'index.tsx')],
-    // helia: 'helia',
-    // cozodb: 'cyb-cozo-lib-wasm',
   },
   output: {
     filename: '[name].js',
@@ -100,19 +98,21 @@ const config = {
       'process.env.COMMIT_SHA': JSON.stringify(process.env.COMMIT_SHA),
       'process.env.CHAIN_ID': JSON.stringify(process.env.CHAIN_ID),
 
-      'process.env.CYBER_NODE_URL_API': JSON.stringify(
-        process.env.CYBER_NODE_URL_API
-      ),
-      'process.env.CYBER_NODE_URL_WS': JSON.stringify(
-        process.env.CYBER_NODE_URL_WS
-      ),
-      'process.env.CYBER_INDEX_HTTPS': JSON.stringify(
-        process.env.CYBER_INDEX_HTTPS
-      ),
-      'process.env.CYBER_INDEX_WEBSOCKET': JSON.stringify(
-        process.env.CYBER_INDEX_WEBSOCKET
+      'process.env.RPC_URL': JSON.stringify(process.env.RPC_URL),
+      'process.env.LCD_URL': JSON.stringify(process.env.LCD_URL),
+      'process.env.WEBSOCKET_URL': JSON.stringify(process.env.WEBSOCKET_URL),
+      'process.env.INDEX_HTTPS': JSON.stringify(process.env.INDEX_HTTPS),
+      'process.env.INDEX_WEBSOCKET': JSON.stringify(
+        process.env.INDEX_WEBSOCKET
       ),
       'process.env.CYBER_GATEWAY': JSON.stringify(process.env.CYBER_GATEWAY),
+      'process.env.BASE_DENOM': JSON.stringify(process.env.BASE_DENOM),
+      'process.env.DENOM_LIQUID': JSON.stringify(process.env.DENOM_LIQUID),
+      'process.env.BECH32_PREFIX': JSON.stringify(process.env.BECH32_PREFIX),
+    }),
+    new webpack.ProvidePlugin({
+      // ProvidePlugin configuration
+      cyblog: ['src/utils/logging/cyblog.ts', 'default'],
     }),
   ],
   module: {
@@ -121,6 +121,7 @@ const config = {
         test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         include: /src/,
+        // include: [/src/, /node_modules\/typeit-react/],
         use: {
           loader: 'esbuild-loader',
           options: {
@@ -193,6 +194,15 @@ const config = {
       {
         test: /\.cozo$/,
         use: 'raw-loader',
+      },
+      {
+        test: /\.(graphql|gql)$/,
+        exclude: /node_modules/,
+        use: 'graphql-tag/loader',
+      },
+      {
+        test: /\.rn$/,
+        type: 'asset/source',
       },
     ],
   },

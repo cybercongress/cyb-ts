@@ -4,18 +4,19 @@ import { Pane, Text } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { useDevice } from 'src/contexts/device';
-import {
-  getIpfsHash,
-  getRankGrade,
-  searchByHash,
-} from '../../utils/search/utils';
-import { Loading } from '../../components';
+import { getRankGrade, searchByHash } from '../../utils/search/utils';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
+import { Loading, MainContainer } from '../../components';
 import useGetCybernomics from './useGetTokensInfo';
 import SearchTokenInfo from './searchTokensInfo';
 import InfoTokens from './infoTokens';
 import ActionBarCont from './actionBarContainer';
 import useSetActiveAddress from './useSetActiveAddress';
 import { coinDecimals } from '../../utils/utils';
+import { useQueryClient } from 'src/contexts/queryClient';
+import { useBackend } from 'src/contexts/backend/backend';
+import { mapLinkToLinkDto } from 'src/services/CozoDb/mapping';
+import { enqueueLinksSave } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
 
 function ContainerGrid({ children }) {
   return (
@@ -52,6 +53,7 @@ const reduceSearchResults = (data, query) => {
 function Market({ defaultAccount }) {
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const queryClient = useQueryClient();
+
   const { tab = 'BOOT' } = useParams();
   const { gol, cyb, boot, hydrogen, milliampere, millivolt, tocyb } =
     useGetCybernomics();
@@ -73,15 +75,17 @@ function Market({ defaultAccount }) {
         setLoadingSearch(true);
         const hash = await getIpfsHash(tab);
         setKeywordHash(hash);
-        const responseApps = await searchByHash(queryClient, hash, 0, {
-          storeToCozo: true,
-        });
-        if (responseApps.result && responseApps.result.length > 0) {
-          const dataApps = reduceSearchResults(responseApps.result, tab);
+        const response = await searchByHash(queryClient, hash, 0);
+        if (response.result && response.result.length > 0) {
+          const dataApps = reduceSearchResults(response.result, tab);
           setResultSearch(dataApps);
           setLoadingSearch(false);
-          setAllPage(Math.ceil(parseFloat(responseApps.pagination.total) / 10));
+          setAllPage(Math.ceil(parseFloat(response.pagination.total) / 10));
           setPage((item) => item + 1);
+
+          enqueueLinksSave(
+            response.result.map((l) => mapLinkToLinkDto(hash, l.particle))
+          );
         } else {
           setResultSearch([]);
           setLoadingSearch(false);
@@ -98,11 +102,13 @@ function Market({ defaultAccount }) {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
     let links = [];
-    const data = await searchByHash(queryClient, keywordHash, page, {
-      storeToCozo: true,
-    });
-    if (data.result) {
-      links = reduceSearchResults(data, tab);
+    const response = await searchByHash(queryClient, keywordHash, page);
+    if (response.result) {
+      links = reduceSearchResults(response, tab);
+
+      enqueueLinksSave(
+        response.result.map((l) => mapLinkToLinkDto(keywordHash, l.particle))
+      );
     }
 
     setTimeout(() => {
@@ -125,7 +131,7 @@ function Market({ defaultAccount }) {
 
   return (
     <>
-      <main className="block-body">
+      <MainContainer>
         {addressActive === null && (
           <Pane
             boxShadow="0px 0px 5px #36d6ae"
@@ -201,7 +207,7 @@ function Market({ defaultAccount }) {
             />
           )}
         </ContainerGrid>
-      </main>
+      </MainContainer>
       {!mobile && (
         <ActionBarCont
           addressActive={addressActive}

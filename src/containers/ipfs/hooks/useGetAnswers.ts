@@ -3,6 +3,8 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useState } from 'react';
 import { reduceParticleArr } from './useGetBackLink';
 import { searchByHash } from 'src/utils/search/utils';
+import { mapLinkToLinkDto } from 'src/services/CozoDb/mapping';
+import { enqueueLinksSave } from 'src/services/backend/channels/BackendQueueChannel/backendQueueSenders';
 
 function useGetAnswers(hash) {
   const queryClient = useQueryClient();
@@ -18,14 +20,12 @@ function useGetAnswers(hash) {
   } = useInfiniteQuery(
     ['useGetAnswers', hash],
     async ({ pageParam = 0 }) => {
-      const response = await searchByHash(queryClient, hash, pageParam, {
-        storeToCozo: true,
-        callback: setTotal,
-      });
-      const reduceArr = response.result
-        ? reduceParticleArr(response.result)
-        : [];
+      const response = await searchByHash(queryClient, hash, pageParam);
+      const result = response?.result || [];
+      const reduceArr = result ? reduceParticleArr(result) : [];
+      setTotal(pageParam === 0 && response.pagination.total);
 
+      enqueueLinksSave(result.map((l) => mapLinkToLinkDto(hash, l.particle)));
       return { data: reduceArr, page: pageParam };
     },
     {

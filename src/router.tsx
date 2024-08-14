@@ -55,6 +55,10 @@ import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
+// import Cybernet from './features/cybernet/ui/Cybernet';
+import Settings from './pages/Settings/Settings';
+import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
+import Map from './pages/Portal/Map/Map';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -113,6 +117,7 @@ function AppRouter() {
       <Routes>
         <Route path={routes.home.path} element={<App />}>
           <Route index element={<OracleLanding />} />
+          <Route path="/ide" element={<FreestyleIde />} />
 
           <Route path="/robot/*" element={<Robot />} />
           <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
@@ -188,11 +193,6 @@ function AppRouter() {
 
           <Route path="/teleport/*" element={<Teleport />} />
 
-          {/* <Route path="/teleport" element={<TeleportMainScreen />} />
-          <Route path="/teleport/swap" element={<Swap />} />
-          <Route path="/teleport/send" element={<Send />} />
-          <Route path="/teleport/bridge" element={<Bridge />} /> */}
-
           <Route path="/warp" element={<WarpDashboardPools />} />
           <Route path="/warp/:tab" element={<Warp />} />
           <Route path="/genesis" element={<Movie />} />
@@ -200,6 +200,8 @@ function AppRouter() {
           <Route path="/gift" element={<PortalGift />} />
           <Route path="/release" element={<Release />} />
           <Route path="/portal" element={<MainPartal />} />
+          <Route path="/portal/map" element={<Map />} />
+
           {/* wasm */}
           <Route path="/libs" element={<Codes />} />
           <Route path="/libs/:codeId" element={<CodePage />} />
@@ -208,17 +210,18 @@ function AppRouter() {
             path="/contracts/:contractAddress"
             element={<ContractPage />}
           />
-          {/* network */}
-          {/* <Route path="/networks" element={<ListNetwork />} />
-          <Route path="/networks/add" element={<CustomNetwork />} />
-          <Route path="/networks/:networkId" element={<DetailsNetwork />} /> */}
+
           <Route path="/help" element={<Help />} />
 
           <Route path="/sigma" element={<SigmaWrapper />} />
 
           <Route path="/nebula" element={<Nebula />} />
 
+          {/* <Route path="/cyberver/*" element={<Cybernet />} /> */}
+
           <Route path="/keys" element={<Keys />} />
+
+          <Route path="/settings/*" element={<Settings />} />
 
           <Route path={routes.social.path} element={<Social />} />
 

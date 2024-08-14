@@ -5,7 +5,6 @@ import { Registry } from '@cosmjs/proto-signing';
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { formatNumber, makeTags, trimString } from '../../../utils/utils';
-import { CYBER } from '../../../utils/config';
 import HistoryInfo from './HistoryInfo';
 import InitializationInfo from './InitializationInfo';
 import ExecuteContract from './ExecuteContract';
@@ -14,7 +13,8 @@ import { FlexWrapCantainer, CardCantainer } from '../ui/ui';
 import styles from './stylesContractPage.scss';
 import RenderAbi from './renderAbi';
 import ExecuteTable from './ExecuteTable';
-import { DenomArr } from '../../../components';
+import { DenomArr, MainContainer } from '../../../components';
+import { BASE_DENOM } from 'src/constants/config';
 
 function isStargateMsgExecuteContract(msg) {
   return msg.typeUrl === '/cosmwasm.wasm.v1.MsgExecuteContract' && !!msg.value;
@@ -106,10 +106,7 @@ const getExecutions = async (client, contractAddress, setExecutions) => {
 
 const getBalance = async (client, contractAddress, setBalance) => {
   try {
-    const response = await client.getBalance(
-      contractAddress,
-      CYBER.DENOM_CYBER
-    );
+    const response = await client.getBalance(contractAddress, BASE_DENOM);
     if (response !== null) {
       setBalance(response);
     }
@@ -171,7 +168,7 @@ function ContractPage() {
   } = useGetInfoContractAddress(contractAddress, updateFnc);
 
   return (
-    <main className="block-body">
+    <MainContainer>
       <FlexWrapCantainer
         style={{ flexDirection: 'column', width: '60%', boxShadow: 'none' }}
       >
@@ -214,7 +211,7 @@ function ContractPage() {
       <CardCantainer style={{ width: '60%', margin: '0 auto' }}>
         <ExecuteTable executions={executions} />
       </CardCantainer>
-    </main>
+    </MainContainer>
   );
 }
 

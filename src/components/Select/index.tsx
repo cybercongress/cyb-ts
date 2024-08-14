@@ -1,17 +1,17 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 
 import { $TsFixMe, $TsFixMeFunc } from 'src/types/tsfix';
+import classNames from 'classnames';
 import styles from './Select.module.scss';
 import { SelectContext, useSelectContext } from './selectContext';
+
 import useOnClickOutside from '../../hooks/useOnClickOutside';
 import LinearGradientContainer, {
   Color,
 } from '../LinearGradientContainer/LinearGradientContainer';
-
-const classNames = require('classnames');
 
 type OptionSelectProps = {
   text: React.ReactNode;
@@ -48,9 +48,9 @@ export type SelectOption = {
 
 type SelectProps = {
   valueSelect: $TsFixMe;
-  onChangeSelect: $TsFixMeFunc;
+  onChangeSelect?: $TsFixMeFunc;
   children?: React.ReactNode;
-  width?: string;
+  width?: string | number;
   disabled?: boolean;
   options?: SelectOption[];
   currentValue: React.ReactNode;
@@ -71,7 +71,7 @@ function Select({
   color = Color.Yellow,
   title,
 }: SelectProps) {
-  const selectContainerRef = useRef(null);
+  const selectContainerRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const toggling = () => {
     if (!disabled) {
@@ -91,6 +91,17 @@ function Select({
   };
 
   useOnClickOutside(selectContainerRef, clickOutsideHandler);
+
+  const { current: refCurrent } = selectContainerRef;
+  const isDropUp = useMemo(() => {
+    if (refCurrent) {
+      // maybe improve
+      const { bottom } = refCurrent.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - bottom;
+      return spaceBelow < window.innerHeight / 2;
+    }
+    return false;
+  }, [refCurrent]);
 
   function renderTitle() {
     let value = currentValue;
@@ -119,7 +130,10 @@ function Select({
     >
       <div
         style={{ width: width || '120px' }}
-        className={classNames(styles.dropDown, { [styles.small]: small })}
+        className={classNames(styles.dropDown, {
+          [styles.small]: small,
+          [styles.disabled]: disabled,
+        })}
         ref={selectContainerRef}
       >
         <div className={styles.dropDownContainer}>
@@ -130,14 +144,18 @@ function Select({
           >
             <LinearGradientContainer
               active={isOpen}
-              color={color}
+              color={disabled ? Color.Black : color}
               title={title}
             >
               <span className={styles.dropDownHeader}>{renderTitle()}</span>
             </LinearGradientContainer>
           </button>
           {isOpen && (
-            <div className={styles.dropDownListContainer}>
+            <div
+              className={classNames(styles.dropDownListContainer, {
+                [styles.dropUp]: isDropUp,
+              })}
+            >
               <div className={styles.dropDownList}>
                 {/* {placeholder && (
                   <OptionSelect text={placeholder} value={null} />

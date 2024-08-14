@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { useAppData } from 'src/contexts/appData';
 import TokenChange from 'src/components/TokenChange/TokenChange';
+import { DENOM_LIQUID } from 'src/constants/config';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import {
   DenomArr,
   ContainerGradient,
@@ -15,8 +17,6 @@ import {
 import { replaceSlash, getDisplayAmount } from '../../utils/utils';
 // import { getMarketData } from './getMarketData';
 import { ColItem, RowItem, NebulaImg } from './components';
-import { CYBER } from '../../utils/config';
-import { useAdviser } from 'src/features/adviser/context';
 
 function Title({
   capData,
@@ -42,22 +42,20 @@ function Title({
 }
 
 function Nebula() {
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { dataTotalSupply, marketData } = useAppData();
   const [capData, setCapData] = useState({ currentCap: 0, change: 0 });
 
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    setAdviser('nebula');
-  }, [setAdviser]);
+  useAdviserTexts({
+    defaultText: 'welcome to nebula',
+  });
 
   useEffect(() => {
     if (Object.keys(dataTotalSupply).length > 0) {
       let cap = 0;
       Object.keys(dataTotalSupply).forEach((key) => {
         const amount = dataTotalSupply[key];
-        const [{ coinDecimals }] = traseDenom(key);
+        const [{ coinDecimals }] = tracesDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
         if (
           Object.keys(marketData).length > 0 &&
@@ -98,7 +96,7 @@ function Nebula() {
         const amount = dataTotalSupply[key];
         let price = 0;
         let cap = 0;
-        const [{ coinDecimals }] = traseDenom(key);
+        const [{ coinDecimals }] = tracesDenom(key);
         const reduceAmount = getDisplayAmount(amount, coinDecimals);
 
         if (
@@ -130,7 +128,7 @@ function Nebula() {
   }, [dataTotalSupply, marketData]);
 
   const getTypeDenomKey = (key) => {
-    const denom = traseDenom(key);
+    const denom = tracesDenom(key);
 
     if (denom[0].denom.includes('ibc')) {
       return replaceSlash(denom[0].denom);
@@ -168,7 +166,7 @@ function Nebula() {
           </ColItem>
           <ColItem justifyContent="flex-end">
             <FormatNumberTokens
-              text={CYBER.DENOM_LIQUID_TOKEN}
+              text={DENOM_LIQUID}
               value={dataRenderItems[key].price}
               tooltipStatusImg={false}
             />
@@ -176,7 +174,7 @@ function Nebula() {
           <ColItem justifyContent="flex-end">
             <FormatNumberTokens
               value={dataRenderItems[key].cap}
-              text={CYBER.DENOM_LIQUID_TOKEN}
+              text={DENOM_LIQUID}
               tooltipStatusImg={false}
             />
           </ColItem>
@@ -187,7 +185,7 @@ function Nebula() {
   }, [dataRenderItems]);
 
   return (
-    <MainContainer width="100%">
+    <MainContainer>
       <ContainerGradient
         userStyleContent={{ minHeight: 'auto', height: 'unset' }}
         title={<Title capData={capData} />}

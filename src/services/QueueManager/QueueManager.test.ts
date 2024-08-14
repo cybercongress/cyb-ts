@@ -1,7 +1,8 @@
 import { fetchIpfsContent } from 'src/services/ipfs/utils/utils-ipfs';
 
-import QueueManager, { QueueItemStatus } from './QueueManager';
+import QueueManager from './QueueManager';
 import { QueueStrategy } from './QueueStrategy';
+import { QueueItemStatus } from './types';
 
 jest.mock('src/services/ipfs/utils/utils-ipfs', () => ({
   fetchIpfsContent: jest.fn(),

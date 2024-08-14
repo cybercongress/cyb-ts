@@ -2,7 +2,7 @@
 /* eslint-disable import/no-unused-modules */
 import { fileTypeFromBuffer } from 'file-type';
 import { concat as uint8ArrayConcat } from 'uint8arrays/concat';
-import { Uint8ArrayLike } from '../ipfs';
+import { Uint8ArrayLike } from '../types';
 
 type ResultWithMime = {
   result: Uint8ArrayLike;
@@ -132,26 +132,31 @@ export const getResponseResult = async (
       return readArray;
     }
 
-    const reader = response[Symbol.asyncIterator]();
+    if (Symbol.asyncIterator in response) {
+      const reader = response[Symbol.asyncIterator]();
 
-    // if (cid === 'QmRqms6Utkk6L4mtyLQXY2spcQ8Pk7fBBTNjvxa9jTNrXp') {
-    //   debugger;
-    // }
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const chunk of reader) {
-      if (chunk instanceof Uint8Array) {
-        chunks.push(chunk);
-        bytesDownloaded += chunk.byteLength;
-        onProgress && onProgress(bytesDownloaded);
+      // if (cid === 'QmRqms6Utkk6L4mtyLQXY2spcQ8Pk7fBBTNjvxa9jTNrXp') {
+      //   debugger;
+      // }
+      // eslint-disable-next-line no-restricted-syntax
+      for await (const chunk of reader) {
+        if (chunk instanceof Uint8Array) {
+          chunks.push(chunk);
+          bytesDownloaded += chunk.byteLength;
+          onProgress && onProgress(bytesDownloaded);
+        }
       }
+      const result = uint8ArrayConcat(chunks);
+      return result;
     }
-    const result = uint8ArrayConcat(chunks);
-    return result;
+    return undefined;
   } catch (error) {
     console.error(
       `Error reading stream/iterable.\r\n Probably Hot reload error!`,
       error
     );
+
+    // throw error;
 
     return undefined;
   }

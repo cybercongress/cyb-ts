@@ -1,10 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { CHAIN_ID } from 'src/constants/config';
+import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import usePassportContract from 'src/features/passport/usePassportContract';
-import { RootState } from 'src/redux/store';
+import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { useAppSelector } from 'src/redux/hooks';
 import { routes } from 'src/routes';
 import { Citizenship } from 'src/types/citizenship';
+import { Networks } from 'src/types/networks';
+import { fromBech32 } from 'src/utils/utils';
 
 const RobotContext = React.createContext<{
   address: string | null;
@@ -33,21 +37,10 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
 
   const [refetchFuncs, setRefetch] = useState<(() => void)[]>([]);
 
-  const {
-    pocket: { defaultAccount, accounts },
-    passport: currentUserPassport,
-  } = useSelector(({ pocket, passports }: RootState) => {
-    const address = pocket.defaultAccount.account?.cyber?.bech32;
+  const currentAddress = useAppSelector(selectCurrentAddress);
+  const currentUserPassport = usePassportByAddress(currentAddress);
 
-    return {
-      pocket,
-      // maybe try to reuse passport hook
-      passport: (address && passports[address]) || {
-        data: undefined,
-        loading: false,
-      },
-    };
-  });
+  const { accounts } = useAppSelector(({ pocket }) => pocket);
 
   const { username } = params;
   const nickname =
@@ -59,8 +52,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   let isOwner: boolean | undefined = false;
 
   if (robotUrl) {
-    address =
-      defaultAccount.account?.cyber?.bech32 || currentUserPassport.data?.owner;
+    address = currentAddress || currentUserPassport.data?.owner;
     isOwner = true;
   } else if (
     nickname &&
@@ -142,7 +134,12 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   });
 
   const currentPassport = isOwner ? currentUserPassport : passportContract;
-  const currentRobotAddress = address || currentPassport.data?.owner || null;
+  let currentRobotAddress = address || currentPassport.data?.owner || null;
+
+  if (CHAIN_ID === Networks.SPACE_PUSSY && currentRobotAddress) {
+    currentRobotAddress = fromBech32(currentRobotAddress, 'pussy');
+  }
+
   const isLoading = currentPassport.loading;
 
   // redirect from /robot to /@nickname
@@ -157,9 +154,11 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
       newUser &&
       location.pathname.includes(routes.robot.path) &&
       // allowed routes
-      ![routes.robot.path, routes.robot.routes.drive.path].includes(
-        location.pathname
-      )
+      ![
+        routes.robot.path,
+        routes.robot.routes.drive.path,
+        routes.robot.routes.sense.path,
+      ].includes(location.pathname)
     ) {
       navigate(routes.robot.path);
     }
@@ -167,7 +166,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
     if (
       robotUrl &&
       currentUserPassport.data &&
-      defaultAccount.account?.cyber.bech32 === currentUserPassport.data.owner
+      currentAddress === currentUserPassport.data.owner
     ) {
       navigate(
         location.pathname.replace(
@@ -186,7 +185,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
     robotUrl,
     currentUserPassport.data,
     newUser,
-    defaultAccount,
+    currentAddress,
     navigate,
   ]);
 

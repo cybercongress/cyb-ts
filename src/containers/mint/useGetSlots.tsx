@@ -3,13 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { authAccounts } from '../../utils/search/utils';
 import { convertResources } from '../../utils/utils';
-import { CYBER } from '../../utils/config';
 import { Slot } from './types';
+import { DENOM_LIQUID } from 'src/constants/config';
 
 const MILLISECONDS_IN_SECOND = 1000;
 
 const initStateVested = {
-  [CYBER.DENOM_LIQUID_TOKEN]: 0,
+  [DENOM_LIQUID]: 0,
   millivolt: 0,
   milliampere: 0,
 };
@@ -73,7 +73,7 @@ function useGetSlots(addressActive) {
   const [slotsData, setSlotsData] = useState<Slot[]>([]);
   const [loadingAuthAccounts, setLoadingAuthAccounts] = useState(true);
   const [originalVesting, setOriginalVesting] = useState(initStateVested);
-  const [balacesResource, setBalacesResource] = useState(initBalacesResource);
+  const [balancesResource, setBalacesResource] = useState(initBalacesResource);
   const [vested, setVested] = useState(initStateVested);
 
   const { data: dataAuthAccounts, refetch: refetchAuthAccounts } = useQuery(
@@ -105,7 +105,7 @@ function useGetSlots(addressActive) {
       setVested(initStateVested);
 
       const originalVestingInitAmount = {
-        [CYBER.DENOM_LIQUID_TOKEN]: 0,
+        [DENOM_LIQUID]: 0,
         millivolt: 0,
         milliampere: 0,
       };
@@ -118,9 +118,9 @@ function useGetSlots(addressActive) {
         const { start_time: startTime } = dataAuthAccounts.result.value;
 
         const balances = getCalculationBalance(originalVestingAmount);
-        if (balances[CYBER.DENOM_LIQUID_TOKEN]) {
-          originalVestingInitAmount[CYBER.DENOM_LIQUID_TOKEN] =
-            balances[CYBER.DENOM_LIQUID_TOKEN];
+        if (balances[DENOM_LIQUID]) {
+          originalVestingInitAmount[DENOM_LIQUID] =
+            balances[DENOM_LIQUID];
         }
         if (balances.millivolt) {
           originalVestingInitAmount.millivolt = balances.millivolt;
@@ -225,9 +225,9 @@ function useGetSlots(addressActive) {
           }
         });
         if (obj.status !== 'Unfreezing') {
-          if (obj.amount[CYBER.DENOM_LIQUID_TOKEN]) {
-            vestedAmount[CYBER.DENOM_LIQUID_TOKEN] +=
-              obj.amount[CYBER.DENOM_LIQUID_TOKEN];
+          if (obj.amount[DENOM_LIQUID]) {
+            vestedAmount[DENOM_LIQUID] +=
+              obj.amount[DENOM_LIQUID];
           }
           if (obj.amount.milliampere) {
             vestedAmount.milliampere += obj.amount.milliampere;
@@ -247,7 +247,7 @@ function useGetSlots(addressActive) {
     slotsData,
     originalVesting,
     loadingAuthAccounts,
-    balacesResource,
+    balancesResource,
     vested,
     update,
   };

@@ -8,7 +8,7 @@ import {
 import { RootState } from 'src/redux/store';
 import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CYBER, PATTERN_CYBER } from 'src/utils/config';
+import { PATTERN_CYBER } from 'src/constants/patterns';
 import { useQueryClient } from 'src/contexts/queryClient';
 import {
   getDisplayAmount,
@@ -38,12 +38,14 @@ import {
 } from '../components/Inputs';
 import useGetSendTxsByAddressByLcd from '../hooks/useGetSendTxsByAddressByLcd';
 import { useTeleport } from '../Teleport.context';
+import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
-const tokenDefaultValue = CYBER.DENOM_CYBER;
+const tokenDefaultValue = BASE_DENOM;
 
 function Send() {
   const queryClient = useQueryClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   const { defaultAccount } = useAppSelector((state: RootState) => state.pocket);
   useAccountsPassports();
   const { addressActive } = useSetActiveAddress(defaultAccount);
@@ -107,9 +109,9 @@ function Send() {
   }, [tokenSelect, recipient, setSearchParams, searchParams, tokenAmount]);
 
   useEffect(() => {
-    const [{ coinDecimals }] = traseDenom(tokenSelect);
+    const [{ coinDecimals }] = tracesDenom(tokenSelect);
     setTokenACoinDecimals(coinDecimals);
-  }, [tokenSelect, traseDenom]);
+  }, [tokenSelect, tracesDenom]);
 
   // setTokenABalance
   useEffect(() => {
@@ -232,6 +234,10 @@ function Send() {
     [tokenAmount, tokenACoinDecimals]
   );
 
+  useAdviserTexts({
+    defaultText: 'send tokens',
+  });
+
   const stateActionBar = {
     tokenAmount,
     tokenSelect,
@@ -246,16 +252,16 @@ function Send() {
       <MainContainer width="62%">
         <TeleportContainer>
           <Select
-            valueSelect={CYBER.CHAIN_ID}
-            currentValue={CYBER.CHAIN_ID}
+            valueSelect={CHAIN_ID}
+            currentValue={CHAIN_ID}
             disabled
             options={[
               {
-                value: CYBER.CHAIN_ID,
-                text: CYBER.CHAIN_ID,
+                value: CHAIN_ID,
+                text: CHAIN_ID,
                 img: (
                   <DenomArr
-                    denomValue={CYBER.CHAIN_ID}
+                    denomValue={CHAIN_ID}
                     onlyImg
                     type="network"
                     tooltipStatusImg={false}

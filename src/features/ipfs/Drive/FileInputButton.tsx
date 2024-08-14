@@ -10,8 +10,6 @@ function FileInputButton({
   const fileInputRef = React.createRef();
 
   const handleFileChange = (e) => {
-    console.log('---HANDLE handleFileChange', e);
-
     const file = e.target.files[0];
     if (file) {
       processFile(file);

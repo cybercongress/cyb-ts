@@ -1,4 +1,4 @@
-import { IpfsNode, CybIpfsNode, IpfsContentType } from '../../ipfs';
+import { IpfsNode, CybIpfsNode, IpfsContentType } from '../../types';
 import { parseArrayLikeToDetails } from '../../utils/content';
 import { addContenToIpfs, getIPFSContent } from '../../utils/utils-ipfs';
 
@@ -12,12 +12,14 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
   options: WithCybFeaturesOptions
 ) {
   return class CybIpfsNodeMixin extends Base implements CybIpfsNode {
-    async fetchWithDetails(cid: string, parseAs?: IpfsContentType) {
-      const response = await getIPFSContent(cid, this);
-      const details = response?.result
-        ? await parseArrayLikeToDetails(response, cid)
-        : undefined;
+    async fetchWithDetails(
+      cid: string,
+      parseAs?: IpfsContentType,
+      abortController?: AbortController
+    ) {
+      const content = await getIPFSContent(cid, this, abortController);
 
+      const details = await parseArrayLikeToDetails(content, cid);
       return !parseAs
         ? details
         : details?.type === parseAs
@@ -30,13 +32,13 @@ function withCybFeatures<TBase extends new (...args: any[]) => IpfsNode>(
     }
 
     async isConnectedToSwarm() {
-      return !!(await super.getPeers()).find(
-        (peerId) => peerId === options.swarmPeerId
-      );
+      const peers = await super.getPeers();
+      return !!peers.find((peerId) => peerId === options.swarmPeerId);
     }
 
-    async reconnectToSwarm(lastConnectedTimestamp?: number) {
-      if (!(await this.isConnectedToSwarm())) {
+    async reconnectToSwarm(forced = false) {
+      const isConnectedToSwarm = await this.isConnectedToSwarm();
+      if (!isConnectedToSwarm || forced) {
         // TODO: refactor using timeout for node config
 
         //   const needToReconnect =

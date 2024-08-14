@@ -1,41 +1,41 @@
 /* eslint-disable no-restricted-syntax */
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import BigNumber from 'bignumber.js';
-import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import { useSelector } from 'react-redux';
 import useGetTotalSupply from 'src/hooks/useGetTotalSupply';
-import { NoItems, MainContainer } from 'src/components';
+import { NoItems, MainContainer, LinkWindow } from 'src/components';
 import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import useWarpDexTickers from 'src/hooks/useGetWarpPools';
 import { Coin } from '@cosmjs/launchpad';
 import useGetBalances from 'src/hooks/getBalances';
+import Loader2 from 'src/components/ui/Loader2';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { PoolsInfo, PoolCard } from './pool';
 import styles from './pool/styles.module.scss';
 import useGetMySharesInPools from './hooks/useGetMySharesInPools';
 import usePoolsAssetAmount from './hooks/usePoolsAssetAmount';
-import Loader2 from 'src/components/ui/Loader2';
-import { useAdviser } from 'src/features/adviser/context';
 
 function WarpDashboardPools() {
-  const { defaultAccount } = useSelector((state) => state.pocket);
+  const currentAddress = useCurrentAddress();
+  const { liquidBalances: accountBalances } = useGetBalances(currentAddress);
+  const { myCap } = useGetMySharesInPools(accountBalances);
+
   const { vol24Total, vol24ByPool } = useWarpDexTickers();
   const data = usePoolListInterval();
   const { poolsData, totalCap, loading } = usePoolsAssetAmount(data);
-  const { addressActive } = useSetActiveAddress(defaultAccount);
-  const { liquidBalances: accountBalances } = useGetBalances(addressActive);
-  const { myCap } = useGetMySharesInPools(accountBalances);
   const { totalSupplyAll } = useGetTotalSupply();
 
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    if (loading) {
-      setAdviser('loading...', 'yellow');
-    } else {
-      setAdviser('add or sub liquidity. create a pool');
-    }
-  }, [setAdviser, loading]);
+  useAdviserTexts({
+    isLoading: loading,
+    loadingText: 'loading pools',
+    defaultText: (
+      <span>
+        warp is power dex for all things cyber <br />
+        <LinkWindow to="https://api.warp-dex.cyb.ai/docs">api docs</LinkWindow>
+      </span>
+    ),
+  });
 
   const useMyProcent = useMemo(() => {
     if (totalCap > 0 && myCap > 0) {
@@ -50,8 +50,8 @@ function WarpDashboardPools() {
   }, [totalCap, myCap]);
 
   const itemsPools = useMemo(() => {
-    if (poolsData.length > 0) {
-      return poolsData.map((item) => {
+    return (
+      poolsData.map((item) => {
         const keyItem = uuidv4();
         let vol24: Coin | undefined;
 
@@ -68,14 +68,12 @@ function WarpDashboardPools() {
             vol24={vol24}
           />
         );
-      });
-    }
-    return [];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [poolsData, vol24ByPool]);
+      }) || []
+    );
+  }, [poolsData, vol24ByPool, accountBalances, totalSupplyAll]);
 
   return (
-    <MainContainer width="100%">
+    <MainContainer>
       <div className={styles.PoolDataContainer}>
         <PoolsInfo
           myCap={myCap}
@@ -83,9 +81,13 @@ function WarpDashboardPools() {
           useMyProcent={useMyProcent}
           vol24={vol24Total}
         />
-        {Object.keys(itemsPools).length > 0
-          ? itemsPools
-          : !loading && <NoItems text="No Pools" />}
+        {loading ? (
+          <Loader2 />
+        ) : Object.keys(itemsPools).length > 0 ? (
+          <div className={styles.pools}>{itemsPools}</div>
+        ) : (
+          <NoItems text="No Pools" />
+        )}
       </div>
     </MainContainer>
   );

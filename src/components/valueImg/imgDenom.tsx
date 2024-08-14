@@ -8,12 +8,12 @@ import amperImg from 'images/light.png';
 import hydrogen from 'images/hydrogen.svg';
 import tocyb from 'images/boot.png';
 import boot from 'images/large-green.png';
-import pussy from 'images/large-purple-circle.png';
 import defaultImg from 'images/large-orange-circle.png';
 import Tooltip from '../tooltip/tooltip';
 import { trimString } from '../../utils/utils';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import styles from './TextDenom.module.scss';
+import lp from './images/lp.png';
 
 // maybe reuse enum from DenomArr
 const nativeImageMap = {
@@ -23,10 +23,10 @@ const nativeImageMap = {
   a: amperImg,
   hydrogen,
   h: hydrogen,
-  liquidpussy: hydrogen,
-  lp: hydrogen,
+  liquidpussy: lp,
+  lp,
   boot,
-  pussy,
+  pussy: '🟣',
   tocyb,
   eth,
 };
@@ -101,11 +101,16 @@ function ImgDenom({
         setTooltipText(path);
       }
     } else {
-      setImgDenom(defaultImg);
+      setImgDenom(getNativeImg(coinDenom));
     }
-  }, [coinDenom, infoDenom, fetchWithDetails]);
+  }, [coinDenom, infoDenom, fetchWithDetails, getImgFromIpfsByCid]);
 
-  const img = (
+  // refactor
+  const isEmoji = imgDenom && imgDenom?.length < 3;
+
+  const img = isEmoji ? (
+    imgDenom
+  ) : (
     <img
       style={{
         margin: marginImg || 0,

@@ -5,6 +5,7 @@
     "cybercongress",
     "cyberlink",
     "cyberlinks",
+    "cybernet",
     "denoms",
     "helia",
     "investmint",
@@ -13,6 +14,23 @@
     "negentropy",
     "stylelint",
     "superintelligence",
+    "websockets",
+    "cyberver",
     "websockets"
-  ]
+  ],
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "stylelint.snippet": ["css", "scss", "postcss"],
+  "stylelint.validate": ["css", "scss", "postcss"]
 }

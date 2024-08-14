@@ -5,10 +5,12 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { routes } from 'src/routes';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import cx from 'classnames';
+import { BECH32_PREFIX_VALOPER } from 'src/constants/config';
 import { trimString } from '../../utils/utils';
-import { CYBER } from '../../utils/config';
 import { AvataImgIpfs } from '../../containers/portal/components/avataIpfs';
 import styles from './account.module.scss';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import Tooltip from '../tooltip/tooltip';
 
 function useGetValidatorInfo(address: string) {
   const queryClient = useQueryClient();
@@ -16,18 +18,12 @@ function useGetValidatorInfo(address: string) {
   const { data } = useQuery(
     ['validatorInfo', address],
     async () => {
-      if (!queryClient) {
-        return null;
-      }
-
-      const response = await queryClient.validator(address);
+      const response = await queryClient!.validator(address);
       return response;
     },
     {
       enabled: Boolean(
-        queryClient &&
-          address &&
-          address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)
+        queryClient && address && address.includes(BECH32_PREFIX_VALOPER)
       ),
     }
   );
@@ -42,13 +38,15 @@ type Props = {
   onlyAvatar?: boolean;
   avatar?: boolean;
   margin?: string;
-  sizeAvatar?: string;
+  sizeAvatar?: string | number;
   styleUser?: object;
   trimAddressParam?: [number, number];
   disabled?: boolean;
   containerClassName?: string;
   avatarClassName?: string;
   monikerClassName?: string;
+  link?: string;
+  markCurrentAddress?: boolean;
 };
 
 function Account({
@@ -58,12 +56,14 @@ function Account({
   onlyAvatar,
   avatar,
   margin,
+  link,
   sizeAvatar,
   styleUser,
   trimAddressParam = [9, 3],
   disabled,
   containerClassName,
   avatarClassName,
+  markCurrentAddress,
   monikerClassName,
 }: Props) {
   const { data: dataValidInfo } = useGetValidatorInfo(address);
@@ -76,8 +76,14 @@ function Account({
     return trimString(address, trimAddressParam[0], trimAddressParam[1]);
   }, [address, trimAddressParam]);
 
+  const currentAddress = useCurrentAddress();
+
   const linkAddress = useMemo(() => {
-    if (address.includes(CYBER.BECH32_PREFIX_ACC_ADDR_CYBERVALOPER)) {
+    if (link) {
+      return link;
+    }
+
+    if (address?.includes(BECH32_PREFIX_VALOPER)) {
       return `/network/bostrom/hero/${address}`;
     }
 
@@ -86,7 +92,7 @@ function Account({
     }
 
     return `/network/bostrom/contract/${address}`;
-  }, [address, moniker]);
+  }, [address, moniker, link]);
 
   const cidAvatar = useMemo(() => {
     if (dataPassport !== undefined && dataPassport !== null) {
@@ -104,7 +110,8 @@ function Account({
       }}
     >
       {avatar && (
-        <div
+        <Link
+          to={linkAddress}
           className={cx(styles.avatar, avatarClassName)}
           style={{
             width: sizeAvatar,
@@ -112,7 +119,7 @@ function Account({
           }}
         >
           <AvataImgIpfs addressCyber={address} cidAvatar={cidAvatar} />
-        </div>
+        </Link>
       )}
       {!onlyAvatar && (
         <Link
@@ -126,6 +133,10 @@ function Account({
         >
           {!moniker ? trimAddress : moniker}
         </Link>
+      )}
+
+      {markCurrentAddress && currentAddress === address && (
+        <Tooltip tooltip="your account">🔑</Tooltip>
       )}
       {children}
     </div>

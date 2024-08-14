@@ -2,25 +2,25 @@ import { useState, useEffect, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
+import { DENOM_LIQUID, BASE_DENOM } from 'src/constants/config';
 import useGetTotalSupply from './useGetTotalSupply';
 import usePoolListInterval from './usePoolListInterval';
-import { CYBER } from '../utils/config';
 import { reduceBalances, convertAmount } from '../utils/utils';
 
 const defaultTokenList = {
-  [CYBER.DENOM_CYBER]: 0,
-  [CYBER.DENOM_LIQUID_TOKEN]: 0,
+  [BASE_DENOM]: 0,
+  [DENOM_LIQUID]: 0,
   milliampere: 0,
   millivolt: 0,
   tocyb: 0,
 };
 
-const calculatePrice = (coinsPair, balances, traseDenom) => {
+const calculatePrice = (coinsPair, balances, tracesDenom) => {
   let price = 0;
   const tokenA = coinsPair[0];
   const tokenB = coinsPair[1];
-  const [{ coinDecimals: coinDecimalsA }] = traseDenom(tokenA);
-  const [{ coinDecimals: coinDecimalsB }] = traseDenom(tokenB);
+  const [{ coinDecimals: coinDecimalsA }] = tracesDenom(tokenA);
+  const [{ coinDecimals: coinDecimalsB }] = tracesDenom(tokenB);
 
   const amountA = new BigNumber(convertAmount(balances[tokenA], coinDecimalsA));
   const amountB = new BigNumber(convertAmount(balances[tokenB], coinDecimalsB));
@@ -32,7 +32,7 @@ const calculatePrice = (coinsPair, balances, traseDenom) => {
   return price;
 };
 
-const getPoolPrice = (data, traseDenom) => {
+const getPoolPrice = (data, tracesDenom) => {
   const copyObj = { ...data };
   Object.keys(copyObj).forEach((key) => {
     const element = copyObj[key];
@@ -40,17 +40,19 @@ const getPoolPrice = (data, traseDenom) => {
       const coinsPair = element.reserveCoinDenoms;
       const { balances } = element;
       let price = 0;
-      if (
-        coinsPair[0] === CYBER.DENOM_LIQUID_TOKEN ||
-        coinsPair[1] === CYBER.DENOM_LIQUID_TOKEN
-      ) {
-        if (coinsPair[0] === CYBER.DENOM_LIQUID_TOKEN) {
-          price = calculatePrice(coinsPair, balances, traseDenom);
+      if (coinsPair[0] === DENOM_LIQUID || coinsPair[1] === DENOM_LIQUID) {
+        if (coinsPair[0] === DENOM_LIQUID) {
+          price = calculatePrice(coinsPair, balances, tracesDenom);
         } else {
-          price = calculatePrice(coinsPair.reverse(), balances, traseDenom);
+          price = calculatePrice(
+            [...coinsPair].reverse(),
+            balances,
+            tracesDenom
+          );
+          copyObj[key].reserveCoinDenoms = [...coinsPair].reverse();
         }
       } else {
-        price = calculatePrice(coinsPair, balances, traseDenom);
+        price = calculatePrice(coinsPair, balances, tracesDenom);
       }
       element.price = price;
     }
@@ -76,7 +78,7 @@ const getPoolsBalance = async (data, client) => {
 
 function useGetMarketData() {
   const queryClient = useQueryClient();
-  const { traseDenom } = useIbcDenom();
+  const { tracesDenom } = useIbcDenom();
   // const [fetchDataWorker] = useWorker(getMarketData);
   const [dataTotal, setDataTotal] = useState({});
   const [poolsTotal, setPoolsTotal] = useState([]);
@@ -84,7 +86,8 @@ function useGetMarketData() {
   const { totalSupplyAll: dataTotalSupply } = useGetTotalSupply({
     refetchInterval: 1000 * 60 * 3,
   });
-  const dataPools = usePoolListInterval({ refetchInterval: 1000 * 60 * 3 });
+  const dataPools = usePoolListInterval();
+  // const dataPools = usePoolListInterval({ refetchInterval: 1000 * 60 * 3 });
 
   useEffect(() => {
     const marketDataLS = localStorage.getItem('marketData');
@@ -108,7 +111,7 @@ function useGetMarketData() {
   useEffect(() => {
     const getPpools = async () => {
       try {
-        if (dataPools && Object.keys(dataPools).length > 0) {
+        if (dataPools && dataPools.length > 0) {
           const reduceObj = dataPools.reduce(
             (obj, item) => ({
               ...obj,
@@ -119,7 +122,7 @@ function useGetMarketData() {
             {}
           );
           const poolsBalance = await getPoolsBalance(reduceObj, queryClient);
-          const poolPriceObj = getPoolPrice(poolsBalance, traseDenom);
+          const poolPriceObj = getPoolPrice(poolsBalance, tracesDenom);
           setPoolsTotal(poolPriceObj);
         }
       } catch (error) {
@@ -128,7 +131,7 @@ function useGetMarketData() {
       }
     };
     getPpools();
-  }, [dataPools, queryClient, traseDenom]);
+  }, [dataPools, queryClient, tracesDenom]);
 
   useEffect(() => {
     try {
@@ -137,13 +140,13 @@ function useGetMarketData() {
         Object.keys(poolsTotal).length > 0
       ) {
         const marketDataObj = {};
-        marketDataObj[CYBER.DENOM_LIQUID_TOKEN] = 1;
+        marketDataObj[DENOM_LIQUID] = 1;
         Object.keys(dataTotal).forEach((keyI) => {
           Object.keys(poolsTotal).forEach((keyJ) => {
             const itemJ = poolsTotal[keyJ];
             const { reserveCoinDenoms } = itemJ;
             if (
-              reserveCoinDenoms[0] === CYBER.DENOM_LIQUID_TOKEN &&
+              reserveCoinDenoms[0] === DENOM_LIQUID &&
               reserveCoinDenoms[1] === keyI
             ) {
               marketDataObj[keyI] = itemJ.price;
@@ -187,7 +190,7 @@ function useGetMarketData() {
                 reserveCoinDenoms.forEach((itemJ) => {
                   if (data[itemJ] && balances[itemJ]) {
                     const marketDataPrice = data[itemJ];
-                    const [{ coinDecimals }] = traseDenom(itemJ);
+                    const [{ coinDecimals }] = tracesDenom(itemJ);
                     const balancesConvert = convertAmount(
                       balances[itemJ],
                       coinDecimals

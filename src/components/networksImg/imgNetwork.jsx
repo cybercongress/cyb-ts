@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
   isNativeChainId,
-  useTraseNetworks,
-} from '../../hooks/useTraseNetworks';
+  useTracesNetworks,
+} from '../../hooks/useTracesNetworks';
 import Tooltip from '../tooltip/tooltip';
 
 import boot from '../../image/large-green.png';
@@ -50,7 +50,7 @@ const getNativeImg = (text) => {
 };
 
 function ImgNetwork({ network, marginImg, size, zIndexImg, tooltipStatus }) {
-  const { chainInfo } = useTraseNetworks(network);
+  const { chainInfo } = useTracesNetworks(network);
   const [imgDenom, setImgDenom] = useState(null);
   const [tooltipText, setTooltipText] = useState(network);
 

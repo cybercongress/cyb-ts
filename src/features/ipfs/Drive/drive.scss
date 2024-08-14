@@ -64,3 +64,26 @@
 .logItems {
   // padding-left: 25px;
 }
+
+.list h3 {
+  padding-bottom: 16px;
+}
+
+.tabbed {
+  padding-left: 20px;
+  font-size: 0.85em;
+}
+
+.buttonPanel {
+  padding-top: 16px;
+  // justify-content: center;
+  display: flex;
+}
+
+.centerPanel {
+  padding: 16px;
+  // justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}

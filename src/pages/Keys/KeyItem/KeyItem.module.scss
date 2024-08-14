@@ -5,6 +5,8 @@
   gap: 0 28px;
   overflow-x: auto;
   align-items: center;
+  position: relative;
+  min-height: 230px;
 
   > img {
     height: auto;
@@ -12,7 +14,11 @@
 
   .imageWrapper {
     position: relative;
-
+    width: 226px;
+    height: 227px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
     .active {
       position: absolute;
       left: 0;
@@ -68,4 +74,8 @@
   .passportMain {
     color: var(--green-light);
   }
+}
+
+.pointer {
+  cursor: pointer;
 }

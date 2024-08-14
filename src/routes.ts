@@ -7,7 +7,7 @@ export const routes = {
     path: '/temple',
   },
   senateProposal: {
-    path: '/senate/:proposalId',
+    path: '/senate/:proposalId/*',
     getLink: (proposalId: number) => `/senate/${proposalId}`,
   },
   sphere: {
@@ -39,6 +39,18 @@ export const routes = {
       drive: {
         path: '/robot/drive',
       },
+      sense: {
+        path: '/robot/sense',
+      },
+      energy: {
+        path: '/robot/energy',
+      },
+      brain: {
+        path: '/robot/brain',
+      },
+      soul: {
+        path: '/robot/soul',
+      },
     },
   },
   robotPassport: {
@@ -47,6 +59,11 @@ export const routes = {
   },
   portal: {
     path: '/portal',
+    routes: {
+      map: {
+        path: '/portal/map',
+      },
+    },
   },
   search: {
     path: '/search',
@@ -65,7 +82,7 @@ export const routes = {
     },
   },
   keys: {
-    path: '/keys',
+    path: '/settings/keys',
   },
   sigma: {
     path: '/sigma',
@@ -89,5 +106,27 @@ export const routes = {
   },
   brain: {
     path: '/brain',
+  },
+  txExplorer: {
+    path: '/tx/:hash',
+    getLink: (hash: string) => `/network/bostrom/tx/${hash}`,
+  },
+  contracts: {
+    path: '/contracts',
+    byAddress: {
+      path: '/contracts/:contractAddress',
+      getLink: (contractAddress: string) => `/contracts/${contractAddress}`,
+    },
+  },
+  blocks: {
+    path: '/blocks',
+    getLink: () => `/network/bostrom/blocks`,
+    idBlock: {
+      path: '/blocks/:idBlock',
+      getLink: (idBlock: string) => `/network/bostrom/blocks/${idBlock}`,
+    },
+  },
+  settings: {
+    path: '/settings',
   },
 };

@@ -1,3 +1,5 @@
+import { ObjectKey } from './data';
+
 export type Channel = {
   id: number;
   active: 'true' | 'false';
@@ -31,3 +33,9 @@ export type Network = {
   logo: string;
   particle: string;
 };
+
+export type TokenList = ObjectKey<Token>;
+
+export type NetworkList = ObjectKey<Network>;
+
+export type ChannelList = ObjectKey<Channel>;
