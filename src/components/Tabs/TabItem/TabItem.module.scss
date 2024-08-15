@@ -1,9 +1,9 @@
 @import '../../containerGradient/saber/index.module.scss';
 
 @mixin active-saber($position) {
-  $color-saber: 'purple';
+  $color-saber: 'white';
   color: #fff;
-  font-size: 1.125rem;
+  font-size: 24px;
 
   &:hover {
     color: #fff;
@@ -34,6 +34,7 @@
   width: 100%;
   font-size: 1rem;
   z-index: 0;
+  transition: all 0.3s ease;
 
   &:hover {
     color: var(--blue-light);
