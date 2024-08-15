@@ -22,8 +22,11 @@ export const initValueMainToken = {
   melting: { ...initValue },
   growth: { ...initValue },
   total: { ...initValue },
-  cyberver: { ...initValue },
 };
+
+if (isPussyChain) {
+  initValueMainToken.cyberver = { ...initValue };
+}
 
 const initValueResponseFunc = (denom = '', amount = 0) => {
   return { denom, amount };
@@ -95,9 +98,13 @@ function useCyberverBalance({ address }) {
   const total1 = s1.data?.reduce((acc, { stake }) => acc + stake, 0) || 0;
   const total2 = s2.data?.reduce((acc, { stake }) => acc + stake, 0) || 0;
 
-  const totalCyberver = (total1 + total2).toString();
+  const total = total1 + total2;
 
-  return totalCyberver;
+  if (total === 0) {
+    return null;
+  }
+
+  return total.toString();
 }
 
 export const useGetBalance = (addressBech32) => {
