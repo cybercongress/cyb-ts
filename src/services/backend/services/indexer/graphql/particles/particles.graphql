@@ -1,0 +1,8 @@
+query particles($neuron: String, $limit: Int = 10) {
+  particles(where: { neuron: { _eq: $neuron } }, limit: $limit) {
+    id
+    particle
+    timestamp
+    transaction_hash
+  }
+}
