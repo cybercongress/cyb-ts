@@ -1,15 +1,11 @@
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { ActionBar, Button } from 'src/components';
-import { useSearchParams } from 'react-router-dom';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import styles from './Brain.module.scss';
-
-const DEFAULT_LIMIT = 10000;
+import useGraphLimit from '../robot/Brain/useGraphLimit';
 
 function Brain() {
-  const [searchParams] = useSearchParams();
-
-  const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
+  const { limit, setSearchParams } = useGraphLimit();
 
   useAdviserTexts({
     defaultText: 'cyber graph',
@@ -19,16 +15,7 @@ function Brain() {
     <div className={styles.wrapper}>
       <CyberlinksGraphContainer toPortal limit={limit} />
 
-      <p
-        style={{
-          zIndex: 10,
-        }}
-      >
-        Limit is: {limit.toLocaleString()}
-        <br />
-        use url param to set different limit :
-        <a href="/brain?limit=500">/brain?limit=500</a>
-      </p>
+      <ParamsBlock limit={limit} setSearchParams={setSearchParams} />
 
       <ActionBar>
         <Button
@@ -43,3 +30,32 @@ function Brain() {
 }
 
 export default Brain;
+
+export function ParamsBlock({ limit, setSearchParams }) {
+  return (
+    <p
+      style={{
+        textAlign: 'center',
+        zIndex: 10,
+        position: 'relative',
+        marginBottom: 20,
+      }}
+    >
+      Limit is: {limit.toLocaleString()}
+      <br />
+      use url param to set different limit :
+      <a
+        href="/brain?limit=500"
+        onClick={(e) => {
+          e.preventDefault();
+
+          setSearchParams({
+            limit: 500,
+          });
+        }}
+      >
+        /brain?limit=500
+      </a>
+    </p>
+  );
+}

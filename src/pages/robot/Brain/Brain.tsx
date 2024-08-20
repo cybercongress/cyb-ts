@@ -3,11 +3,13 @@ import { Route, Routes, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
+import { ParamsBlock } from 'src/pages/Brain/Brain';
 import { useRobotContext } from '../robot.context';
 import TreedView from './ui/TreedView';
 import styles from './Brain.module.scss';
 import GraphView from './ui/GraphView';
 import { LIMIT_GRAPH } from './utils';
+import useGraphLimit from './useGraphLimit';
 
 enum TabsKey {
   graph3d = 'graph3d',
@@ -66,13 +68,7 @@ function Brain() {
           <Route
             key={path}
             path={path}
-            element={
-              <CyberlinksGraphContainer
-                toPortal
-                limit={false}
-                address={address}
-              />
-            }
+            element={<Graph2d address={address} />}
           />
         ))}
 
@@ -85,3 +81,15 @@ function Brain() {
 }
 
 export default Brain;
+
+function Graph2d({ address }) {
+  const { limit, setSearchParams } = useGraphLimit();
+
+  return (
+    <div>
+      <ParamsBlock limit={limit} setSearchParams={setSearchParams} />
+
+      <CyberlinksGraphContainer toPortal limit={limit} address={address} />
+    </div>
+  );
+}
