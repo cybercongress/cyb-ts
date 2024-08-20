@@ -10,9 +10,9 @@ import GraphView from './ui/GraphView';
 import { LIMIT_GRAPH } from './utils';
 
 enum TabsKey {
-  list = 'list',
+  graph3d = 'graph3d',
   graph = 'graph',
-  graph2 = 'graph2',
+  list = 'list',
 }
 
 function Brain() {
@@ -27,7 +27,7 @@ function Brain() {
       () => (
         <>
           neurons public knowledge cybergraph <br />
-          {selected === TabsKey.graph && (
+          {selected === TabsKey.graph3d && (
             <> that is how last {LIMIT_GRAPH} cyberlinks looks like </>
           )}
         </>
@@ -42,17 +42,19 @@ function Brain() {
         <Tabs
           options={[
             {
+              key: TabsKey.graph3d,
+              to: './graph3d',
+              text: '3d graph',
+            },
+            {
               key: TabsKey.graph,
               to: './graph',
+              text: '2d graph',
             },
             {
               key: TabsKey.list,
               to: './list',
-            },
-            {
-              key: TabsKey.graph2,
-              to: './graph2',
-              text: 'graph new',
+              text: 'last cyberlinks',
             },
           ]}
           selected={selected}
@@ -64,23 +66,19 @@ function Brain() {
           <Route
             key={path}
             path={path}
-            element={<GraphView address={address} />}
+            element={
+              <CyberlinksGraphContainer
+                toPortal
+                limit={false}
+                address={address}
+              />
+            }
           />
         ))}
 
         <Route path="list" element={<TreedView address={address} />} />
 
-        <Route
-          path="graph2"
-          element={
-            <CyberlinksGraphContainer
-              toPortal
-              limit={99999}
-              isNew
-              address={address}
-            />
-          }
-        />
+        <Route path="graph3d" element={<GraphView address={address} />} />
       </Routes>
     </div>
   );

@@ -4,8 +4,6 @@ import {
   CosmographProvider,
   Cosmograph,
   CosmographRef,
-  CosmographHistogramRef,
-  CosmographTimelineRef,
   CosmographSearchRef,
   CosmographInputConfig,
 } from '@cosmograph/react';
@@ -16,22 +14,13 @@ import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
 
 export default function GraphNew({ address, data, size }) {
   const cosmograph = useRef<CosmographRef>();
-  const histogram = useRef<CosmographHistogramRef<Node>>();
-  const timeline = useRef<CosmographTimelineRef<Link>>();
+  // const histogram = useRef<CosmographHistogramRef<Node>>();
+  // const timeline = useRef<CosmographTimelineRef<Link>>();
   const search = useRef<CosmographSearchRef>();
   const [degree, setDegree] = useState<number[]>([]);
 
   const [hoverNode, setHoverNode] = useState(null);
   const [nodePostion, setNodePostion] = useState(null);
-
-  // const { data } = useCyberlinks(
-  //   {
-  //     address,
-  //   },
-  //   {
-  //     limit: 1024,
-  //   }
-  // );
 
   const nodes = useMemo(() => {
     return (
@@ -57,8 +46,6 @@ export default function GraphNew({ address, data, size }) {
       }) ?? []
     );
   }, [data]);
-
-  // console.log(data);
 
   const scaleColor = useRef(
     scaleSymlog<string, string>()
@@ -116,12 +103,13 @@ export default function GraphNew({ address, data, size }) {
   //   setSelectedNode(n);
   // }, []);
 
-  console.log(nodePostion);
+  // console.log(nodePostion);
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.total}>
-        <p>total nodes {nodes.length} </p>
+        <p>total nodes: {nodes.length} </p>
+        <p>total links: {links.length} </p>
       </div>
       <GraphHoverInfo
         node={hoverNode}
@@ -144,28 +132,19 @@ export default function GraphNew({ address, data, size }) {
             className={styles.cosmographStyle}
             // showTopLabels={}
             // showTopLabelsLimit={10}
-            showFPSMonitor
+            showFPSMonitor={process.env.NODE_ENV === 'development'}
             // disableSimulation
             backgroundColor="transparent"
             showDynamicLabels={false}
             linkArrows={false}
             linkWidth={2}
             onClick={() => {
-              debugger;
               cosmograph.current?.pause();
             }}
             showLabelsFor={showLabelsFor}
             showHoveredNodeLabel={false}
             nodeLabelColor="white"
             hoveredNodeLabelColor="white"
-            // nodeLabelAccessor={(n) => {
-            //   return (
-            //     <>
-            //       <div>{n.id}</div>
-            //       <div>{n.value}</div>
-            //     </>
-            //   );
-            // }}
             nodeSize={(n) => n.size ?? null}
             // nodeColor={nodeColor}
             nodeColor={(d) => d.color}
@@ -186,7 +165,7 @@ export default function GraphNew({ address, data, size }) {
             }}
             // linkWidth={(l: Link) => l.width ?? null}
             // linkColor={(l: Link) => l.color ?? null}
-            curvedLinks
+            // curvedLinks
             // onClick={onCosmographClick}
           />
         )}

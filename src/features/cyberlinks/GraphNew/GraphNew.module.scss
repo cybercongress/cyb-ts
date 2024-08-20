@@ -8,9 +8,9 @@
 }
 
 .total {
-  top: 200px;
+  top: 250px;
   color: white;
-  left: 50%;
+  left: calc(50% - 50px);
   position: absolute;
   z-index: 11;
 }
