@@ -24,7 +24,7 @@ const defaultNetworks: NetworksList = {
     MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
   },
   localbostrom: {
-    CHAIN_ID: Networks.BOSTROM,
+    CHAIN_ID: 'localbostrom',
     BASE_DENOM: 'boot',
     DENOM_LIQUID: 'hydrogen',
     RPC_URL: process.env.IS_DEV
