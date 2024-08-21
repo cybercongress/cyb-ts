@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { DENOM_LIQUID } from 'src/constants/config';
 import { authAccounts } from '../../utils/search/utils';
 import { convertResources } from '../../utils/utils';
 import { Slot } from './types';
-import { DENOM_LIQUID } from 'src/constants/config';
 
 const MILLISECONDS_IN_SECOND = 1000;
 
@@ -110,17 +110,15 @@ function useGetSlots(addressActive) {
         milliampere: 0,
       };
 
-      if (dataAuthAccounts && dataAuthAccounts.result.value.vesting_periods) {
-        const { vesting_periods: vestingPeriods } =
-          dataAuthAccounts.result.value;
+      if (dataAuthAccounts && dataAuthAccounts.account.vesting_periods) {
+        const { vesting_periods: vestingPeriods } = dataAuthAccounts.account;
         const { original_vesting: originalVestingAmount } =
-          dataAuthAccounts.result.value.base_vesting_account;
-        const { start_time: startTime } = dataAuthAccounts.result.value;
+          dataAuthAccounts.account.base_vesting_account;
+        const { start_time: startTime } = dataAuthAccounts.account;
 
         const balances = getCalculationBalance(originalVestingAmount);
         if (balances[DENOM_LIQUID]) {
-          originalVestingInitAmount[DENOM_LIQUID] =
-            balances[DENOM_LIQUID];
+          originalVestingInitAmount[DENOM_LIQUID] = balances[DENOM_LIQUID];
         }
         if (balances.millivolt) {
           originalVestingInitAmount.millivolt = balances.millivolt;
@@ -226,8 +224,7 @@ function useGetSlots(addressActive) {
         });
         if (obj.status !== 'Unfreezing') {
           if (obj.amount[DENOM_LIQUID]) {
-            vestedAmount[DENOM_LIQUID] +=
-              obj.amount[DENOM_LIQUID];
+            vestedAmount[DENOM_LIQUID] += obj.amount[DENOM_LIQUID];
           }
           if (obj.amount.milliampere) {
             vestedAmount.milliampere += obj.amount.milliampere;

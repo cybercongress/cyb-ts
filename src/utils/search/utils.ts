@@ -638,7 +638,8 @@ export const getCreator = async (cid) => {
 
     if (h1 === 0) {
       return response2.data;
-    } else if (h2 === 0) {
+    }
+    if (h2 === 0) {
       return response.data;
     }
 
@@ -653,7 +654,7 @@ export const authAccounts = async (address) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${LCD_URL}/auth/accounts/${address}`,
+      url: `${LCD_URL}/cosmos/auth/v1beta1/accounts/${address}`,
     });
     return response.data;
   } catch (error) {

@@ -190,7 +190,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
         sourceChannel,
         sender: address,
         receiver: counterpartyAccount,
-        timeoutTimestamp,
+        timeoutTimestamp: BigInt(timeoutTimestamp.toNumber()),
         token: transferAmount,
       },
     };
