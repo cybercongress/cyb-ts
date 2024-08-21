@@ -6,10 +6,9 @@ import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { getNowUtcNumber } from 'src/utils/date';
 
 import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
+import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 import { LinkDto } from '../CozoDb/types/dto';
 import { throwErrorOrResponse } from './errors';
-
-import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 
 const defaultFee = {
   amount: [],
@@ -86,6 +85,21 @@ export const investmint = async (
   length: number,
   signingClient: SigningCyberClient
 ) => {
+  console.log(address, amount, resource, length, 'auto');
+
+  // await signingClient.simulate(
+  //   address,
+  //   MsgData.fromPartial({
+  //     investmint: {
+  //       amount,
+  //       resource,
+  //       length,
+  //     },
+  //   }),
+  //   ''
+  // );
+
+  // debugger;
   const response = await signingClient.investmint(
     address,
     amount,
@@ -93,6 +107,8 @@ export const investmint = async (
     length,
     'auto'
   );
+
+  console.error(response);
 
   const { transactionHash } = throwErrorOrResponse(response);
   return transactionHash;

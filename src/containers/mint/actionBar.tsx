@@ -5,6 +5,7 @@ import { investmint } from 'src/services/neuron/neuronApi';
 import useWaitForTransaction, {
   Props as PropsTx,
 } from 'src/hooks/useWaitForTransaction';
+import { DENOM_LIQUID } from 'src/constants/config';
 import {
   Dots,
   TransactionSubmitted,
@@ -14,7 +15,6 @@ import {
 } from '../../components';
 import { LEDGER } from '../../utils/config';
 import { SelectedState } from './types';
-import { DENOM_LIQUID } from 'src/constants/config';
 
 const {
   STAGE_INIT,
@@ -75,6 +75,8 @@ function ActionBar({
         });
       })
       .catch((e) => {
+        console.log(e);
+
         setTx(undefined);
         setErrorMessage(e.toString());
         setStage(STAGE_ERROR);
