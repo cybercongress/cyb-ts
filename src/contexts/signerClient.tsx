@@ -32,12 +32,7 @@ type SignerClientContextType = {
 async function createClient(
   signer: OfflineSigner
 ): Promise<SigningCyberClient> {
-  const options = { prefix: BECH32_PREFIX };
-  const client = await SigningCyberClient.connectWithSigner(
-    RPC_URL,
-    signer,
-    options
-  );
+  const client = await SigningCyberClient.connectWithSigner(RPC_URL, signer);
   return client;
 }
 
