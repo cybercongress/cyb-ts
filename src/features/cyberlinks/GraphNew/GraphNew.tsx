@@ -1,13 +1,12 @@
 import { scaleSymlog } from 'd3-scale';
-import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import {
   CosmographProvider,
   Cosmograph,
   CosmographRef,
   CosmographSearchRef,
-  CosmographInputConfig,
 } from '@cosmograph/react';
-import { Node, Link } from './data';
+import { Node } from './data';
 // import './styles.css';
 import styles from './GraphNew.module.scss';
 import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
@@ -81,20 +80,28 @@ export default function GraphNew({ address, data, size }) {
   );
   const [selectedNode, setSelectedNode] = useState<Node | undefined>();
 
-  const onCosmographClick = useCallback<
-    Exclude<CosmographInputConfig<Node, Link>['onClick'], undefined>
-  >((n) => {
-    search?.current?.clearInput();
-    if (n) {
-      cosmograph.current?.selectNode(n);
-      setShowLabelsFor([n]);
-      setSelectedNode(n);
-    } else {
-      cosmograph.current?.unselectNodes();
-      setShowLabelsFor(undefined);
-      setSelectedNode(undefined);
-    }
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      cosmograph.current?.pause();
+    }, 5000);
+
+    return () => clearTimeout(timeoutId);
   }, []);
+
+  // const onCosmographClick = useCallback<
+  //   Exclude<CosmographInputConfig<Node, Link>['onClick'], undefined>
+  // >((n) => {
+  //   search?.current?.clearInput();
+  //   if (n) {
+  //     cosmograph.current?.selectNode(n);
+  //     setShowLabelsFor([n]);
+  //     setSelectedNode(n);
+  //   } else {
+  //     cosmograph.current?.unselectNodes();
+  //     setShowLabelsFor(undefined);
+  //     setSelectedNode(undefined);
+  //   }
+  // }, []);
 
   // const onSearchSelectResult = useCallback<
   //   Exclude<CosmographSearchInputConfig<Node>['onSelectResult'], undefined>
@@ -102,8 +109,6 @@ export default function GraphNew({ address, data, size }) {
   //   setShowLabelsFor(n ? [n] : undefined);
   //   setSelectedNode(n);
   // }, []);
-
-  // console.log(nodePostion);
 
   return (
     <div className={styles.wrapper}>
@@ -128,12 +133,10 @@ export default function GraphNew({ address, data, size }) {
         {nodes.length > 0 && (
           <Cosmograph
             ref={cosmograph}
-            // spaceSize={size}
             className={styles.cosmographStyle}
-            // showTopLabels={}
+            // spaceSize={size}
             // showTopLabelsLimit={10}
-            showFPSMonitor={process.env.NODE_ENV === 'development'}
-            // disableSimulation
+            // showTopLabels={}
             backgroundColor="transparent"
             showDynamicLabels={false}
             linkArrows={false}
@@ -144,11 +147,16 @@ export default function GraphNew({ address, data, size }) {
             showLabelsFor={showLabelsFor}
             showHoveredNodeLabel={false}
             nodeLabelColor="white"
+            simulationFriction={0.95}
+            simulationDecay={5000}
             hoveredNodeLabelColor="white"
             nodeSize={(n) => n.size ?? null}
             // nodeColor={nodeColor}
             nodeColor={(d) => d.color}
             linkColor={(d) => d.color}
+            // linkWidth={(l: Link) => l.width ?? null}
+            // linkColor={(l: Link) => l.color ?? null}
+
             onNodeMouseOver={(n, _, _1, e) => {
               setHoverNode(n);
 
@@ -163,10 +171,7 @@ export default function GraphNew({ address, data, size }) {
               setHoverNode(null);
               setNodePostion(null);
             }}
-            // linkWidth={(l: Link) => l.width ?? null}
-            // linkColor={(l: Link) => l.color ?? null}
-            // curvedLinks
-            // onClick={onCosmographClick}
+            showFPSMonitor={process.env.NODE_ENV === 'development'}
           />
         )}
         <div className="sidebarStyle">
