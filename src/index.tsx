@@ -47,6 +47,7 @@ import HubProvider from './contexts/hub';
 import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
 import ScriptingProvider from './contexts/scripting/scripting';
 import { localStorageKeys } from './constants/localStorageKeys';
+import CyberTsQueryClientProvider from './contexts/cyberTsClient';
 
 const httpLink = new HttpLink({
   uri: INDEX_HTTPS,
@@ -109,27 +110,29 @@ function Providers({ children }: { children: React.ReactNode }) {
       <NetworksProvider>
         <QueryClientProvider client={queryClient}>
           <SdkQueryClientProvider>
-            <SigningClientProvider>
-              <HubProvider>
-                <IbcDenomProvider>
-                  <WebsocketsProvider>
-                    <DataProvider>
-                      <ApolloProvider client={client}>
-                        <BackendProvider>
-                          <ScriptingProvider>
-                            <DeviceProvider>
-                              <AdviserProvider>
-                                <ErrorBoundary>{children}</ErrorBoundary>
-                              </AdviserProvider>
-                            </DeviceProvider>
-                          </ScriptingProvider>
-                        </BackendProvider>
-                      </ApolloProvider>
-                    </DataProvider>
-                  </WebsocketsProvider>
-                </IbcDenomProvider>
-              </HubProvider>
-            </SigningClientProvider>
+            <CyberTsQueryClientProvider>
+              <SigningClientProvider>
+                <HubProvider>
+                  <IbcDenomProvider>
+                    <WebsocketsProvider>
+                      <DataProvider>
+                        <ApolloProvider client={client}>
+                          <BackendProvider>
+                            <ScriptingProvider>
+                              <DeviceProvider>
+                                <AdviserProvider>
+                                  <ErrorBoundary>{children}</ErrorBoundary>
+                                </AdviserProvider>
+                              </DeviceProvider>
+                            </ScriptingProvider>
+                          </BackendProvider>
+                        </ApolloProvider>
+                      </DataProvider>
+                    </WebsocketsProvider>
+                  </IbcDenomProvider>
+                </HubProvider>
+              </SigningClientProvider>
+            </CyberTsQueryClientProvider>
           </SdkQueryClientProvider>
         </QueryClientProvider>
       </NetworksProvider>

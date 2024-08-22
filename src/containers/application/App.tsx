@@ -12,7 +12,7 @@ import { routes } from 'src/routes';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useBackend } from 'src/contexts/backend/backend';
 
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useAppDispatch } from 'src/redux/hooks';
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
 
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
@@ -20,6 +20,7 @@ import { initCyblog } from 'src/utils/logging/bootstrap';
 import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
 import { PreviousPageProvider } from 'src/contexts/previousPage';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 import styles from './styles.scss';
 
@@ -29,14 +30,14 @@ initCyblog();
 
 function App() {
   const dispatch: AppDispatch = useAppDispatch();
-  const { defaultAccount } = useAppSelector((state) => state.pocket);
   const queryClient = useQueryClient();
 
-  const address = defaultAccount.account?.cyber?.bech32;
-  // cyblog.info('TEST!!!!');
+  const address = useCurrentAddress();
+
   // const { community, communityLoaded } = useGetCommunity(address || null, {
   //   main: true,
   // });
+
   const location = useLocation();
   const adviserContext = useAdviser();
   useSenseManager();
