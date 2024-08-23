@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 import { NumericFormat } from 'react-number-format';
 import { ActionBar, Pane } from '@cybercongress/gravity';
 import { coins } from '@cosmjs/launchpad';
-import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import {
   VoteOption,
@@ -45,7 +44,6 @@ const {
 } = LEDGER;
 
 function ActionBarDetail({ proposals, id, addressActive, update }) {
-  const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
@@ -56,15 +54,11 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (queryClient && txHash !== null) {
+      if (txHash !== null) {
         setStage(STAGE_CONFIRMING);
-        const response = await getTxs(txHash);
-        console.log('response :>> ', response);
-
-        const responseGetTx = await queryClient.getTx(txHash);
-        console.log('responseGetTx :>> ', responseGetTx);
-
-        if (response && response !== null) {
+        const res = await getTxs(txHash);
+        if (res) {
+          const response = res.tx_response;
           if (response.logs) {
             setStage(STAGE_CONFIRMED);
             setTxHeight(response.height);
@@ -85,7 +79,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
     };
     confirmTx();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryClient, txHash]);
+  }, [txHash]);
 
   const clearState = () => {
     setStage(STAGE_INIT);

@@ -52,6 +52,7 @@ function App() {
     if (!address || !queryClient) {
       return;
     }
+
     dispatch(
       getPassport({
         address,
@@ -61,7 +62,6 @@ function App() {
   }, [address, queryClient, dispatch]);
 
   // reset
-
   // useEffect(() => {
   //   if (communityLoaded) {
   //     dispatch(setCommunity(community));

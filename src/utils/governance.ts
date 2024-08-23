@@ -1,6 +1,10 @@
 import axios from 'axios';
-import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
+import {
+  GetTxsEventResponse,
+  OrderBy,
+} from 'cosmjs-types/cosmos/tx/v1beta1/service';
 import { LCD_URL } from 'src/constants/config';
+import { getTransactions } from 'src/services/transactions/lcd';
 
 export const getProposals = async () => {
   try {
@@ -73,13 +77,18 @@ export const getProposer = async (id) => {
 
 export const getTableVoters = async (id, offset = 0, limit = 20) => {
   try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/cosmos/tx/v1beta1/txs?pagination.offset=${
-        offset * limit
-      }&pagination.limit=${limit}&orderBy=ORDER_BY_DESC&events=proposal_vote.proposal_id%3D${id}`,
+    const response = await getTransactions({
+      events: [
+        {
+          key: 'proposal_vote.proposal_id',
+          value: id,
+        },
+      ],
+      pagination: { limit, offset: offset * limit },
+      orderBy: OrderBy.ORDER_BY_DESC,
     });
-    let r: Omit<GetTxsEventResponse, 'txResponses'> & {
+
+    const r: Omit<GetTxsEventResponse, 'txResponses'> & {
       tx_responses: GetTxsEventResponse['txResponses'];
     } = response.data;
 

@@ -2,7 +2,8 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { GetTxsEventResponse } from 'cosmjs-types/cosmos/tx/v1beta1/service';
 import { CID_TWEET } from 'src/constants/app';
 import { useMemo } from 'react';
-import { getTransactions } from 'src/utils/search/utils';
+import { getTransactions } from 'src/services/transactions/lcd';
+import { OrderBy } from '@cybercongress/cyber-ts/cosmos/tx/v1beta1/service';
 
 const LIMIT = 20;
 // TO DO refactor: need to use soft3js
@@ -20,8 +21,9 @@ const request = async (address: string, offset: number, limit: number) => {
   const response = await getTransactions({
     events,
     pagination: { limit, offset },
-    orderBy: 'ORDER_BY_DESC',
+    orderBy: OrderBy.ORDER_BY_DESC,
   });
+
   return response.data;
 };
 
@@ -44,9 +46,7 @@ function useGetLog(address: string | null) {
         getNextPageParam: (lastPage) => {
           const {
             page,
-            data: {
-              pagination: { total },
-            },
+            data: { total },
           } = lastPage;
 
           if (!total || (page + 1) * LIMIT > total) {

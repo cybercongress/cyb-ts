@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Spark from 'src/components/search/Spark/Spark';
-import { useCyberTsQueryClient } from 'src/contexts/cyberTsClient';
+
 import { getRelevance, getRankGrade } from '../../utils/search/utils';
 import { Dots, Loading } from '../../components';
 import { coinDecimals } from '../../utils/utils';
@@ -45,29 +45,19 @@ function Relevance({ items, fetchMoreData }) {
   );
 }
 
+// need refactor
 function Objects() {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [allPage, setAllPage] = useState(1);
-
-  const { hooks } = useCyberTsQueryClient();
-
-  const query = hooks.cyber.rank.v1beta1.useTop({
-    request: {
-      page: 0,
-      limit: 50,
-    },
-  });
-  console.log(query);
+  const [allPage, setAllPage] = useState(0);
 
   useEffect(() => {
     getFirstItem();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getFirstItem = async () => {
-    const data = await getRelevance(page);
+  function processData(data) {
     const links = data.result.reduce(
       (obj, link) => ({
         ...obj,
@@ -82,6 +72,13 @@ function Objects() {
       }),
       {}
     );
+
+    return links;
+  }
+
+  const getFirstItem = async () => {
+    const data = await getRelevance(page);
+    const links = processData(data);
 
     setItems(links);
     setPage(page + 1);
@@ -92,21 +89,9 @@ function Objects() {
   const fetchMoreData = async () => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
+
     const data = await getRelevance(page);
-    const links = data.result.reduce(
-      (obj, link) => ({
-        ...obj,
-        [link.particle]: {
-          rank: coinDecimals(link.rank),
-          particle: link.particle,
-          grade: getRankGrade(coinDecimals(link.rank)),
-          status: 'impossibleLoad',
-          text: link.particle,
-          content: false,
-        },
-      }),
-      {}
-    );
+    const links = processData(data);
 
     setTimeout(() => {
       setItems((itemState) => ({ ...itemState, ...links }));

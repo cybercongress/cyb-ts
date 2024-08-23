@@ -13,7 +13,24 @@ const QueryClientContext = React.createContext<{
   hooks: ReturnType<typeof createRpcQueryHooks>;
 }>(undefined);
 
-export function useCyberTsQueryClient() {
+// example
+// const { hooks, rpc } = useCyberTsQueryClient();
+
+// rpc.cosmos.tx.v1beta1.getTxsEvent({
+//   // orderBy:
+// })
+
+// const query = hooks.cyber.rank.v1beta1.useTop({
+//   request: {
+//     pagination: {
+//       page: 0,
+//       perPage: 50,
+//     },
+//   },
+// });
+
+// eslint-disable-next-line import/no-unused-modules
+export function useCyberClient() {
   return useContext(QueryClientContext);
 }
 
@@ -25,7 +42,7 @@ function CyberTsQueryClientProvider({
   children: React.ReactNode;
 }) {
   const { data, error, isFetching } = useQuery({
-    queryKey: ['cyberClient2', 'connect'],
+    queryKey: ['cyberTsClient', 'connect'],
     queryFn: () => {
       const { createRPCQueryClient } = cyber.ClientFactory;
 

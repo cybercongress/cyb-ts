@@ -5,6 +5,7 @@ import Display from 'src/components/containerGradient/Display/Display';
 import { selectCommunityPassports } from 'src/features/passport/passports.redux';
 import { useAppSelector } from 'src/redux/hooks';
 import { BASE_DENOM } from 'src/constants/config';
+import { CYBER_CONGRESS_ADDRESS } from 'src/constants/app';
 import TitleAction from '../TitleAction/TitleAction';
 import styles from './SendAction.module.scss';
 import TotalCount from '../TotalCount/TotalCount';
@@ -17,7 +18,7 @@ const topCreator = [
   'bostrom122zt392tg6hperkmsrj20hyg9duzdxhz233f3g',
   'bostrom1679yrs8dmska7wcsawgy2m25kwucm3z0hwr74y',
   'bostrom1k7nssnnvxezpp4una7lvk6j53895vadpqe6jh6',
-  'bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw',
+  CYBER_CONGRESS_ADDRESS,
 ];
 
 function SendAction() {

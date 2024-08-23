@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getTransactions } from 'src/utils/search/utils';
+import { getTransactions } from 'src/services/transactions/lcd';
 
 const request = async (address: string, offset: number, limit: number) => {
   const events = [
@@ -11,7 +11,6 @@ const request = async (address: string, offset: number, limit: number) => {
   const response = await getTransactions({
     events,
     pagination: { limit, offset },
-    orderBy: 'ORDER_BY_ASC',
   });
   return response.data;
 };

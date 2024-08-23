@@ -47,7 +47,7 @@ import HubProvider from './contexts/hub';
 import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
 import ScriptingProvider from './contexts/scripting/scripting';
 import { localStorageKeys } from './constants/localStorageKeys';
-import CyberTsQueryClientProvider from './contexts/cyberTsClient';
+import CyberClientProvider from './contexts/queryCyberClient';
 
 const httpLink = new HttpLink({
   uri: INDEX_HTTPS,
@@ -110,7 +110,7 @@ function Providers({ children }: { children: React.ReactNode }) {
       <NetworksProvider>
         <QueryClientProvider client={queryClient}>
           <SdkQueryClientProvider>
-            <CyberTsQueryClientProvider>
+            <CyberClientProvider>
               <SigningClientProvider>
                 <HubProvider>
                   <IbcDenomProvider>
@@ -132,7 +132,7 @@ function Providers({ children }: { children: React.ReactNode }) {
                   </IbcDenomProvider>
                 </HubProvider>
               </SigningClientProvider>
-            </CyberTsQueryClientProvider>
+            </CyberClientProvider>
           </SdkQueryClientProvider>
         </QueryClientProvider>
       </NetworksProvider>
