@@ -40,7 +40,7 @@ const getVestingPeriodsData = (data, startTime) => {
   return vestedAmount;
 };
 
-function useGetBalances(addressActive) {
+function useGetBalances(addressActive: string | undefined) {
   const queryClient = useQueryClient();
   const [allBalances, setAllBalances] = useState(null);
   const [vestedAmount, setVestedAmount] = useState(null);
@@ -55,7 +55,7 @@ function useGetBalances(addressActive) {
     const getAllBalances = async () => {
       if (queryClient && addressActive) {
         const getAllBalancesPromise = await queryClient.getAllBalances(
-          addressActive.bech32
+          addressActive
         );
         const balances = reduceBalances(getAllBalancesPromise);
         setAllBalances(balances);
@@ -75,7 +75,8 @@ function useGetBalances(addressActive) {
         millivolt: 0,
         milliampere: 0,
       };
-      const getAccount = await authAccounts(addressActive.bech32);
+
+      const getAccount = await authAccounts(addressActive);
       if (
         getAccount.account.vesting_periods &&
         getAccount.account.base_vesting_account.original_vesting

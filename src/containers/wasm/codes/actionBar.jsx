@@ -6,6 +6,7 @@ import Button from 'src/components/btnGrd';
 import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { MEMO_KEPLR } from 'src/constants/config';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { getTxs } from '../../../utils/search/utils';
 import {
   ActionBarContentText,
@@ -25,7 +26,7 @@ const {
   STAGE_SUBMITTED,
 } = LEDGER;
 
-function ActionBar({ updateFnc, addressActive }) {
+function ActionBar({ updateFnc }) {
   const { signer, signingClient } = useSigningClient();
   const inputOpenFileRef = useRef();
   const [wasm, setWasm] = useState(null);
@@ -33,6 +34,13 @@ function ActionBar({ updateFnc, addressActive }) {
   const [txHash, setTxHash] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [txHeight, setTxHeight] = useState(null);
+
+  const currentAddress = useCurrentAddress();
+
+  // refactor
+  const addressActive = {
+    bech32: currentAddress,
+  };
 
   useEffect(() => {
     const confirmTx = async () => {

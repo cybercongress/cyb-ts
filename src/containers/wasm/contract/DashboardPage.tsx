@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { BASE_DENOM } from 'src/constants/config';
 import { useWasmDashboardPageQuery } from 'src/generated/graphql';
-import { CardStatisics, Dots, MainContainer } from 'src/components';
+import { CardStatisics, Dots, MainContainer, NoItems } from 'src/components';
+import Loader2 from 'src/components/ui/Loader2';
 import { formatNumber } from '../../../utils/utils';
 import { ContainerCardStatisics, ContainerCol } from '../ui/ui';
 import ContractTable from './ContractTable';
@@ -21,6 +22,7 @@ const useGetContracts = (offset) => {
     },
   });
 
+  // effect  not needed
   useEffect(() => {
     if (data && data.contracts && data.contracts_aggregate) {
       setDataContracts((items) => [...items, ...data.contracts]);
@@ -62,7 +64,7 @@ const useGetCodes = () => {
 
 function DashboardPage() {
   const [offset, setOffset] = useState(0);
-  const { dataContracts, dataAggregate } = useGetContracts(offset);
+  const { dataContracts, dataAggregate, loading } = useGetContracts(offset);
   const { codes } = useGetCodes();
 
   return (
@@ -118,8 +120,10 @@ function DashboardPage() {
           </Link>
         </ContainerCardStatisics>
 
-        {dataContracts.length === 0 ? (
-          <Dots />
+        {loading ? (
+          <Loader2 />
+        ) : dataContracts.length === 0 ? (
+          <NoItems text="No contracts" />
         ) : (
           <ContractTable
             contracts={dataContracts}
