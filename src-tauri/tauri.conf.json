@@ -56,10 +56,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 760,
         "resizable": true,
         "title": "BOSTROM cyb.ai",
-        "width": 800
+        "width": 1200
       }
     ]
   }
