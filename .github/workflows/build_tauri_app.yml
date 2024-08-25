@@ -58,7 +58,7 @@ jobs:
         run: yarn tauri build ${{ matrix.settings.args }}
       - uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_RELEASE_ACCESS_TOKEN }}
         with:
           tauriScript: true
           tagName: cyb-tauri-${{ github.sha }}
