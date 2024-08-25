@@ -26,6 +26,13 @@ const links: Array<MenuItem[]> = [
   ],
   [
     {
+      text: 'Signer',
+      link: './signer',
+      icon: '🖋️',
+    },
+  ],
+  [
+    {
       text: 'Tokens',
       link: './tokens',
       icon: '🟢',
@@ -51,40 +58,32 @@ const links: Array<MenuItem[]> = [
 ];
 
 function SettingsMenu() {
-  const renderLinks = (links: Array<MenuItem[]>) => {
-    return (
-      <div className={styles.links}>
-        {links.map((link, indexUl) => {
-          return (
-            <ul key={indexUl}>
-              {link.map((item, index) => {
-                return (
-                  <li key={index}>
-                    <NavLink
-                      className={({ isActive }) => {
-                        return cx({
-                          [styles.active]: isActive,
-                        });
-                      }}
-                      to={item.link}
-                      end
-                    >
-                      <span className={styles.icon}>{item.icon}</span>
-                      <span className={styles.text}>{item.text}</span>
-                    </NavLink>
-                  </li>
-                );
-              })}
-            </ul>
-          );
-        })}
-      </div>
-    );
-  };
-
   return (
     <div className={styles.wrapper}>
-      <Display>{renderLinks(links)}</Display>
+      <Display>
+        <div className={styles.links}>
+          {links.map((link, indexUl) => (
+            <ul key={indexUl}>
+              {link.map((item, index) => (
+                <li key={index}>
+                  <NavLink
+                    className={({ isActive }) =>
+                      cx({
+                        [styles.active]: isActive,
+                      })
+                    }
+                    to={item.link}
+                    end
+                  >
+                    <span className={styles.icon}>{item.icon}</span>
+                    <span className={styles.text}>{item.text}</span>
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      </Display>
     </div>
   );
 }

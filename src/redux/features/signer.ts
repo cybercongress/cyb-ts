@@ -1,3 +1,4 @@
+import { EncodeObject } from '@cosmjs/proto-signing';
 import { StdFee } from '@keplr-wallet/types';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
@@ -5,12 +6,27 @@ type ResolveType = (value: any) => void;
 type RejectType = (reason?: any) => void;
 
 type InitialState = {
-  resolve?: ResolveType;
-  reject?: RejectType;
   memo: string;
   fee?: number | 'auto' | StdFee;
+  reject?: RejectType;
+  resolve?: ResolveType;
+  confirmation: boolean;
+  messages?: EncodeObject[];
 };
-const initialState = { memo: '' } as InitialState;
+// FIXME: remove this logic after switching to redux-persist
+let confirmation = false;
+try {
+  confirmation = JSON.parse(
+    localStorage.getItem('cyb:confirmation') || 'false'
+  );
+} catch (error) {
+  console.log('[Signer] failed to parse cyb:confirmation', error);
+}
+
+const initialState: InitialState = {
+  memo: '',
+  confirmation,
+};
 
 const signerSlice = createSlice({
   name: 'signer',
@@ -30,12 +46,24 @@ const signerSlice = createSlice({
       state.memo = payload;
     },
     setFee(state, { payload }: PayloadAction<number | 'auto' | StdFee>) {
-      state.fee = payload;
+      state.fee = payload as any;
+    },
+    setConfirmation(state, { payload }: PayloadAction<boolean>) {
+      state.confirmation = payload;
+    },
+    setMessages(state, { payload }: PayloadAction<EncodeObject[]>) {
+      state.messages = payload;
     },
   },
 });
 
-export const { shareSignerPromise, resetSignerState, updateMemo, setFee } =
-  signerSlice.actions;
+export const {
+  setFee,
+  updateMemo,
+  setMessages,
+  setConfirmation,
+  resetSignerState,
+  shareSignerPromise,
+} = signerSlice.actions;
 
 export default signerSlice.reducer;

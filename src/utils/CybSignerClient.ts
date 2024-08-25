@@ -7,6 +7,7 @@ import {
 import {
   resetSignerState,
   setFee,
+  setMessages,
   shareSignerPromise,
 } from 'src/redux/features/signer';
 import store from 'src/redux/store';
@@ -18,13 +19,21 @@ export class CybSignerClient extends SigningCyberClient {
     ...args: Parameters<SigningCyberClient['signAndBroadcast']>
   ) {
     return new Promise((resolve, reject) => {
-      store.dispatch(shareSignerPromise({ resolve, reject }));
-      store.dispatch(setFee(args[2]));
+      const [, messages, fee] = args;
+      store.dispatch(setFee(fee));
+      store.dispatch(setMessages([...messages]));
 
-      getNavigate()?.('/sign');
+      const { confirmation } = store.getState().signer;
+      if (confirmation) {
+        store.dispatch(shareSignerPromise({ resolve, reject }));
+        getNavigate()?.('/sign');
+      } else {
+        resolve({});
+      }
     }).then(() => {
       const [signerAddress, messages, fee] = args;
       const { memo } = store.getState().signer;
+
       return super
         .signAndBroadcast(signerAddress, messages, fee, memo ?? '')
         .finally(() => {
