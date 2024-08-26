@@ -16,6 +16,7 @@ import {
   FormatNumberTokens,
 } from 'src/components';
 import { formatNumber, getDisplayAmount } from 'src/utils/utils';
+import { DENOM_LIQUID } from 'src/constants/config';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
@@ -32,7 +33,6 @@ import RcSlider from './components/Slider/Slider';
 import InfoText from './InfoText/InfoText';
 import LiquidBalances from './LiquidBalances/LiquidBalances';
 import ERatio from './components/ERatio/ERatio';
-import { DENOM_LIQUID } from 'src/constants/config';
 
 const returnColorDot = (marks) => {
   return {
@@ -80,9 +80,11 @@ function Mint() {
 
   const maxMintTime = getMaxTimeMint(resourcesParams, selected, height);
   const resourceToken = getAmountResource(resourcesParams, selected, height, {
-    valueH: value,
+    valueH: 10010840856,
     valueDays,
   });
+
+  console.log('resourceToken', resourceToken);
 
   useEffect(() => {
     const availableSlots =

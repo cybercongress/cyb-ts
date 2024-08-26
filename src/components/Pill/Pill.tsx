@@ -4,7 +4,14 @@ import styles from './Pill.module.scss';
 
 export type Props = {
   text: string | React.ReactNode;
-  color?: 'white' | 'black' | 'blue' | 'red' | 'green' | 'yellow';
+  color?:
+    | 'white'
+    | 'black'
+    | 'blue'
+    | 'red'
+    | 'green'
+    | 'yellow'
+    | 'green-outline';
   image?: React.ReactNode;
   className?: string;
 };

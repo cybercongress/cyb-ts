@@ -1,6 +1,6 @@
 import cx from 'classnames';
-import styles from './ButtonsGroup.module.scss';
 import Tooltip from 'src/components/tooltip/tooltip';
+import styles from './ButtonsGroup.module.scss';
 
 type Props = {
   items: {

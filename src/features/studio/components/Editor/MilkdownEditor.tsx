@@ -1,10 +1,10 @@
 import { Milkdown } from '@milkdown/react';
 import '@milkdown/theme-nord/style.css';
-import './MilkdownEditor.css';
+import './Editor.css';
 import { RefObject, useImperativeHandle } from 'react';
 import { editorViewCtx, parserCtx } from '@milkdown/core';
 import { Slice } from '@milkdown/prose/model';
-import useMilkdownEditor from '../../hooks/useMilkdownEditor';
+import useMilkdownEditor from './hooks/useMilkdownEditor';
 
 export interface MilkdownRef {
   update: (markdown: string) => void;
@@ -21,13 +21,17 @@ function MilkdownEditor({ content, onChange, milkdownRef }: MilkdownProps) {
 
   useImperativeHandle(milkdownRef, () => ({
     update: (markdown: string) => {
-      if (loading) return;
+      if (loading) {
+        return;
+      }
       const editor = get();
       editor?.action((ctx) => {
         const view = ctx.get(editorViewCtx);
         const parser = ctx.get(parserCtx);
         const doc = parser(markdown);
-        if (!doc) return;
+        if (!doc) {
+          return;
+        }
         const { state } = view;
         view.dispatch(
           state.tr.replace(

@@ -1,0 +1,42 @@
+.wrapper {
+  display: grid;
+  align-content: flex-start;
+  gap: 20px;
+}
+
+.tagContainer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
+
+  img {
+    width: 1rem;
+    height: 1rem;
+    transform: rotate(180deg);
+  }
+}
+
+.containerPill {
+  display: flex;
+  gap: 15px 10px;
+  align-content: flex-start;
+  flex-flow: row wrap;
+
+  button {
+    width: 60px;
+  }
+}
+
+.overflowPill {
+  display: inline-block;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+}

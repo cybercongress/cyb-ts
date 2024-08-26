@@ -1,10 +1,14 @@
 import type { CmdKey } from '@milkdown/core';
 import { callCommand } from '@milkdown/utils';
 import { useInstance } from '@milkdown/react';
-import { toggleEmphasisCommand } from '@milkdown/preset-commonmark';
 import Display from 'src/components/containerGradient/Display/Display';
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
+import Links from 'src/components/search/Spark/Meta/Links/Links';
+import { formatCurrency } from 'src/utils/utils';
+import { PREFIXES } from 'src/containers/ipfs/components/metaInfo';
 import styles from './ControlPanel.module.scss';
+import { useStudioContext } from '../../studio.context';
+import HistoryCommand from '../HistoryCommand/HistoryCommand';
 
 const contentTypeConfig = {
   neuron: {
@@ -30,6 +34,7 @@ const contentTypeConfig = {
 };
 
 function ControlPanel() {
+  const { keywordsFrom, keywordsTo, currentMarkdown } = useStudioContext();
   const [loading, get] = useInstance();
 
   function call<T>(command: CmdKey<T>, payload?: T) {
@@ -41,6 +46,7 @@ function ControlPanel() {
       <div className={styles.containerControlPanel}>
         <ButtonsGroup
           type="checkbox"
+          onChange={() => {}}
           items={Object.values(contentTypeConfig).map((type) => {
             return {
               label: type.label,
@@ -50,8 +56,15 @@ function ControlPanel() {
             };
           })}
         />
-        {/* <Button onClick={() => call(toggleEmphasisCommand.key)}>italic</Button> */}
-        {/* <Button onClick={() => call(toggleLinkCommand.key)}>cyberlink</Button> */}
+        <Links
+          to={keywordsTo.length}
+          from={keywordsFrom.length}
+          onChange={() => {}}
+        />
+        <span className={styles.size}>
+          🟥 {formatCurrency(currentMarkdown.length, 'B', 0, PREFIXES)}
+        </span>
+        <HistoryCommand call={call} />
       </div>
     </Display>
   );

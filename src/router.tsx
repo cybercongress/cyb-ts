@@ -59,6 +59,7 @@ import Brain from './pages/Brain/Brain';
 import Settings from './pages/Settings/Settings';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
+import StudioWrapper from './features/studio/StudioWrapper';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -224,6 +225,8 @@ function AppRouter() {
           <Route path="/settings/*" element={<Settings />} />
 
           <Route path={routes.social.path} element={<Social />} />
+
+          <Route path="studio" element={<StudioWrapper />} />
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />
