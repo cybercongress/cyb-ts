@@ -1,10 +1,13 @@
+import { MilkdownProvider } from '@milkdown/react';
 import StudioContextProvider from './studio.context';
 import Studio from './Studio';
 
 function StudioWrapper() {
   return (
     <StudioContextProvider>
-      <Studio />
+      <MilkdownProvider>
+        <Studio />
+      </MilkdownProvider>
     </StudioContextProvider>
   );
 }

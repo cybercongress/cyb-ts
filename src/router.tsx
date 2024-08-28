@@ -226,7 +226,9 @@ function AppRouter() {
 
           <Route path={routes.social.path} element={<Social />} />
 
-          <Route path="studio" element={<StudioWrapper />} />
+          {['/studio', '/studio/:cid'].map((path) => (
+            <Route key={path} path={path} element={<StudioWrapper />} />
+          ))}
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />

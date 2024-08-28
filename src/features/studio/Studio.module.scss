@@ -1,8 +1,14 @@
+@import '../../layouts/variables.module';
+
+$controlPanelHeight: 60px;
+
 .wrapper {
   display: flex;
   flex-direction: column;
-  height: 1px;
-  min-height: 65vh;
+  height: inherit;
+  min-height: calc(
+    100vh - $reservedTopHeight - $actionBarHeight - $controlPanelHeight
+  );
 
   > :first-child {
     > div {

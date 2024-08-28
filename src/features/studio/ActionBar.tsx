@@ -57,8 +57,6 @@ function ActionBarContainer() {
     } else if (loading) {
       content = 'transaction pending...';
       adviserColor = 'yellow';
-    } else {
-      content = 'create content';
     }
 
     setAdviser(content, adviserColor);

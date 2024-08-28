@@ -1,7 +1,9 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBackend } from 'src/contexts/backend/backend';
 import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
-import { markdown } from './testData';
+import { useParams } from 'react-router-dom';
+import useParticle from 'src/hooks/useParticle';
+import useAdviserTexts from '../adviser/useAdviserTexts';
 
 type StateActionBar = 'link' | 'keywords-from' | 'keywords-to';
 
@@ -15,12 +17,14 @@ const StudioContext = React.createContext<{
   keywordsFrom: KeywordsItem[];
   keywordsTo: KeywordsItem[];
   currentMarkdown: string;
+  loadedMarkdown: string;
   setStateActionBar: React.Dispatch<React.SetStateAction<StateActionBar>>;
   addKeywords: (type: 'from' | 'to', item: string) => void;
   onChangeCurrentMarkdown: React.Dispatch<React.SetStateAction<string>>;
 }>({
   stateActionBar: 'link',
   currentMarkdown: '',
+  loadedMarkdown: '',
   keywordsFrom: [],
   keywordsTo: [],
   setStateActionBar: () => {},
@@ -32,10 +36,32 @@ export const useStudioContext = () => React.useContext(StudioContext);
 
 function StudioContextProvider({ children }: { children: React.ReactNode }) {
   const { isIpfsInitialized, ipfsApi } = useBackend();
+  const { cid } = useParams();
+  const { status, details } = useParticle(cid!);
+  const content =
+    details && details.type === 'text' && details.content
+      ? details.content
+      : '';
   const [stateActionBar, setStateActionBar] = useState<StateActionBar>('link');
   const [keywordsFrom, setKeywordsFrom] = useState<KeywordsItem[]>([]);
   const [keywordsTo, setKeywordsTo] = useState<KeywordsItem[]>([]);
-  const [currentMarkdown, setCurrentMarkdown] = useState<string>(markdown);
+  const [currentMarkdown, setCurrentMarkdown] = useState<string>('');
+
+  useAdviserTexts({
+    isLoading: (!cid && status === 'pending') || !isIpfsInitialized,
+    loadingText: !isIpfsInitialized ? 'node is loading' : 'cid is loading',
+    defaultText: 'you can create content',
+    error:
+      details && details.type !== 'text'
+        ? 'invalid content type, content must be text type'
+        : undefined,
+  });
+
+  useEffect(() => {
+    if (content.length && !currentMarkdown.length) {
+      setCurrentMarkdown(content);
+    }
+  }, [content, currentMarkdown]);
 
   const addKeywords = useCallback(
     (type: 'from' | 'to', newItem: string) => {
@@ -61,6 +87,7 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
   const contextValue = useMemo(
     () => ({
       currentMarkdown,
+      loadedMarkdown: content,
       stateActionBar,
       keywordsFrom,
       keywordsTo,
@@ -75,6 +102,7 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
       keywordsTo,
       addKeywords,
       currentMarkdown,
+      content,
       setCurrentMarkdown,
     ]
   );
