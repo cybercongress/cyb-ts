@@ -1,5 +1,6 @@
+import { StdFee } from '@cosmjs/launchpad';
 import { EncodeObject } from '@cosmjs/proto-signing';
-import { StdFee } from '@keplr-wallet/types';
+
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 type ResolveType = (value: any) => void;

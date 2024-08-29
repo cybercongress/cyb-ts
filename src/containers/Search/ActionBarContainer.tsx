@@ -211,7 +211,7 @@ const ActionBarContainer: FC<Props> = ({
 
   const confirmTx = async () => {
     try {
-      if (txHash === null) {
+      if (!txHash) {
         throw new TxError('txHash is null');
       }
 

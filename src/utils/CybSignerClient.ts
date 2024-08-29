@@ -11,6 +11,8 @@ import {
   shareSignerPromise,
 } from 'src/redux/features/signer';
 import store from 'src/redux/store';
+import { setActionBarStage } from 'src/redux/features/action-bar';
+import { ActionBarStates } from 'src/containers/Search/constants';
 import { getNavigate } from './shareNavigation';
 
 // eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
@@ -36,6 +38,10 @@ export class CybSignerClient extends SigningCyberClient {
 
       return super
         .signAndBroadcast(signerAddress, messages, fee, memo ?? '')
+        .then((result) => {
+          store.dispatch(setActionBarStage(ActionBarStates.STAGE_CONFIRMED));
+          return result;
+        })
         .finally(() => {
           store.dispatch(resetSignerState());
         });

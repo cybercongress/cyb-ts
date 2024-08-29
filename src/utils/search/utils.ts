@@ -108,7 +108,7 @@ export const getRelevance = async (page = 0, limit = 50) => {
   }
 };
 
-export const getTxs = async (txs) => {
+export const getTxs = async (txs: string) => {
   try {
     const response = await axios({
       method: 'get',
@@ -121,7 +121,7 @@ export const getTxs = async (txs) => {
   }
 };
 
-export const getValidatorsInfo = async (address) => {
+export const getValidatorsInfo = async (address: string) => {
   try {
     const response = await axios({
       method: 'get',
@@ -134,7 +134,7 @@ export const getValidatorsInfo = async (address) => {
   }
 };
 
-export const keybaseCheck = async (identity) => {
+export const keybaseCheck = async (identity: string) => {
   try {
     const response = await axios({
       method: 'get',
@@ -147,7 +147,7 @@ export const keybaseCheck = async (identity) => {
   }
 };
 
-export const keybaseAvatar = async (identity) => {
+export const keybaseAvatar = async (identity: string) => {
   try {
     const response = await axios({
       method: 'get',
@@ -160,7 +160,7 @@ export const keybaseAvatar = async (identity) => {
   }
 };
 
-export const getDelegators = async (validatorAddr) => {
+export const getDelegators = async (validatorAddr: string) => {
   try {
     const response = await axios({
       method: 'get',
@@ -173,7 +173,7 @@ export const getDelegators = async (validatorAddr) => {
   }
 };
 
-export const getTotalRewards = async (delegatorAddr) => {
+export const getTotalRewards = async (delegatorAddr: string) => {
   try {
     const response = await axios({
       method: 'get',
@@ -463,9 +463,8 @@ const getLink = async (
         'pagination.offset': offset,
         'pagination.limit': limit,
         orderBy: Order.DESC,
-        events: `cyberlink.particle${
-          type === LinksTypeFilter.to ? 'To' : 'From'
-        }='${cid}'`,
+        events: `cyberlink.particle${type === LinksTypeFilter.to ? 'To' : 'From'
+          }='${cid}'`,
       },
     });
     return response.data;
@@ -638,7 +637,8 @@ export const getCreator = async (cid) => {
 
     if (h1 === 0) {
       return response2.data;
-    } else if (h2 === 0) {
+    }
+    if (h2 === 0) {
       return response.data;
     }
 
