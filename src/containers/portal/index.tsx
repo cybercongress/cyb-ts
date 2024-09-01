@@ -23,11 +23,7 @@ function PortalCitizenship() {
   if (loading) {
     return null;
   }
-
-  if (!passport) {
-    return <GetCitizenship />;
-  }
-  return <PassportMoonCitizenship />;
+  return <GetCitizenship />;
 }
 
 export default PortalCitizenship;
