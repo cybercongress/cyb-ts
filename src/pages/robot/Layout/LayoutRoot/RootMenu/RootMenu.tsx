@@ -64,6 +64,31 @@ const links: MenuItem[] = [
     // description: 'bytes',
     icon: '👻',
   },
+  {
+    text: 'Drive',
+    link: '/robot/drive',
+    icon: '🟥',
+  },
+  {
+    text: 'Keys',
+    link: '/robot/keys',
+    icon: '🗝',
+  },
+  {
+    text: 'Tokens',
+    link: './tokens',
+    icon: '🟢',
+  },
+  {
+    text: 'Networks',
+    link: './networks',
+    icon: '🌐',
+  },
+  {
+    text: 'Channels',
+    link: './channels',
+    icon: '📡',
+  },
 ];
 
 type Props = {

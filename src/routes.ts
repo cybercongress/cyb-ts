@@ -51,6 +51,15 @@ export const routes = {
       soul: {
         path: '/robot/soul',
       },
+      keys: {
+        path: '/robot/keys',
+      },
+      audio: {
+        path: '/robot/audio',
+      },
+      hub: {
+        path: '/robot/hub',
+      },
     },
   },
   robotPassport: {

@@ -16,6 +16,10 @@ import Heroes from './_refactor/account/tabs/heroes';
 import Karma from './Karma/Karma';
 import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
+import IpfsSettings from 'src/features/ipfs/ipfsSettings';
+import Keys from '../Keys/Keys';
+import Audio from 'src/pages/Settings/Audio/Audio';
+import Hub from '../Hub/hub';
 
 function RobotRoutes() {
   const { isLoading, address } = useRobotContext();
@@ -44,6 +48,10 @@ function RobotRoutes() {
             <Route path="rights" element={<UnderConstruction />} />
             <Route path="karma" element={<Karma />} />
             <Route path="badges" element={<TableDiscipline />} />
+            <Route path="keys" element={<Keys />} />
+            <Route path="audio" element={<Audio />} />
+            <Route path="drive" element={<IpfsSettings />} />
+            <Route path="/*" element={<Hub />} />
           </Route>
         )}
 
