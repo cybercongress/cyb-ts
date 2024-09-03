@@ -1,9 +1,8 @@
 import cx from 'classnames';
-import Pill from 'src/components/Pill/Pill';
 import arrowImg from 'images/arrow-left-img.svg';
 import styles from './Keywords.module.scss';
 import KeywordButton from '../KeywordButton/KeywordButton';
-import { KeywordsItem } from '../../studio.context';
+import { KeywordsItem, useStudioContext } from '../../studio.context';
 
 type Props = {
   items: KeywordsItem[];
@@ -12,13 +11,16 @@ type Props = {
 };
 
 function Keywords({ items, type, onClickAddBtn }: Props) {
+  const { removeKeywords } = useStudioContext();
+
   const renderItem = items.map((item, index) => {
     return (
-      <Pill
-        color="green-outline"
+      <KeywordButton
         text={item.text}
         key={index}
         className={styles.overflowPill}
+        onClick={() => removeKeywords(type, item.cid)}
+        isKeyword
       />
     );
   });

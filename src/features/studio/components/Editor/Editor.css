@@ -9,8 +9,19 @@
 }
 
 .milkdown .editor {
+  outline: none;
   height: 100%;
   padding: 5px;
+}
+
+.ProseMirror[data-placeholder]::before {
+  color: #a9a9a9;
+  position: absolute;
+  content: attr(data-placeholder);
+  pointer-events: none;
+  font-size: 16px;
+  /* Using default height value of p element in chrome */
+  line-height: 20px;
 }
 
 .milkdown blockquote {

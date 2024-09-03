@@ -148,7 +148,11 @@ function ActionBarContainer() {
     }`;
     return (
       <ActionBar
-        button={{ text: textBtn, onClick: addNewKeywords }}
+        button={{
+          text: textBtn,
+          onClick: addNewKeywords,
+          disabled: !newKeywords.length,
+        }}
         onClickBack={() => setStateActionBar('link')}
       >
         <Input

@@ -20,6 +20,7 @@ const StudioContext = React.createContext<{
   loadedMarkdown: string;
   setStateActionBar: React.Dispatch<React.SetStateAction<StateActionBar>>;
   addKeywords: (type: 'from' | 'to', item: string) => void;
+  removeKeywords: (type: 'from' | 'to', item: string) => void;
   onChangeCurrentMarkdown: React.Dispatch<React.SetStateAction<string>>;
 }>({
   stateActionBar: 'link',
@@ -29,6 +30,7 @@ const StudioContext = React.createContext<{
   keywordsTo: [],
   setStateActionBar: () => {},
   addKeywords: () => {},
+  removeKeywords: () => {},
   onChangeCurrentMarkdown: () => {},
 });
 
@@ -84,6 +86,17 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
     [keywordsFrom, keywordsTo, ipfsApi, isIpfsInitialized]
   );
 
+  const removeKeywords = useCallback(
+    (type: 'from' | 'to', itemCid: string) => {
+      const stateKeywords = type === 'from' ? keywordsFrom : keywordsTo;
+      const setStateKeywords =
+        type === 'from' ? setKeywordsFrom : setKeywordsTo;
+      const newState = stateKeywords.filter((item) => item.cid !== itemCid);
+      setStateKeywords(newState);
+    },
+    [keywordsFrom, keywordsTo]
+  );
+
   const contextValue = useMemo(
     () => ({
       currentMarkdown,
@@ -94,6 +107,7 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
       setStateActionBar,
       addKeywords,
       onChangeCurrentMarkdown: setCurrentMarkdown,
+      removeKeywords,
     }),
     [
       stateActionBar,
@@ -104,6 +118,7 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
       currentMarkdown,
       content,
       setCurrentMarkdown,
+      removeKeywords,
     ]
   );
 

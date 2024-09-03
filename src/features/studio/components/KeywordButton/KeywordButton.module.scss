@@ -1,9 +1,8 @@
+$position: 2px;
+
 .keywordBtn {
-  &,
-  // global styles
-  &:hover {
-    color: var(--blue-light);
-  }
+  color: var(--blue-light);
+  width: 60px;
 
   font-size: 16px;
   padding: 3px 15px;
@@ -14,5 +13,23 @@
 
   &:hover {
     opacity: 0.7;
+  }
+
+  &.isKeyword {
+    width: unset;
+    position: relative;
+    &:hover {
+      &::after {
+        content: 'x';
+        position: absolute;
+        background-color: var(--red);
+        color: var(--grayscale-primary);
+        left: $position;
+        right: $position;
+        top: $position;
+        bottom: $position;
+        border-radius: 15px;
+      }
+    }
   }
 }
