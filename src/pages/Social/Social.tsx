@@ -1,11 +1,10 @@
 import { LinkWindow, MainContainer } from 'src/components';
 import Discord from 'src/pages/Social/Discord/Discord';
 import { GitHub } from 'src/pages/Social/GitHub/GitHub';
-import { Telegram } from 'src/pages/Social/Telegram/Telegram';
+import Telegram from 'src/pages/Social/Telegram/Telegram';
 import Display from 'src/components/containerGradient/Display/Display';
 import DisplayTitle from 'src/components/containerGradient/DisplayTitle/DisplayTitle';
-import { useAdviser } from 'src/features/adviser/context';
-import { useEffect } from 'react';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import Twitter from './Twitter/Twitter';
 import styles from './Social.module.scss';
 
@@ -13,11 +12,9 @@ export const HUB_LINK = 'https://docs.cyb.ai/#/page/aicosystem';
 
 // TODO: folder is dirty, can be refactored
 function Social() {
-  const { setAdviser } = useAdviser();
-
-  useEffect(() => {
-    setAdviser('join our community!');
-  }, [setAdviser]);
+  useAdviserTexts({
+    defaultText: 'join our community 🤖',
+  });
 
   return (
     <MainContainer>
