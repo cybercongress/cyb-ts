@@ -1,11 +1,12 @@
 import { ActionBar, Button, Tabs } from 'src/components';
 import { routes } from 'src/routes';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 // import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
 
 import { useAppDispatch } from 'src/redux/hooks';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
+
 import { Link, useSearchParams } from 'react-router-dom';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import styles from './OracleLanding.module.scss';
@@ -123,11 +124,7 @@ function OracleLanding() {
 
       {/* {!isMobile && (
         <div className={styles.graphWrapper}>
-          <Link
-            to={routes.brain.path}
-            className={styles.enlargeBtn}
-            title="open full graph"
-          />
+        
 
           {isRenderGraph && (
             <CyberlinksGraphContainer
@@ -197,3 +194,13 @@ function OracleLanding() {
 }
 
 export default OracleLanding;
+
+export function BrainBtn() {
+  return (
+    <Link
+      to={routes.brain.path}
+      className={styles.enlargeBtn}
+      title="open full graph"
+    />
+  );
+}
