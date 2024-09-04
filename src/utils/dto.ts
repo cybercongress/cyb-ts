@@ -1,4 +1,5 @@
 import { EntityToDto, DtoToEntity } from 'src/types/dto';
+import { deserializeString } from './string';
 
 export const snakeToCamel = (str: string) =>
   str.replace(/([-_][a-z])/g, (group) =>
@@ -25,6 +26,8 @@ export function entityToDto<T extends Record<string, any>>(
         value = dbEntity[key].map((item) => entityToDto(item));
       } else if (typeof dbEntity[key] === 'object') {
         value = entityToDto(dbEntity[key]);
+      } else if (typeof dbEntity[key] === 'string') {
+        value = deserializeString(value);
       }
       dto[camelCaseKey] = value;
     }
@@ -46,11 +49,14 @@ export function dtoToEntity<T extends Record<string, any>>(
     if (Object.prototype.hasOwnProperty.call(dto, key)) {
       const snakeCaseKey = camelToSnake(key);
       let value = dto[key];
-      if (Array.isArray(dto[key])) {
-        value = dto[key].map((item) => dtoToEntity(item));
-      } else if (typeof dto[key] === 'object') {
-        value = dtoToEntity(dto[key]);
+      if (Array.isArray(value)) {
+        value = value.map((item) => dtoToEntity(item));
+      } else if (typeof value === 'object') {
+        value = dtoToEntity(value);
       }
+      //  else if (typeof value === 'string') {
+      //   value = replaceQuotes(value);
+      // }
       dbEntity[snakeCaseKey] = value;
     }
   });

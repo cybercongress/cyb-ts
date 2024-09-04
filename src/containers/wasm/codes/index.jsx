@@ -6,6 +6,7 @@ import ActionBar from './actionBar';
 import useSetActiveAddress from '../../../hooks/useSetActiveAddress';
 
 import styles from './styles.scss';
+import { MainContainer } from 'src/components';
 
 function Codes({ defaultAccount }) {
   const queryClient = useQueryClient();
@@ -34,14 +35,14 @@ function Codes({ defaultAccount }) {
 
   return (
     <>
-      <main className="block-body">
+      <MainContainer>
         <div className={styles.containerCodes}>
           {codes.length > 0 &&
             codes.map((item) => {
               return <Code data={item} key={item.id} />;
             })}
         </div>
-      </main>
+      </MainContainer>
       <ActionBar
         addressActive={addressActive}
         updateFnc={() => setUpdateFunc((item) => item + 1)}

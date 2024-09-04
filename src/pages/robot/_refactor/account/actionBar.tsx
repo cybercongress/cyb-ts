@@ -1,11 +1,22 @@
-/* eslint-disable */
 import React, { Component } from 'react';
 import { ActionBar } from '@cybercongress/gravity';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+
+import { sendCyberlink } from 'src/services/neuron/neuronApi';
+import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
+import { routes } from 'src/routes';
+import { createSearchParams } from 'react-router-dom';
+import { AccountValue } from 'src/types/defaultAccount';
+import { useBackend } from 'src/contexts/backend/backend';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { useQueryClient } from 'src/contexts/queryClient';
+import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
+import { getTxs } from '../../../../utils/search/utils';
+import { LEDGER } from '../../../../utils/config';
 import {
   TransactionSubmitted,
   Confirmed,
   RewardsDelegators,
-  Cyberlink,
   StartStageSearchActionBar,
   TransactionError,
   Dots,
@@ -13,18 +24,6 @@ import {
   ActionBar as ActionBarComp,
   Button,
 } from '../../../../components';
-import { LEDGER } from '../../../../utils/config';
-import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
-
-import { getTotalRewards, getTxs } from '../../../../utils/search/utils';
-
-import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
-import { sendCyberlink } from 'src/services/neuron/neuronApi';
-import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
-import { routes } from 'src/routes';
-import { createSearchParams } from 'react-router-dom';
-import { AccountValue } from 'src/types/defaultAccount';
-import { DIVISOR_CYBER_G, DEFAULT_GAS_LIMITS } from 'src/constants/config';
 
 const {
   STAGE_INIT,
@@ -45,6 +44,12 @@ type Props = {
   // can be followed
   follow: boolean;
   tweets: boolean;
+
+  signer: ReturnType<typeof useSigningClient>['signer'];
+  signingClient: ReturnType<typeof useSigningClient>['signingClient'];
+  ipfsApi: ReturnType<typeof useBackend>['ipfsApi'];
+  senseApi: ReturnType<typeof useBackend>['senseApi'];
+  queryClient: ReturnType<typeof useQueryClient>;
 
   updateAddress: () => void;
 
@@ -101,12 +106,13 @@ class ActionBarContainer extends Component<Props> {
       signingClient,
       ipfsApi,
       senseApi,
+      queryClient,
     } = this.props;
-    const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
-    const fee = {
-      amount: [],
-      gas: DEFAULT_GAS_LIMITS.toString(),
-    };
+    // const amount = parseFloat(toSend) * DIVISOR_CYBER_G;
+    // const fee = {
+    //   amount: [],
+    //   gas: DEFAULT_GAS_LIMITS.toString(),
+    // };
 
     if (signer && signingClient) {
       const [{ address }] = await signer.getAccounts();
@@ -115,16 +121,23 @@ class ActionBarContainer extends Component<Props> {
 
         if (type === 'security') {
           if (address === addressSend) {
-            const dataTotalRewards = await getTotalRewards(address);
-            console.log(`dataTotalRewards`, dataTotalRewards);
-            if (dataTotalRewards !== null && dataTotalRewards.rewards) {
+            if (!queryClient) {
+              return;
+            }
+
+            const dataTotalRewards = await queryClient.delegationTotalRewards(
+              address
+            );
+
+            if (dataTotalRewards?.rewards) {
               const { rewards } = dataTotalRewards;
               const validatorAddress = [];
               Object.keys(rewards).forEach((key) => {
-                if (rewards[key].reward !== null) {
-                  validatorAddress.push(rewards[key].validator_address);
+                if (rewards[key].reward) {
+                  validatorAddress.push(rewards[key].validatorAddress);
                 }
               });
+
               const gasLimitsRewards =
                 100000 * Object.keys(validatorAddress).length;
               const feeRewards = {
@@ -132,7 +145,7 @@ class ActionBarContainer extends Component<Props> {
                 gas: gasLimitsRewards.toString(),
               };
 
-              response = await signingClient.withdrawAllRewards(
+              const response = await signingClient.withdrawAllRewards(
                 address,
                 validatorAddress,
                 feeRewards
@@ -294,27 +307,23 @@ class ActionBarContainer extends Component<Props> {
         if (!isOwner) {
           content.push(
             <Button
-              link={
-                routes.teleport.send.path +
-                '?' +
-                createSearchParams({
-                  recipient: addressSend,
-                  token: 'boot',
-                  amount: '1',
-                }).toString()
-              }
+              link={`${routes.teleport.send.path}?${createSearchParams({
+                recipient: addressSend,
+                token: 'boot',
+                amount: '1',
+              }).toString()}`}
             >
               Send
             </Button>
           );
         }
 
-        if (follow) {
-          content.push(followBtn);
-        }
+        // if (follow) {
+        //   content.push(followBtn);
+        // }
       }
 
-      if (type === 'log') {
+      if (!type) {
         if (follow) {
           content.push(followBtn);
         }

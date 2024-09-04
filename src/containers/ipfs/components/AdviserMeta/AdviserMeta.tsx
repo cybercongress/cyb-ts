@@ -1,9 +1,11 @@
-import { Rank, Account } from 'src/components';
+import { Account } from 'src/components';
 import { timeSince, formatCurrency } from 'src/utils/utils';
+import useRank from 'src/features/cyberlinks/rank/useRank';
+import { Link } from 'react-router-dom';
+import { routes } from 'src/routes';
 import useGetCreator from '../../hooks/useGetCreator';
 import { PREFIXES } from '../metaInfo';
 import styles from './AdviserMeta.module.scss';
-import useRank from 'src/features/cyberlinks/rank/useRank';
 
 type Props = {
   cid: string;
@@ -22,11 +24,17 @@ function AdviserMeta({ cid, type, size }: Props) {
 
         {!!rank && (
           <div className={styles.rank}>
-            <span>with rank</span>
             <span className={styles.number}>
               {rank.toLocaleString().replaceAll(',', ' ')}
             </span>
-            <Rank hash={cid} rank={rank} />
+            <Link
+              to="https://docs.cyb.ai/#/page/cyberank"
+              replace
+              target="_blank"
+            >
+              🦠
+            </Link>
+            {/* <Rank hash={cid} rank={rank} /> */}
           </div>
         )}
       </div>
@@ -42,7 +50,7 @@ function AdviserMeta({ cid, type, size }: Props) {
         <span>
           🟥 {size ? formatCurrency(size, 'B', 0, PREFIXES) : 'unknown'}
         </span>
-        <button disabled>🌓</button>
+        <Link to={routes.robot.routes.soul.path}>🌓</Link>
       </div>
     </div>
   );

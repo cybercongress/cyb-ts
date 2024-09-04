@@ -14,7 +14,7 @@ function ZeroUser() {
         Connect your wallet by adding a <Link to={routes.keys.path}>key</Link>{' '}
         to start using robot. <br /> Get your first{' '}
         <Link to={routes.citizenship.path}>citizenship</Link> to unlock all
-        features of cyb.
+        features of cyb
       </>
     );
 

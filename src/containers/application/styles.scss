@@ -1,20 +1,3 @@
-.sideBar {
-  position: fixed;
-  top: 130px;
-  left: 0;
-  width: 218px;
-  background: #000000;
-  color: #fff;
-  transition: 0.3s;
-  z-index: 4;
-  opacity: 0.9;
-  box-shadow: 1px 0 20px 2px #000;
-}
-
-.sideBarHide {
-  left: -250px;
-}
-
 .portal {
   // z-index: -1;
   overflow: hidden;

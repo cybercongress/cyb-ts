@@ -11,6 +11,7 @@ $animation-time: 2.3s;
   overflow: hidden;
   position: relative;
   min-height: 26px;
+  cursor: pointer;
 
   --color-r: 0;
   --color-b: 0;
@@ -28,6 +29,7 @@ $animation-time: 2.3s;
       --color-b: 92;
       --color-g: 0;
     }
+
     &green {
       --color-r: 122;
       --color-b: 250;
@@ -47,7 +49,7 @@ $animation-time: 2.3s;
     }
   }
 
-  &:disabled {
+  &.disabled {
     cursor: unset;
 
     &::before {
@@ -62,21 +64,18 @@ $animation-time: 2.3s;
   // background
   &::before {
     content: '';
-
     position: absolute;
     left: 0;
     filter: blur(10px);
     z-index: -1;
-
     width: 100%;
     height: 100%;
-
     background: linear-gradient(
       to right,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(var(--color-r), var(--color-b), var(--color-g), 0.13) 40%,
-      rgba(var(--color-r), var(--color-b), var(--color-g), 0.13) 60%,
-      rgba(0, 0, 0, 0) 100%
+      rgb(0 0 0 / 0%) 0%,
+      rgb(var(--color-r) var(--color-b) var(--color-g) / 13%) 40%,
+      rgb(var(--color-r) var(--color-b) var(--color-g) / 13%) 60%,
+      rgb(0 0 0 / 0%) 100%
     );
 
     @keyframes pulseBg {
@@ -86,11 +85,12 @@ $animation-time: 2.3s;
         filter: blur(7px);
       }
     }
+
     animation: pulseBg $animation-time infinite alternate;
   }
 
   &.open,
-  &:disabled {
+  &.disabled {
     &::before,
     .summary {
       animation-name: none;
@@ -103,7 +103,7 @@ $animation-time: 2.3s;
     transition: all 0.7s;
   }
 
-  @media (max-width: 480px) {
+  @media (width <= 480px) {
     min-width: unset;
   }
 }
@@ -119,30 +119,28 @@ $animation-time: 2.3s;
 
   @keyframes pulse {
     0% {
-      box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0);
+      box-shadow: 0 0 0 0 rgb(0 0 0 / 0%);
       opacity: 0.2;
     }
+
     100% {
-      box-shadow: 0px 0px 10px 2px
-        rgb(var(--color-r), var(--color-b), var(--color-g));
+      box-shadow: 0 0 10px 2px rgb(var(--color-r) var(--color-b) var(--color-g));
     }
   }
 
   // dot
   &::before {
     content: '';
-    $size: 4px;
-    background-color: #fff;
 
+    $size: 4px;
+
+    background-color: #fff;
     border-radius: 50%;
     transition: all 1s;
     opacity: 1;
-
     animation: pulse $animation-time infinite alternate;
-
     width: $size;
     height: $size;
-
     position: absolute;
     top: calc(50% - $size / 2);
     left: calc(50% - $size / 2);
@@ -158,10 +156,11 @@ $animation-time: 2.3s;
     }
   }
 
-  .wrapper:disabled & {
+  .wrapper.disabled & {
     &::before {
       animation: none;
       opacity: 0.35;
+
       // background-color: rgba(#fff, 0.5);
     }
   }
@@ -169,8 +168,7 @@ $animation-time: 2.3s;
 
 .content {
   text-align: center;
-  text-shadow: 0px 0px 5px
-    rgba(var(--color-r), var(--color-b), var(--color-g), 0.7);
+  text-shadow: 0 0 5px rgb(var(--color-r) var(--color-b) var(--color-g) / 70%);
   line-height: 26px;
   overflow: hidden;
   height: 0;
@@ -185,5 +183,11 @@ $animation-time: 2.3s;
     min-height: 62px;
     height: auto;
     opacity: 1;
+  }
+}
+
+.typer {
+  &::before {
+    position: absolute;
   }
 }

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTransactionsSubscription } from 'src/generated/graphql';
 
 import { trimString, formatNumber } from '../../utils/utils';
-import { Loading, MsgType, TextTable } from '../../components';
+import { Loading, MainContainer, MsgType, TextTable } from '../../components';
 
 import statusTrueImg from '../../image/ionicons_svg_ios-checkmark-circle.svg';
 import statusFalseImg from '../../image/ionicons_svg_ios-close-circle.svg';
@@ -66,7 +66,7 @@ function Txs() {
   }
 
   return (
-    <main className="block-body">
+    <MainContainer>
       <Table>
         <Table.Head
           style={{
@@ -109,7 +109,7 @@ function Txs() {
           'No data'
         )}
       </Table>
-    </main>
+    </MainContainer>
   );
 }
 

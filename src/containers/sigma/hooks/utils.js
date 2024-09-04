@@ -4,6 +4,17 @@ import BigNumber from 'bignumber.js';
 import { useQuery } from '@tanstack/react-query';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
 import { BECH32_PREFIX_VALOPER, BASE_DENOM } from 'src/constants/config';
+import {
+  useStake as useVerseStake,
+  useStake as useVerseStake,
+} from 'src/features/cybernet/ui/hooks/useCurrentAccountStake';
+import {
+  CYBERVER_CONTRACTS,
+  CYBERVER_CONTRACTS,
+} from 'src/features/cybernet/constants';
+import { useQueryClient, useQueryClient } from 'src/contexts/queryClient';
+
+import { isPussyChain } from 'src/utils/chains/pussy';
 import { fromBech32 } from '../../../utils/utils';
 
 const initValue = {
@@ -18,6 +29,10 @@ export const initValueMainToken = {
   growth: { ...initValue },
   total: { ...initValue },
 };
+
+if (isPussyChain) {
+  initValueMainToken.cyberver = { ...initValue };
+}
 
 const initValueResponseFunc = (denom = '', amount = 0) => {
   return { denom, amount };
@@ -71,88 +86,124 @@ const getCommissionAmount = (data) => {
   return initValueResponseFunc(BASE_DENOM, commissionAmount.toString());
 };
 
-export const useGetBalance = (client, addressBech32) => {
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { data, isFetching } = useQuery(
-      ['getBalance', addressBech32],
-      async () => {
-        const responsegetBalance = await client.getBalance(
-          addressBech32,
-          BASE_DENOM
-        );
+function useCyberverBalance({ address }) {
+  const skip = !address || !isPussyChain;
+  // will be refactored to loop
+  const s1 = useVerseStake({
+    address,
+    contractAddress: CYBERVER_CONTRACTS[0],
+    skip,
+  });
 
-        const responsedelegatorDelegations = await getDelegatorDelegations(
-          client,
-          addressBech32
-        );
+  const s2 = useVerseStake({
+    address,
+    contractAddress: CYBERVER_CONTRACTS[1],
+    skip,
+  });
 
-        const delegationsAmount = getDelegationsAmount(
-          responsedelegatorDelegations
-        );
+  const total1 = s1.data?.reduce((acc, { stake }) => acc + stake, 0) || 0;
+  const total2 = s2.data?.reduce((acc, { stake }) => acc + stake, 0) || 0;
 
-        const responsedelegatorUnbondingDelegations =
-          await client.delegatorUnbondingDelegations(addressBech32);
+  const total = total1 + total2;
 
-        const unbondingAmount = getUnbondingAmount(
-          responsedelegatorUnbondingDelegations
-        );
-
-        const responsedelegationTotalRewards =
-          await client.delegationTotalRewards(addressBech32);
-
-        const rewardsAmount = getRewardsAmount(responsedelegationTotalRewards);
-
-        const dataValidatorAddress = fromBech32(
-          addressBech32,
-          BECH32_PREFIX_VALOPER
-        );
-
-        const responsevalidatorCommission = await client.validatorCommission(
-          dataValidatorAddress
-        );
-
-        const commissionAmount = getCommissionAmount(
-          responsevalidatorCommission
-        );
-
-        const resultBalance = {
-          liquid: responsegetBalance,
-          frozen: delegationsAmount,
-          melting: unbondingAmount,
-          growth: rewardsAmount,
-        };
-
-        if (commissionAmount.amount > 0) {
-          resultBalance.commission = commissionAmount;
-        }
-
-        const total = Object.values(resultBalance).reduce((acc, item) => {
-          return new BigNumber(acc).plus(item.amount).toString();
-        }, 0);
-
-        return {
-          ...resultBalance,
-          total: {
-            denom: BASE_DENOM,
-            amount: total,
-          },
-        };
-      },
-      {
-        enabled: Boolean(client && addressBech32),
-      }
-    );
-
-    if (data && data !== null && !isFetching) {
-      return data;
-    }
-
-    return undefined;
-  } catch (error) {
-    console.log(`error`, error);
-    const tempObj = { ...initValueMainToken };
-    delete tempObj.total;
-    return { ...tempObj };
+  if (total === 0) {
+    return null;
   }
+
+  return total.toString();
+}
+
+export const useGetBalance = (addressBech32) => {
+  const client = useQueryClient();
+
+  const { data, isFetching, refetch } = useQuery(
+    ['getBalance', addressBech32],
+    async () => {
+      const responsegetBalance = await client.getBalance(
+        addressBech32,
+        BASE_DENOM
+      );
+
+      const responsedelegatorDelegations = await getDelegatorDelegations(
+        client,
+        addressBech32
+      );
+
+      const delegationsAmount = getDelegationsAmount(
+        responsedelegatorDelegations
+      );
+
+      const responsedelegatorUnbondingDelegations =
+        await client.delegatorUnbondingDelegations(addressBech32);
+
+      const unbondingAmount = getUnbondingAmount(
+        responsedelegatorUnbondingDelegations
+      );
+
+      const responsedelegationTotalRewards =
+        await client.delegationTotalRewards(addressBech32);
+
+      const rewardsAmount = getRewardsAmount(responsedelegationTotalRewards);
+
+      const dataValidatorAddress = fromBech32(
+        addressBech32,
+        BECH32_PREFIX_VALOPER
+      );
+
+      const responsevalidatorCommission = await client.validatorCommission(
+        dataValidatorAddress
+      );
+
+      const commissionAmount = getCommissionAmount(responsevalidatorCommission);
+
+      const resultBalance = {
+        liquid: responsegetBalance,
+        frozen: delegationsAmount,
+        melting: unbondingAmount,
+        growth: rewardsAmount,
+      };
+
+      if (commissionAmount.amount > 0) {
+        resultBalance.commission = commissionAmount;
+      }
+
+      return resultBalance;
+    },
+    {
+      enabled: Boolean(client && addressBech32),
+    }
+  );
+
+  const totalCyberver = useCyberverBalance({ address: addressBech32 });
+
+  // TODO: refactor below
+  if (isFetching) {
+    return { data: initValueMainToken, refetch };
+  }
+
+  const result = {
+    ...initValueMainToken,
+    ...data,
+  };
+
+  if (data && totalCyberver) {
+    result.cyberver = {
+      denom: BASE_DENOM,
+      amount: totalCyberver,
+    };
+  }
+
+  const total = Object.values(result).reduce((acc, item) => {
+    return new BigNumber(acc).plus(item.amount).toString();
+  }, 0);
+
+  result.total = {
+    denom: BASE_DENOM,
+    amount: total,
+  };
+
+  return {
+    data: result,
+    refetch,
+  };
 };

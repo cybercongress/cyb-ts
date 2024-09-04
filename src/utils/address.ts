@@ -1,3 +1,7 @@
+import {
+  PATTERN_CYBER_CONTRACT,
+  PATTERN_SPACE_PUSSY,
+} from 'src/constants/patterns';
 import { Networks } from 'src/types/networks';
 
 export function getTypeFromAddress(address: string): Networks {
@@ -18,4 +22,9 @@ export function getTypeFromAddress(address: string): Networks {
   }
 
   return undefined;
+}
+
+export function isPussyAddress(address: string): boolean {
+  // fix
+  return address.match(PATTERN_CYBER_CONTRACT);
 }

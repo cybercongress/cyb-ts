@@ -16,6 +16,7 @@ import {
   FormatNumberTokens,
 } from 'src/components';
 import { formatNumber, getDisplayAmount } from 'src/utils/utils';
+import { DENOM_LIQUID } from 'src/constants/config';
 import useGetSlots from './useGetSlots';
 import { TableSlots } from '../energy/ui';
 import ActionBar from './actionBar';
@@ -32,7 +33,6 @@ import RcSlider from './components/Slider/Slider';
 import InfoText from './InfoText/InfoText';
 import LiquidBalances from './LiquidBalances/LiquidBalances';
 import ERatio from './components/ERatio/ERatio';
-import { DENOM_LIQUID } from 'src/constants/config';
 
 const returnColorDot = (marks) => {
   return {
@@ -109,11 +109,9 @@ function Mint() {
       return;
     }
 
-    queryClient
-      .getBalance(addressActive, DENOM_LIQUID)
-      .then((response) => {
-        SetBalanceHydrogen(parseFloat(response.amount));
-      });
+    queryClient.getBalance(addressActive, DENOM_LIQUID).then((response) => {
+      SetBalanceHydrogen(parseFloat(response.amount));
+    });
   }, [queryClient, addressActive, updateAddress]);
 
   useEffect(() => {
@@ -170,65 +168,67 @@ function Mint() {
 
   return (
     <>
-      <MainContainer width="100%">
+      <MainContainer>
         <Statistics amount={{ vestedA, vestedV }} />
 
-        <div className={styles.tabs}>
-          <Tabs
-            options={['milliampere', 'millivolt'].map((item) => {
-              return {
-                text: <DenomArr denomValue={item} />,
-                key: item,
-                onClick: () => setSelected(item),
-              };
-            })}
-            selected={selected}
-          />
-        </div>
-
-        <div className={styles.containerControl}>
-          <LiquidBalances amount={{ liquidH, frozenH }} />
-
-          <div className={styles.containerRcSlider}>
-            <FormatNumberTokens
-              value={resourceToken}
-              text={selected}
-              styleContainer={{ fontSize: '30px' }}
-            />
-
-            <RcSlider
-              value={{ amount: value, onChange: onChangeValue }}
-              minMax={{ min: 0, max: liquidH }}
-              marks={{
-                [liquidH]: returnColorDot(`${formatNumber(liquidH)} H`),
-              }}
-            />
-
-            <RcSlider
-              value={{ amount: valueDays, onChange: onChangeValueDays }}
-              minMax={{ min: 1, max: maxMintTime }}
-              marks={{
-                1: returnColorDot('1 day'),
-                [maxMintTime]: returnColorDot(`${maxMintTime} days`),
-              }}
+        <Display>
+          <div className={styles.tabs}>
+            <Tabs
+              options={['milliampere', 'millivolt'].map((item) => {
+                return {
+                  text: <DenomArr denomValue={item} />,
+                  key: item,
+                  onClick: () => setSelected(item),
+                };
+              })}
+              selected={selected}
             />
           </div>
 
-          <ERatio eRatio={eRatio} />
+          <div className={styles.containerControl}>
+            <LiquidBalances amount={{ liquidH, frozenH }} />
 
-          {value > 0 && (
-            <InfoText
-              value={{ amount: value, days: valueDays }}
-              selected={selected}
-              resourceToken={resourceToken}
-            />
-          )}
-        </div>
+            <div className={styles.containerRcSlider}>
+              <FormatNumberTokens
+                value={resourceToken}
+                text={selected}
+                styleContainer={{ fontSize: '30px' }}
+              />
+
+              <RcSlider
+                value={{ amount: value, onChange: onChangeValue }}
+                minMax={{ min: 0, max: liquidH }}
+                marks={{
+                  [liquidH]: returnColorDot(`${formatNumber(liquidH)} H`),
+                }}
+              />
+
+              <RcSlider
+                value={{ amount: valueDays, onChange: onChangeValueDays }}
+                minMax={{ min: 1, max: maxMintTime }}
+                marks={{
+                  1: returnColorDot('1 day'),
+                  [maxMintTime]: returnColorDot(`${maxMintTime} days`),
+                }}
+              />
+            </div>
+
+            <ERatio eRatio={eRatio} />
+
+            {value > 0 && (
+              <InfoText
+                value={{ amount: value, days: valueDays }}
+                selected={selected}
+                resourceToken={resourceToken}
+              />
+            )}
+          </div>
+        </Display>
 
         {loadingAuthAccounts ? (
           <Dots big />
         ) : (
-          <Display noPaddingX>
+          <Display noPadding>
             <TableSlots data={slotsData} />
           </Display>
         )}

@@ -1,20 +1,12 @@
-import SwitchNetwork from './SwitchNetwork/SwitchNetwork';
+import { useEffect, useState } from 'react';
+import cx from 'classnames';
+import CurrentApp from './CurrentApp/CurrentApp';
 import Electricity from '../../home/electricity';
 import SwitchAccount from './SwitchAccount/SwitchAccount';
 import Commander from './Commander/Commander';
 import styles from './Header.module.scss';
-import { useEffect, useState } from 'react';
-import cx from 'classnames';
-import AdviserContainer from 'src/features/adviser/AdviserContainer';
 
-type Props = {
-  menuProps: {
-    isOpen: boolean;
-    toggleMenu: () => void;
-  };
-};
-
-function Header({ menuProps }: Props) {
+function Header() {
   const [scroll, setScroll] = useState(false);
 
   useEffect(() => {
@@ -42,10 +34,7 @@ function Header({ menuProps }: Props) {
         [styles.scroll]: scroll,
       })}
     >
-      <SwitchNetwork
-        openMenu={menuProps.isOpen}
-        onClickOpenMenu={menuProps.toggleMenu}
-      />
+      <CurrentApp />
 
       <Commander />
 

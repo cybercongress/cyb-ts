@@ -4,7 +4,7 @@ import {
   CYBLOG_BROADCAST_CHANNEL_NAME,
 } from './constants';
 import {} from './cyblog';
-import { ConsoleLogParams, LogContext } from './types';
+import { ConsoleLogParams } from './types';
 
 let isLogging = false;
 
@@ -44,28 +44,14 @@ const updateCyblogConsoleLogParams = (params: ConsoleLogParams) =>
   channel.postMessage({ type: 'params', value: params });
 
 window.setCyblogConsole = (val: boolean | ConsoleLogParams) => {
-  if (val) {
-    const params = (
-      typeof val === 'boolean'
-        ? val
-          ? CYBLOG_CONSOLE_PARAMS_DEFAULT
-          : {}
-        : val
-    ) as ConsoleLogParams;
-    console.log('---window.setCyblogConsole', params, val);
-    localStorage.setItem(CYBLOG_LOG_SHOW, JSON.stringify(params));
-    updateCyblogConsoleLogParams(params);
-  } else {
-    localStorage.removeItem(CYBLOG_LOG_SHOW);
-    updateCyblogConsoleLogParams({});
-  }
-
-  showCyblogConsoleLogMessage();
-  return '';
+  const params = (
+    typeof val === 'boolean' ? (val ? CYBLOG_CONSOLE_PARAMS_DEFAULT : {}) : val
+  ) as ConsoleLogParams;
+  updateCyblogConsoleLogParams(params);
 };
 
-const showCyblogConsoleLogMessage = () => {
-  const params = cyblog.getConsoleLogParams();
+const showCyblogConsoleLogMessage = (params) => {
+  // const params = cyblog.getConsoleLogParams();
   const keys = Object.keys(params);
   if (keys.length === 0) {
     console.log('📺 cyblog.console disabled.');
@@ -81,14 +67,18 @@ export const initCyblog = () => {
   const channel = new BroadcastChannel(CYBLOG_BROADCAST_CHANNEL_NAME);
 
   channel.onmessage = (event) => {
-    if (event.data.type === 'log') {
-      const { level, message, context } = event.data.value;
+    const { type: logType, value } = event.data;
+    if (logType === 'log') {
+      const { level, message, context } = value;
       cyblog[level](message, context);
+    } else if (logType === 'params') {
+      showCyblogConsoleLogMessage(value);
+      localStorage.setItem(CYBLOG_LOG_SHOW, JSON.stringify(value));
     }
   };
 
   const params = JSON.parse(localStorage.getItem(CYBLOG_LOG_SHOW) || '{}');
   updateCyblogConsoleLogParams(params);
 
-  showCyblogConsoleLogMessage();
+  showCyblogConsoleLogMessage(cyblog.getConsoleLogParams());
 };

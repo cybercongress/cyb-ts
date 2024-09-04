@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Popper, { usePopperTooltip } from 'react-popper-tooltip';
 import 'react-popper-tooltip/dist/styles.css';
 import cx from 'classnames';
 
 import { PositioningStrategy } from '@popperjs/core';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import styles from './Tooltip.module.scss';
 
 export type TooltipProps = {
@@ -20,6 +21,43 @@ export type TooltipProps = {
   strategy?: PositioningStrategy;
 };
 
+function AdviserTooltipWrapper({
+  children,
+  tooltip,
+  contentStyle,
+}: {
+  children: React.ReactNode;
+  tooltip: React.ReactNode;
+}) {
+  const { setAdviser } = useAdviserTexts();
+  const ref = useRef<HTMLDivElement>(null);
+
+  function onMouseEnter() {
+    setAdviser(tooltip);
+  }
+
+  function onMouseLeave() {
+    setAdviser(null);
+  }
+  useEffect(() => {
+    return () => {
+      setAdviser(null);
+    };
+  }, [setAdviser]);
+
+  return (
+    <div
+      ref={ref}
+      style={contentStyle}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
+    </div>
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function Tooltip({
   children,
   trigger = 'hover',
@@ -76,4 +114,4 @@ function Tooltip({
   );
 }
 
-export default Tooltip;
+export default AdviserTooltipWrapper;

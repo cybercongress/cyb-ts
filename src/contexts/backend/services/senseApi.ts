@@ -87,10 +87,10 @@ export const createSenseApi = (
 ) => ({
   getList: async () => {
     const result = await dbApi.getSenseList(myAddress);
-    console.log(
-      '--- getList unread',
-      result.filter((r) => r.unreadCount > 0)
-    );
+    // console.log(
+    //   '--- getList unread',
+    //   result.filter((r) => r.unreadCount > 0)
+    // );
     return result;
   },
   markAsRead: async (
@@ -194,7 +194,7 @@ export const createSenseApi = (
     await dbApi.putSyncStatus(newItem);
     new BroadcastChannelSender().postSenseUpdate([newItem]);
   },
-  putCyberlinsks: (links: LinkDto | LinkDto[]) => dbApi.putCyberlinks(links),
+  putCyberlink: (links: LinkDto | LinkDto[]) => dbApi.putCyberlinks(links),
   getTransactions: (neuron: NeuronAddress) => dbApi.getTransactions(neuron),
   getFriendItems: async (userAddress: NeuronAddress) => {
     if (!myAddress) {

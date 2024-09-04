@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 
-  @media (max-width: 768px) {
+  @media (width <= 768px) {
     display: block;
     text-align: center;
 
@@ -22,25 +22,31 @@
   .left {
     display: flex;
     gap: 7px;
-    align-items: center;
+    align-items: baseline;
 
     span:first-of-type {
-      color: rgba(255, 255, 255, 0.5);
+      color: rgb(255 255 255 / 50%);
       font-size: 14px;
     }
 
     .rank {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       gap: 5px;
-
-      color: rgba(221, 255, 255, 0.38);
-
+      color: rgb(221 255 255 / 38%);
       font-size: 14px;
 
       .number {
-        color: #f62bfd;
+        color: white;
         line-height: 23px;
+      }
+
+      a {
+        cursor: help;
+
+        &:hover {
+          opacity: 0.8;
+        }
       }
     }
   }
@@ -61,8 +67,10 @@
     justify-content: flex-end;
     gap: 14px;
 
-    button {
-      opacity: 0.35;
+    a {
+      &:hover {
+        opacity: 0.8;
+      }
     }
   }
 }

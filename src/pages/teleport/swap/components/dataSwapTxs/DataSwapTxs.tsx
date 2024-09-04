@@ -24,8 +24,6 @@ function DataSwapTxs({ dataTxs }: { dataTxs: UseGetSendTxsByAddressByType }) {
     return [];
   }, [data]);
 
-  console.log('data', data);
-
   const fetchNextPageFnc = () => {
     setTimeout(() => {
       fetchMoreData();

@@ -1,9 +1,4 @@
 import { useState, useCallback } from 'react';
-import {
-  ActionBar as ActionBarContainer,
-  Pane,
-  Button,
-} from '@cybercongress/gravity';
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx';
 import Long from 'long';
 import BigNumber from 'bignumber.js';
@@ -15,17 +10,13 @@ import {
   SigningStargateClient,
 } from '@cosmjs/stargate';
 import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
-import {
-  ActionBarContentText,
-  LinkWindow,
-  ActionBar as ActionBarCenter,
-} from '../../../components';
+import { getNowUtcNumber } from 'src/utils/date';
+import { LinkWindow, ActionBar as ActionBarCenter } from '../../../components';
 import { LEDGER } from '../../../utils/config';
 import {
   fromBech32,
   trimString,
   convertAmountReverce,
-  getNowUtcTime,
 } from '../../../utils/utils';
 import networks from '../../../utils/networkListIbc';
 
@@ -150,7 +141,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
           destChainId: networkB,
           sender: address,
           recipient: counterpartyAccount,
-          createdAt: getNowUtcTime(),
+          createdAt: getNowUtcNumber(),
           amount: coinFunc(amount, tokenSelect),
         };
         pingTxsIbc(ibcClient, transferData);
@@ -220,7 +211,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
           destChainId: networkB,
           sender: address,
           recipient: counterpartyAccount,
-          createdAt: getNowUtcTime(),
+          createdAt: getNowUtcNumber(),
           amount: transferAmount,
         };
         pingTxsIbc(signingClient, transferData);
@@ -259,15 +250,12 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
 
   if (stage === STAGE_CONFIRMED_IBC) {
     return (
-      <ActionBarContainer>
-        <ActionBarContentText display="inline">
-          <Pane display="inline">Transaction Successful: </Pane>{' '}
+      <ActionBarCenter button={{ text: 'Fuck Google', onClick: clearState }}>
+        <span>
+          Transaction successful:{' '}
           <LinkWindow to={linkIbcTxs}>{trimString(txHashIbc, 6, 6)}</LinkWindow>
-        </ActionBarContentText>
-        <Button marginX={10} onClick={clearState}>
-          Fuck Google
-        </Button>
-      </ActionBarContainer>
+        </span>
+      </ActionBarCenter>
     );
   }
 

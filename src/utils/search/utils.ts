@@ -5,6 +5,10 @@ import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
 import { CID_TWEET } from 'src/constants/app';
 import { LCD_URL } from 'src/constants/config';
 import { LinksType, LinksTypeFilter } from 'src/containers/Search/types';
+import { ParticleCid } from 'src/types/base';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { getIpfsHash } from '../ipfs/helpers';
+import { encodeSlash } from '../utils';
 
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
@@ -163,19 +167,6 @@ export const getDelegators = async (validatorAddr) => {
       url: `${LCD_URL}/staking/validators/${validatorAddr}/delegations`,
     });
     return response.data;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
-export const getTotalRewards = async (delegatorAddr) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/distribution/delegators/${delegatorAddr}/rewards`,
-    });
-    return response.data.result;
   } catch (e) {
     console.log(e);
     return null;
@@ -634,7 +625,8 @@ export const getCreator = async (cid) => {
 
     if (h1 === 0) {
       return response2.data;
-    } else if (h2 === 0) {
+    }
+    if (h2 === 0) {
       return response.data;
     }
 
@@ -706,6 +698,9 @@ export const getCredit = async (address) => {
     return null;
   }
 };
+
+export const getSearchQuery = async (query: ParticleCid | string) =>
+  query.match(PATTERN_IPFS_HASH) ? query : getIpfsHash(encodeSlash(query));
 
 export const searchByHash = async (
   client: CyberClient,

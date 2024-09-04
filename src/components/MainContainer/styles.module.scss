@@ -1,10 +1,13 @@
-.containerContent {
-  width: 62%;
-  margin: 0px auto;
+@import '../../layouts/variables.module.scss';
 
-  display: flex;
-  flex-direction: column;
-  gap: 20px 0;
+.wrapper {
+  width: 62%;
+  margin: 0 auto;
+  display: grid;
+  align-items: flex-start;
+
+  // padding for action bar, if scroll bottom
+  padding-bottom: $actionBarHeight;
 
   @media (max-width: 650px) {
     width: 82%;
@@ -13,8 +16,17 @@
   @media (max-width: 540px) {
     width: 100% !important;
   }
-}
 
-.noMaxWidth {
-  max-width: unset;
+  >main {
+    // same with menu
+    min-height: 100%;
+
+    // stretch children by height
+    display: grid;
+
+    >header {
+      // because of grid
+      align-self: flex-start;
+    }
+  }
 }

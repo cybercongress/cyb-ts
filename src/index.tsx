@@ -23,15 +23,15 @@ import { Provider } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import AppRouter from './router';
 import store from './redux/store';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 
 import './style/main.css';
 import './style/index.scss';
 import './image/favicon.ico';
 
-// for bootloading
+// for boot loading
 import './image/robot.svg';
 
-// import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import SdkQueryClientProvider from './contexts/queryClient';
 import SigningClientProvider from './contexts/signerClient';
 import DataProvider from './contexts/appData';
@@ -45,6 +45,8 @@ import AdviserProvider from './features/adviser/context';
 import HubProvider from './contexts/hub';
 
 import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
+import ScriptingProvider from './contexts/scripting/scripting';
+import { localStorageKeys } from './constants/localStorageKeys';
 
 const httpLink = new HttpLink({
   uri: INDEX_HTTPS,
@@ -98,8 +100,10 @@ if (container === null) {
 
 const root = createRoot(container);
 
-// for Storybook, WIP
-export function Providers({ children }: { children: React.ReactNode }) {
+// temp
+localStorage.removeItem(localStorageKeys.settings.adviserAudio);
+
+function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <NetworksProvider>
@@ -112,12 +116,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
                     <DataProvider>
                       <ApolloProvider client={client}>
                         <BackendProvider>
-                          <DeviceProvider>
-                            <AdviserProvider>
-                              {/* <ErrorBoundary>{children}</ErrorBoundary> */}
-                              {children}
-                            </AdviserProvider>
-                          </DeviceProvider>
+                          <ScriptingProvider>
+                            <DeviceProvider>
+                              <AdviserProvider>
+                                <ErrorBoundary>{children}</ErrorBoundary>
+                              </AdviserProvider>
+                            </DeviceProvider>
+                          </ScriptingProvider>
                         </BackendProvider>
                       </ApolloProvider>
                     </DataProvider>

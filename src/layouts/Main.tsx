@@ -1,72 +1,94 @@
-import { useEffect, useMemo, useState } from 'react';
-
-import { localStorageKeys } from 'src/constants/localStorageKeys';
-import AppMenu from 'src/containers/application/AppMenu';
-import AppSideBar from 'src/containers/application/AppSideBar';
+import { useEffect, useRef, useState } from 'react';
 import Header from 'src/containers/application/Header/Header';
-import useSetActiveAddress from 'src/hooks/useSetActiveAddress';
-import { useAppSelector } from 'src/redux/hooks';
-import styles from './Main.module.scss';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { routes } from 'src/routes';
+import { useDevice } from 'src/contexts/device';
+import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
+import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
+import TimeFooter from 'src/features/TimeFooter/TimeFooter';
+import { Networks } from 'src/types/networks';
+import { CHAIN_ID } from 'src/constants/config';
 import { Link } from 'react-router-dom';
+import CircularMenu from 'src/components/appMenu/CircularMenu/CircularMenu';
+import TimeHistory from 'src/features/TimeHistory/TimeHistory';
+import MobileMenu from 'src/components/appMenu/MobileMenu/MobileMenu';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import { BrainBtn } from 'src/pages/oracle/landing/OracleLanding';
+import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
+import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
+import styles from './Main.module.scss';
+import SideHydrogenBtn from './ui/SideHydrogenBtn/SideHydrogenBtn';
 
 function MainLayout({ children }: { children: JSX.Element }) {
-  const pocket = useAppSelector(({ pocket }) => pocket);
-  const { defaultAccount } = pocket;
+  const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
+  const addressBech32 = defaultAccount.account?.cyber.bech32;
 
-  const { addressActive } = useSetActiveAddress(defaultAccount);
+  const currentAddress = useCurrentAddress();
+  const { viewportWidth } = useDevice();
+  const ref = useRef<HTMLDivElement>(null);
+  const dispatch = useAppDispatch();
+  const [isRenderGraph, setIsRenderGraph] = useState(false);
 
-  // for new user show menu, else no + animation
-  const [openMenu, setOpenMenu] = useState(
-    !localStorage.getItem(localStorageKeys.MENU_SHOW)
-  );
+  const graphSize = Math.min(viewportWidth * 0.13, 220);
+  const isMobile =
+    viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
 
-  function toggleMenu(isOpen: boolean) {
-    const newState = isOpen;
-
-    setOpenMenu(newState);
-    localStorage.setItem(localStorageKeys.MENU_SHOW, newState.toString());
-  }
-
-  // for initial animation
   useEffect(() => {
-    const isMenuOpenPreference = localStorage.getItem(
-      localStorageKeys.MENU_SHOW
-    );
+    dispatch(setFocus(true));
 
     const timeout = setTimeout(() => {
-      toggleMenu(isMenuOpenPreference === 'true');
-    }, 500);
+      setIsRenderGraph(true);
+    }, 1000 * 1.5);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, []);
+  }, [dispatch]);
 
-  function closeMenu() {
-    toggleMenu(false);
-  }
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+
+    ref.current.style.setProperty('--graph-size', `${graphSize}px`);
+  }, [ref, graphSize]);
+
+  const link = currentAddress
+    ? routes.robot.routes.brain.path
+    : routes.brain.path;
 
   return (
-    <div className={styles.wrapper}>
-      <Header
-        menuProps={{
-          toggleMenu: useMemo(() => () => toggleMenu(!openMenu), [openMenu]),
-          isOpen: openMenu,
-        }}
-      />
+    <div className={styles.wrapper} ref={ref}>
+      <Header />
 
-      <AppSideBar openMenu={openMenu} closeMenu={closeMenu}>
-        <AppMenu addressActive={addressActive} closeMenu={closeMenu} />
-      </AppSideBar>
-
-      <SenseButton className={styles.senseBtn} />
+      {CHAIN_ID === Networks.BOSTROM && !isMobile && <SenseButton />}
+      {!isMobile && <SideHydrogenBtn address={addressBech32} />}
 
       {children}
-
       <footer>
-        <Link to={routes.social.path}>contacts</Link>
+        {isMobile ? <MobileMenu /> : <CircularMenu circleSize={graphSize} />}
+        {!isMobile && (
+          <Link
+            to={link}
+            className={stylesOracle.graphWrapper}
+            style={{ bottom: '0px' }}
+          >
+            <BrainBtn />
+
+            {isRenderGraph && (
+              <CyberlinksGraphContainer
+                size={graphSize}
+                type="3d"
+                data={graphDataPrepared}
+              />
+            )}
+          </Link>
+        )}
+        <div className={styles.Time}>
+          {!isMobile && <TimeHistory />}
+          <TimeFooter />
+        </div>
       </footer>
     </div>
   );

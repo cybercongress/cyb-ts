@@ -18,6 +18,6 @@ export enum SortBy {
   rank = 'rank',
   date = 'date',
   // not ready
-  popular = 'popular',
-  mine = 'mine',
+  // popular = 'popular',
+  // mine = 'mine',
 }
