@@ -46,7 +46,7 @@ function useCyberlinks(
     limit = 1024,
     skip,
   }: {
-    limit?: number;
+    limit?: number | false;
     skip?: boolean;
   }
 ) {
@@ -65,7 +65,7 @@ function useCyberlinks(
     variables: {
       where,
       orderBy: { height: OrderBy.Desc },
-      limit,
+      limit: limit || undefined,
     },
     skip,
   });

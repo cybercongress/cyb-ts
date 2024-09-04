@@ -13,6 +13,7 @@ import CircularMenu from 'src/components/appMenu/CircularMenu/CircularMenu';
 import TimeHistory from 'src/features/TimeHistory/TimeHistory';
 import MobileMenu from 'src/components/appMenu/MobileMenu/MobileMenu';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import { BrainBtn } from 'src/pages/oracle/landing/OracleLanding';
 import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
@@ -72,13 +73,13 @@ function MainLayout({ children }: { children: JSX.Element }) {
             to={link}
             className={stylesOracle.graphWrapper}
             style={{ bottom: '0px' }}
-
-            // className={stylesOracle.enlargeBtn}
-            // title="open full graph"
           >
+            <BrainBtn />
+
             {isRenderGraph && (
               <CyberlinksGraphContainer
                 size={graphSize}
+                type="3d"
                 data={graphDataPrepared}
               />
             )}

@@ -1,6 +1,6 @@
 import { ActionBar, Button, Tabs } from 'src/components';
 import { routes } from 'src/routes';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 // import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
 
@@ -9,13 +9,13 @@ import { useDevice } from 'src/contexts/device';
 import { useAppDispatch } from 'src/redux/hooks';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import styles from './OracleLanding.module.scss';
 import KeywordButton from './components/KeywordButton/KeywordButton';
 
 import Stats from './Stats/Stats';
 // import graphDataPrepared from './graphDataPrepared.json';
 import { TitleType } from './type';
-import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 
 const mapTitleTypeToTitle = {
   [TitleType.search]: 'search',
@@ -150,11 +150,7 @@ function OracleLanding() {
 
       {/* {!isMobile && (
         <div className={styles.graphWrapper}>
-          <Link
-            to={routes.brain.path}
-            className={styles.enlargeBtn}
-            title="open full graph"
-          />
+        
 
           {isRenderGraph && (
             <CyberlinksGraphContainer
@@ -224,3 +220,13 @@ function OracleLanding() {
 }
 
 export default OracleLanding;
+
+export function BrainBtn() {
+  return (
+    <Link
+      to={routes.brain.path}
+      className={styles.enlargeBtn}
+      title="open full graph"
+    />
+  );
+}
