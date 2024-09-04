@@ -32,9 +32,7 @@ const listConfig = {
     description: (
       <>
         decentralized <Link to={routes.oracle.ask.getLink('ipfs')}>ipfs</Link>{' '}
-        search is just one{' '}
-        <Link to={routes.oracle.ask.getLink('cyber')}>cyber</Link> <i>app</i>{' '}
-        aip
+        search
       </>
     ),
   },
