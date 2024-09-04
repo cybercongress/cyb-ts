@@ -59,9 +59,9 @@ export function TransactionSubmitted() {
 
 export function Confirmed({ txHash, txHeight, cosmos, onClickBtnClose }) {
   return (
-    <ActionBar button={{ text: ' Fuck Google', onClick: onClickBtnClose }}>
+    <ActionBar button={{ text: 'Fuck Google', onClick: onClickBtnClose }}>
       <span>
-        Transaction
+        Transaction successful:{' '}
         {cosmos ? (
           <LinkWindow to={`https://www.mintscan.io/txs/${txHash}`}>
             {trimString(txHash, 6, 6)}

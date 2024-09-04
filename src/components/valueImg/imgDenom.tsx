@@ -9,9 +9,9 @@ import hydrogen from 'images/hydrogen.svg';
 import tocyb from 'images/boot.png';
 import boot from 'images/large-green.png';
 import defaultImg from 'images/large-orange-circle.png';
+import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import Tooltip from '../tooltip/tooltip';
 import { trimString } from '../../utils/utils';
-import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import styles from './TextDenom.module.scss';
 import lp from './images/lp.png';
 
@@ -129,6 +129,7 @@ function ImgDenom({
       <div>
         <Tooltip
           placement="top"
+          contentStyle={{ display: 'flex' }}
           tooltip={<div className={styles.denom}>{tooltipText}</div>}
         >
           {img}
