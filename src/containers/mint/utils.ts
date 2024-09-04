@@ -81,6 +81,7 @@ export const getAmountResource = (
 
   return new BigNumber(cycles)
     .multipliedBy(base)
+    .multipliedBy(halving)
     .dp(0, BigNumber.ROUND_FLOOR)
     .toNumber();
 };
