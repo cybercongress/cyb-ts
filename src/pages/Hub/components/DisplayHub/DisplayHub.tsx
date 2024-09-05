@@ -18,6 +18,7 @@ function DisplayHub({
 }) {
   return (
     <Display
+      noPadding
       title={
         <DisplayTitle
           title={

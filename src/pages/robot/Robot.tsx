@@ -20,7 +20,9 @@ import Karma from './Karma/Karma';
 import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
 import Keys from '../Keys/Keys';
-import Hub from '../Hub/hub';
+import Tokens from '../Hub/containers/Tokens/Tokens';
+import Networks from '../Hub/containers/Networks/Networks';
+import Channels from '../Hub/containers/Channels/Channels';
 
 function RobotRoutes() {
   const { isLoading, address } = useRobotContext();
@@ -58,10 +60,6 @@ function RobotRoutes() {
             <Route path="rights" element={<UnderConstruction />} />
             <Route path="karma" element={<Karma />} />
             <Route path="badges" element={<TableDiscipline />} />
-            <Route path="keys" element={<Keys />} />
-            <Route path="audio" element={<Audio />} />
-            <Route path="drive" element={<IpfsSettings />} />
-            <Route path="/*" element={<Hub />} />
           </Route>
         )}
 
@@ -71,6 +69,18 @@ function RobotRoutes() {
         {['sense', 'sense/:senseId'].map((path) => (
           <Route key={path} path={path} element={<SensePage />} />
         ))}
+
+        <Route path="audio" element={<Audio />} />
+        <Route path="drive" element={<IpfsSettings />} />
+
+        <Route path="keys" element={<Keys />} />
+        {/* 
+        {['tokens', 'networks', 'channels'].map((path) => (
+          <Route key={path} path={`/${path}`} element={<Hub />} />
+        ))} */}
+        <Route path="tokens" element={<Tokens />} />
+        <Route path="networks" element={<Networks />} />
+        <Route path="channels" element={<Channels />} />
 
         <Route path="brain/*" element={<Brain />} />
 

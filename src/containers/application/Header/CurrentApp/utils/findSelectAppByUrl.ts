@@ -10,7 +10,8 @@ const findSelectAppByUrl = (
   address: Option<string>
 ) => {
   let pathname = url;
-  const isRobot = url.includes('@') || url.includes('neuron/');
+  const isRobot =
+    url.includes('@') || url.includes('neuron/') || url.includes('robot');
   const isOracle = url.includes('oracle');
 
   const itemsMenuObj = reduceRobotSubItems(passport, address);

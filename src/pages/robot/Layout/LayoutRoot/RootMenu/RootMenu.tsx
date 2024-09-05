@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import cx from 'classnames';
 import Display from 'src/components/containerGradient/Display/Display';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
+import { useRobotContext } from 'src/pages/robot/robot.context';
 import styles from './RootMenu.module.scss';
 
 type MenuItem = {
@@ -11,6 +12,7 @@ type MenuItem = {
   name?: string;
   icon: string;
   isDisabled?: boolean;
+  onlyOwner?: boolean;
 };
 
 const links: MenuItem[] = [
@@ -68,26 +70,31 @@ const links: MenuItem[] = [
     text: 'Drive',
     link: '/robot/drive',
     icon: '🟥',
+    onlyOwner: true,
   },
   {
     text: 'Keys',
     link: '/robot/keys',
     icon: '🗝',
+    onlyOwner: true,
   },
   {
     text: 'Tokens',
     link: './tokens',
     icon: '🟢',
+    onlyOwner: true,
   },
   {
     text: 'Networks',
     link: './networks',
     icon: '🌐',
+    onlyOwner: true,
   },
   {
     text: 'Channels',
     link: './channels',
     icon: '📡',
+    onlyOwner: true,
   },
 ];
 
@@ -96,11 +103,16 @@ type Props = {
 };
 
 function RootMenu({ counts }: Props) {
+  const { isOwner } = useRobotContext();
   const renderLinks = (links: Array<MenuItem>) => {
     return (
       <ul className={styles.links}>
         {links.map((link, index) => {
           const count = counts[link.name] || 0;
+
+          if (link.onlyOwner && !isOwner) {
+            return null;
+          }
 
           return (
             <li key={index}>
