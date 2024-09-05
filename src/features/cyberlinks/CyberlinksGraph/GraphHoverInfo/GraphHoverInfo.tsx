@@ -1,4 +1,6 @@
 import ContentItem from 'src/components/ContentItem/contentItem';
+import { useMemo } from 'react';
+import * as THREE from 'three';
 import styles from './GraphHoverInfo.module.scss';
 
 // fix
@@ -9,32 +11,35 @@ type Props = {
 };
 
 function HoverInfo({ node, camera, size, left, top }: Props) {
-  // const calc = useMemo(() => {
-  //   if (!node || !camera) {
-  //     return null;
-  //   }
+  let l = left;
+  let t = top;
 
-  //   const { x, y, z } = node;
-  //   const vector = new THREE.Vector3(x, y, z);
-  //   vector.project(camera);
+  const calc = useMemo(() => {
+    if (!node || !camera) {
+      return null;
+    }
 
-  //   const widthHalf = window.innerWidth / 2;
-  //   const heightHalf = window.innerHeight / 2;
+    const { x, y, z } = node;
+    const vector = new THREE.Vector3(x, y, z);
+    vector.project(camera);
 
-  //   const posX = vector.x * widthHalf + widthHalf;
-  //   const posY = -(vector.y * heightHalf) + heightHalf;
+    const widthHalf = window.innerWidth / 2;
+    const heightHalf = window.innerHeight / 2;
 
-  //   return {
-  //     posX,
-  //     posY,
-  //   };
-  // }, [camera, node]);
+    const posX = vector.x * widthHalf + widthHalf;
+    const posY = -(vector.y * heightHalf) + heightHalf;
 
-  // if (!calc) {
-  //   return null;
-  // }
+    return {
+      posX,
+      posY,
+    };
+  }, [camera, node]);
 
-  // const { posX, posY } = calc;
+  if (calc) {
+    const { posX, posY } = calc;
+    l = posX;
+    t = posY;
+  }
 
   if (!node?.id) {
     return null;
@@ -51,8 +56,8 @@ function HoverInfo({ node, camera, size, left, top }: Props) {
     <div
       className={styles.hoverInfo}
       style={{
-        top,
-        left,
+        top: t,
+        left: l,
       }}
     >
       <ContentItem cid={node.id} />
