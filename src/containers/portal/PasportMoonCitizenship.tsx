@@ -23,6 +23,7 @@ import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { useAdviser } from 'src/features/adviser/context';
+import { selectAccountsPassports } from 'src/features/passport/passports.redux';
 
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 
@@ -46,6 +47,7 @@ const stopPortalAmbient = () => {
 function PassportMoonCitizenship() {
   const { isMobile: mobile } = useDevice();
   const defaultAccount = useAppSelector((state) => state.pocket.defaultAccount);
+  const accountsPassports = useAppSelector(selectAccountsPassports);
 
   const citizenship = useAppSelector(selectCurrentPassport);
   // FIXME: backward compatibility
@@ -132,14 +134,20 @@ function PassportMoonCitizenship() {
         <Stars />
         {!mobile && <MoonAnimation />}
 
-        <PasportCitizenship
-          citizenship={citizenship}
-          txHash={txHash}
-          onClickProveeAddress={onClickProveeAddress}
-          onClickDeleteAddress={onClickDeleteAddress}
-          onClickEditAvatar={onClickEditAvatar}
-          updateFunc={setSelectedAddress}
-        />
+        {Object.entries(accountsPassports.accounts).map(
+          ([address, passport]) => (
+            <PasportCitizenship
+              key={address}
+              citizenship={passport?.data}
+              initStateCard={false}
+              txHash={txHash}
+              onClickProveeAddress={onClickProveeAddress}
+              onClickDeleteAddress={onClickDeleteAddress}
+              onClickEditAvatar={onClickEditAvatar}
+              updateFunc={setSelectedAddress}
+            />
+          )
+        )}
       </MainContainer>
       {Math.floor(appStep) === STEP_INFO.STATE_INIT && (
         <ActionBarSteps>

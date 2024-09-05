@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import GetCitizenship from './citizenship';
-import PassportMoonCitizenship from './PasportMoonCitizenship';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
