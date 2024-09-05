@@ -1,4 +1,4 @@
-/* import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import IpfsSettings from 'src/features/ipfs/ipfsSettings';
 import Layout from './Layout/Layout';
 import Keys from '../Keys/Keys';
@@ -20,4 +20,3 @@ function Settings() {
 }
 
 export default Settings;
- */
