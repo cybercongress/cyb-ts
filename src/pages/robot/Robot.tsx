@@ -1,9 +1,10 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import TxsTable from 'src/pages/robot/_refactor/account/component/txsTable';
 import Sigma from 'src/containers/sigma';
 import RoutedEnergy from 'src/containers/energy';
 import TableDiscipline from 'src/containers/gol/table';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import { routes } from 'src/routes';
 import Layout from './Layout/Layout';
 import RobotContextProvider, { useRobotContext } from './robot.context';
 import Brain from './Brain/Brain';
@@ -27,18 +28,27 @@ function RobotRoutes() {
   const newUser = !isLoading && !address;
 
   useAdviserTexts({
-    defaultText: 'my robot',
+    defaultText: `${!newUser && 'my'} robot`,
   });
 
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         {newUser ? (
-          <Route index element={<ZeroUser />} />
+          <>
+            <Route index element={<ZeroUser />} />
+            <Route path="*" element={<Navigate to="/robot" />} />
+          </>
         ) : (
           <Route element={<LayoutRoot />}>
-            <Route index element={newUser ? <ZeroUser /> : <FeedsTab />} />
+            <Route index element={<FeedsTab />} />
             <Route path="soul" element={<Soul />} />
+
+            {/* energy */}
+            <Route
+              path="/grid"
+              element={<Navigate to={routes.robot.routes.energy.path} />}
+            />
             {['energy', 'energy/:pageId'].map((path) => (
               <Route key={path} path={path} element={<RoutedEnergy />} />
             ))}
