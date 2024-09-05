@@ -5,6 +5,7 @@ import {
   Order_By as OrderBy,
   useCyberlinksByParticleQuery,
 } from 'src/generated/graphql';
+import Loader2 from 'src/components/ui/Loader2';
 import { LIMIT_TREED } from '../utils';
 import TreedItem from './TreedItem/TreedItem';
 import styles from './TreedView.modile.scss';
@@ -55,7 +56,7 @@ function TreedView({ address }: { address?: string }) {
       dataLength={data?.cyberlinks.length || 0}
       next={fetchMoreData}
       hasMore={hasMore}
-      loader={<h4>Loading</h4>}
+      loader={<Loader2 />}
       className={styles.wrapper}
     >
       {data?.cyberlinks.map((item) => {

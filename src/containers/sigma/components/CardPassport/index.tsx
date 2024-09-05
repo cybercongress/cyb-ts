@@ -1,9 +1,9 @@
 import { useMemo, useEffect, useContext } from 'react';
-import { Dots, ContainerGradientText } from '../../../../components';
+import { Citizenship } from 'src/types/citizenship';
+import { Dots } from '../../../../components';
 import { useGetBalanceBostrom } from '../../hooks';
 import { SigmaContext } from '../../SigmaContext';
 import { TitleCard, RowBalancesDetails } from '../cardUi';
-import { Citizenship } from 'src/types/citizenship';
 import styles from './CardPassport.module.scss';
 
 type Props = {
@@ -24,7 +24,9 @@ function CardPassport({
     useGetBalanceBostrom(address);
 
   useEffect(() => {
-    if (!address) return;
+    if (!address) {
+      return;
+    }
 
     updateDataCap({ [address]: { ...totalAmountInLiquid } });
   }, [address, totalAmountInLiquid]);

@@ -9,14 +9,15 @@ import { toAscii, toBase64 } from '@cosmjs/encoding';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Citizenship } from 'src/types/citizenship';
-import { RootState } from 'src/redux/store';
 import { useBackend } from 'src/contexts/backend/backend';
 import { PATTERN_CYBER } from 'src/constants/patterns';
 import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import BigNumber from 'bignumber.js';
 import { Nullable } from 'src/types';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import { CHAIN_ID } from 'src/constants/config';
 import {
   Dots,
   ButtonIcon,
@@ -47,8 +48,6 @@ import {
 } from '../../../features/passport/passports.redux';
 import { ClaimMsg } from './type';
 import { TxHash } from '../hook/usePingTxs';
-import useCurrentAddress from 'src/hooks/useCurrentAddress';
-import { CHAIN_ID } from 'src/constants/config';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 

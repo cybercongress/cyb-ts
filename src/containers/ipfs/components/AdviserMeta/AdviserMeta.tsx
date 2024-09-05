@@ -1,4 +1,4 @@
-import { Rank, Account } from 'src/components';
+import { Account } from 'src/components';
 import { timeSince, formatCurrency } from 'src/utils/utils';
 import useRank from 'src/features/cyberlinks/rank/useRank';
 import { Link } from 'react-router-dom';
@@ -27,7 +27,14 @@ function AdviserMeta({ cid, type, size }: Props) {
             <span className={styles.number}>
               {rank.toLocaleString().replaceAll(',', ' ')}
             </span>
-            <Rank hash={cid} rank={rank} />
+            <Link
+              to="https://docs.cyb.ai/#/page/cyberank"
+              replace
+              target="_blank"
+            >
+              🦠
+            </Link>
+            {/* <Rank hash={cid} rank={rank} /> */}
           </div>
         )}
       </div>
