@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { CHAIN_ID } from 'src/constants/config';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import usePassportContract from 'src/features/passport/usePassportContract';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 import { routes } from 'src/routes';
 import { Citizenship } from 'src/types/citizenship';
-import { Networks } from 'src/types/networks';
+import { isPussyChain } from 'src/utils/chains/pussy';
 import { fromBech32 } from 'src/utils/utils';
 
 const RobotContext = React.createContext<{
@@ -113,7 +112,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   }
   isOwner = isOwner as boolean;
 
-  let query = {};
+  let query;
   if (address) {
     query = {
       active_passport: {
@@ -130,11 +129,15 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
 
   const passportContract = usePassportContract<Citizenship>({
     query,
-    skip: isOwner,
+    skip: isOwner || !query,
   });
 
   const currentPassport = isOwner ? currentUserPassport : passportContract;
   let currentRobotAddress = address || currentPassport.data?.owner || null;
+
+  if (isPussyChain && currentRobotAddress) {
+    currentRobotAddress = fromBech32(currentRobotAddress, 'pussy');
+  }
 
   if (
     robotUrl &&
@@ -154,10 +157,6 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (CHAIN_ID === Networks.SPACE_PUSSY && currentRobotAddress) {
-    currentRobotAddress = fromBech32(currentRobotAddress, 'pussy');
-  }
-
   const addRefetch = useCallback(
     (func: () => void) => {
       setRefetch((items) => [...items, func]);
@@ -169,8 +168,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
     refetchFuncs.forEach((func) => func());
   }, [refetchFuncs]);
 
-  const isLoading =
-    currentPassport.loading || currentPassport.data === undefined;
+  const isLoading = currentPassport.loading;
 
   const contextValue = useMemo(
     () => ({

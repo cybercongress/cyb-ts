@@ -5,6 +5,8 @@ import RoutedEnergy from 'src/containers/energy';
 import TableDiscipline from 'src/containers/gol/table';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { routes } from 'src/routes';
+import IpfsSettings from 'src/features/ipfs/ipfsSettings';
+import Audio from 'src/pages/Settings/Audio/Audio';
 import Layout from './Layout/Layout';
 import RobotContextProvider, { useRobotContext } from './robot.context';
 import Brain from './Brain/Brain';
@@ -17,9 +19,7 @@ import Heroes from './_refactor/account/tabs/heroes';
 import Karma from './Karma/Karma';
 import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
-import IpfsSettings from 'src/features/ipfs/ipfsSettings';
 import Keys from '../Keys/Keys';
-import Audio from 'src/pages/Settings/Audio/Audio';
 import Hub from '../Hub/hub';
 
 function RobotRoutes() {
@@ -28,7 +28,7 @@ function RobotRoutes() {
   const newUser = !isLoading && !address;
 
   useAdviserTexts({
-    defaultText: `${!newUser && 'my'} robot`,
+    defaultText: `${!newUser ? 'my' : 'welcome to'} robot`,
   });
 
   return (
