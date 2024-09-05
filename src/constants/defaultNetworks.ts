@@ -9,15 +9,9 @@ const defaultNetworks: NetworksList = {
     CHAIN_ID: Networks.BOSTROM,
     BASE_DENOM: 'boot',
     DENOM_LIQUID: 'hydrogen',
-    RPC_URL: process.env.IS_DEV
-      ? 'https://rpc.arch.bostrom.cybernode.ai:443'
-      : 'https://rpc.bostrom.cybernode.ai',
-    LCD_URL: process.env.IS_DEV
-      ? 'https://lcd.arch.bostrom.cybernode.ai:443'
-      : 'https://lcd.bostrom.cybernode.ai',
-    WEBSOCKET_URL: process.env.IS_DEV
-      ? 'wss://rpc.arch.bostrom.cybernode.ai:443/websocket'
-      : 'wss://rpc.bostrom.cybernode.ai/websocket',
+    RPC_URL: 'https://rpc.bostrom.cybernode.ai',
+    LCD_URL: 'https://lcd.bostrom.cybernode.ai',
+    WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
     INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
     INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
     BECH32_PREFIX: 'bostrom',
