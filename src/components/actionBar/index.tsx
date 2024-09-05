@@ -91,7 +91,9 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   ) {
     return (
       <ActionBarContainer>
-        {noAccount && <Button link={routes.keys.path}>Connect</Button>}
+        {noAccount && (
+          <Button link={routes.robot.routes.keys.path}>Connect</Button>
+        )}
 
         {noPassport && location.pathname !== routes.citizenship.path && (
           <Button link={routes.portal.path}>Get citizenship</Button>

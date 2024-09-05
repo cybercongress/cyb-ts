@@ -9,7 +9,10 @@ import styles from './AppName.module.scss';
 
 function AppName() {
   let { pathname } = useLocation();
-  const isRobot = pathname.includes('@') || pathname.includes('neuron/');
+  const isRobot =
+    pathname.includes('@') ||
+    pathname.includes('neuron/') ||
+    pathname.includes('robot');
   const isOracle = pathname.includes('oracle');
 
   if (isRobot) {
