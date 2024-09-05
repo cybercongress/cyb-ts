@@ -18,6 +18,7 @@ const RobotContext = React.createContext<{
   isLoading: boolean;
   addRefetch: (func: () => void) => void;
   refetchData: () => void;
+  isFetched: boolean;
 }>({
   address: null,
   passport: undefined,
@@ -26,10 +27,14 @@ const RobotContext = React.createContext<{
   nickname: undefined,
   addRefetch: () => {},
   refetchData: () => {},
+  isFetched: false,
 });
 
 export const useRobotContext = () => React.useContext(RobotContext);
 
+/**
+ * Complex logic change carefully
+ */
 function RobotContextProvider({ children }: { children: React.ReactNode }) {
   const params = useParams();
   const location = useLocation();
@@ -40,7 +45,9 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   const currentAddress = useAppSelector(selectCurrentAddress);
   const currentUserPassport = usePassportByAddress(currentAddress);
 
-  const { accounts } = useAppSelector(({ pocket }) => pocket);
+  const { accounts, isInitialized: isPocketInitialized } = useAppSelector(
+    ({ pocket }) => pocket
+  );
 
   const { username } = params;
   const nickname =
@@ -171,9 +178,10 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
 
   const isLoading = currentPassport.loading || false;
 
-  const isFetched = currentPassport.data !== undefined || robotUrl;
-
-  console.error(isLoading);
+  const isFetched =
+    currentPassport.data !== undefined ||
+    // zero user
+    (robotUrl && isPocketInitialized && !currentAddress);
 
   const contextValue = useMemo(
     () => ({

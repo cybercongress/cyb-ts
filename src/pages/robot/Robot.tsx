@@ -20,7 +20,7 @@ import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
 
 function RobotRoutes() {
-  const { isLoading, address, isFetched } = useRobotContext();
+  const { address, isFetched } = useRobotContext();
 
   const newUser = isFetched && !address;
 
@@ -41,26 +41,30 @@ function RobotRoutes() {
             <Route path="*" element={<Navigate to="/robot" />} />
           </>
         ) : (
-          <Route element={<LayoutRoot />}>
-            <Route index element={<FeedsTab />} />
-            <Route path="soul" element={<Soul />} />
+          <>
+            <Route element={<LayoutRoot />}>
+              <Route index element={<FeedsTab />} />
+              <Route path="soul" element={<Soul />} />
 
-            {/* energy */}
-            <Route
-              path="/grid"
-              element={<Navigate to={routes.robot.routes.energy.path} />}
-            />
-            {['energy', 'energy/:pageId'].map((path) => (
-              <Route key={path} path={path} element={<RoutedEnergy />} />
-            ))}
+              {/* energy */}
+              <Route
+                path="/grid"
+                element={<Navigate to={routes.robot.routes.energy.path} />}
+              />
+              {['energy', 'energy/:pageId'].map((path) => (
+                <Route key={path} path={path} element={<RoutedEnergy />} />
+              ))}
 
-            <Route path="swarm" element={<Follows />} />
-            <Route path="security" element={<Heroes />} />
-            <Route path="rights" element={<UnderConstruction />} />
-            <Route path="karma" element={<Karma />} />
-            <Route path="badges" element={<TableDiscipline />} />
+              <Route path="swarm" element={<Follows />} />
+              <Route path="security" element={<Heroes />} />
+              <Route path="rights" element={<UnderConstruction />} />
+              <Route path="karma" element={<Karma />} />
+              <Route path="badges" element={<TableDiscipline />} />
+            </Route>
+
+            {/* should be for logined user, but without layout */}
             <Route path="brain/*" element={<Brain />} />
-          </Route>
+          </>
         )}
 
         <Route path="sigma" element={<Sigma />} />

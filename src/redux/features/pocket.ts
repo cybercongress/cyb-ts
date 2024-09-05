@@ -17,12 +17,14 @@ type SliceState = {
   };
   defaultAccount: DefaultAccount;
   accounts: null | Accounts;
+  isInitialized: boolean;
 };
 
 const initialState: SliceState = {
   actionBar: {
     tweet: POCKET.STAGE_TWEET_ACTION_BAR.TWEET, // stage for tweet ActionBar: 'addAvatar' 'follow' 'tweet'
   },
+  isInitialized: false,
   defaultAccount: {
     name: null,
     account: null,
@@ -75,6 +77,9 @@ const slice = createSlice({
       state.accounts = payload;
 
       saveToLocalStorage(state);
+    },
+    setInitialized: (state) => {
+      state.isInitialized = true;
     },
     setStageTweetActionBar: (state, { payload }: PayloadAction<string>) => {
       state.actionBar.tweet = payload;
@@ -191,6 +196,8 @@ export const initPocket = () => (dispatch: Dispatch) => {
     });
 
   accountsTemp && dispatch(setAccounts(accountsTemp));
+
+  dispatch(slice.actions.setInitialized());
 };
 
 const defaultNameAccount = () => {
