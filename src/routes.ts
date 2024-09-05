@@ -51,6 +51,9 @@ export const routes = {
       soul: {
         path: '/robot/soul',
       },
+      sigma: {
+        path: '/robot/sigma',
+      },
     },
   },
   robotPassport: {

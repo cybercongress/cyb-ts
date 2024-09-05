@@ -1,14 +1,13 @@
 import HydrogenBalance from 'src/components/HydrogenBalance/HydrogenBalance';
 import SideButtonLink from 'src/components/sideButtonLink/SideButtonLink';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { routes } from 'src/routes';
 
-function SideHydrogenBtn({ address }: { address?: string }) {
+function SideHydrogenBtn() {
+  const currentAddress = useCurrentAddress();
   return (
-    <SideButtonLink
-      to={`${routes.neuron.getLink(address || '')}/sigma`}
-      buttonType="hydrogen"
-    >
-      <HydrogenBalance address={address} />
+    <SideButtonLink to={routes.robot.routes.sigma.path} buttonType="hydrogen">
+      <HydrogenBalance address={currentAddress} />
     </SideButtonLink>
   );
 }

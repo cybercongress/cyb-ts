@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Header from 'src/containers/application/Header/Header';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useAppDispatch } from 'src/redux/hooks';
 import { routes } from 'src/routes';
 import { useDevice } from 'src/contexts/device';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
@@ -21,9 +21,6 @@ import styles from './Main.module.scss';
 import SideHydrogenBtn from './ui/SideHydrogenBtn/SideHydrogenBtn';
 
 function MainLayout({ children }: { children: JSX.Element }) {
-  const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
-  const addressBech32 = defaultAccount.account?.cyber.bech32;
-
   const currentAddress = useCurrentAddress();
   const { viewportWidth } = useDevice();
   const ref = useRef<HTMLDivElement>(null);
@@ -62,8 +59,12 @@ function MainLayout({ children }: { children: JSX.Element }) {
     <div className={styles.wrapper} ref={ref}>
       <Header />
 
-      {CHAIN_ID === Networks.BOSTROM && !isMobile && <SenseButton />}
-      {!isMobile && <SideHydrogenBtn address={addressBech32} />}
+      {currentAddress && !isMobile && (
+        <>
+          {CHAIN_ID === Networks.BOSTROM && !isMobile && <SenseButton />}
+          <SideHydrogenBtn />
+        </>
+      )}
 
       {children}
       <footer>
