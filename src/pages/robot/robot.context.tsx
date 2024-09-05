@@ -169,8 +169,11 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
     refetchFuncs.forEach((func) => func());
   }, [refetchFuncs]);
 
-  const isLoading =
-    currentPassport.loading || currentPassport.data === undefined;
+  const isLoading = currentPassport.loading || false;
+
+  const isFetched = currentPassport.data !== undefined || robotUrl;
+
+  console.error(isLoading);
 
   const contextValue = useMemo(
     () => ({
@@ -181,6 +184,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
       nickname: nickname || currentPassport.data?.extension.nickname,
       refetchData,
       isLoading,
+      isFetched,
     }),
     [
       currentPassport.data,
@@ -188,6 +192,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
       addRefetch,
       refetchData,
       isOwner,
+      isFetched,
       isLoading,
       currentRobotAddress,
     ]

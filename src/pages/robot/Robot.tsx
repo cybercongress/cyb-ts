@@ -5,6 +5,7 @@ import RoutedEnergy from 'src/containers/energy';
 import TableDiscipline from 'src/containers/gol/table';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { routes } from 'src/routes';
+import Loader2 from 'src/components/ui/Loader2';
 import Layout from './Layout/Layout';
 import RobotContextProvider, { useRobotContext } from './robot.context';
 import Brain from './Brain/Brain';
@@ -19,13 +20,17 @@ import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
 
 function RobotRoutes() {
-  const { isLoading, address } = useRobotContext();
+  const { isLoading, address, isFetched } = useRobotContext();
 
-  const newUser = !isLoading && !address;
+  const newUser = isFetched && !address;
 
   useAdviserTexts({
-    defaultText: `${!newUser && 'my'} robot`,
+    defaultText: `${!newUser ? 'my' : 'welcome to'} robot`,
   });
+
+  if (!isFetched) {
+    return <Loader2 />;
+  }
 
   return (
     <Routes>
@@ -54,6 +59,7 @@ function RobotRoutes() {
             <Route path="rights" element={<UnderConstruction />} />
             <Route path="karma" element={<Karma />} />
             <Route path="badges" element={<TableDiscipline />} />
+            <Route path="brain/*" element={<Brain />} />
           </Route>
         )}
 
@@ -63,8 +69,6 @@ function RobotRoutes() {
         {['sense', 'sense/:senseId'].map((path) => (
           <Route key={path} path={path} element={<SensePage />} />
         ))}
-
-        <Route path="brain/*" element={<Brain />} />
 
         <Route path="*" element={<p>Page should not exist</p>} />
       </Route>
