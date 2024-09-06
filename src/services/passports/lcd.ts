@@ -6,9 +6,8 @@ import axios from 'axios';
 import defaultNetworks from 'src/constants/defaultNetworks';
 
 // need this request to query passports with any queryClient chain
+// eslint-disable-next-line import/prefer-default-export
 export async function getPassport(query: PassportContractQuery) {
-  console.log(query);
-
   const response = await axios.get(
     `${
       defaultNetworks.bostrom.LCD_URL

@@ -425,19 +425,6 @@ export const getParamNetwork = async (address, node) => {
   }
 };
 
-export const getInlfation = async () => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/minting/inflation`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
 const getLink = async (
   cid: string,
   type: LinksType = LinksTypeFilter.from,

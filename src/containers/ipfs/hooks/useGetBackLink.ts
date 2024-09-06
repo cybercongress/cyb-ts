@@ -8,15 +8,6 @@ type BackLink = {
   rank: string;
 };
 
-type PaginationData = {
-  total: number;
-};
-
-type Res = {
-  result: BackLink[];
-  pagination: PaginationData;
-};
-
 export const reduceParticleArr = (data: BackLink[]) => {
   return data.reduce<CyberLink[]>(
     (acc, item) => [
@@ -44,11 +35,7 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
     ['useGetBackLink', cid],
     async ({ pageParam = 0 }: { pageParam?: number }) => {
       try {
-        const response = (await queryClient?.backlinks(
-          cid,
-          pageParam,
-          LIMIT
-        )) as Res;
+        const response = await queryClient!.backlinks(cid, pageParam, LIMIT);
 
         return { data: response, page: pageParam };
       } catch (error) {
@@ -69,12 +56,9 @@ function useGetBackLink(cid: string, { skip = false } = {}) {
     {
       enabled: Boolean(queryClient && cid) && !skip,
       getNextPageParam: (lastPage) => {
-        const {
-          page,
-          data: {
-            pagination: { total },
-          },
-        } = lastPage;
+        const { page, data } = lastPage;
+
+        const total = data.pagination?.total || 0;
 
         if (!total || (page + 1) * LIMIT > total) {
           return undefined;
