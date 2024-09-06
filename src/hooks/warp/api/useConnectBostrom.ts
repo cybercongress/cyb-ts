@@ -6,9 +6,7 @@ import { Networks } from 'src/types/networks';
 function useConnectBostrom() {
   const { data: queryClient } = useQuery({
     queryKey: ['cyberClient', 'connect', Networks.BOSTROM],
-    queryFn: async () => {
-      return CyberClient.connect(RPC_URL);
-    },
+    queryFn: () => CyberClient.connect(RPC_URL),
     enabled: CHAIN_ID !== Networks.BOSTROM,
   });
 

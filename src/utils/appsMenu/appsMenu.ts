@@ -1,13 +1,14 @@
-import nebulaIcon from 'images/temple/nebula.png';
-import teleport from 'images/temple/teleport.png';
-import hfr from 'images/temple/hfr.png';
-import robot from 'images/temple/robot.png';
-import shpere from 'images/temple/shpere.png';
-import senate from 'images/temple/senate.png';
+import nebulaIcon from 'src/image/new_icons/nebula.svg';
+import teleport from 'src/image/new_icons/teleport.svg';
+import hfr from 'src/image/new_icons/hfr.svg';
+import robot from 'src/image/new_icons/robot.svg';
+import shpere from 'src/image/new_icons/sphere.svg';
+import senate from 'src/image/new_icons/senate.svg';
+
 import portal from 'images/space-pussy.svg';
-import oracle from 'images/temple/oracle.png';
-import warp from 'images/temple/warp.png';
-import congress from 'images/congress.png';
+import oracle from 'src/image/new_icons/oracle.svg';
+import warp from 'src/image/new_icons/warp.svg';
+import congress from 'src/image/new_icons/congress.svg';
 import { routes } from 'src/routes';
 import { Networks } from 'src/types/networks';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
@@ -68,7 +69,7 @@ const getMenuItems = () => {
       name: 'Docs',
       to: 'https://docs.cyb.ai',
       subItems: [],
-      icon: require('images/temple/autonomous-semantic-programs.png'),
+      icon: require('src/image/new_icons/docs.svg'),
     },
     { name: 'Nebula', to: '/nebula', subItems: [], icon: nebulaIcon },
     {
@@ -144,7 +145,7 @@ const getMenuItems = () => {
     CHAIN_ID === Networks.BOSTROM
       ? {
           name: 'Cyberver 🟣',
-          icon: require('./images/cyberver.png'),
+          icon: require('src/image/new_icons/cyberver.svg'),
           to: 'https://spacepussy.ai/cyberver',
           subItems: [],
         }
@@ -236,7 +237,7 @@ const getMenuItems = () => {
     // },
   ];
 
-  if (CHAIN_ID === Networks.BOSTROM || CHAIN_ID === Networks.SPACE_PUSSY) {
+  if (CHAIN_ID === Networks.BOSTROM) {
     listItemMenu.splice(2, 0, {
       name: 'Portal',
       icon: portal,

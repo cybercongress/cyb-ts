@@ -1,22 +1,20 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useMemo } from 'react';
-import { SubnetInfo } from '../../types';
+import { useMemo } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Delegator } from 'src/features/cybernet/types';
-import { Account, AmountDenom } from 'src/components';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
+import { Account } from 'src/components';
+
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import { tableIDs } from 'src/components/Table/tableIDs';
 import useCybernetTexts from '../../../useCybernetTexts';
 import { cybernetRoutes } from '../../../routes';
 import { useCybernet } from '../../../cybernet.context';
 import { useDelegates } from '../../../hooks/useDelegate';
 import useCurrentAccountStake from '../../../hooks/useCurrentAccountStake';
 import IconsNumber from '../../../../../../components/IconsNumber/IconsNumber';
-import SubnetPreview, {
-  SubnetPreviewGroup,
-} from '../../../components/SubnetPreview/SubnetPreview';
-import { tableIDs } from 'src/components/Table/tableIDs';
+import { SubnetPreviewGroup } from '../../../components/SubnetPreview/SubnetPreview';
 
 type Props = {};
 

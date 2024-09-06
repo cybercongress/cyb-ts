@@ -1,21 +1,20 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
-import { Link } from 'react-router-dom';
-import { SubnetInfo, SubnetNeuron } from 'src/features/cybernet/types';
-import { cybernetRoutes } from '../../../../../routes';
-import styles from './WeightsTable.module.scss';
+import { SubnetNeuron } from 'src/features/cybernet/types';
 import { Account } from 'src/components';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
-import useQueryCybernetContract from 'src/features/cybernet/ui/useQueryCybernetContract.refactor';
-import { useSubnet } from '../../../subnet.context';
+
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { useMemo } from 'react';
 import {
   useCurrentContract,
   useCybernet,
 } from 'src/features/cybernet/ui/cybernet.context';
-import colorStyles from './temp.module.scss';
 import SubnetPreview from 'src/features/cybernet/ui/components/SubnetPreview/SubnetPreview';
+import { useSubnet } from '../../../subnet.context';
+import colorStyles from './temp.module.scss';
+import styles from './WeightsTable.module.scss';
+import { cybernetRoutes } from '../../../../../routes';
 
 type Props = {};
 
@@ -61,7 +60,7 @@ function WeightsTable({}: Props) {
         .filter((subnet) => subnet !== 0)
     : neurons.map((neuron) => neuron.uid);
 
-  const data = grades.all.data;
+  const { data } = grades.all;
 
   if (!columns?.length) {
     return null;
@@ -111,7 +110,7 @@ function WeightsTable({}: Props) {
                     return <SubnetPreview subnetUID={uid} withName />;
                   }
 
-                  const hotkey = neurons[uid].hotkey;
+                  const { hotkey } = neurons[uid];
 
                   return (
                     <div className={styles.headerCell}>
