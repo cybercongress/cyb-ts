@@ -80,11 +80,9 @@ function Mint() {
 
   const maxMintTime = getMaxTimeMint(resourcesParams, selected, height);
   const resourceToken = getAmountResource(resourcesParams, selected, height, {
-    valueH: 10010840856,
+    valueH: value,
     valueDays,
   });
-
-  console.log('resourceToken', resourceToken);
 
   useEffect(() => {
     const availableSlots =

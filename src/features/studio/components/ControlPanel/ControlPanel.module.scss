@@ -2,10 +2,24 @@
   display: flex;
   justify-content: space-between;
   align-content: center;
-  margin: 2px 0 -5px;
+  margin: 0px 0 -5px;
   // padding: 17px 12px 20px;
   color: #fff;
   width: 100%;
+  position: relative;
+
+  .linkContainer {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0px);
+  }
+
+  .metaContainer {
+    display: grid;
+    grid-template-columns: 1fr 70px;
+    gap: 10px;
+    justify-items: end;
+  }
 }
 
 .size {

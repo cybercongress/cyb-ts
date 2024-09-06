@@ -1,5 +1,6 @@
 import cx from 'classnames';
 import arrowImg from 'images/arrow-left-img.svg';
+import linkImg from 'components/search/Spark/Meta/Links/link.svg';
 import styles from './Keywords.module.scss';
 import KeywordButton from '../KeywordButton/KeywordButton';
 import { KeywordsItem, useStudioContext } from '../../studio.context';
@@ -28,9 +29,12 @@ function Keywords({ items, type, onClickAddBtn }: Props) {
   return (
     <div className={styles.wrapper}>
       <div
-        className={cx(styles.tagContainer, { [styles.reverse]: type === 'to' })}
+        className={cx(styles.tagContainer, {
+          [styles.reverse]: type === 'from',
+        })}
       >
-        # <img src={arrowImg} alt="arrow" />{' '}
+        <img src={linkImg} alt="linkImg" className={styles.linkImg} />{' '}
+        <img src={arrowImg} alt="arrow" className={styles.arrow} />{' '}
       </div>
       <div className={styles.containerPill}>
         {renderItem}

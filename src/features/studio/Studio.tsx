@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import { Display, DisplayTitle, MainContainer } from 'src/components';
+import { Display, MainContainer } from 'src/components';
 import styles from './Studio.module.scss';
 import Keywords from './components/Keywords/Keywords';
 import MilkdownEditor, {
@@ -29,31 +29,28 @@ function Studio() {
   return (
     <>
       <MainContainer>
-        <Display
-          color="purple"
-          noPadding
-          title={<DisplayTitle title={<ControlPanel />} />}
-        >
-          <div className={styles.wrapper}>
-            <div className={styles.containerEditor}>
-              <Keywords
-                type="from"
-                items={keywordsFrom}
-                onClickAddBtn={() => setStateActionBar('keywords-from')}
-              />
+        <div className={styles.wrapper}>
+          <ControlPanel />
+          <div className={styles.containerEditor}>
+            <Keywords
+              type="from"
+              items={keywordsFrom}
+              onClickAddBtn={() => setStateActionBar('keywords-from')}
+            />
+            <Display color="blue" noPadding>
               <MilkdownEditor
                 milkdownRef={milkdownRef}
                 content={loadedMarkdown}
                 onChange={onMilkdownChange}
               />
-              <Keywords
-                type="to"
-                items={keywordsTo}
-                onClickAddBtn={() => setStateActionBar('keywords-to')}
-              />
-            </div>
+            </Display>
+            <Keywords
+              type="to"
+              items={keywordsTo}
+              onClickAddBtn={() => setStateActionBar('keywords-to')}
+            />
           </div>
-        </Display>
+        </div>
       </MainContainer>
       <ActionBarContainer />
     </>

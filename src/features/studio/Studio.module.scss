@@ -6,9 +6,10 @@ $controlPanelHeight: 60px;
   display: flex;
   flex-direction: column;
   height: inherit;
-  min-height: calc(
-    100vh - $reservedTopHeight - $actionBarHeight - $controlPanelHeight
-  );
+  min-height: 200px;
+  // min-height: calc(
+  //   100vh - $reservedTopHeight - $actionBarHeight - $controlPanelHeight
+  // );
 
   > :first-child {
     > div {
