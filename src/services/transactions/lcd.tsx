@@ -1,4 +1,7 @@
-import { GetTxsEventRequest } from '@cybercongress/cyber-ts/cosmos/tx/v1beta1/service';
+import {
+  GetTxsEventRequest,
+  GetTxsEventResponse,
+} from '@cybercongress/cyber-ts/cosmos/tx/v1beta1/service';
 import axios from 'axios';
 import { LCD_URL } from 'src/constants/config';
 
@@ -16,7 +19,7 @@ export async function getTransactions({
   config,
 }: PropsTx) {
   const { offset, limit } = pagination;
-  return axios.get(`${LCD_URL}/cosmos/tx/v1beta1/txs`, {
+  return axios.get<GetTxsEventResponse>(`${LCD_URL}/cosmos/tx/v1beta1/txs`, {
     params: {
       'pagination.offset': offset,
       'pagination.limit': limit,

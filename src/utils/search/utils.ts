@@ -503,7 +503,7 @@ export const getSendBySenderRecipient = async (
         { key: 'transfer.recipient', value: recipient },
       ],
       pagination: { limit, offset },
-      orderBy: Order.DESC,
+      orderBy: OrderBy.ORDER_BY_DESC,
     });
 
     return response.data;

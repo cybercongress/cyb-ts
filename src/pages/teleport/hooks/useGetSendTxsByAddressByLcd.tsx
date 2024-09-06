@@ -35,7 +35,7 @@ function useGetSendBySenderRecipient(
       const response = await getSendBySenderRecipient(address, offset, limit);
 
       if (callBack && offset === 0 && response) {
-        callBack(response.pagination.total);
+        callBack(response.pagination?.total);
       }
 
       return {
@@ -50,12 +50,9 @@ function useGetSendBySenderRecipient(
         Boolean(addressRecipient) &&
         Boolean(addressRecipient?.match(PATTERN_CYBER)),
       getNextPageParam: (lastPage) => {
-        const {
-          page,
-          data: {
-            pagination: { total },
-          },
-        } = lastPage;
+        const { page, data } = lastPage;
+
+        const total = data?.pagination?.total || 0;
 
         if (!total || (page + 1) * limit >= total) {
           return undefined;
