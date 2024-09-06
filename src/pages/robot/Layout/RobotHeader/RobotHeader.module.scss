@@ -22,49 +22,33 @@
   justify-items: center;
   padding: 8px;
 
-  .level {
+  .level,
+  .addressName {
     display: grid;
     justify-items: center;
     gap: 15px;
-
-    &Value {
-      font-size: 20px;
-    }
-
-    &Time {
-      font-size: 16px;
-    }
   }
 
-  .addressName {
-    display: grid;
-    gap: 15px;
-
-    .name {
-      color: #1fcbff;
-      font-size: 16px;
-      font-weight: 400;
-      padding: unset;
-    }
+  .name {
+    color: #1fcbff;
+    font-size: 16px;
+    font-weight: 400;
   }
 
-
-  >img {
+  img {
     height: 75px;
     width: 75px;
   }
 
-  >div {
+  > div {
     text-align: center;
   }
-
 }
 
 .inner {
   display: grid;
-  align-items: center;
   grid-template-columns: repeat(3, 1fr);
-  column-gap: 10px;
+  gap: 10px;
 
   .name {
     color: #1fcbff;
@@ -86,12 +70,8 @@
     }
   }
 
-  >img {
+  img {
     height: 112px;
     width: 112px;
-  }
-
-  >div {
-    text-align: center;
   }
 }
