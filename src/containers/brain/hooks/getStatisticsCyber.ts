@@ -97,7 +97,10 @@ function useGetStatisticsCyber() {
 
   const inflation = useMemo(() => {
     if (inflationData) {
-      return covertUint8ArrayToString(inflationData.inflation);
+      return (
+        // add 10 ** 18 to variable
+        BigNumber(covertUint8ArrayToString(inflationData.inflation)) / 10 ** 18
+      );
     }
     return;
   }, [inflationData]);
