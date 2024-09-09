@@ -14,7 +14,6 @@ import {
   ContainerGradientText,
   IconStatus,
   Item,
-  MainContainer,
 } from '../../components';
 
 import {
@@ -179,7 +178,7 @@ function ProposalsDetail() {
 
   return (
     <>
-      <MainContainer>
+      <>
         <Pane display="flex" alignItems="center">
           <Text fontSize="25px" color="#fff">
             {proposals.title && ` #${proposalId} ${proposals.title}`}
@@ -282,7 +281,7 @@ function ProposalsDetail() {
           totalDeposit={totalDeposit}
           updateFunc={updateFunc}
         />
-      </MainContainer>
+      </>
       {addressActive &&
       isOwner &&
       location.pathname === `/senate/${proposalId}/voters` ? (

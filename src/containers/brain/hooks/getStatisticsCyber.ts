@@ -55,7 +55,6 @@ function useGetStatisticsCyber() {
       if (queryClient) {
         const totalCyb = {};
         let staked = 0;
-        let inlfation = 0;
 
         const responseGraphStats = await queryClient.graphStats();
         const { cyberlinks, particles } = responseGraphStats;

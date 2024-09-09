@@ -60,6 +60,7 @@ import Settings from './pages/Settings/Settings';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
 import { Networks } from './types/networks';
+import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -148,11 +149,7 @@ function AppRouter() {
           />
           <Route path="/search/:query" element={<ToOracleAsk />} />
 
-          <Route path="/senate" element={<Governance />} />
-          <Route
-            path={routes.senateProposal.path}
-            element={<ProposalsDetail />}
-          />
+          <Route path="/senate/*" element={<GovernanceRoutes />} />
 
           {/* old links - start */}
           <Route path="/halloffame" element={<Navigate to="/sphere" />} />
