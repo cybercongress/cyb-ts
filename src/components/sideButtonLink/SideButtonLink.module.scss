@@ -1,10 +1,11 @@
 .main {
   display: flex;
-  position: fixed;
+  justify-content: center;
+  align-items: center;
+
   z-index: 3;
-  top: 45%;
   transform: translateY(-50%);
-  padding: 40px 10px;
+  padding: 30px 10px;
   backdrop-filter: blur(15px);
   border-radius: 50px;
 
@@ -39,13 +40,11 @@
   );
 
   &:hover {
-    padding-right: 30px;
+    padding-right: 25px;
   }
 }
 
 .hydrogen {
-  right: 0;
-  align-items: center;
   background: linear-gradient(
     to left,
     black 90%,
@@ -53,7 +52,7 @@
   );
 
   &:hover {
-    padding-left: 30px;
+    padding-left: 25px;
   }
 }
 

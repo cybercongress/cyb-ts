@@ -60,10 +60,10 @@ function MainLayout({ children }: { children: JSX.Element }) {
       <Header />
 
       {currentAddress && !isMobile && (
-        <>
+        <div className={stylesOracle.widgetWrapper}>
           {CHAIN_ID === Networks.BOSTROM && !isMobile && <SenseButton />}
           <SideHydrogenBtn />
-        </>
+        </div>
       )}
 
       {children}
