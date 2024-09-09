@@ -59,6 +59,7 @@ import Cybernet from './features/cybernet/ui/Cybernet';
 import Settings from './pages/Settings/Settings';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
+import { Networks } from './types/networks';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -220,7 +221,10 @@ function AppRouter() {
 
           <Route path="/nebula" element={<Nebula />} />
 
-          <Route path="/cyberver/*" element={<Cybernet />} />
+          {/* seems shouldn't be build */}
+          {process.env.CHAIN_ID === Networks.SPACE_PUSSY && (
+            <Route path="/cyberver/*" element={<Cybernet />} />
+          )}
 
           <Route path="/keys" element={<Keys />} />
 
