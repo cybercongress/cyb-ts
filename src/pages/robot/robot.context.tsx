@@ -34,6 +34,8 @@ export const useRobotContext = () => React.useContext(RobotContext);
 
 /**
  * Complex logic change carefully
+ *
+ * TODO: refactor to use 1 passport hook
  */
 function RobotContextProvider({ children }: { children: React.ReactNode }) {
   const params = useParams();
@@ -180,6 +182,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
 
   const isFetched =
     currentPassport.data !== undefined ||
+    currentPassport.error ||
     // zero user
     (robotUrl && isPocketInitialized && !currentAddress);
 

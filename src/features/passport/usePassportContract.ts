@@ -11,7 +11,7 @@ type Props = {
   skip?: boolean;
 };
 
-// TODO: use useQuery lib
+// TODO: use  passport redux hook, or useQuery, think
 function usePassportContract<DataType>({ query, skip }: Props) {
   const [data, setData] = useState<DataType>();
   const [loading, setLoading] = useState(false);
@@ -35,6 +35,7 @@ function usePassportContract<DataType>({ query, skip }: Props) {
       setData(response);
     } catch (error) {
       console.error(error);
+      setData(null);
       setError(error);
     }
     setLoading(false);
