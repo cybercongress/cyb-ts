@@ -6,11 +6,13 @@ import { useRobotContext } from '../robot.context';
 import TreedView from './ui/TreedView';
 import styles from './Brain.module.scss';
 import GraphView from './ui/GraphView';
+import GraphViewVR from './ui/GraphViewVR';
 import { LIMIT_GRAPH } from './utils';
 
 enum TabsKey {
   list = 'list',
   graph = 'graph',
+  vr = 'vr',
 }
 
 function Brain() {
@@ -44,6 +46,10 @@ function Brain() {
               to: './graph',
             },
             {
+              key: TabsKey.vr,
+              to: './vr',
+            },
+            {
               key: TabsKey.list,
               to: './list',
             },
@@ -58,6 +64,13 @@ function Brain() {
             key={path}
             path={path}
             element={<GraphView address={address} />}
+          />
+        ))}
+        {['/', 'vr'].map((path) => (
+          <Route
+            key={path}
+            path={path}
+            element={<GraphViewVR address={address} />}
           />
         ))}
 
