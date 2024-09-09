@@ -84,7 +84,7 @@ function Txs() {
             <TextTable>tx</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell flex={1.3} textAlign="center">
-            <TextTable>timestamp, UTC</TextTable>
+            <TextTable>block height</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>type</TextTable>
