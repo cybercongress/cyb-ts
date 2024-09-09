@@ -37,10 +37,10 @@ function CreateProposal() {
       <Display>
         <p>only text proposals are supported at the moment</p>
 
+        <br />
+
         <p>
-          if need different, <Link to={routes.social.path}>contact devs</Link>
-        </p>
-        <p>
+          if need different, <Link to={routes.social.path}>contact devs</Link>{' '}
           or{' '}
           <Link
             to="https://docs.cosmos.network/v0.50/build/modules/gov#proposal-submission"
