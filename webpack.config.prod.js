@@ -7,6 +7,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const commonConfig = require('./webpack.config.common');
 
 console.log('NODE_OPTIONS', process.env.NODE_OPTIONS);
+console.log('NODE_OPTIONS', process.env);
 console.log(process.NODE_OPTIONS);
 
 module.exports = merge(commonConfig, {
