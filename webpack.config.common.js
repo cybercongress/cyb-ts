@@ -65,6 +65,11 @@ const config = {
     new WorkerUrlPlugin(),
     new NodePolyfillPlugin(),
     new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
+      if (resource.request.includes('@cybercongress/cyber-ts')) {
+        resource.request = null;
+        return resource;
+      }
+
       const mod = resource.request.replace(/^node:/, '');
       switch (mod) {
         case 'buffer':

@@ -52,14 +52,14 @@ module.exports = merge(commonConfig, {
   },
   plugins: [
     // disabled to speed up builds
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      openAnalyzer: false,
-    }),
-    new WorkboxPlugin.InjectManifest({
-      swSrc: 'src/services/service-worker/service-worker.ts',
-      swDest: 'service-worker.js',
-      maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
-    }),
+    // new BundleAnalyzerPlugin({
+    //   analyzerMode: 'static',
+    //   openAnalyzer: false,
+    // }),
+    // new WorkboxPlugin.InjectManifest({
+    //   swSrc: 'src/services/service-worker/service-worker.ts',
+    //   swDest: 'service-worker.js',
+    //   maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+    // }),
   ],
 });
