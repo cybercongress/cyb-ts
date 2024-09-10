@@ -7,7 +7,8 @@ const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
   mode: 'production',
-  devtool: 'source-map',
+  // devtool: 'source-map',
+  devtool: false,
   output: {
     filename: '[name].[contenthash:8].js',
     chunkFilename: '[name].[contenthash:8].chunk.js',
