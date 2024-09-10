@@ -3,7 +3,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 // const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
-// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
@@ -48,10 +48,10 @@ module.exports = merge(commonConfig, {
   },
   plugins: [
     // disabled to speed up builds
-    // new BundleAnalyzerPlugin({
-    //   analyzerMode: 'static',
-    //   openAnalyzer: false,
-    // }),
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      openAnalyzer: false,
+    }),
     new WorkboxPlugin.InjectManifest({
       swSrc: 'src/services/service-worker/service-worker.ts',
       swDest: 'service-worker.js',
