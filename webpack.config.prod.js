@@ -6,6 +6,9 @@ const WorkboxPlugin = require('workbox-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const commonConfig = require('./webpack.config.common');
 
+console.log('NODE_OPTIONS', process.env.NODE_OPTIONS);
+console.log(process.NODE_OPTIONS);
+
 module.exports = merge(commonConfig, {
   mode: 'production',
   devtool: 'source-map',
