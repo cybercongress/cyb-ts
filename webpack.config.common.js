@@ -70,6 +70,11 @@ const config = {
         return resource;
       }
 
+      if (resource.request.includes('@cosmograph/react')) {
+        resource.request = null;
+        return resource;
+      }
+
       const mod = resource.request.replace(/^node:/, '');
       switch (mod) {
         case 'buffer':
