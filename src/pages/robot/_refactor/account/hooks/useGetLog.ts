@@ -23,8 +23,6 @@ function useGetLog(address: string | null) {
           orderBy: OrderBy.ORDER_BY_DESC,
         });
 
-        // debugger;
-
         return { data: response, page: pageParam };
       },
       {
