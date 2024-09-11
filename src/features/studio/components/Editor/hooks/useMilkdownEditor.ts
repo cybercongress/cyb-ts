@@ -7,11 +7,7 @@ import { clipboard } from '@milkdown/kit/plugin/clipboard';
 import { listener, listenerCtx } from '@milkdown/kit/plugin/listener';
 import { useEditor } from '@milkdown/react';
 import useDebounce from 'src/hooks/useDebounce';
-
-import {
-  placeholderConfig,
-  placeholder as placeholderPlugin,
-} from '../feature/placeholder/placeholder';
+import { useStudioContext } from 'src/features/studio/studio.context';
 
 // import {
 //   inputRuleAsk,
@@ -25,31 +21,37 @@ function useMilkdownEditor(
   onChange: (markdown: string) => void
 ) {
   const { debounce } = useDebounce();
+  const { saveMarkdown } = useStudioContext();
 
   const editorInfo = useEditor(
     (root) => {
-      return Editor.make()
-        .config((ctx) => {
-          ctx.set(rootCtx, root);
-          ctx.set(defaultValueCtx, defaultValue);
-          ctx.set(placeholderConfig.key, 'Please input here...');
-          ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
-            debounce(onChange, 100)(markdown);
-          });
-          ctx.set(historyKeymap.key, {
-            // Remap to one shortcut.
-            Undo: 'Mod-z',
-            // Remap to multiple shortcuts.
-            Redo: ['Mod-y', 'Shift-Mod-z'],
-          });
-        })
-        .config(nord)
-        .use(commonmark)
-        .use(clipboard)
-        .use(automd)
-        .use(history)
-        .use(listener)
-        .use(placeholderPlugin);
+      return (
+        Editor.make()
+          .config((ctx) => {
+            ctx.set(rootCtx, root);
+            ctx.set(defaultValueCtx, defaultValue);
+            // ctx.set(placeholderConfig.key, 'Please input here...');
+            ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
+              debounce(onChange, 100)(markdown);
+            });
+            ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
+              debounce(saveMarkdown, 10000)(markdown);
+            });
+            ctx.set(historyKeymap.key, {
+              // Remap to one shortcut.
+              Undo: 'Mod-z',
+              // Remap to multiple shortcuts.
+              Redo: ['Mod-y', 'Shift-Mod-z'],
+            });
+          })
+          .config(nord)
+          .use(commonmark)
+          .use(clipboard)
+          .use(automd)
+          .use(history)
+          // .use(placeholderPlugin)
+          .use(listener)
+      );
     },
     [onChange, defaultValue]
   );

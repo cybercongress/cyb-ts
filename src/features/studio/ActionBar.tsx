@@ -1,4 +1,4 @@
-import { ActionBar, Color, Input } from 'src/components';
+import { ActionBar } from 'src/components';
 import { useCallback, useEffect, useState } from 'react';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useBackend } from 'src/contexts/backend/backend';
@@ -6,7 +6,9 @@ import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
 import BigNumber from 'bignumber.js';
 import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
-import { useStudioContext } from './studio.context';
+import { InputMemo } from 'src/pages/teleport/components/Inputs';
+import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { KeywordsItem, useStudioContext } from './studio.context';
 import { useAdviser } from '../adviser/context';
 import { AdviserColors } from '../adviser/Adviser/Adviser';
 
@@ -18,7 +20,14 @@ function ActionBarContainer() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
 
-  const [newKeywords, setNewKeywords] = useState<string>('');
+  const [newKeywords, setNewKeywords] = useState<
+    | {
+        value: string;
+        fileName?: string;
+      }
+    | undefined
+  >();
+
   const {
     currentMarkdown,
     keywordsFrom,
@@ -38,14 +47,34 @@ function ActionBarContainer() {
     onSuccess: tx.onSuccess,
   });
 
-  const addNewKeywords = useCallback(() => {
-    addKeywords(
-      stateActionBar === 'keywords-from' ? 'from' : 'to',
-      newKeywords
-    );
+  const addNewKeywords = useCallback(async () => {
+    if (!newKeywords?.value || !ipfsApi) {
+      return;
+    }
 
-    setNewKeywords('');
-  }, [newKeywords, stateActionBar, addKeywords]);
+    const { value, fileName } = newKeywords;
+
+    const newItem: KeywordsItem[] = [];
+
+    if (value.match(PATTERN_IPFS_HASH)) {
+      newItem.push({ text: fileName || value, cid: value });
+    } else {
+      const arrValue = value.split(',');
+
+      for (let index = 0; index < arrValue.length; index++) {
+        const item = arrValue[index];
+        // eslint-disable-next-line no-await-in-loop
+        const itemCid = await addIfpsMessageOrCid(item, { ipfsApi });
+
+        newItem.push({ text: item, cid: itemCid });
+      }
+    }
+
+    addKeywords(stateActionBar === 'keywords-from' ? 'from' : 'to', newItem);
+
+    setNewKeywords(undefined);
+    setStateActionBar('link');
+  }, [newKeywords, ipfsApi, addKeywords, stateActionBar, setStateActionBar]);
 
   useEffect(() => {
     let content;
@@ -94,8 +123,6 @@ function ActionBarContainer() {
         links,
       },
     };
-
-    console.log('cyberlinkMsg', cyberlinkMsg);
 
     try {
       setLoading(true);
@@ -151,15 +178,16 @@ function ActionBarContainer() {
         button={{
           text: textBtn,
           onClick: addNewKeywords,
-          disabled: !newKeywords.length,
+          disabled: !newKeywords?.value.length,
         }}
         onClickBack={() => setStateActionBar('link')}
       >
-        <Input
-          width="62%"
-          color={Color.Pink}
-          value={newKeywords}
-          onChange={(e) => setNewKeywords(e.target.value)}
+        <InputMemo
+          title="type keywords"
+          value={newKeywords?.value || ''}
+          onChangeValue={(value, fileName) =>
+            setNewKeywords({ value, fileName })
+          }
         />
       </ActionBar>
     );

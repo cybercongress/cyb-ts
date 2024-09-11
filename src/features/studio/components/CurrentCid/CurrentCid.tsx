@@ -1,23 +1,11 @@
-import { useEffect, useState } from 'react';
-import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { trimString } from 'src/utils/utils';
 import styles from './CurrentCid.modules.scss';
+import { useStudioContext } from '../../studio.context';
 
-function CurrentCid({ text }: { text: string }) {
-  const [textCid, setTextCid] = useState<string>('');
+function CurrentCid() {
+  const { lastCid } = useStudioContext();
 
-  useEffect(() => {
-    if (!text) {
-      return;
-    }
-
-    (async () => {
-      const cid = await getIpfsHash(text);
-      setTextCid(cid);
-    })();
-  }, [text]);
-
-  return <span className={styles.cid}>{trimString(textCid, 5, 4)}</span>;
+  return <span className={styles.cid}>{trimString(lastCid || '', 5, 4)}</span>;
 }
 
 export default CurrentCid;

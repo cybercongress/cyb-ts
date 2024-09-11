@@ -11,11 +11,12 @@ export const placeholderConfig = $ctx(
 export const placeholderPlugin = $prose((ctx: Ctx) => {
   const update = (view: EditorView) => {
     const { doc } = view.state;
+    console.log('doc', doc);
     if (
-      doc.childCount === 1 &&
-      doc.firstChild?.isTextblock &&
-      doc.firstChild?.content.size === 0 &&
-      doc.firstChild?.type.name === 'paragraph'
+      doc.childCount === 1
+      // doc.firstChild?.isTextblock &&
+      // doc.firstChild?.content.size === 0 &&
+      // doc.firstChild?.type.name === 'paragraph'
     ) {
       view.dom.setAttribute('data-placeholder', ctx.get(placeholderConfig.key));
     } else {
