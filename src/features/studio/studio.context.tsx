@@ -102,6 +102,12 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      if (!markdown.length) {
+        setSearchParams(createSearchParams({}), { replace: true });
+        setLastCid(undefined);
+        return;
+      }
+
       addIfpsMessageOrCid(markdown, { ipfsApi }).then((cid) => {
         setSearchParams(createSearchParams({ cid }), { replace: true });
         setLastCid(cid);
