@@ -6,9 +6,7 @@ const WorkboxPlugin = require('workbox-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const commonConfig = require('./webpack.config.common');
 
-console.log('NODE_OPTIONS', process.env.NODE_OPTIONS);
 console.log('NODE_OPTIONS', process.env);
-console.log(process.NODE_OPTIONS);
 
 module.exports = merge(commonConfig, {
   mode: 'production',
@@ -30,10 +28,7 @@ module.exports = merge(commonConfig, {
     minimizer: [
       new CssMinimizerPlugin(),
       new TerserPlugin({
-        // Use multi-process parallel running to improve the build speed
-        // Default number of concurrent runs: os.cpus().length - 1
         parallel: true,
-        // Enable file caching
         cache: true,
         sourceMap: true,
       }),
@@ -56,10 +51,10 @@ module.exports = merge(commonConfig, {
     //   analyzerMode: 'static',
     //   openAnalyzer: false,
     // }),
-    // new WorkboxPlugin.InjectManifest({
-    //   swSrc: 'src/services/service-worker/service-worker.ts',
-    //   swDest: 'service-worker.js',
-    //   maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
-    // }),
+    new WorkboxPlugin.InjectManifest({
+      swSrc: 'src/services/service-worker/service-worker.ts',
+      swDest: 'service-worker.js',
+      maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+    }),
   ],
 });
