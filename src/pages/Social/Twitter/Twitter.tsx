@@ -5,7 +5,7 @@ function Twitter() {
   return (
     <LinkWindow to="https://twitter.com/cyber_devs">
       <img src={twitterIcon} alt="Twitter" />
-      <span>twitter</span>
+      <span>x (twitter)</span>
     </LinkWindow>
   );
 }

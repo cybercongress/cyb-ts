@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 
+/**
+ @deprecated TODO: refactor to useParticle hook
+  */
 function useParticleDetails(
   cid: string,
   { skip = false } = {},

@@ -3,7 +3,7 @@
 @mixin active-saber($position) {
   $color-saber: 'white';
   color: #fff;
-  font-size: 1.125rem;
+  font-size: 24px;
 
   &:hover {
     color: #fff;
@@ -12,9 +12,7 @@
 
   @if ($position ==left or $position ==right) {
     @include saber($color-saber, $position);
-  }
-
-  @else {
+  } @else {
     @include saber-horizontal($color-saber);
   }
 }
@@ -36,6 +34,7 @@
   width: 100%;
   font-size: 1rem;
   z-index: 0;
+  transition: all 0.3s ease;
 
   &:hover {
     color: var(--blue-light);
@@ -78,7 +77,7 @@
   @include changeWidth('before');
 
   &::before {
-    width: 100%
+    width: 100%;
   }
 
   border-right: unset;

@@ -31,7 +31,7 @@
 
     .rank {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       gap: 5px;
       color: rgb(221 255 255 / 38%);
       font-size: 14px;
@@ -39,6 +39,14 @@
       .number {
         color: white;
         line-height: 23px;
+      }
+
+      a {
+        cursor: help;
+
+        &:hover {
+          opacity: 0.8;
+        }
       }
     }
   }

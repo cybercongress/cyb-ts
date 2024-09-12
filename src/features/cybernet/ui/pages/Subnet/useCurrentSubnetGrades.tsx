@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useAdviser } from 'src/features/adviser/context';
+import { isEqual } from 'lodash';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import {
   formatGradeToWeight,
   formatWeightToGrade,
 } from '../../utils/formatWeight';
 import useExecuteCybernetContract from '../../useExecuteCybernetContract';
-import { useAdviser } from 'src/features/adviser/context';
-import { isEqual } from 'lodash';
 import { useAppData } from '../../../../../contexts/appData';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
 import useCybernetContract from '../../useQueryCybernetContract.refactor';
 import { SubnetNeuron, Weights } from '../../../types';
 

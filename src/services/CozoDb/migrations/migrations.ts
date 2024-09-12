@@ -1,10 +1,10 @@
 import { getRelevance } from 'src/utils/search/utils';
-import { DB_VERSION, type CybCozoDb } from '../cozoDb';
-import { DbEntity, SyncQueueJobType } from '../types/entities';
 import { QueuePriority } from 'src/services/QueueManager/types';
-import { SyncQueueDto } from '../types/dto';
 import { dtoListToEntity } from 'src/utils/dto';
 import { ParticleCid } from 'src/types/base';
+import { DB_VERSION, type CybCozoDb } from '../cozoDb';
+import { DbEntity, SyncQueueJobType } from '../types/entities';
+import { SyncQueueDto } from '../types/dto';
 
 export const fetchInitialEmbeddings = async (
   saveSyncQueue: (syncItems: Partial<DbEntity>[]) => Promise<void>
@@ -42,17 +42,23 @@ const migrate = async (db: CybCozoDb) => {
         }
     `);
     console.log(`       ok: ${res1.ok}`);
-
-    console.log('    create embeddings relation');
-    const res2 = await db.runCommand(`
+    try {
+      console.log('    create embeddings relation');
+      const res2 = await db.runCommand(`
         :create embeddings {
             cid: String =>
             vec: <F32; 384>
         }
-    `);
-    console.log(`       ok: ${res2.ok}`);
-    console.log('    create embeddings:semantic index');
-    const res3 = await db.runCommand(`
+      `);
+
+      console.log(`       ok: ${res2.ok}`);
+    } catch (e) {
+      console.log('* embeddings already exist');
+    }
+
+    try {
+      console.log('    create embeddings:semantic index');
+      const res3 = await db.runCommand(`
         ::hnsw create embeddings:semantic{
             fields: [vec],
             dim: 384,
@@ -60,8 +66,10 @@ const migrate = async (db: CybCozoDb) => {
             m: 16
         }
     `);
-    console.log(`       ok: ${res3.ok}`);
-
+      console.log(`       ok: ${res3.ok}`);
+    } catch (e) {
+      console.log('* embeddings semantics already exist');
+    }
     console.log('    fill queue to calculate embeddings for all particles');
     const res4 = await db.runCommand(`
         ?[id, data, job_type, status, priority] := *particle{cid, text, mime}, mime="text/plain", job_type=1, status=0, priority=0.5, id = cid, data=text

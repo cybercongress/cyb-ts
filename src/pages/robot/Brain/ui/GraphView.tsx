@@ -10,7 +10,7 @@ function GraphView({ address }: { address?: string }) {
     }
   );
 
-  return <CyberlinksGraphContainer data={fetchData} toPortal />;
+  return <CyberlinksGraphContainer data={fetchData} toPortal type="3d" />;
 }
 
 export default GraphView;
