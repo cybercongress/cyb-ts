@@ -2,20 +2,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
   z-index: 3;
-  transform: translateY(-50%);
-  padding: 30px 10px;
+  padding: 10px 10px;
   backdrop-filter: blur(15px);
-  border-radius: 50px;
 
   > span {
     font-size: 14px;
-    margin-top: 5px;
     color: white;
 
     &:last-of-type {
-      margin-top: 4px;
       font-size: 16px;
     }
   }
@@ -32,7 +27,7 @@
 
 .sense {
   flex-direction: column;
-  padding-left: 3px;
+  border-radius: 0px 15px 15px 0px;
   background: linear-gradient(
     to right,
     black 90%,
@@ -44,13 +39,19 @@
   }
 }
 
+.sense div {
+  display: flex;
+  flex-direction: column;
+  margin-right: 5px;
+}
+
 .hydrogen {
   background: linear-gradient(
     to left,
     black 90%,
     rgba(255, 255, 255, 0.5) 100%
   );
-
+  border-radius: 15px 0px 0px 15px;
   &:hover {
     padding-left: 25px;
   }
