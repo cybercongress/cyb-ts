@@ -1,3 +1,5 @@
+@import 'src/components/atoms/glass/mixins.scss';
+
 .main {
   display: flex;
   justify-content: center;
@@ -30,7 +32,7 @@
   border-radius: 0px 15px 15px 0px;
   background: linear-gradient(
     to right,
-    black 90%,
+    black 93%,
     rgba(255, 255, 255, 0.5) 100%
   );
 
@@ -48,7 +50,7 @@
 .hydrogen {
   background: linear-gradient(
     to left,
-    black 90%,
+    black 93%,
     rgba(255, 255, 255, 0.5) 100%
   );
   border-radius: 15px 0px 0px 15px;
