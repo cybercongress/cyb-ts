@@ -6,7 +6,7 @@ import Display from 'src/components/containerGradient/Display/Display';
 // import { ServiceStatus, SyncEntryStatus } from 'src/services/backend/types';
 import {
   ProgressTracking,
-  ServiceStatus as ServiceStatusInfo,
+  ServiceStatus,
   SyncEntryName,
   SyncProgress,
 } from 'src/services/backend/types/services';
@@ -16,10 +16,7 @@ import styles from './drive.scss';
 import { syncEntryNameToReadable } from 'src/services/backend/services/sync/utils';
 import { Button } from 'src/components';
 import { downloadJson } from 'src/utils/json';
-import { useBackend } from 'src/contexts/backend/backend';
-import { EmbeddinsDbEntity } from 'src/services/CozoDb/types/entities';
 import { isObject } from 'lodash';
-import { openAICompletion } from 'src/services/scripting/services/llmRequests/openai';
 
 const getProgressTrackingInfo = (progress?: ProgressTracking) => {
   if (!progress) {
@@ -39,7 +36,7 @@ function ServiceStatusInfo({
   message,
 }: {
   name: string;
-  status: ServiceStatusInfo;
+  status: ServiceStatus;
   message?: string;
 }) {
   const icon = status === 'error' ? '❌' : status === 'starting' ? '⏳' : '';
@@ -67,7 +64,7 @@ function EntrySatus({
 }
 
 function BackendStatus() {
-  const { syncState, dbPendingWrites, services, mlState } = useAppSelector(
+  const { syncState, dbPendingWrites, services, mlState, p2p } = useAppSelector(
     (store) => store.backend
   );
 
@@ -85,6 +82,25 @@ function BackendStatus() {
           status={services.db.status}
           message={services.db.error || `(queries: ${dbPendingWrites})`}
         />
+        <ServiceStatusInfo
+          name="p2p"
+          status={services.p2p.status}
+          message={services.p2p.error || services.p2p.message}
+        />
+        {['addresses', 'peers'].map((key) => (
+          <div key={`kind_${key}`}>
+            <div className={styles.tabbed}>{key}</div>
+            {(p2p[key] || []).length === 0 ? (
+              <div className={styles.doubleTabbed}>none</div>
+            ) : (
+              p2p[key].map((addr, index) => (
+                <div className={styles.doubleTabbed} key={`${key}_${index}`}>
+                  {addr}
+                </div>
+              ))
+            )}
+          </div>
+        ))}
         <ServiceStatusInfo
           name="ipfs"
           status={services.ipfs.status}

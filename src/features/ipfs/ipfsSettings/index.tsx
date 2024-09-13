@@ -4,7 +4,9 @@ import { Pane } from '@cybercongress/gravity';
 
 import { useAdviser } from 'src/features/adviser/context';
 import Select from 'src/containers/warp/components/Select';
-import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
+import { useBackend } from 'src/contexts/backend/backend';
+import { IPFSNodes } from 'src/services/ipfs/types';
+import { getIpfsOpts } from 'src/services/ipfs/config';
 import BtnPassport from '../../../containers/portal/pasport/btnPasport';
 import {
   updateIpfsStateUrl,
@@ -17,11 +19,9 @@ import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
 import ComponentLoader from './ipfsComponents/ipfsLoader';
 import Drive from '../Drive';
-import { useBackend } from 'src/contexts/backend/backend';
-import { IPFSNodes } from 'src/services/ipfs/types';
-import { getIpfsOpts } from 'src/services/ipfs/config';
+import P2PChat from '../Drive/P2PChat';
 
-const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.EMBEDDED, IPFSNodes.HELIA];
+const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.HELIA];
 
 function IpfsSettings() {
   const [valueSelect, setValueSelect] = useState(IPFSNodes.HELIA);
@@ -45,21 +45,17 @@ function IpfsSettings() {
   const { setAdviser } = useAdviser();
 
   useEffect(() => {
-    let text;
-    let status: AdviserColors = undefined;
     if (!isIpfsInitialized) {
-      text = 'trying to connect to ipfs...';
-      status = 'yellow';
+      setAdviser('trying to connect to ipfs...', 'yellow');
     } else {
-      text = (
+      const text = (
         <>
           manage and store neurones public data drive <br />
           drive storing data forever before the 6th great extinction
         </>
       );
+      setAdviser(text, 'green');
     }
-
-    setAdviser(text, status);
   }, [setAdviser, isIpfsInitialized]);
 
   const onChangeSelect = (item) => {
@@ -75,12 +71,15 @@ function IpfsSettings() {
     updateUserGatewayUrl(valueInputGateway);
   }, [valueInputGateway]);
 
-  const onClickReConnect = () => {
-    ipfsApi
-      ?.stop()
-      .then(() => ipfsApi?.start(getIpfsOpts()))
-      .then();
-  };
+  const onClickReConnect = async () =>
+    getIpfsOpts().then((ipfsOpts) => {
+      ipfsApi
+        ?.stop()
+        .then(() => ipfsApi?.start(ipfsOpts))
+        .catch((e) =>
+          setAdviser(`Can't start ipfs node: ${e.toString()}`, 'red')
+        );
+    });
 
   const stateProps = {
     valueInput,
@@ -105,14 +104,12 @@ function IpfsSettings() {
           <div>
             <ContainerKeyValue>
               <div>client</div>
-
               <Select
                 width="300px"
                 valueSelect={valueSelect}
-                textSelectValue={valueSelect !== '' ? valueSelect : ''}
+                textSelectValue={valueSelect}
                 onChangeSelect={(item) => onChangeSelect(item)}
                 custom
-                disabled={!isIpfsInitialized}
               >
                 {renderOptions(dataOpts)}
               </Select>
@@ -192,11 +189,8 @@ function IpfsSettings() {
         >
           <Button onClick={onClickReConnect}>Reconnect</Button>
         </Pane>
-        {/* <ActionBar>
-          <Button onClick={onClickReConnect}>Reconnect</Button>
-          <Button onClick={console.log}>Sync drive</Button>
-        </ActionBar> */}
       </div>
+      <P2PChat />
     </Display>
   );
 }

@@ -6,11 +6,10 @@ export type CallBackFuncStatus = (a: string) => void;
 
 export enum IPFSNodes {
   EXTERNAL = 'external',
-  EMBEDDED = 'embedded',
   HELIA = 'helia',
 }
 
-type IpfsNodeType = 'embedded' | 'external' | 'helia';
+export type IpfsNodeType = 'external' | 'helia';
 
 export type IpfsFileStats = {
   type: 'file' | 'directory' | 'raw';
@@ -29,7 +28,7 @@ export interface CatOptions extends AbortOptions {
   offset?: number;
 }
 
-export type InitOptions = { url: string };
+export type InitOptions = { url: string; libp2p?: any };
 
 export interface IpfsNodeFeatures {
   tcp: boolean;
@@ -62,7 +61,10 @@ export type Uint8ArrayWithMime = {
   rawData: Uint8Array;
 };
 
-export type Uint8ArrayLike = Uint8Array | AsyncIterator<Uint8Array>; // | ReadableStream<Uint8Array>
+export type Uint8ArrayLike =
+  | Uint8Array
+  | AsyncIterator<Uint8Array>
+  | AsyncIterable<Uint8Array>; // | ReadableStream<Uint8Array>
 
 export type IpfsContentSource = 'db' | 'node' | 'gateway';
 
@@ -117,13 +119,13 @@ export type FetchWithDetailsFunc = (
   cid: string,
   type?: IpfsContentType,
   controller?: AbortController
-) => Promise<IPFSContentDetails>;
+) => Promise<IPFSContentDetails | undefined>;
 
 export interface IpfsNode {
   readonly nodeType: IpfsNodeType;
   readonly config: IpfsNodePrperties;
   readonly isStarted: boolean;
-  init: (options?: InitOptions) => Promise<void>;
+  init: (options?: InitOptions, libp2p?: any) => Promise<void>;
   stop: () => Promise<void>;
   start: () => Promise<void>;
   cat: (cid: string, options?: CatOptions) => AsyncIterable<Uint8Array>;
@@ -131,9 +133,9 @@ export interface IpfsNode {
   add: (content: File | string, options?: AbortOptions) => Promise<string>;
   pin: (cid: string, options?: AbortOptions) => Promise<string | undefined>;
   ls: () => AsyncIterable<LsResult>;
-  getPeers: () => Promise<string[]>;
-  connectPeer: (address: string) => Promise<boolean>;
   info: () => Promise<IpfsNodeInfo>;
+  getPeers: () => Promise<string[]>;
+  connectPeer(address: string): Promise<boolean>;
 }
 
 export interface CybIpfsNode extends IpfsNode {
@@ -143,8 +145,15 @@ export interface CybIpfsNode extends IpfsNode {
   addContent(content: File | string): Promise<string | undefined>;
 }
 
+export type JsonPeerId = {
+  id: string;
+  privateKey: string;
+  publicKey: string;
+};
+
 export type IpfsOptsType = {
   ipfsNodeType: IpfsNodeType;
   urlOpts: string;
   userGateway: string;
+  peerId: JsonPeerId;
 };

@@ -6,10 +6,10 @@ import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { getNowUtcNumber } from 'src/utils/date';
 
 import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
+import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
+import { PassportData } from 'src/types/citizenship';
 import { LinkDto } from '../CozoDb/types/dto';
 import { throwErrorOrResponse } from './errors';
-
-import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 
 const defaultFee = {
   amount: [],
@@ -115,6 +115,33 @@ export const updatePassportParticle = async (
     update_particle: {
       nickname,
       particle,
+    },
+  };
+  return signingClient.execute(
+    address,
+    CONTRACT_ADDRESS_PASSPORT,
+    msgObject,
+    'auto'
+  );
+};
+
+export const updatePassportData = async (
+  nickname: string,
+  data: PassportData,
+  {
+    signer,
+    signingClient,
+  }: {
+    signer: OfflineSigner;
+    signingClient: SigningCyberClient;
+  }
+) => {
+  const [{ address }] = await signer.getAccounts();
+
+  const msgObject = {
+    update_data: {
+      nickname,
+      data: JSON.stringify(data),
     },
   };
   return signingClient.execute(

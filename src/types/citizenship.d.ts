@@ -1,5 +1,10 @@
+export type PassportData = {
+  peerId?: string;
+  description?: string;
+};
+
 // https://docs.rs/cw721-base/latest/cw721_base/state/struct.TokenInfo.html
-export type Citizenship = {
+type CitizenshipBase<T> = {
   owner: string;
   // fix approvals type when will need
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,7 +20,11 @@ export type Citizenship = {
           label: string | null;
         }[]
       | null;
-    data: string | null;
+    data: T | null;
     particle: string | null;
   };
 };
+
+export type Citizenship = CitizenshipBase<string>;
+
+export type CitizenshipWithData = CitizenshipBase<PassportData>;

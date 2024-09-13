@@ -1,6 +1,7 @@
 import { Citizenship } from 'src/types/citizenship';
 import usePassportContract from 'src/features/passport/usePassportContract';
 import { PATTERN_CYBER } from 'src/constants/patterns';
+import { parseToCitizenshipWithData } from 'src/utils/citizenship';
 
 function useGetPassportByAddress(accounts: any) {
   let address =
@@ -25,7 +26,7 @@ function useGetPassportByAddress(accounts: any) {
   });
 
   return {
-    passport: data,
+    passport: data ? parseToCitizenshipWithData(data) : null,
     loading,
     error,
   };
