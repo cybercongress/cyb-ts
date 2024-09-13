@@ -5,29 +5,26 @@ import Table from 'src/components/Table/Table';
 import { toListOfObjects } from 'src/services/CozoDb/utils';
 import { saveAs } from 'file-saver';
 
-import { Pane, Text } from '@cybercongress/gravity';
-import {
-  Button,
-  Button as CybButton,
-  Dots,
-  Input,
-  Loading,
-  Select,
-} from 'src/components';
-import FileInputButton from './FileInputButton';
+import { Pane } from '@cybercongress/gravity';
+import { Button, Button as CybButton, Input, Select } from 'src/components';
 import Display from 'src/components/containerGradient/Display/Display';
+import { updatePassportData } from 'src/services/neuron/neuronApi';
 
 import { useBackend } from 'src/contexts/backend/backend';
 
 import { Link } from 'react-router-dom';
 import { Colors } from 'src/components/containerGradient/types';
 import classNames from 'classnames';
+import { useScripting } from 'src/contexts/scripting/scripting';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { useGetPassportByAddress } from 'src/containers/sigma/hooks';
+import { RootState } from 'src/redux/store';
+import { useAppSelector } from 'src/redux/hooks';
 import BackendStatus from './BackendStatus';
 import cozoPresets from './cozo_presets.json';
 
 import styles from './drive.scss';
-import { useScripting } from 'src/contexts/scripting/scripting';
-import { DBResultError } from 'src/services/CozoDb/types/types';
+import FileInputButton from './FileInputButton';
 
 const DEFAULT_PRESET_NAME = '💡 defaul commands...';
 
@@ -43,6 +40,12 @@ const diffMs = (t0: number, t1: number) => `${(t1 - t0).toFixed(1)}ms`;
 
 function Drive() {
   const [queryText, setQueryText] = useState('');
+  const { signer, signingClient } = useSigningClient();
+  const { defaultAccount } = useAppSelector((store: RootState) => store.pocket);
+
+  const { passport } = useGetPassportByAddress(defaultAccount);
+  const [description, setDescription] = useState('');
+
   const [isLoaded, setIsLoaded] = useState(true);
   const [inProgress, setInProgress] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
@@ -54,11 +57,30 @@ function Drive() {
 
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
   const [queryResults, setQueryResults] = useState<{ rows: []; cols: [] }>();
-  const { cozoDbRemote, isReady, ipfsApi } = useBackend();
+  const { cozoDbRemote, isReady, p2pApi } = useBackend();
   const { embeddingApi, isEmbeddingApiInitialized } = useScripting();
 
-  // console.log('-----syncStatus', syncState, dbPendingWrites);
-
+  useEffect(() => {
+    if (passport?.extension?.data?.description) {
+      setDescription(passport.extension.data.description);
+    }
+  }, [passport]);
+  function syncCitizenshipData() {
+    const nickname = passport?.extension.nickname;
+    if (nickname) {
+      updatePassportData(
+        nickname,
+        {
+          description,
+          peerId: p2pApi?.getMyPeerId(),
+        },
+        {
+          signer,
+          signingClient,
+        }
+      );
+    }
+  }
   function runQuery(queryArg?: string) {
     const query = queryArg || queryText.trim();
     if (query) {
@@ -259,7 +281,7 @@ function Drive() {
           </div>
           <div>
             - query using ai oriented{' '}
-            <a href="https://www.cozodb.org/" target="_blank">
+            <a href="https://www.cozodb.org/" target="_blank" rel="noreferrer">
               datalog
             </a>
           </div>
@@ -269,6 +291,20 @@ function Drive() {
           </p>
         </Display>
         <BackendStatus />
+        <Pane width="100%">
+          <textarea
+            placeholder="Enter citizen's description...."
+            onChange={(e) => setDescription(e.target.value)}
+            value={description}
+            className={styles.queryInput}
+            rows={10}
+          />
+          <div className={styles.commandPanel}>
+            <CybButton onClick={() => syncCitizenshipData()} small>
+              Sync your peerId & description
+            </CybButton>
+          </div>
+        </Pane>
         <Pane width="100%">
           {/* <div className={styles.centerPanel}>
             <Button small onClick={createParticleEmbeddingsClick}>
@@ -318,7 +354,6 @@ function Drive() {
             placeholder="Enter your query here..."
             onChange={(e) => setQueryText(e.target.value)}
             value={queryText}
-            className="resize-none"
             className={styles.queryInput}
             rows={10}
           />

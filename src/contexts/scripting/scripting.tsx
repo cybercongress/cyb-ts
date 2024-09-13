@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { UserContext } from 'src/services/scripting/types';
-import { Remote, proxy } from 'comlink';
+import { Remote } from 'comlink';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import {
   selectRuneEntypoints,
@@ -18,12 +18,14 @@ type ScriptingContextType = {
   isSoulInitialized: boolean;
   rune: Option<Remote<RuneFrontend>>;
   embeddingApi: Option<EmbeddingApi>;
+  isEmbeddingApiInitialized: boolean;
 };
 
 const ScriptingContext = React.createContext<ScriptingContextType>({
   isSoulInitialized: false,
   rune: undefined,
   embeddingApi: undefined,
+  isEmbeddingApiInitialized: false,
 });
 
 export function useScripting() {

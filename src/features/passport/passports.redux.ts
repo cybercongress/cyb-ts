@@ -10,8 +10,9 @@ import { RootState } from 'src/redux/store';
 import { AppThunk } from 'src/redux/types';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Accounts } from 'src/types/defaultAccount';
-import { PASSPORT_NOT_EXISTS_ERROR } from './constants';
 import { getPassport as getPassportQuery } from 'src/services/passports/lcd';
+import { parseToCitizenshipWithData } from 'src/utils/citizenship';
+import { PASSPORT_NOT_EXISTS_ERROR } from './constants';
 
 export type SliceState = {
   // address
@@ -133,7 +134,7 @@ const slice = createSlice({
     builder.addCase(getPassport.fulfilled, (state, action) => {
       Object.assign(state[action.meta.arg.address]!, {
         loading: false,
-        data: action.payload,
+        data: parseToCitizenshipWithData(action.payload),
       });
     });
 
