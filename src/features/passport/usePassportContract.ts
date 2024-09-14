@@ -36,6 +36,7 @@ function usePassportContract<DataType>({ query, skip }: Props) {
     } catch (error) {
       console.error(error);
       setError(error);
+      setData(null);
     }
     setLoading(false);
   }
