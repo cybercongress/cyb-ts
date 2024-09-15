@@ -16,7 +16,7 @@ function RobotHeader({ menuCounts }) {
       <Display noPadding color="blue">
         <div className={styles.content}>
           <div className={styles.level}>
-            {nickname && <h3 className={styles.name}>{nickname}</h3>}
+            {nickname && <h3 className={styles.name}>{nickname}.moon</h3>}
             <Level value={menuCounts} />
           </div>
           <AvataImgIpfs addressCyber={address} cidAvatar={avatar} />
