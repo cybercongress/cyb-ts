@@ -41,11 +41,15 @@ function useMilkdownEditor(
           ctx.set(editorViewOptionsCtx, { editable: () => true });
           ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
             console.log('markdown', markdown);
-            debounce(onChange, 100)(markdown);
+            debounce(saveMarkdown, 100)(markdown);
           });
-          ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
-            debounce(saveMarkdown, 10000)(markdown);
-          });
+          // ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
+          //   if (markdown.length === 0) {
+          //     debounce(saveMarkdown, 10)(markdown);
+          //     return;
+          //   }
+          //   debounce(saveMarkdown, 10000)(markdown);
+          // });
           ctx.set(historyKeymap.key, {
             // Remap to one shortcut.
             Undo: 'Mod-z',

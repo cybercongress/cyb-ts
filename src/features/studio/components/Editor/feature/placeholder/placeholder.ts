@@ -48,7 +48,7 @@ export type PlaceHolderFeatureConfig = Partial<PlaceholderConfig>;
 
 export const placeholderConfig = $ctx(
   {
-    text: 'Please enter...',
+    text: 'Start here ...',
     mode: 'block',
   } as PlaceholderConfig,
   'placeholderConfigCtx'
@@ -68,7 +68,7 @@ export const placeholderPlugin = $prose((ctx) => {
           return null;
         }
 
-        const placeholderText = config.text ?? 'Please enter...';
+        const placeholderText = config.text ?? 'Start here ...';
         const deco = createPlaceholderDecoration(state, placeholderText);
         if (!deco) {
           return null;

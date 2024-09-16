@@ -9,6 +9,7 @@ import { useBackend } from 'src/contexts/backend/backend';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import useParticle from 'src/hooks/useParticle';
 import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
+import useDebounce from 'src/hooks/useDebounce';
 import useAdviserTexts from '../adviser/useAdviserTexts';
 
 type StateActionBar = 'link' | 'keywords-from' | 'keywords-to';
@@ -65,6 +66,8 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
   const [keywordsTo, setKeywordsTo] = useState<KeywordsItem[]>([]);
   const [currentMarkdown, setCurrentMarkdown] = useState<string>('');
 
+  const { debounce } = useDebounce();
+
   const { setAdviser } = useAdviserTexts({
     isLoading: (!cidSearchParams && status === 'pending') || !isIpfsInitialized,
     loadingText: !isIpfsInitialized ? 'node is loading' : 'cid is loading',
@@ -74,6 +77,8 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
         ? 'invalid content type, content must be text type'
         : undefined,
   });
+
+  console.log('currentMarkdown', currentMarkdown);
 
   useEffect(() => {
     if (firstEffectOccured.current) {
@@ -88,7 +93,7 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
       setCidSearchParams(cid);
       setLastCid(cid);
     }
-  }, [currentMarkdown, searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     if (content.length && !currentMarkdown.length) {
@@ -96,30 +101,41 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
     }
   }, [content, currentMarkdown]);
 
+  const handleSaveMarkdown = useCallback(
+    debounce(
+      (markdown: string) =>
+        addIfpsMessageOrCid(markdown, { ipfsApi }).then((cid) => {
+          setSearchParams(createSearchParams({ cid }), { replace: true });
+          setLastCid(cid);
+
+          setAdviser('📝 Particle saved to ipfs', 'yellow');
+
+          setTimeout(() => {
+            setAdviser('you can create content');
+          }, 5000);
+        }),
+      10000
+    ),
+    [ipfsApi]
+  );
+
   const saveMarkdown = useCallback(
     (markdown: string) => {
+      setCurrentMarkdown(markdown);
+
       if (!firstEffectOccured.current || !ipfsApi) {
         return;
       }
 
-      if (!markdown.length) {
+      if (markdown.length === 0) {
         setSearchParams(createSearchParams({}), { replace: true });
         setLastCid(undefined);
         return;
       }
 
-      addIfpsMessageOrCid(markdown, { ipfsApi }).then((cid) => {
-        setSearchParams(createSearchParams({ cid }), { replace: true });
-        setLastCid(cid);
-
-        setAdviser('📝 Particle saved to ipfs', 'yellow');
-
-        setTimeout(() => {
-          setAdviser('you can create content');
-        }, 5000);
-      });
+      handleSaveMarkdown(markdown);
     },
-    [ipfsApi, setAdviser, setSearchParams]
+    [handleSaveMarkdown, ipfsApi, setSearchParams]
   );
 
   const addKeywords = useCallback(

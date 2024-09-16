@@ -1,5 +1,5 @@
 import { ActionBar } from 'src/components';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useBackend } from 'src/contexts/backend/backend';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
@@ -150,7 +150,11 @@ function ActionBarContainer() {
     }
   };
 
-  const isKeywords = !keywordsFrom.length && !keywordsTo.length;
+  const isDisabledLink = useMemo(() => {
+    const isKeywords = ![...keywordsFrom, ...keywordsTo].length;
+
+    return isKeywords || loading || !currentMarkdown.length;
+  }, [currentMarkdown, keywordsFrom, keywordsTo, loading]);
 
   if (!isIpfsInitialized) {
     return <ActionBar>node is loading...</ActionBar>;
@@ -161,7 +165,7 @@ function ActionBarContainer() {
       <ActionBar
         button={{
           text: 'link',
-          disabled: isKeywords || loading || !currentMarkdown.length,
+          disabled: isDisabledLink,
           onClick: createCyberlinkTx,
           pending: loading,
         }}
@@ -170,9 +174,9 @@ function ActionBarContainer() {
   }
 
   if (stateActionBar === 'keywords-from' || stateActionBar === 'keywords-to') {
-    const textBtn = `add keywords ${
-      stateActionBar === 'keywords-from' ? 'from' : 'to'
-    }`;
+    const textBtn = `add ${
+      stateActionBar === 'keywords-from' ? 'incoming' : 'outcoming'
+    } link(s)`;
     return (
       <ActionBar
         button={{

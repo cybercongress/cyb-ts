@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useRef } from 'react';
 import { Display, MainContainer } from 'src/components';
 import styles from './Studio.module.scss';
 import Keywords from './components/Keywords/Keywords';
@@ -19,13 +19,6 @@ function Studio() {
     onChangeCurrentMarkdown,
   } = useStudioContext();
 
-  const onMilkdownChange = useCallback(
-    (markdown: string) => {
-      onChangeCurrentMarkdown(markdown);
-    },
-    [onChangeCurrentMarkdown]
-  );
-
   return (
     <>
       <MainContainer>
@@ -41,7 +34,7 @@ function Studio() {
               <MilkdownEditor
                 milkdownRef={milkdownRef}
                 content={loadedMarkdown}
-                onChange={onMilkdownChange}
+                onChange={onChangeCurrentMarkdown}
               />
             </Display>
             <Keywords
