@@ -16,7 +16,7 @@ function Studio() {
     keywordsFrom,
     keywordsTo,
     setStateActionBar,
-    onChangeCurrentMarkdown,
+    saveMarkdown,
   } = useStudioContext();
 
   return (
@@ -30,11 +30,11 @@ function Studio() {
               items={keywordsFrom}
               onClickAddBtn={() => setStateActionBar('keywords-from')}
             />
-            <Display color="blue" noPadding>
+            <Display color="blue">
               <MilkdownEditor
                 milkdownRef={milkdownRef}
                 content={loadedMarkdown}
-                onChange={onChangeCurrentMarkdown}
+                onChange={saveMarkdown}
               />
             </Display>
             <Keywords

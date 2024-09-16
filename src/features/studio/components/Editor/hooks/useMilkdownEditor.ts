@@ -12,7 +12,6 @@ import { clipboard } from '@milkdown/kit/plugin/clipboard';
 import { listener, listenerCtx } from '@milkdown/kit/plugin/listener';
 import { useEditor } from '@milkdown/react';
 import useDebounce from 'src/hooks/useDebounce';
-import { useStudioContext } from 'src/features/studio/studio.context';
 import {
   placeholderConfig,
   placeholderPlugin,
@@ -30,7 +29,6 @@ function useMilkdownEditor(
   onChange: (markdown: string) => void
 ) {
   const { debounce } = useDebounce();
-  const { saveMarkdown } = useStudioContext();
 
   const editorInfo = useEditor(
     (root) => {
@@ -41,7 +39,7 @@ function useMilkdownEditor(
           ctx.set(editorViewOptionsCtx, { editable: () => true });
           ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
             console.log('markdown', markdown);
-            debounce(saveMarkdown, 100)(markdown);
+            debounce(onChange, 100)(markdown);
           });
           // ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
           //   if (markdown.length === 0) {
