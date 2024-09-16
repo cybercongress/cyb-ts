@@ -35,7 +35,7 @@ function Level({ value }: { value: Props }) {
   }, [value]);
 
   return (
-    <span>
+    <span className={styles.levelText}>
       lvl <span className={styles.levelValue}>{level}</span>
     </span>
   );

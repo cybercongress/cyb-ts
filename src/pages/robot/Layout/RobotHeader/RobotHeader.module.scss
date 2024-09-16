@@ -17,7 +17,7 @@
 
 .content {
   display: grid;
-  grid-template-columns: 1fr 128px 1fr;
+  grid-template-columns: 1fr 75px 1fr;
   align-items: center;
   justify-items: center;
   padding: 8px;
@@ -38,8 +38,8 @@
   }
 
   img {
-    height: 128px;
-    width: 128px;
+    height: 75px;
+    width: 75px;
   }
 
   > div {
