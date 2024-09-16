@@ -29,3 +29,10 @@
     }
   }
 }
+.widgetWrapper {
+  display: inline-flex;
+  position: fixed;
+  justify-content: space-between;
+  width: 100%;
+  top: 45%;
+}

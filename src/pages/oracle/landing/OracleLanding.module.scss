@@ -176,11 +176,3 @@ $mobile-breakpoint: 1279px;
     box-shadow: inset 0 0 50px 20px black;
   }
 }
-
-.widgetWrapper {
-  display: inline-flex;
-  position: fixed;
-  justify-content: space-between;
-  width: 100%;
-  top: 45%;
-}
