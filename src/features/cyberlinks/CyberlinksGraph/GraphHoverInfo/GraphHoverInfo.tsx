@@ -19,21 +19,21 @@ function HoverInfo({ node, camera, size, left, top }: Props) {
       return null;
     }
 
-  //   const { x, y, z } = node;
-  //   const vector = new THREE.Vector3(x, y, z);
-  //   vector.project(camera);
+    const { x, y, z } = node;
+    const vector = new THREE.Vector3(x, y, z);
+    vector.project(camera);
 
-  //   const widthHalf = window.innerWidth / 2;
-  //   const heightHalf = window.innerHeight / 2;
+    const widthHalf = window.innerWidth / 2;
+    const heightHalf = window.innerHeight / 2;
 
-  //   const posX = vector.x * widthHalf + widthHalf;
-  //   const posY = -(vector.y * heightHalf) + heightHalf;
+    const posX = vector.x * widthHalf + widthHalf;
+    const posY = -(vector.y * heightHalf) + heightHalf;
 
-  //   return {
-  //     posX,
-  //     posY,
-  //   };
-  // }, [camera, node]);
+    return {
+      posX,
+      posY,
+    };
+  }, [camera, node]);
 
   if (calc) {
     const { posX, posY } = calc;
