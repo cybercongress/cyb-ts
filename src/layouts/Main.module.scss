@@ -30,6 +30,7 @@
   }
 }
 .widgetWrapper {
+  z-index: 3;
   display: inline-flex;
   position: fixed;
   justify-content: space-between;
