@@ -1,6 +1,6 @@
 import { ActionBar, Button, Tabs } from 'src/components';
 import { routes } from 'src/routes';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 // import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { Stars } from 'src/containers/portal/components';
 
