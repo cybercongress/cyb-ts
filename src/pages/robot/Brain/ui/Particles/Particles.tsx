@@ -1,6 +1,7 @@
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import {
   ParticlesQuery,
+  useCyberlinksCountByNeuron2Query,
   useParticlesAggregateQuery,
   useParticlesQuery,
 } from 'src/generated/graphql';
@@ -9,7 +10,7 @@ import { useRobotContext } from 'src/pages/robot/robot.context';
 import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
 import ContentItem from 'src/components/ContentItem/contentItem';
-import { Display, Rank } from 'src/components';
+import { Display } from 'src/components';
 import { useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Loader2 from 'src/components/ui/Loader2';
@@ -26,7 +27,20 @@ const LIMIT = 20;
 function Rank2({ cid }) {
   const rank = useRank(cid);
 
-  return <span>{rank}</span>;
+  if (!rank) {
+    return null;
+  }
+
+  return (
+    <span
+      style={{
+        fontSize: 14,
+      }}
+    >
+      {rank / 10 ** 15}
+      {/* {rank.toLocaleString().replaceAll(',', ' ')} */}
+    </span>
+  );
 }
 
 function Particles() {
@@ -48,6 +62,12 @@ function Particles() {
   const particleAggregateQuery = useParticlesAggregateQuery({
     variables: {
       neuron: address,
+    },
+  });
+
+  const cyberlinksCountQuery = useCyberlinksCountByNeuron2Query({
+    variables: {
+      address,
     },
   });
 
@@ -77,7 +97,7 @@ function Particles() {
     error,
   });
 
-  console.log(data);
+  console.log(data, cyberlinksCountQuery);
 
   const total =
     particleAggregateQuery.data?.particles_aggregate.aggregate?.count;
@@ -91,6 +111,11 @@ function Particles() {
     >
       <Display>
         <p>{total} particles</p>
+
+        <p>
+          {cyberlinksCountQuery.data?.cyberlinks_aggregate.aggregate?.count}{' '}
+          cyberlinks
+        </p>
       </Display>
       <br />
       <Display noPadding>
@@ -144,7 +169,15 @@ function Particles() {
               columnHelper.accessor('particle', {
                 header: (
                   <>
-                    rank <Rank />
+                    {/* rank{' '} */}
+                    {/* <Link
+                      to="https://docs.cyb.ai/#/page/cyberank"
+                      replace
+                      target="_blank"
+                    >
+                      🦠
+                    </Link> */}
+                    probability of observation
                   </>
                 ),
                 id: 'rank',

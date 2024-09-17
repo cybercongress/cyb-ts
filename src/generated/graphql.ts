@@ -9805,6 +9805,13 @@ export type CyberlinksCountByNeuronQueryVariables = Exact<{
 
 export type CyberlinksCountByNeuronQuery = { cyberlinks_aggregate: { aggregate?: { count: number } | null } };
 
+export type CyberlinksCountByNeuron2QueryVariables = Exact<{
+  address?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CyberlinksCountByNeuron2Query = { cyberlinks_aggregate: { aggregate?: { count: number } | null } };
+
 export type CyberlinksCountByParticleQueryVariables = Exact<{
   cid?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<Cyberlinks_Bool_Exp>;
@@ -10198,6 +10205,48 @@ export type CyberlinksCountByNeuronQueryHookResult = ReturnType<typeof useCyberl
 export type CyberlinksCountByNeuronLazyQueryHookResult = ReturnType<typeof useCyberlinksCountByNeuronLazyQuery>;
 export type CyberlinksCountByNeuronSuspenseQueryHookResult = ReturnType<typeof useCyberlinksCountByNeuronSuspenseQuery>;
 export type CyberlinksCountByNeuronQueryResult = Apollo.QueryResult<CyberlinksCountByNeuronQuery, CyberlinksCountByNeuronQueryVariables>;
+export const CyberlinksCountByNeuron2Document = gql`
+    query CyberlinksCountByNeuron2($address: String) {
+  cyberlinks_aggregate(where: {neuron: {_eq: $address}}) {
+    aggregate {
+      count
+    }
+  }
+}
+    `;
+
+/**
+ * __useCyberlinksCountByNeuron2Query__
+ *
+ * To run a query within a React component, call `useCyberlinksCountByNeuron2Query` and pass it any options that fit your needs.
+ * When your component renders, `useCyberlinksCountByNeuron2Query` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCyberlinksCountByNeuron2Query({
+ *   variables: {
+ *      address: // value for 'address'
+ *   },
+ * });
+ */
+export function useCyberlinksCountByNeuron2Query(baseOptions?: Apollo.QueryHookOptions<CyberlinksCountByNeuron2Query, CyberlinksCountByNeuron2QueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CyberlinksCountByNeuron2Query, CyberlinksCountByNeuron2QueryVariables>(CyberlinksCountByNeuron2Document, options);
+      }
+export function useCyberlinksCountByNeuron2LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CyberlinksCountByNeuron2Query, CyberlinksCountByNeuron2QueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CyberlinksCountByNeuron2Query, CyberlinksCountByNeuron2QueryVariables>(CyberlinksCountByNeuron2Document, options);
+        }
+export function useCyberlinksCountByNeuron2SuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CyberlinksCountByNeuron2Query, CyberlinksCountByNeuron2QueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<CyberlinksCountByNeuron2Query, CyberlinksCountByNeuron2QueryVariables>(CyberlinksCountByNeuron2Document, options);
+        }
+export type CyberlinksCountByNeuron2QueryHookResult = ReturnType<typeof useCyberlinksCountByNeuron2Query>;
+export type CyberlinksCountByNeuron2LazyQueryHookResult = ReturnType<typeof useCyberlinksCountByNeuron2LazyQuery>;
+export type CyberlinksCountByNeuron2SuspenseQueryHookResult = ReturnType<typeof useCyberlinksCountByNeuron2SuspenseQuery>;
+export type CyberlinksCountByNeuron2QueryResult = Apollo.QueryResult<CyberlinksCountByNeuron2Query, CyberlinksCountByNeuron2QueryVariables>;
 export const CyberlinksCountByParticleDocument = gql`
     query cyberlinksCountByParticle($cid: String, $where: cyberlinks_bool_exp) {
   cyberlinks_aggregate(where: $where) {
