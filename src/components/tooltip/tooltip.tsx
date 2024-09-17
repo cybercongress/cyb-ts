@@ -24,6 +24,7 @@ export type TooltipProps = {
 function AdviserTooltipWrapper({
   children,
   tooltip,
+  contentStyle,
 }: {
   children: React.ReactNode;
   tooltip: React.ReactNode;
@@ -47,7 +48,7 @@ function AdviserTooltipWrapper({
   return (
     <div
       ref={ref}
-      // style={contentStyle}
+      style={contentStyle}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >

@@ -1,4 +1,6 @@
 import ContentItem from 'src/components/ContentItem/contentItem';
+import { useMemo } from 'react';
+import * as THREE from 'three';
 import styles from './GraphHoverInfo.module.scss';
 
 // fix
@@ -9,10 +11,13 @@ type Props = {
 };
 
 function HoverInfo({ node, camera, size, left, top }: Props) {
-  // const calc = useMemo(() => {
-  //   if (!node || !camera) {
-  //     return null;
-  //   }
+  let l = left;
+  let t = top;
+
+  const calc = useMemo(() => {
+    if (!node || !camera) {
+      return null;
+    }
 
   //   const { x, y, z } = node;
   //   const vector = new THREE.Vector3(x, y, z);
@@ -30,11 +35,11 @@ function HoverInfo({ node, camera, size, left, top }: Props) {
   //   };
   // }, [camera, node]);
 
-  // if (!calc) {
-  //   return null;
-  // }
-
-  // const { posX, posY } = calc;
+  if (calc) {
+    const { posX, posY } = calc;
+    l = posX;
+    t = posY;
+  }
 
   if (!node?.id) {
     return null;
@@ -51,8 +56,8 @@ function HoverInfo({ node, camera, size, left, top }: Props) {
     <div
       className={styles.hoverInfo}
       style={{
-        top,
-        left,
+        top: t,
+        left: l,
       }}
     >
       <ContentItem cid={node.id} />

@@ -30,8 +30,6 @@ function RowBalancesDetails({ balance }) {
     return false;
   }, [balance]);
 
-  // console.log('balance', balance)
-
   const useAmountTotal = useMemo(() => {
     if (balance.total) {
       const { amount, denom } = balance.total;
@@ -118,14 +116,11 @@ function RowBalancesDetails({ balance }) {
           {(state) => {
             return (
               <div
-                className={cx(styles.containerDetailsBalance, {
-                  [styles[`containerDetailsBalance${state}`]]:
-                    Object.keys(balance).length === 5,
-                  [styles[`containerDetailsBalanceMain${state}`]]:
-                    Object.keys(balance).length === 7,
-                  [styles[`containerDetailsBalanceMainComm${state}`]]:
-                    Object.keys(balance).length === 8,
-                })}
+                className={cx(
+                  styles.containerDetailsBalance,
+                  styles[`containerDetailsBalance${state}`],
+                  styles[`length-${Object.keys(balance).length}`]
+                )}
               >
                 <DetailsBalance data={balance} />
               </div>

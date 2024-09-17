@@ -252,7 +252,7 @@ function ActionBar({ stateActionBar }: { stateActionBar: Props }) {
     return (
       <ActionBarCenter button={{ text: 'Fuck Google', onClick: clearState }}>
         <span>
-          Transaction Successful:{' '}
+          Transaction successful:{' '}
           <LinkWindow to={linkIbcTxs}>{trimString(txHashIbc, 6, 6)}</LinkWindow>
         </span>
       </ActionBarCenter>
