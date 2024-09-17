@@ -9848,6 +9848,7 @@ export type MessagesByAddressSenseWsSubscription = { messages_by_address: Array<
 export type ParticlesQueryVariables = Exact<{
   neuron?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
@@ -10397,8 +10398,8 @@ export function useMessagesByAddressSenseWsSubscription(baseOptions?: Apollo.Sub
 export type MessagesByAddressSenseWsSubscriptionHookResult = ReturnType<typeof useMessagesByAddressSenseWsSubscription>;
 export type MessagesByAddressSenseWsSubscriptionResult = Apollo.SubscriptionResult<MessagesByAddressSenseWsSubscription>;
 export const ParticlesDocument = gql`
-    query particles($neuron: String, $limit: Int = 10) {
-  particles(where: {neuron: {_eq: $neuron}}, limit: $limit) {
+    query particles($neuron: String, $limit: Int = 10, $offset: Int = 0) {
+  particles(where: {neuron: {_eq: $neuron}}, limit: $limit, offset: $offset) {
     id
     particle
     timestamp
@@ -10421,6 +10422,7 @@ export const ParticlesDocument = gql`
  *   variables: {
  *      neuron: // value for 'neuron'
  *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
  *   },
  * });
  */
