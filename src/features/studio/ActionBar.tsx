@@ -106,6 +106,8 @@ function ActionBarContainer() {
       ipfsApi,
     });
 
+    // check loop links before send txs
+
     const links = [
       ...keywordsFrom.map((item) => ({
         from: item.cid,
@@ -164,7 +166,7 @@ function ActionBarContainer() {
     return (
       <ActionBar
         button={{
-          text: 'link',
+          text: 'publish',
           disabled: isDisabledLink,
           onClick: createCyberlinkTx,
           pending: loading,

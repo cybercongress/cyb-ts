@@ -49,7 +49,7 @@ export type PlaceHolderFeatureConfig = Partial<PlaceholderConfig>;
 export const placeholderConfig = $ctx(
   {
     text: 'Start here ...',
-    mode: 'block',
+    mode: 'doc',
   } as PlaceholderConfig,
   'placeholderConfigCtx'
 );

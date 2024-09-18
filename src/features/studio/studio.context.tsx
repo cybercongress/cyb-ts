@@ -8,8 +8,9 @@ import React, {
 import { useBackend } from 'src/contexts/backend/backend';
 import { createSearchParams, useSearchParams } from 'react-router-dom';
 import useParticle from 'src/hooks/useParticle';
-import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
 import useDebounce from 'src/hooks/useDebounce';
+import { CID_TWEET } from 'src/constants/app';
+import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
 import useAdviserTexts from '../adviser/useAdviserTexts';
 
 type StateActionBar = 'link' | 'keywords-from' | 'keywords-to';
@@ -17,6 +18,11 @@ type StateActionBar = 'link' | 'keywords-from' | 'keywords-to';
 export type KeywordsItem = {
   text: string;
   cid: string;
+};
+
+const defaultKeywordsFrom: KeywordsItem = {
+  text: 'tweet',
+  cid: CID_TWEET,
 };
 
 const StudioContext = React.createContext<{
@@ -29,7 +35,6 @@ const StudioContext = React.createContext<{
   setStateActionBar: React.Dispatch<React.SetStateAction<StateActionBar>>;
   addKeywords: (type: 'from' | 'to', item: KeywordsItem[]) => void;
   removeKeywords: (type: 'from' | 'to', item: string) => void;
-  onChangeCurrentMarkdown: React.Dispatch<React.SetStateAction<string>>;
   saveMarkdown: (md: string) => void;
 }>({
   stateActionBar: 'link',
@@ -41,7 +46,6 @@ const StudioContext = React.createContext<{
   setStateActionBar: () => {},
   addKeywords: () => {},
   removeKeywords: () => {},
-  onChangeCurrentMarkdown: () => {},
   saveMarkdown: () => {},
 });
 
@@ -54,6 +58,7 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
 
   const firstEffectOccured = useRef(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const updateSearchParams = useCallback(setSearchParams, []);
 
   const { status, details } = useParticle(cidSearchParams!);
   const content =
@@ -62,7 +67,9 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
       : '';
 
   const [stateActionBar, setStateActionBar] = useState<StateActionBar>('link');
-  const [keywordsFrom, setKeywordsFrom] = useState<KeywordsItem[]>([]);
+  const [keywordsFrom, setKeywordsFrom] = useState<KeywordsItem[]>([
+    defaultKeywordsFrom,
+  ]);
   const [keywordsTo, setKeywordsTo] = useState<KeywordsItem[]>([]);
   const [currentMarkdown, setCurrentMarkdown] = useState<string>('');
 
@@ -78,8 +85,6 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
         : undefined,
   });
 
-  console.log('currentMarkdown', currentMarkdown);
-
   useEffect(() => {
     if (firstEffectOccured.current) {
       return;
@@ -93,7 +98,7 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
       setCidSearchParams(cid);
       setLastCid(cid);
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams]);
 
   useEffect(() => {
     if (content.length && !currentMarkdown.length) {
@@ -102,21 +107,19 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
   }, [content, currentMarkdown]);
 
   const handleSaveMarkdown = useCallback(
-    debounce(
-      (markdown: string) =>
-        addIfpsMessageOrCid(markdown, { ipfsApi }).then((cid) => {
-          setSearchParams(createSearchParams({ cid }), { replace: true });
-          setLastCid(cid);
+    debounce((markdown: string) => {
+      addIfpsMessageOrCid(markdown, { ipfsApi }).then((cid) => {
+        updateSearchParams(createSearchParams({ cid }), { replace: true });
+        setLastCid(cid);
 
-          setAdviser('📝 Particle saved to ipfs', 'yellow');
+        setAdviser('📝 Particle saved to ipfs', 'yellow');
 
-          setTimeout(() => {
-            setAdviser('you can create content');
-          }, 5000);
-        }),
-      10000
-    ),
-    [ipfsApi]
+        setTimeout(() => {
+          setAdviser('you can create content');
+        }, 5000);
+      });
+    }, 5000),
+    [updateSearchParams, ipfsApi]
   );
 
   const saveMarkdown = useCallback(
@@ -128,14 +131,14 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (markdown.length === 0) {
-        setSearchParams(createSearchParams({}), { replace: true });
+        updateSearchParams(createSearchParams({}), { replace: true });
         setLastCid(undefined);
         return;
       }
 
       handleSaveMarkdown(markdown);
     },
-    [handleSaveMarkdown, ipfsApi, setSearchParams]
+    [handleSaveMarkdown, ipfsApi, updateSearchParams]
   );
 
   const addKeywords = useCallback(
@@ -182,7 +185,6 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
       lastCid,
       setStateActionBar,
       addKeywords,
-      onChangeCurrentMarkdown: setCurrentMarkdown,
       removeKeywords,
       saveMarkdown,
     }),
@@ -195,7 +197,6 @@ function StudioContextProvider({ children }: { children: React.ReactNode }) {
       addKeywords,
       currentMarkdown,
       content,
-      setCurrentMarkdown,
       removeKeywords,
       saveMarkdown,
     ]

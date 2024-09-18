@@ -38,16 +38,9 @@ function useMilkdownEditor(
           ctx.set(defaultValueCtx, defaultValue);
           ctx.set(editorViewOptionsCtx, { editable: () => true });
           ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
-            console.log('markdown', markdown);
+            // console.log('markdown', markdown);
             debounce(onChange, 100)(markdown);
           });
-          // ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
-          //   if (markdown.length === 0) {
-          //     debounce(saveMarkdown, 10)(markdown);
-          //     return;
-          //   }
-          //   debounce(saveMarkdown, 10000)(markdown);
-          // });
           ctx.set(historyKeymap.key, {
             // Remap to one shortcut.
             Undo: 'Mod-z',
@@ -67,32 +60,6 @@ function useMilkdownEditor(
     },
     [onChange, defaultValue]
   );
-
-  // const { get } = editorInfo;
-
-  // useEffect(() => {
-  //   requestAnimationFrame(() => {
-  //     (async () => {
-  //       const editor = get();
-  //       if (!editor) {
-  //         return;
-  //       }
-  //       // editor.use(placeholder);
-  //       // editor.use(placeholderConfig);
-  //       // editor.use(remarkCybSyntaxPlugin);
-  //       // editor.use(markSchemaCybSyntax);
-  //       // editor.use([inputRuleAsk, inputRuleNeuron]);
-  //       const promiseList: Promise<unknown>[] = [];
-
-  //       [EditorFeature.Placeholder].forEach((feature) => {
-  //         promiseList.push(loadFeature(feature, editor));
-  //       });
-  //       await Promise.all(promiseList);
-
-  //       await editor.create();
-  //     })();
-  //   });
-  // }, [get]);
 
   return editorInfo;
 }

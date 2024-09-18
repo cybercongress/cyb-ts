@@ -1,7 +1,5 @@
 .milkdown {
   height: 100%;
-  /* border: 1px solid #808080; */
-  padding: 5px;
 }
 
 .milkdown * {
@@ -11,7 +9,6 @@
 .milkdown .editor {
   outline: none;
   height: 100%;
-  padding: 5px;
 }
 
 .ProseMirror[data-placeholder]::before {
