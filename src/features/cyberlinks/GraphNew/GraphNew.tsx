@@ -10,6 +10,7 @@ import { Node } from './data';
 // import './styles.css';
 import styles from './GraphNew.module.scss';
 import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
+import { useFullscreen } from '../GraphFullscreenBtn/GraphFullscreenBtn';
 
 export default function GraphNew({ address, data, size }) {
   const cosmograph = useRef<CosmographRef>();
@@ -110,12 +111,16 @@ export default function GraphNew({ address, data, size }) {
   //   setSelectedNode(n);
   // }, []);
 
+  const { isFullscreen } = useFullscreen();
+
   return (
     <div className={styles.wrapper}>
-      <div className={styles.total}>
-        <p>total nodes: {nodes.length} </p>
-        <p>total links: {links.length} </p>
-      </div>
+      {!isFullscreen && (
+        <div className={styles.total}>
+          <p>total nodes: {nodes.length} </p>
+          <p>total links: {links.length} </p>
+        </div>
+      )}
       <GraphHoverInfo
         node={hoverNode}
         left={nodePostion?.x}

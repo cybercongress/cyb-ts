@@ -1,0 +1,12 @@
+.btn {
+  position: absolute;
+  right: 50px;
+  z-index: 10;
+  top: 200px;
+  font-size: 18px;
+  color: var(--primary-color);
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
