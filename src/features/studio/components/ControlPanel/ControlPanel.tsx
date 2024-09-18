@@ -61,6 +61,11 @@ function ControlPanel() {
             to={keywordsFrom.length}
             from={keywordsTo.length}
             onChange={() => {}}
+            tooltip={{
+              from: 'outcoming links',
+              to: 'incoming links',
+              particle: 'current particle',
+            }}
           />
         </div>
 

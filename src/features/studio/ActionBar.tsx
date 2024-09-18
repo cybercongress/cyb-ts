@@ -4,13 +4,13 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import { useBackend } from 'src/contexts/backend/backend';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
-import BigNumber from 'bignumber.js';
-import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { InputMemo } from 'src/pages/teleport/components/Inputs';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { sendCyberlinkArray } from 'src/services/neuron/neuronApi';
 import { KeywordsItem, useStudioContext } from './studio.context';
 import { useAdviser } from '../adviser/context';
 import { AdviserColors } from '../adviser/Adviser/Adviser';
+import { checkLoopLinks, mapLinks, reduceLoopKeywords } from './utils/utils';
 
 function ActionBarContainer() {
   const { signer, signingClient } = useSigningClient();
@@ -106,50 +106,49 @@ function ActionBarContainer() {
       ipfsApi,
     });
 
-    // check loop links before send txs
+    const links = mapLinks(currentMarkdownCid, {
+      from: keywordsFrom,
+      to: keywordsTo,
+    });
 
-    const links = [
-      ...keywordsFrom.map((item) => ({
-        from: item.cid,
-        to: currentMarkdownCid,
-      })),
-      ...keywordsTo.map((item) => ({ from: currentMarkdownCid, to: item.cid })),
-    ];
+    const { uniqueLinks, loopLink } = await checkLoopLinks(links);
 
-    const multiplier = new BigNumber(2).multipliedBy(links.length);
-
-    const cyberlinkMsg = {
-      typeUrl: '/cyber.graph.v1beta1.MsgCyberlink',
-      value: {
-        neuron: address,
-        links,
-      },
-    };
-
-    try {
-      setLoading(true);
-
-      const response = await signingClient.signAndBroadcast(
-        address,
-        [cyberlinkMsg],
-        Soft3MessageFactory.fee(multiplier.toNumber())
+    if (loopLink.length) {
+      setAdviser(
+        <>
+          Links with these keywords have already been created: <br />
+          {reduceLoopKeywords(loopLink, [...keywordsFrom, ...keywordsTo]).join(
+            ', '
+          )}
+        </>,
+        'yellow'
       );
+    }
 
-      if (response.code === 0) {
+    if (!uniqueLinks.length) {
+      setTimeout(() => {
+        setAdviser('try adding more unique keywords', 'yellow');
+      }, 5000);
+      return;
+    }
+
+    setAdviser('transaction pending...', 'yellow');
+    setLoading(true);
+
+    await sendCyberlinkArray(address, uniqueLinks, signingClient)
+      .then((txHash) => {
         setTx({
-          hash: response.transactionHash,
+          hash: txHash,
           onSuccess: () => {
             setLoading(false);
           },
         });
-      } else {
-        setError(response.rawLog.toString());
+      })
+      .catch((e) => {
+        setError(e.toString());
+        console.error(error);
         setLoading(false);
-      }
-    } catch (error) {
-      setError(error.message);
-      console.error(error);
-    }
+      });
   };
 
   const isDisabledLink = useMemo(() => {
