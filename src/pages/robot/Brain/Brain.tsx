@@ -8,7 +8,6 @@ import { useRobotContext } from '../robot.context';
 import TreedView from './ui/TreedView';
 import styles from './Brain.module.scss';
 import GraphView from './ui/GraphView';
-import { LIMIT_GRAPH } from './utils';
 import useGraphLimit from './useGraphLimit';
 
 enum TabsKey {
@@ -28,13 +27,13 @@ function Brain() {
     defaultText: useMemo(
       () => (
         <>
-          neurons public knowledge cybergraph <br />
-          {selected === TabsKey.graph3d && (
+          neuron public knowledge cybergraph <br />
+          {/* {selected === TabsKey.graph3d && (
             <> that is how last {LIMIT_GRAPH} cyberlinks looks like </>
-          )}
+          )} */}
         </>
       ),
-      [selected]
+      []
     ),
   });
 

@@ -1,16 +1,21 @@
-import useCyberlinks from 'src/features/cyberlinks/CyberlinksGraph/useCyberlinks';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
-import { LIMIT_GRAPH } from '../utils';
+import { ParamsBlock } from 'src/pages/Brain/Brain';
+import useGraphLimit from '../useGraphLimit';
 
 function GraphView({ address }: { address?: string }) {
-  const { data: fetchData, loading } = useCyberlinks(
-    { address },
-    {
-      limit: LIMIT_GRAPH,
-    }
-  );
+  const { limit, setSearchParams } = useGraphLimit(500);
 
-  return <CyberlinksGraphContainer data={fetchData} toPortal type="3d" />;
+  return (
+    <div>
+      <ParamsBlock limit={limit} setSearchParams={setSearchParams} />
+      <CyberlinksGraphContainer
+        address={address}
+        limit={limit}
+        toPortal
+        type="3d"
+      />
+    </div>
+  );
 }
 
 export default GraphView;
