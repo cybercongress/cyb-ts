@@ -6,11 +6,15 @@ import {
   CosmographRef,
   CosmographSearchRef,
 } from '@cosmograph/react';
+
+import { CosmosInputNode, CosmosInputLink } from '@cosmograph/cosmos';
+import { ActionBar as ActionBarComponent } from 'src/components';
 import { Node } from './data';
 // import './styles.css';
 import styles from './GraphNew.module.scss';
-import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
 import { useFullscreen } from '../GraphFullscreenBtn/GraphFullscreenBtn';
+import { useCyberlinkWithWaitAndAdviser } from '../hooks/useCyberlink';
+import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
 
 export default function GraphNew({ address, data, size }) {
   const cosmograph = useRef<CosmographRef>();
@@ -19,33 +23,40 @@ export default function GraphNew({ address, data, size }) {
   const search = useRef<CosmographSearchRef>();
   const [degree, setDegree] = useState<number[]>([]);
 
+  // max 2 nodes
+  const [selectedNodes, setSelectedNodes] = useState<CosmosInputNode[]>([]);
+
+  const [localData, setLocalData] = useState<{
+    nodes: CosmosInputNode[];
+    links: CosmosInputLink[];
+  }>({
+    links: [],
+    nodes: [],
+  });
+
   const [hoverNode, setHoverNode] = useState(null);
   const [nodePostion, setNodePostion] = useState(null);
 
-  const nodes = useMemo(() => {
-    return (
-      data?.nodes?.map((node) => {
-        return {
-          ...node,
-          size: 0.5,
-          // value: 1,
-          color: 'rgba(0,100,235,1)',
-        };
-      }) ?? []
-    );
-  }, [data]);
+  const { links, nodes } = useMemo(() => {
+    const nodes = [...data.nodes, ...localData.nodes].map((node) => {
+      return {
+        ...node,
+        size: 0.5,
+        // value: 1,
+        color: node.color || 'rgba(0,100,235,1)',
+      };
+    });
 
-  const links = useMemo(() => {
-    return (
-      data?.links?.map((link) => {
-        return {
-          ...link,
-          width: 2.5,
-          color: 'rgba(9,255,13,1)',
-        };
-      }) ?? []
-    );
-  }, [data]);
+    const links = [...data.links, ...localData.links].map((link) => {
+      return {
+        ...link,
+        width: 2.5,
+        color: link.color || 'rgba(9,255,13,1)',
+      };
+    });
+
+    return { links, nodes };
+  }, [data, localData]);
 
   const scaleColor = useRef(
     scaleSymlog<string, string>()
@@ -76,9 +87,9 @@ export default function GraphNew({ address, data, size }) {
   //   [degree]
   // );
 
-  const [showLabelsFor, setShowLabelsFor] = useState<Node[] | undefined>(
-    undefined
-  );
+  // const [showLabelsFor, setShowLabelsFor] = useState<Node[] | undefined>(
+  //   undefined
+  // );
   const [selectedNode, setSelectedNode] = useState<Node | undefined>();
 
   useEffect(() => {
@@ -111,6 +122,29 @@ export default function GraphNew({ address, data, size }) {
   //   setSelectedNode(n);
   // }, []);
 
+  function callback() {
+    cosmograph.current?.unselectNodes();
+    // setShowLabelsFor(undefined);
+    setSelectedNode(undefined);
+
+    setLocalData({
+      nodes: [
+        ...localData.nodes,
+        ...selectedNodes.map((node) => ({ ...node, color: 'orange' })),
+      ],
+      links: [
+        ...localData.links,
+        {
+          source: selectedNodes[0].id,
+          target: selectedNodes[1].id,
+          color: 'red',
+        },
+      ],
+    });
+  }
+
+  console.log(localData);
+
   const { isFullscreen } = useFullscreen();
 
   return (
@@ -123,7 +157,7 @@ export default function GraphNew({ address, data, size }) {
       )}
       <GraphHoverInfo
         node={hoverNode}
-        left={nodePostion?.x}
+        left={nodePostion?.x + 50}
         top={nodePostion?.y}
         size={size || window.innerWidth}
       />
@@ -146,10 +180,31 @@ export default function GraphNew({ address, data, size }) {
             showDynamicLabels={false}
             linkArrows={false}
             linkWidth={2}
-            onClick={() => {
+            onClick={(node) => {
               cosmograph.current?.pause();
+
+              if (node) {
+                // setShowLabelsFor([node]);
+
+                // check for duplicate
+
+                let newNodes = [...selectedNodes];
+
+                if (newNodes.length < 2) {
+                  newNodes.push(node);
+                } else {
+                  newNodes = [node];
+                }
+
+                setSelectedNodes(newNodes);
+                cosmograph.current?.selectNodes(newNodes);
+              } else {
+                cosmograph.current?.unselectNodes();
+                // setShowLabelsFor(undefined);
+                setSelectedNodes([]);
+              }
             }}
-            showLabelsFor={showLabelsFor}
+            // showLabelsFor={showLabelsFor}
             showHoveredNodeLabel={false}
             nodeLabelColor="white"
             simulationFriction={0.95}
@@ -202,6 +257,40 @@ export default function GraphNew({ address, data, size }) {
           showAnimationControls
         /> */}
       </CosmographProvider>
+
+      <ActionBar selectedNodes={selectedNodes} callback={callback} />
     </div>
+  );
+}
+
+type Props2 = {
+  selectedNodes: CosmosInputNode[];
+  callback: () => void;
+};
+
+function ActionBar({ selectedNodes, callback }: Props2) {
+  const { isReady, isLoading, execute } = useCyberlinkWithWaitAndAdviser({
+    to: selectedNodes[0]?.id,
+    from: selectedNodes[1]?.id,
+    callback,
+  });
+
+  let text;
+  if (selectedNodes.length !== 2 || selectedNodes.length === 0) {
+    text = `select ${2 - selectedNodes.length}  particles`;
+  } else {
+    text = '';
+  }
+
+  return (
+    <ActionBarComponent
+      button={{
+        text: 'cyberlink particles',
+        onClick: execute,
+        disabled: !isReady || selectedNodes.length !== 2,
+        pending: isLoading,
+      }}
+      text={text}
+    />
   );
 }
