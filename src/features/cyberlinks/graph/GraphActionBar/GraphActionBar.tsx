@@ -59,6 +59,7 @@ function GraphActionBar({ children }: { children?: React.ReactNode }) {
           <Button
             onClick={() => {
               setLimit(newLimit);
+              setStep(Steps.INITIAL);
             }}
           >
             Confirm

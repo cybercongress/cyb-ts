@@ -8,9 +8,10 @@ import {
 
 import { CosmosInputNode, CosmosInputLink } from '@cosmograph/cosmos';
 import { Button } from 'src/components';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import useGraphLimit from 'src/pages/robot/Brain/useGraphLimit';
 import { Node } from './data';
 import styles from './GraphNew.module.scss';
-import { useFullscreen } from '../GraphFullscreenBtn/GraphFullscreenBtn';
 import { useCyberlinkWithWaitAndAdviser } from '../hooks/useCyberlink';
 import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
 import GraphActionBar from '../graph/GraphActionBar/GraphActionBar';
@@ -22,6 +23,8 @@ export default function GraphNew({ address, data, size }) {
   // const search = useRef<CosmographSearchRef>();
 
   const [degree, setDegree] = useState<number[]>([]);
+
+  const { limit } = useGraphLimit();
 
   // max 2 nodes
   const [selectedNodes, setSelectedNodes] = useState<CosmosInputNode[]>([]);
@@ -122,8 +125,6 @@ export default function GraphNew({ address, data, size }) {
     });
   }
 
-  const { isFullscreen } = useFullscreen();
-
   const { links, nodes } = useMemo(() => {
     const nodes = [...data.nodes, ...localData.nodes].map((node) => {
       return {
@@ -145,14 +146,22 @@ export default function GraphNew({ address, data, size }) {
     return { links, nodes };
   }, [data, localData]);
 
+  useAdviserTexts({
+    defaultText: useMemo(() => {
+      return (
+        <>
+          {/* @nick (or) your */}
+          public brain, with {nodes.length} particles and {links.length}{' '}
+          cyberlinks
+          <br />
+          The limit is {limit}
+        </>
+      );
+    }, [nodes.length, links.length, limit]),
+  });
+
   return (
     <div className={styles.wrapper}>
-      {!isFullscreen && (
-        <div className={styles.total}>
-          <p>total nodes: {nodes.length} </p>
-          <p>total links: {links.length} </p>
-        </div>
-      )}
       <GraphHoverInfo
         node={hoverNode}
         left={nodePostion?.x + 50}

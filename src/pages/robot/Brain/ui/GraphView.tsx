@@ -1,13 +1,22 @@
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
-import { ParamsBlock } from 'src/pages/Brain/Brain';
 import useGraphLimit from '../useGraphLimit';
 
 function GraphView({ address }: { address?: string }) {
-  const { limit, setSearchParams } = useGraphLimit(500);
+  const { limit } = useGraphLimit(500);
 
   return (
     <div>
-      <ParamsBlock limit={limit} setSearchParams={setSearchParams} />
+      <p
+        style={{
+          textAlign: 'center',
+          zIndex: 10,
+          position: 'relative',
+          marginBottom: 20,
+        }}
+      >
+        Limit is: {limit.toLocaleString()}
+      </p>
+
       <CyberlinksGraphContainer
         address={address}
         limit={limit}

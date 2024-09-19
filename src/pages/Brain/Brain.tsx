@@ -6,7 +6,7 @@ import styles from './Brain.module.scss';
 import useGraphLimit from '../robot/Brain/useGraphLimit';
 
 function Brain() {
-  const { limit, setSearchParams } = useGraphLimit();
+  const { limit } = useGraphLimit();
 
   useAdviserTexts({
     defaultText: 'cyber graph',
@@ -15,8 +15,6 @@ function Brain() {
   return (
     <div className={styles.wrapper}>
       <CyberlinksGraphContainer toPortal limit={limit} />
-
-      <ParamsBlock limit={limit} setSearchParams={setSearchParams} />
 
       <GraphActionBar>
         <Button
@@ -31,18 +29,3 @@ function Brain() {
 }
 
 export default Brain;
-
-export function ParamsBlock({ limit, setSearchParams }) {
-  return (
-    <p
-      style={{
-        textAlign: 'center',
-        zIndex: 10,
-        position: 'relative',
-        marginBottom: 20,
-      }}
-    >
-      Limit is: {limit.toLocaleString()}
-    </p>
-  );
-}
