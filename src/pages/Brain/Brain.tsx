@@ -43,20 +43,6 @@ export function ParamsBlock({ limit, setSearchParams }) {
       }}
     >
       Limit is: {limit.toLocaleString()}
-      <br />
-      use url param to set different limit :
-      <a
-        href="/brain?limit=500"
-        onClick={(e) => {
-          e.preventDefault();
-
-          setSearchParams({
-            limit: 500,
-          });
-        }}
-      >
-        /brain?limit=500
-      </a>
     </p>
   );
 }
