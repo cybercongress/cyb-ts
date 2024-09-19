@@ -10,6 +10,7 @@ import { CosmosInputNode, CosmosInputLink } from '@cosmograph/cosmos';
 import { Button } from 'src/components';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import useGraphLimit from 'src/pages/robot/Brain/useGraphLimit';
+import { useLocation } from 'react-router-dom';
 import { Node } from './data';
 import styles from './GraphNew.module.scss';
 import { useCyberlinkWithWaitAndAdviser } from '../hooks/useCyberlink';
@@ -21,6 +22,8 @@ export default function GraphNew({ address, data, size }) {
   // const histogram = useRef<CosmographHistogramRef<Node>>();
   // const timeline = useRef<CosmographTimelineRef<Link>>();
   // const search = useRef<CosmographSearchRef>();
+
+  const location = useLocation();
 
   const [degree, setDegree] = useState<number[]>([]);
 
@@ -265,9 +268,11 @@ export default function GraphNew({ address, data, size }) {
         /> */}
       </CosmographProvider>
 
-      <GraphActionBar>
-        <ActionBar selectedNodes={selectedNodes} callback={callback} />
-      </GraphActionBar>
+      {location.pathname !== '/brain' && (
+        <GraphActionBar>
+          <ActionBar selectedNodes={selectedNodes} callback={callback} />
+        </GraphActionBar>
+      )}
     </div>
   );
 }
