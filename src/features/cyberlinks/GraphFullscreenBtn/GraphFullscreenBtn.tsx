@@ -21,6 +21,19 @@ export function useFullscreen() {
     }
   }
 
+  function handleKeyDown(event: KeyboardEvent) {
+    // if input is focused, do not handle keydown
+    if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+      return;
+    }
+    if (event.key === 'f') {
+      toggleFullscreen(document.getElementById(PORTAL_ID));
+    }
+  }
+
+  // listen F key
+  useEventListener('keydown', handleKeyDown);
+
   return {
     isFullscreen,
     toggleFullscreen,
