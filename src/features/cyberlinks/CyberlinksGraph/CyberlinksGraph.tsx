@@ -3,6 +3,7 @@ import { ForceGraph3D } from 'react-force-graph';
 import GraphHoverInfo from './GraphHoverInfo/GraphHoverInfo';
 
 import styles from './CyberlinksGraph.module.scss';
+import GraphActionBar from '../graph/GraphActionBar/GraphActionBar';
 
 type Props = {
   data: any;
@@ -173,7 +174,7 @@ function CyberlinksGraph({ data, size }: Props) {
         ref={fgRef}
         graphData={data}
         showNavInfo={false}
-        backgroundColor="#000000"
+        backgroundColor="rgba(0, 0, 0, 0)"
         warmupTicks={420}
         cooldownTicks={0}
         enableNodeDrag={false}
@@ -215,6 +216,8 @@ function CyberlinksGraph({ data, size }: Props) {
         camera={fgRef.current?.camera()}
         size={size || window.innerWidth}
       />
+
+      <GraphActionBar />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { PORTAL_ID } from 'src/containers/application/App';
 import { useState } from 'react';
 import useEventListener from 'src/hooks/dom/useEventListener';
+import { Button } from 'src/components';
 import styles from './GraphFullscreenBtn.module.scss';
 
 export function useFullscreen() {
@@ -38,9 +39,9 @@ function GraphFullscreenBtn() {
   }
 
   return (
-    <button className={styles.btn} onClick={onClick} type="button">
+    <Button className={styles.btn} onClick={onClick}>
       {isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-    </button>
+    </Button>
   );
 }
 

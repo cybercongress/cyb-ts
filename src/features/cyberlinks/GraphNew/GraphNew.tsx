@@ -8,16 +8,14 @@ import {
 } from '@cosmograph/react';
 
 import { CosmosInputNode, CosmosInputLink } from '@cosmograph/cosmos';
-import { ActionBar as ActionBarComponent } from 'src/components';
+import { Button } from 'src/components';
 import { Node } from './data';
 // import './styles.css';
 import styles from './GraphNew.module.scss';
-import {
-  useFullscreen,
-  useFullscreen,
-} from '../GraphFullscreenBtn/GraphFullscreenBtn';
+import { useFullscreen } from '../GraphFullscreenBtn/GraphFullscreenBtn';
 import { useCyberlinkWithWaitAndAdviser } from '../hooks/useCyberlink';
 import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
+import GraphActionBar from '../graph/GraphActionBar/GraphActionBar';
 
 export default function GraphNew({ address, data, size }) {
   const cosmograph = useRef<CosmographRef>();
@@ -261,7 +259,9 @@ export default function GraphNew({ address, data, size }) {
         /> */}
       </CosmographProvider>
 
-      <ActionBar selectedNodes={selectedNodes} callback={callback} />
+      <GraphActionBar>
+        <ActionBar selectedNodes={selectedNodes} callback={callback} />
+      </GraphActionBar>
     </div>
   );
 }
@@ -286,14 +286,12 @@ function ActionBar({ selectedNodes, callback }: Props2) {
   }
 
   return (
-    <ActionBarComponent
-      button={{
-        text: 'cyberlink particles',
-        onClick: execute,
-        disabled: !isReady || selectedNodes.length !== 2,
-        pending: isLoading,
-      }}
-      text={text}
-    />
+    <Button
+      onClick={execute}
+      disabled={!isReady || selectedNodes.length !== 2}
+      pending={isLoading}
+    >
+      cyberlink particles
+    </Button>
   );
 }

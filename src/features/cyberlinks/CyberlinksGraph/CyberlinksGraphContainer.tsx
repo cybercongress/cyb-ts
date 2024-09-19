@@ -2,11 +2,12 @@ import { createPortal } from 'react-dom';
 import { Loading } from 'src/components';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { Stars } from 'src/containers/portal/components';
 import useCyberlinks from './useCyberlinks';
 import { PORTAL_ID } from '../../../containers/application/App';
 import GraphNew from '../GraphNew/GraphNew';
 import CyberlinksGraph from './CyberlinksGraph';
-import GraphFullscreenBtn from '../GraphFullscreenBtn/GraphFullscreenBtn';
+import { useFullscreen } from '../GraphFullscreenBtn/GraphFullscreenBtn';
 
 enum Types {
   '3d' = '3d',
@@ -42,6 +43,8 @@ function CyberlinksGraphContainer({
 
   const Comp = type === Types['2d'] ? GraphNew : CyberlinksGraph;
 
+  const { isFullscreen } = useFullscreen();
+
   const content = loading ? (
     <div
       style={{
@@ -65,7 +68,7 @@ function CyberlinksGraphContainer({
     </div>
   ) : (
     <>
-      <GraphFullscreenBtn />
+      <Stars />
 
       <Comp
         data={data || fetchData}
