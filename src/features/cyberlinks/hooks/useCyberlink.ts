@@ -90,8 +90,6 @@ export function useCyberlinkWithWaitAndAdviser({ to, from, callback }: Props2) {
     },
   });
 
-  console.log(waitForTx);
-
   const isLoading =
     addToIPFSTo.isLoading ||
     addToIPFSFrom.isLoading ||
