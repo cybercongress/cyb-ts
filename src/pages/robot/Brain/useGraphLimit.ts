@@ -1,11 +1,12 @@
 import { useSearchParams } from 'react-router-dom';
 
-const DEFAULT_LIMIT = 30000;
+const DEFAULT_LIMIT = 20000;
 
-function useGraphLimit() {
+function useGraphLimit(initialLimit?: number) {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const limit = Number(searchParams.get('limit')) || DEFAULT_LIMIT;
+  const limit =
+    Number(searchParams.get('limit')) || initialLimit || DEFAULT_LIMIT;
 
   return {
     limit,

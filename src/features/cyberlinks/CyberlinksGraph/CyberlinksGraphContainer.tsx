@@ -6,6 +6,7 @@ import useCyberlinks from './useCyberlinks';
 import { PORTAL_ID } from '../../../containers/application/App';
 import GraphNew from '../GraphNew/GraphNew';
 import CyberlinksGraph from './CyberlinksGraph';
+import GraphFullscreenBtn from '../GraphFullscreenBtn/GraphFullscreenBtn';
 
 enum Types {
   '3d' = '3d',
@@ -63,11 +64,15 @@ function CyberlinksGraphContainer({
       </p>
     </div>
   ) : (
-    <Comp
-      data={data || fetchData}
-      size={size}
-      currentAddress={currentAddress}
-    />
+    <>
+      <GraphFullscreenBtn />
+
+      <Comp
+        data={data || fetchData}
+        size={size}
+        currentAddress={currentAddress}
+      />
+    </>
   );
 
   const portalEl = document.getElementById(PORTAL_ID);
