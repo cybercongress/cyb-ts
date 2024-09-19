@@ -7,7 +7,6 @@ import useCyberlinks from './useCyberlinks';
 import { PORTAL_ID } from '../../../containers/application/App';
 import GraphNew from '../GraphNew/GraphNew';
 import CyberlinksGraph from './CyberlinksGraph';
-import { useFullscreen } from '../GraphFullscreenBtn/GraphFullscreenBtn';
 
 enum Types {
   '3d' = '3d',
@@ -21,6 +20,9 @@ type Props = {
   limit?: number | false;
   data?: any;
   type?: Types;
+
+  // temp
+  minVersion?: boolean;
 };
 
 function CyberlinksGraphContainer({
@@ -29,6 +31,7 @@ function CyberlinksGraphContainer({
   size,
   limit,
   data,
+  minVersion,
   type = Types['2d'],
 }: Props) {
   const { data: fetchData, loading } = useCyberlinks(
@@ -43,7 +46,7 @@ function CyberlinksGraphContainer({
 
   const Comp = type === Types['2d'] ? GraphNew : CyberlinksGraph;
 
-  const { isFullscreen } = useFullscreen();
+  // const { isFullscreen } = useFullscreen();
 
   const content = loading ? (
     <div
@@ -68,11 +71,12 @@ function CyberlinksGraphContainer({
     </div>
   ) : (
     <>
-      <Stars />
+      {!minVersion && <Stars />}
 
       <Comp
         data={data || fetchData}
         size={size}
+        minVersion={minVersion}
         currentAddress={currentAddress}
       />
     </>

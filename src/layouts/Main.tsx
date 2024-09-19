@@ -80,6 +80,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
             {isRenderGraph && (
               <CyberlinksGraphContainer
                 size={graphSize}
+                minVersion
                 type="3d"
                 data={graphDataPrepared}
               />

@@ -278,11 +278,13 @@ function ActionBar({ selectedNodes, callback }: Props2) {
     callback,
   });
 
+  const { length } = selectedNodes;
+
   let text;
-  if (selectedNodes.length !== 2 || selectedNodes.length === 0) {
-    text = `select ${2 - selectedNodes.length}  particles`;
+  if (length !== 2 || length === 0) {
+    text = `select ${2 - length}  particle${length === 0 ? 's' : ''}`;
   } else {
-    text = '';
+    text = 'cyberlink particles';
   }
 
   return (
@@ -291,7 +293,7 @@ function ActionBar({ selectedNodes, callback }: Props2) {
       disabled={!isReady || selectedNodes.length !== 2}
       pending={isLoading}
     >
-      cyberlink particles
+      {text}
     </Button>
   );
 }

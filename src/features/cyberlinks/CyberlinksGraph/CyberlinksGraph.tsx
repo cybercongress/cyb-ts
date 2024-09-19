@@ -17,7 +17,7 @@ const DEFAULT_CAMERA_DISTANCE = 1300;
 const CAMERA_ZOOM_IN_EFFECT_DURATION = 5000;
 const CAMERA_ZOOM_IN_EFFECT_DELAY = 500;
 
-function CyberlinksGraph({ data, size }: Props) {
+function CyberlinksGraph({ data, size, minVersion }: Props) {
   const [isRendering, setRendering] = useState(true);
   const [touched, setTouched] = useState(false);
   const [hoverNode, setHoverNode] = useState(null);
@@ -211,13 +211,16 @@ function CyberlinksGraph({ data, size }: Props) {
         onEngineStop={handleEngineStop}
       />
 
-      <GraphHoverInfo
-        node={hoverNode}
-        camera={fgRef.current?.camera()}
-        size={size || window.innerWidth}
-      />
-
-      <GraphActionBar />
+      {!minVersion && (
+        <>
+          <GraphHoverInfo
+            node={hoverNode}
+            camera={fgRef.current?.camera()}
+            size={size || window.innerWidth}
+          />
+          <GraphActionBar />
+        </>
+      )}
     </div>
   );
 }
