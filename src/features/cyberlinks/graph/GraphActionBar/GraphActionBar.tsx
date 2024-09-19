@@ -24,15 +24,21 @@ function GraphActionBar({ children }: { children?: React.ReactNode }) {
 
   let content;
   let adviserText;
+  let onClickBack;
+
   switch (step) {
     case Steps.INITIAL: {
       content = (
         <>
-          {!isFullscreen && children}
+          {!isFullscreen && (
+            <>
+              {children}
 
-          <Button onClick={() => setStep(Steps.CHANGE_LIMIT)}>
-            Change limit
-          </Button>
+              <Button onClick={() => setStep(Steps.CHANGE_LIMIT)}>
+                Change limit
+              </Button>
+            </>
+          )}
 
           <GraphFullscreenBtn />
         </>
@@ -60,6 +66,8 @@ function GraphActionBar({ children }: { children?: React.ReactNode }) {
         </>
       );
 
+      onClickBack = () => setStep(Steps.INITIAL);
+
       adviserText =
         'change limit to show in graph, but it can reduce performance';
 
@@ -74,7 +82,9 @@ function GraphActionBar({ children }: { children?: React.ReactNode }) {
     defaultText: adviserText,
   });
 
-  return <ActionBarComponent>{content}</ActionBarComponent>;
+  return (
+    <ActionBarComponent onClickBack={onClickBack}>{content}</ActionBarComponent>
+  );
 }
 
 export default GraphActionBar;
