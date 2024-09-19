@@ -8,7 +8,7 @@ import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/Cy
 import TimeFooter from 'src/features/TimeFooter/TimeFooter';
 import { Networks } from 'src/types/networks';
 import { CHAIN_ID } from 'src/constants/config';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import CircularMenu from 'src/components/appMenu/CircularMenu/CircularMenu';
 import TimeHistory from 'src/features/TimeHistory/TimeHistory';
 import MobileMenu from 'src/components/appMenu/MobileMenu/MobileMenu';
@@ -27,12 +27,16 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const dispatch = useAppDispatch();
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
+  const location = useLocation();
+
   const graphSize = Math.min(viewportWidth * 0.13, 220);
   const isMobile =
     viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
 
   useEffect(() => {
-    dispatch(setFocus(true));
+    if (!location.pathname.includes('brain')) {
+      dispatch(setFocus(true));
+    }
 
     const timeout = setTimeout(() => {
       setIsRenderGraph(true);
@@ -41,7 +45,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [dispatch]);
+  }, [dispatch, location]);
 
   useEffect(() => {
     if (!ref.current) {
