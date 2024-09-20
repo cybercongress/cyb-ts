@@ -6,6 +6,7 @@ import SideButtonLink from 'src/components/sideButtonLink/SideButtonLink';
 import styles from './SenseButton.module.scss';
 
 function SenseButton() {
+  //TODO transfer logic to IconsNumber
   const { particles, neurons } = useAppSelector(selectUnreadCounts);
   const notificationCount = particles + neurons;
 
@@ -24,7 +25,7 @@ function SenseButton() {
               <span key={index}>🧬</span>
             ))}
           </div>
-          {firstThreedigits}
+          <span className={styles.sensePlaceholder}>{firstThreedigits}</span>
         </span>
       </Tooltip>
     </SideButtonLink>
