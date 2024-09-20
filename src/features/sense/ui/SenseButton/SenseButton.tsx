@@ -6,7 +6,7 @@ import SideButtonLink from 'src/components/sideButtonLink/SideButtonLink';
 import styles from './SenseButton.module.scss';
 
 function SenseButton() {
-  //TODO transfer logic to IconsNumber
+  // TODO: transfer logic to IconsNumber
   const { particles, neurons } = useAppSelector(selectUnreadCounts);
   const notificationCount = particles + neurons;
 
