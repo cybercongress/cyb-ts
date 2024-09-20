@@ -10,7 +10,7 @@ type Props = {
   size: number;
 };
 
-function HoverInfo({ node, camera, size, left, top }: Props) {
+function HoverInfo({ node, camera, size, left, top, right }: Props) {
   let l = left;
   let t = top;
 
@@ -58,6 +58,7 @@ function HoverInfo({ node, camera, size, left, top }: Props) {
       style={{
         top: t,
         left: l,
+        right,
       }}
     >
       <ContentItem cid={node.id} />

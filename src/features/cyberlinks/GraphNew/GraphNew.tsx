@@ -17,7 +17,7 @@ import { useCyberlinkWithWaitAndAdviser } from '../hooks/useCyberlink';
 import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
 import GraphActionBar from '../graph/GraphActionBar/GraphActionBar';
 
-export default function GraphNew({ address, data, size }) {
+function GraphNew({ address, data, size }) {
   const cosmograph = useRef<CosmographRef>();
   // const histogram = useRef<CosmographHistogramRef<Node>>();
   // const timeline = useRef<CosmographTimelineRef<Link>>();
@@ -163,14 +163,26 @@ export default function GraphNew({ address, data, size }) {
     }, [nodes.length, links.length, limit]),
   });
 
-  return (
-    <div className={styles.wrapper}>
+  function renderInfo(node, position?: string) {
+    const xOffset = 100;
+    const toRight = position === 'right';
+
+    return (
       <GraphHoverInfo
-        node={hoverNode}
-        left={nodePostion?.x + 50}
-        top={nodePostion?.y}
+        node={node}
+        left={!toRight ? xOffset : undefined}
+        right={toRight ? xOffset : undefined}
+        top={275}
         size={size || window.innerWidth}
       />
+    );
+  }
+
+  return (
+    <div className={styles.wrapper}>
+      {(selectedNodes[0] || hoverNode) &&
+        renderInfo(hoverNode || selectedNodes[0])}
+      {selectedNodes[1] && renderInfo(selectedNodes[1], 'right')}
 
       <CosmographProvider nodes={nodes} links={links}>
         {/* <CosmographSearch
@@ -276,6 +288,8 @@ export default function GraphNew({ address, data, size }) {
     </div>
   );
 }
+
+export default GraphNew;
 
 type Props2 = {
   selectedNodes: CosmosInputNode[];
