@@ -3,12 +3,10 @@ import { Route, Routes, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
-import { ParamsBlock } from 'src/pages/Brain/Brain';
 import { useRobotContext } from '../robot.context';
 import TreedView from './ui/TreedView';
 import styles from './Brain.module.scss';
 import GraphView from './ui/GraphView';
-import { LIMIT_GRAPH } from './utils';
 import useGraphLimit from './useGraphLimit';
 
 enum TabsKey {
@@ -28,13 +26,13 @@ function Brain() {
     defaultText: useMemo(
       () => (
         <>
-          neurons public knowledge cybergraph <br />
-          {selected === TabsKey.graph3d && (
+          neuron public knowledge cybergraph <br />
+          {/* {selected === TabsKey.graph3d && (
             <> that is how last {LIMIT_GRAPH} cyberlinks looks like </>
-          )}
+          )} */}
         </>
       ),
-      [selected]
+      []
     ),
   });
 
@@ -83,13 +81,7 @@ function Brain() {
 export default Brain;
 
 function Graph2d({ address }) {
-  const { limit, setSearchParams } = useGraphLimit();
+  const { limit } = useGraphLimit();
 
-  return (
-    <div>
-      <ParamsBlock limit={limit} setSearchParams={setSearchParams} />
-
-      <CyberlinksGraphContainer toPortal limit={limit} address={address} />
-    </div>
-  );
+  return <CyberlinksGraphContainer toPortal limit={limit} address={address} />;
 }

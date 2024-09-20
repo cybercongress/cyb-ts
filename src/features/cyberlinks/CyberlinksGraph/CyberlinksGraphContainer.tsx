@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom';
 import { Loading } from 'src/components';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { Stars } from 'src/containers/portal/components';
 import useCyberlinks from './useCyberlinks';
 import { PORTAL_ID } from '../../../containers/application/App';
 import GraphNew from '../GraphNew/GraphNew';
@@ -19,6 +20,9 @@ type Props = {
   limit?: number | false;
   data?: any;
   type?: Types;
+
+  // temp
+  minVersion?: boolean;
 };
 
 function CyberlinksGraphContainer({
@@ -27,6 +31,7 @@ function CyberlinksGraphContainer({
   size,
   limit,
   data,
+  minVersion,
   type = Types['2d'],
 }: Props) {
   const { data: fetchData, loading } = useCyberlinks(
@@ -40,6 +45,8 @@ function CyberlinksGraphContainer({
   const currentAddress = useAppSelector(selectCurrentAddress);
 
   const Comp = type === Types['2d'] ? GraphNew : CyberlinksGraph;
+
+  // const { isFullscreen } = useFullscreen();
 
   const content = loading ? (
     <div
@@ -63,11 +70,16 @@ function CyberlinksGraphContainer({
       </p>
     </div>
   ) : (
-    <Comp
-      data={data || fetchData}
-      size={size}
-      currentAddress={currentAddress}
-    />
+    <>
+      {!minVersion && <Stars />}
+
+      <Comp
+        data={data || fetchData}
+        size={size}
+        minVersion={minVersion}
+        currentAddress={currentAddress}
+      />
+    </>
   );
 
   const portalEl = document.getElementById(PORTAL_ID);
