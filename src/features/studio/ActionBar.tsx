@@ -12,6 +12,35 @@ import { useAdviser } from '../adviser/context';
 import { AdviserColors } from '../adviser/Adviser/Adviser';
 import { checkLoopLinks, mapLinks, reduceLoopKeywords } from './utils/utils';
 
+// function execute (content: any[]) {
+
+//   // const addToIPFS = useAddToIPFS([content])
+//   const {isLoading, error} = useExecutionWithWaitAndAdviser(execute);
+
+//   // src/features/cyberlinks/hooks/useCyberlink.ts
+//   // useCyberlinks(cyberlinks[])
+
+//   const {setAdviser} = useAdviserTexts({});
+
+//   function execute2 () {
+
+//     // check existing links
+//     // setAdviser()
+
+//     await addToIPFS.execute();
+
+//     // useCyberlinks
+
+//   }
+
+//   return {
+//     isReady,
+//     iaLoading,
+//     error
+//   }
+
+// }
+
 function ActionBarContainer() {
   const { signer, signingClient } = useSigningClient();
   const { isIpfsInitialized, ipfsApi } = useBackend();
