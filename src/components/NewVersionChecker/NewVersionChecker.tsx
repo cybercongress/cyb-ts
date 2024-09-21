@@ -40,7 +40,7 @@ function NewVersionChecker() {
   }, []);
 
   const newVersionAvailable =
-    true || (lastCommit && currentCommit && lastCommit !== currentCommit);
+    lastCommit && currentCommit && lastCommit !== currentCommit;
 
   const text = useMemo(() => {
     if (!newVersionAvailable) {
