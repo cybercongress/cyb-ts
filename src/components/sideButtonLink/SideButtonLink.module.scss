@@ -5,6 +5,7 @@
   z-index: 3;
   padding: 10px 10px;
   backdrop-filter: blur(15px);
+  pointer-events: auto;
 
   > span {
     font-size: 14px;
