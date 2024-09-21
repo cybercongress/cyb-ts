@@ -228,7 +228,7 @@ function Mint() {
         {loadingAuthAccounts ? (
           <Dots big />
         ) : (
-          <Display noPaddingX>
+          <Display noPadding>
             <TableSlots data={slotsData} />
           </Display>
         )}

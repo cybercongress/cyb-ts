@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Header from 'src/containers/application/Header/Header';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useAppDispatch } from 'src/redux/hooks';
 import { routes } from 'src/routes';
 import { useDevice } from 'src/contexts/device';
 import { setFocus } from 'src/containers/application/Header/Commander/commander.redux';
@@ -8,11 +8,12 @@ import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/Cy
 import TimeFooter from 'src/features/TimeFooter/TimeFooter';
 import { Networks } from 'src/types/networks';
 import { CHAIN_ID } from 'src/constants/config';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import CircularMenu from 'src/components/appMenu/CircularMenu/CircularMenu';
 import TimeHistory from 'src/features/TimeHistory/TimeHistory';
 import MobileMenu from 'src/components/appMenu/MobileMenu/MobileMenu';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import { BrainBtn } from 'src/pages/oracle/landing/OracleLanding';
 import graphDataPrepared from '../pages/oracle/landing/graphDataPrepared.json';
 import stylesOracle from '../pages/oracle/landing/OracleLanding.module.scss';
 import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
@@ -20,21 +21,22 @@ import styles from './Main.module.scss';
 import SideHydrogenBtn from './ui/SideHydrogenBtn/SideHydrogenBtn';
 
 function MainLayout({ children }: { children: JSX.Element }) {
-  const { defaultAccount } = useAppSelector(({ pocket }) => pocket);
-  const addressBech32 = defaultAccount.account?.cyber.bech32;
-
   const currentAddress = useCurrentAddress();
   const { viewportWidth } = useDevice();
   const ref = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
+  const location = useLocation();
+
   const graphSize = Math.min(viewportWidth * 0.13, 220);
   const isMobile =
     viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
 
   useEffect(() => {
-    dispatch(setFocus(true));
+    if (!location.pathname.includes('brain')) {
+      dispatch(setFocus(true));
+    }
 
     const timeout = setTimeout(() => {
       setIsRenderGraph(true);
@@ -43,7 +45,7 @@ function MainLayout({ children }: { children: JSX.Element }) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [dispatch]);
+  }, [dispatch, location]);
 
   useEffect(() => {
     if (!ref.current) {
@@ -61,8 +63,12 @@ function MainLayout({ children }: { children: JSX.Element }) {
     <div className={styles.wrapper} ref={ref}>
       <Header />
 
-      {CHAIN_ID === Networks.BOSTROM && !isMobile && <SenseButton />}
-      {!isMobile && <SideHydrogenBtn address={addressBech32} />}
+      {currentAddress && !isMobile && (
+        <div className={styles.widgetWrapper}>
+          {CHAIN_ID === Networks.BOSTROM && <SenseButton />}
+          <SideHydrogenBtn />
+        </div>
+      )}
 
       {children}
       <footer>
@@ -72,13 +78,14 @@ function MainLayout({ children }: { children: JSX.Element }) {
             to={link}
             className={stylesOracle.graphWrapper}
             style={{ bottom: '0px' }}
-
-            // className={stylesOracle.enlargeBtn}
-            // title="open full graph"
           >
+            <BrainBtn />
+
             {isRenderGraph && (
               <CyberlinksGraphContainer
                 size={graphSize}
+                minVersion
+                type="3d"
                 data={graphDataPrepared}
               />
             )}
