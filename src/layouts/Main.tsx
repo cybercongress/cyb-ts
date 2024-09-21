@@ -64,10 +64,10 @@ function MainLayout({ children }: { children: JSX.Element }) {
       <Header />
 
       {currentAddress && !isMobile && (
-        <>
-          {CHAIN_ID === Networks.BOSTROM && !isMobile && <SenseButton />}
+        <div className={styles.widgetWrapper}>
+          {CHAIN_ID === Networks.BOSTROM && <SenseButton />}
           <SideHydrogenBtn />
-        </>
+        </div>
       )}
 
       {children}
