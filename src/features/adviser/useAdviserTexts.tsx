@@ -15,6 +15,8 @@ type Props =
       defaultText?: string | Element;
       successText?: string;
       txHash?: string;
+
+      priority?: boolean;
     }
   | undefined;
 
@@ -36,8 +38,12 @@ function useAdviserTexts(
   const key = useId();
 
   const setAdviserFunc = useCallback(
-    (content: AdviserProps['children'], color?: AdviserProps['color']) => {
-      setAdviser(key, content, color);
+    (
+      content: AdviserProps['children'],
+      color?: AdviserProps['color'],
+      priority
+    ) => {
+      setAdviser(key, content, color, priority);
     },
     [setAdviser, key]
   );

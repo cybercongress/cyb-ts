@@ -25,6 +25,7 @@ jobs:
       - name: Set environment variable with commit SHA
         run: |
           echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+          echo "BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: yarn install
