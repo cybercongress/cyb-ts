@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { CHAIN_ID } from 'src/constants/config';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
@@ -18,6 +18,7 @@ const RobotContext = React.createContext<{
   isLoading: boolean;
   addRefetch: (func: () => void) => void;
   refetchData: () => void;
+  isFetched: boolean;
 }>({
   address: null,
   passport: undefined,
@@ -26,10 +27,14 @@ const RobotContext = React.createContext<{
   nickname: undefined,
   addRefetch: () => {},
   refetchData: () => {},
+  isFetched: false,
 });
 
 export const useRobotContext = () => React.useContext(RobotContext);
 
+/**
+ * Complex logic change carefully
+ */
 function RobotContextProvider({ children }: { children: React.ReactNode }) {
   const params = useParams();
   const location = useLocation();
@@ -40,7 +45,9 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   const currentAddress = useAppSelector(selectCurrentAddress);
   const currentUserPassport = usePassportByAddress(currentAddress);
 
-  const { accounts } = useAppSelector(({ pocket }) => pocket);
+  const { accounts, isInitialized: isPocketInitialized } = useAppSelector(
+    ({ pocket }) => pocket
+  );
 
   const { username } = params;
   const nickname =
@@ -136,58 +143,27 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
   const currentPassport = isOwner ? currentUserPassport : passportContract;
   let currentRobotAddress = address || currentPassport.data?.owner || null;
 
+  if (
+    robotUrl &&
+    currentUserPassport.data &&
+    currentAddress === currentUserPassport.data.owner
+  ) {
+    navigate(
+      location.pathname.replace(
+        routes.robot.path,
+        routes.robotPassport.getLink(
+          currentUserPassport.data.extension.nickname
+        )
+      ),
+      {
+        replace: true,
+      }
+    );
+  }
+
   if (CHAIN_ID === Networks.SPACE_PUSSY && currentRobotAddress) {
     currentRobotAddress = fromBech32(currentRobotAddress, 'pussy');
   }
-
-  const isLoading = currentPassport.loading;
-
-  // redirect from /robot to /@nickname
-  const newUser =
-    !passportContract.loading &&
-    !currentUserPassport.loading &&
-    !currentRobotAddress;
-
-  // redirects
-  useEffect(() => {
-    if (
-      newUser &&
-      location.pathname.includes(routes.robot.path) &&
-      // allowed routes
-      ![
-        routes.robot.path,
-        routes.robot.routes.drive.path,
-        routes.robot.routes.sense.path,
-      ].includes(location.pathname)
-    ) {
-      navigate(routes.robot.path);
-    }
-
-    if (
-      robotUrl &&
-      currentUserPassport.data &&
-      currentAddress === currentUserPassport.data.owner
-    ) {
-      navigate(
-        location.pathname.replace(
-          routes.robot.path,
-          routes.robotPassport.getLink(
-            currentUserPassport.data.extension.nickname
-          )
-        ),
-        {
-          replace: true,
-        }
-      );
-    }
-  }, [
-    location.pathname,
-    robotUrl,
-    currentUserPassport.data,
-    newUser,
-    currentAddress,
-    navigate,
-  ]);
 
   const addRefetch = useCallback(
     (func: () => void) => {
@@ -200,6 +176,13 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
     refetchFuncs.forEach((func) => func());
   }, [refetchFuncs]);
 
+  const isLoading = currentPassport.loading || false;
+
+  const isFetched =
+    currentPassport.data !== undefined ||
+    // zero user
+    (robotUrl && isPocketInitialized && !currentAddress);
+
   const contextValue = useMemo(
     () => ({
       address: currentRobotAddress,
@@ -209,6 +192,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
       nickname: nickname || currentPassport.data?.extension.nickname,
       refetchData,
       isLoading,
+      isFetched,
     }),
     [
       currentPassport.data,
@@ -216,6 +200,7 @@ function RobotContextProvider({ children }: { children: React.ReactNode }) {
       addRefetch,
       refetchData,
       isOwner,
+      isFetched,
       isLoading,
       currentRobotAddress,
     ]

@@ -173,19 +173,6 @@ export const getDelegators = async (validatorAddr: string) => {
   }
 };
 
-export const getTotalRewards = async (delegatorAddr: string) => {
-  try {
-    const response = await axios({
-      method: 'get',
-      url: `${LCD_URL}/distribution/delegators/${delegatorAddr}/rewards`,
-    });
-    return response.data.result;
-  } catch (e) {
-    console.log(e);
-    return null;
-  }
-};
-
 const getParamSlashing = async () => {
   try {
     const response = await axios({

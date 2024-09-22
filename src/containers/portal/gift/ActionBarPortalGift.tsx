@@ -18,6 +18,7 @@ import { Nullable } from 'src/types';
 import { Citizenship } from 'src/types/citizenship';
 import { getKeplr } from 'src/utils/keplrUtils';
 
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import {
   ActionBar as ActionBarSteps,
   BtnGrd,
@@ -42,7 +43,6 @@ import imgOsmosis from '../../../image/osmosis.svg';
 import imgSpacePussy from '../../../image/space-pussy.svg';
 import imgTerra from '../../../image/terra.svg';
 
-import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import {
   addAddress,
   deleteAddress,

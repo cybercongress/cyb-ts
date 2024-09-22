@@ -2,15 +2,17 @@ import { Tabs } from 'src/components';
 import { Route, Routes, useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
 import { useRobotContext } from '../robot.context';
 import TreedView from './ui/TreedView';
 import styles from './Brain.module.scss';
 import GraphView from './ui/GraphView';
-import { LIMIT_GRAPH } from './utils';
+import useGraphLimit from './useGraphLimit';
 
 enum TabsKey {
-  list = 'list',
+  graph3d = 'graph3d',
   graph = 'graph',
+  list = 'list',
 }
 
 function Brain() {
@@ -24,13 +26,13 @@ function Brain() {
     defaultText: useMemo(
       () => (
         <>
-          neurons public knowledge cybergraph <br />
-          {selected === TabsKey.graph && (
+          neuron public knowledge cybergraph <br />
+          {/* {selected === TabsKey.graph3d && (
             <> that is how last {LIMIT_GRAPH} cyberlinks looks like </>
-          )}
+          )} */}
         </>
       ),
-      [selected]
+      []
     ),
   });
 
@@ -40,12 +42,19 @@ function Brain() {
         <Tabs
           options={[
             {
+              key: TabsKey.graph3d,
+              to: './graph3d',
+              text: '3d graph',
+            },
+            {
               key: TabsKey.graph,
               to: './graph',
+              text: '2d graph',
             },
             {
               key: TabsKey.list,
               to: './list',
+              text: 'last cyberlinks',
             },
           ]}
           selected={selected}
@@ -57,14 +66,22 @@ function Brain() {
           <Route
             key={path}
             path={path}
-            element={<GraphView address={address} />}
+            element={<Graph2d address={address} />}
           />
         ))}
 
         <Route path="list" element={<TreedView address={address} />} />
+
+        <Route path="graph3d" element={<GraphView address={address} />} />
       </Routes>
     </div>
   );
 }
 
 export default Brain;
+
+function Graph2d({ address }) {
+  const { limit } = useGraphLimit();
+
+  return <CyberlinksGraphContainer toPortal limit={limit} address={address} />;
+}

@@ -56,6 +56,7 @@ import Social from './pages/Social/Social';
 import Teleport from './pages/teleport/Teleport';
 import { routes } from './routes';
 // import Cybernet from './features/cybernet/ui/Cybernet';
+import Cybernet from './features/cybernet/ui/Cybernet';
 import Map from './pages/Portal/Map/Map';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Settings from './pages/Settings/Settings';
@@ -121,7 +122,10 @@ function AppRouter() {
           <Route path="/ide" element={<FreestyleIde />} />
 
           <Route path="/robot/*" element={<Robot />} />
-          <Route path="/ipfs" element={<Navigate to="/robot/drive" />} />
+          <Route
+            path="/ipfs"
+            element={<Navigate to={routes.settings.path} />}
+          />
 
           <Route path="/sign" element={<Sign />} />
 
@@ -220,7 +224,7 @@ function AppRouter() {
 
           <Route path="/nebula" element={<Nebula />} />
 
-          {/* <Route path="/cyberver/*" element={<Cybernet />} /> */}
+          <Route path="/cyberver/*" element={<Cybernet />} />
 
           <Route path="/keys" element={<Keys />} />
 

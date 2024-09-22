@@ -50,6 +50,7 @@ import AdviserProvider from './features/adviser/context';
 import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
 import { localStorageKeys } from './constants/localStorageKeys';
 import ScriptingProvider from './contexts/scripting/scripting';
+import NewVersionChecker from './components/NewVersionChecker/NewVersionChecker';
 
 const httpLink = new HttpLink({
   uri: INDEX_HTTPS,
@@ -122,6 +123,7 @@ function Providers({ children }: { children: React.ReactNode }) {
                           <ScriptingProvider>
                             <DeviceProvider>
                               <AdviserProvider>
+                                <NewVersionChecker />
                                 <ErrorBoundary>{children}</ErrorBoundary>
                               </AdviserProvider>
                             </DeviceProvider>

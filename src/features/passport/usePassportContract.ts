@@ -11,6 +11,7 @@ type Props = {
   skip?: boolean;
 };
 
+// TODO: use useQuery lib
 function usePassportContract<DataType>({ query, skip }: Props) {
   const [data, setData] = useState<DataType>();
   const [loading, setLoading] = useState(false);
@@ -35,6 +36,7 @@ function usePassportContract<DataType>({ query, skip }: Props) {
     } catch (error) {
       console.error(error);
       setError(error);
+      setData(null);
     }
     setLoading(false);
   }
