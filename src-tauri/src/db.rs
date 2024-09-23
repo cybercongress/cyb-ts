@@ -36,7 +36,7 @@ impl DbState {
 }
 
 pub fn run_command(db: &mut DbInstance, script: &str, immutable: bool) -> Result<String, String> {
-    println!("Run command {}", script);
+    // println!("Run command {}", script);
 
     let mutability = if immutable {
         ScriptMutability::Immutable
@@ -48,7 +48,7 @@ pub fn run_command(db: &mut DbInstance, script: &str, immutable: bool) -> Result
         .run_script(&script, Default::default(), mutability)
         .map_err(|e| e.to_string())?;
 
-    println!("Result: {:?}", result);
+    // println!("Result: {:?}", result);
 
     let mut result_json = result.into_json();
 

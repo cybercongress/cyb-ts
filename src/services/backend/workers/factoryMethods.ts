@@ -1,13 +1,14 @@
 import {
-  wrap,
   Remote,
+  expose,
   proxy,
   releaseProxy,
-  expose,
   transferHandlers,
+  wrap,
 } from 'comlink';
-import { IPFSContentTransferHandler } from './serializers';
 import { Observable, Observer, Subscribable, Subscription } from 'rxjs'; // v7.8.0
+import { IPFSContentTransferHandler } from './serializers';
+
 type WorkerType = SharedWorker | Worker;
 
 const isSharedWorkersSupported = typeof SharedWorker !== 'undefined';

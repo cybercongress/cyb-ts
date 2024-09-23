@@ -428,16 +428,16 @@ export function ConnectAddress({
           />
         )}
 
-        {/* {(!keplr || process.env.IS_TAURI) && ( */}
+        {(!keplr || process.env.IS_TAURI) && (
+          <ButtonIcon
+            onClick={() => selectMethodFunc('wallet')}
+            active={selectMethod === 'wallet'}
+            img={imgWallet}
+            text="wallet"
+          />
+        )}
 
-        <ButtonIcon
-          onClick={() => selectMethodFunc('wallet')}
-          active={selectMethod === 'wallet'}
-          img={imgWallet}
-          text="wallet"
-        />
-
-        {/* {!keplr && !process.env.IS_TAURI && (
+        {!keplr && !process.env.IS_TAURI && (
           <LinkWindow to="https://www.keplr.app/">
             <Pane marginRight={5} width={34} height={30}>
               <img
@@ -447,7 +447,7 @@ export function ConnectAddress({
               />
             </Pane>
           </LinkWindow>
-        )} */}
+        )}
 
         <ButtonIcon
           onClick={() => selectMethodFunc(KEY_TYPE.readOnly)}

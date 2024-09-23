@@ -31,8 +31,8 @@ const playAudioClick = () => {
 //   audioBtnHoverObg.currentTime = 0;
 // };
 
-export type Props = {
-  disabled?: boolean;
+export interface Props extends HTMLButtonElement {
+  disabled: boolean;
   text?: string | JSX.Element;
   img?: $TsFixMe;
   pending?: boolean;
@@ -42,10 +42,10 @@ export type Props = {
   link?: string;
   onClick?: () => void;
   small?: boolean;
-};
+}
 
 function Button({
-  disabled,
+  disabled = false,
   text,
   img,
   children,

@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
-import { ActionBar as ActionBarContainer } from 'src/components';
-import { useSigningClient } from 'src/contexts/signerClient';
-import imgKeplr from 'src/image/keplr-icon.svg';
-import imgRead from 'src/image/duplicate-outline.svg';
-import Button from 'src/components/btnGrd';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'src/redux/store';
+import { ActionBar as ActionBarContainer } from 'src/components';
+import Button from 'src/components/btnGrd';
+import { useSigningClient } from 'src/contexts/signerClient';
+import imgRead from 'src/image/duplicate-outline.svg';
+import imgKeplr from 'src/image/keplr-icon.svg';
 import { deleteAddress } from 'src/redux/features/pocket';
+import { removeSecret } from 'src/redux/reducers/scripting';
+import { RootState } from 'src/redux/store';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
+import { KEY_LIST_TYPE, KEY_TYPE } from '../types';
 import ActionBarConnect from './actionBarConnect';
 import ActionBarKeplr from './actionBarKeplr';
-import { KEY_LIST_TYPE, KEY_TYPE } from '../types';
-import { removeSecret } from 'src/redux/reducers/scripting';
 
 const STAGE_INIT = 1;
 const STAGE_CONNECT = 2;
