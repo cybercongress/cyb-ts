@@ -25,6 +25,7 @@
   .level,
   .addressName {
     display: grid;
+    grid-template-rows: 1fr 1fr;
     justify-items: center;
     gap: 12px;
     font-size: 16px;
