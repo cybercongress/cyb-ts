@@ -6,6 +6,7 @@ import { useRobotContext } from '../../robot.context';
 import FirstTx from './ui/FirstTx/FirstTx';
 import Level from './ui/Level/Level';
 import TabsNotOwner from './ui/TabsNotOwner/TabsNotOwner';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 
 function RobotHeader({ menuCounts }) {
   const { address, passport, isOwner } = useRobotContext();
@@ -17,7 +18,10 @@ function RobotHeader({ menuCounts }) {
         <div className={styles.content}>
           <div className={styles.level}>
             {nickname && <h3 className={styles.name}>{nickname}.moon</h3>}
-            <Level value={menuCounts} />
+
+            <AdviserHoverWrapper adviserContent="the level increases based on your stats, such as sigma, karma, brain, and others">
+              <Level value={menuCounts} />
+            </AdviserHoverWrapper>
           </div>
           <AvataImgIpfs addressCyber={address} cidAvatar={avatar} />
           <div className={styles.addressName}>
