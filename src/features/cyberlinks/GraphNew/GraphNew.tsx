@@ -172,7 +172,7 @@ function GraphNew({ address, data, size }) {
         node={node}
         left={!toRight ? xOffset : undefined}
         right={toRight ? xOffset : undefined}
-        top={275}
+        top={'42.5vh'}
         size={size || window.innerWidth}
       />
     );
@@ -180,9 +180,12 @@ function GraphNew({ address, data, size }) {
 
   return (
     <div className={styles.wrapper}>
-      {(selectedNodes[0] || hoverNode) &&
-        renderInfo(hoverNode || selectedNodes[0])}
-      {selectedNodes[1] && renderInfo(selectedNodes[1], 'right')}
+      {(selectedNodes[0] || (hoverNode && selectedNodes.length !== 1)) &&
+        renderInfo(
+          (selectedNodes.length !== 1 && hoverNode) || selectedNodes[0]
+        )}
+      {(selectedNodes[1] || (selectedNodes.length === 1 && hoverNode)) &&
+        renderInfo(hoverNode || selectedNodes[1], 'right')}
 
       <CosmographProvider nodes={nodes} links={links}>
         {/* <CosmographSearch
