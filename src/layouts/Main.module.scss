@@ -29,3 +29,12 @@
     }
   }
 }
+.widgetWrapper {
+  z-index: 3;
+  display: inline-flex;
+  position: fixed;
+  justify-content: space-between;
+  width: 100%;
+  top: 45%;
+  pointer-events: none;
+}
