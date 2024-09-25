@@ -190,6 +190,7 @@ export default function GraphNew({ address, data, size }) {
             showDynamicLabels={false}
             linkArrows={false}
             linkWidth={2}
+            curvedLinks
             onClick={(node) => {
               cosmograph.current?.pause();
 
