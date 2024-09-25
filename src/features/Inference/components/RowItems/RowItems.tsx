@@ -7,7 +7,7 @@ import { InferenceItem } from '../../type';
 
 const LOAD_COUNT = 10;
 
-function RowItems({ dataItem }: { dataItem: InferenceItem[] }) {
+function RowItems({ dataItem, sortBy }: { dataItem: InferenceItem[]; sortBy: string }) {
   const [itemsToShow, setItemsToShow] = useState(20);
 
   const loadMore = () => {
@@ -20,10 +20,14 @@ function RowItems({ dataItem }: { dataItem: InferenceItem[] }) {
     () =>
       dataItem.slice(0, itemsToShow).map((item) => {
         return (
-          <Spark key={item.particle} cid={item.particle} itemData={item} />
+          <Spark
+            key={`${item.particle}_${sortBy}`}
+            cid={item.particle}
+            itemData={item}
+          />
         );
       }),
-    [itemsToShow, dataItem]
+    [itemsToShow, dataItem, sortBy]
   );
 
   return (

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { InferenceItem } from '../type';
+import { InferenceItem, SortBy } from '../type';
 
 export type InferenceResponse = {
   result: InferenceItem[];
@@ -13,7 +13,9 @@ const inferenceFetcher = async (hash: string) => {
     url: `https://st-inference.cybernode.ai/standard_inference?particle=${hash}`,
   })
     .then((response) => response.data as InferenceResponse)
-    .catch((e) => console.error(e));
+    .catch((e) => {
+      throw new Error(`useInference: ${e}`);
+    });
 };
 
 function useInference(hash: string) {
@@ -23,7 +25,11 @@ function useInference(hash: string) {
     { enabled: Boolean(hash.length) }
   );
 
-  return { data, isFetching, error };
+  return {
+    data,
+    isFetching,
+    error,
+  };
 }
 
 export default useInference;

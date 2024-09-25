@@ -4,3 +4,9 @@ export type InferenceItem = {
   rank: number;
   inference: number;
 };
+
+export enum SortBy {
+  inference = 'inference',
+  rank = 'rank',
+  balance = 'balance',
+}
