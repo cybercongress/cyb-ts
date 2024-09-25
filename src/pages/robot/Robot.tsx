@@ -18,6 +18,7 @@ import Heroes from './_refactor/account/tabs/heroes';
 import Karma from './Karma/Karma';
 import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
+import Hotkeys from './Hotkeys/Hotkeys';
 
 function RobotRoutes() {
   const { address, isFetched } = useRobotContext();
@@ -73,6 +74,8 @@ function RobotRoutes() {
         {['sense', 'sense/:senseId'].map((path) => (
           <Route key={path} path={path} element={<SensePage />} />
         ))}
+
+        <Route path="hotkeys" element={<Hotkeys />} />
 
         <Route path="*" element={<p>Page should not exist</p>} />
       </Route>

@@ -64,6 +64,13 @@ const links: MenuItem[] = [
     // description: 'bytes',
     icon: '👻',
   },
+  {
+    text: 'Hotkeys',
+    link: './hotkeys',
+    // isDisabled: true,
+    // description: 'bytes',
+    icon: '⌨️',
+  },
 ];
 
 type Props = {
