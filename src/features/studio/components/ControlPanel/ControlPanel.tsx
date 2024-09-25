@@ -4,7 +4,7 @@ import { useInstance } from '@milkdown/react';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
 import { formatCurrency } from 'src/utils/utils';
 import { PREFIXES } from 'src/containers/ipfs/components/metaInfo';
-import { Display } from 'src/components';
+import { Cid, Display } from 'src/components';
 import styles from './ControlPanel.module.scss';
 import { useStudioContext } from '../../studio.context';
 import HistoryCommand from '../HistoryCommand/HistoryCommand';
@@ -33,7 +33,8 @@ const contentTypeConfig = {
 };
 
 function ControlPanel() {
-  const { keywordsFrom, keywordsTo, currentMarkdown } = useStudioContext();
+  const { keywordsFrom, keywordsTo, currentMarkdown, lastCid } =
+    useStudioContext();
   const [loading, get] = useInstance();
 
   function call<T>(command: CmdKey<T>, payload?: T) {
@@ -70,7 +71,10 @@ function ControlPanel() {
         </div>
 
         <div className={styles.metaContainer}>
-          <HistoryCommand call={call} />
+          <div className={styles.metaContainerHistory}>
+            <Cid cid={lastCid || ''} />
+            <HistoryCommand call={call} />
+          </div>
           <span className={styles.size}>
             🟥 {formatCurrency(currentMarkdown.length, 'B', 0, PREFIXES)}
           </span>

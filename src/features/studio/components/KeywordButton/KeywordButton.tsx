@@ -1,12 +1,11 @@
 import { ReactNode } from 'react';
 import cx from 'classnames';
-import { Tooltip } from 'src/components';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 import styles from './KeywordButton.module.scss';
 
 type Props = {
   text: ReactNode;
   onClick: () => void;
-  disabled?: boolean;
   tooltip?: string;
   isKeyword?: boolean;
   className?: string;
@@ -15,24 +14,22 @@ type Props = {
 function KeywordButton({
   text,
   onClick,
-  disabled,
   tooltip,
   isKeyword,
   className,
 }: Props) {
   return (
-    <Tooltip tooltip={!disabled && tooltip}>
+    <AdviserHoverWrapper adviserContent={tooltip || ''}>
       <button
         className={cx(styles.keywordBtn, className, {
           [styles.isKeyword]: isKeyword,
         })}
-        disabled={disabled}
         onClick={onClick}
         type="button"
       >
         {text}
       </button>
-    </Tooltip>
+    </AdviserHoverWrapper>
   );
 }
 

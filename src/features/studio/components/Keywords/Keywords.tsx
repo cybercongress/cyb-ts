@@ -22,6 +22,7 @@ function Keywords({ items, type, onClickAddBtn }: Props) {
         className={styles.overflowPill}
         onClick={() => removeKeywords(type, item.cid)}
         isKeyword
+        tooltip="delete keyword"
       />
     );
   });

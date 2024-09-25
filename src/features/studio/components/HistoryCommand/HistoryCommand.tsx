@@ -4,8 +4,6 @@ import { CmdKey } from '@milkdown/core';
 import { redoCommand, undoCommand } from '@milkdown/kit/plugin/history';
 import styles from './HistoryCommand.modules.scss';
 import reload from './reload.png';
-import CurrentCid from '../CurrentCid/CurrentCid';
-import { useStudioContext } from '../../studio.context';
 
 function ImgReload({ reverse }: { reverse?: boolean }) {
   return (
@@ -33,15 +31,12 @@ function HistoryCommand({
 }: {
   call: (command: CmdKey<unknown>) => boolean | undefined;
 }) {
-  const { currentMarkdown } = useStudioContext();
-
   return (
     <div className={styles.wrapper}>
-      <CurrentCid text={currentMarkdown} />
       <ButtonsGroup
         type="checkbox"
         onChange={(name) => {
-          let value: CmdKey<T>;
+          let value: CmdKey<unknown>;
           switch (name) {
             case 'undo':
               value = undoCommand.key;

@@ -8,6 +8,7 @@ import { getNowUtcNumber } from 'src/utils/date';
 import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
 import BigNumber from 'bignumber.js';
+import { asyncForEach } from 'src/utils/utils';
 import { LinkDto } from '../CozoDb/types/dto';
 import { throwErrorOrResponse } from './errors';
 
@@ -53,7 +54,13 @@ export const sendCyberlink = async (
 export const sendCyberlinkArray = async (
   neuron: NeuronAddress,
   arrLinks: CyberLinkSimple[],
-  signingClient: SigningCyberClient
+  {
+    signingClient,
+    senseApi,
+  }: {
+    senseApi: SenseApi;
+    signingClient: SigningCyberClient;
+  }
 ) => {
   const multiplier = new BigNumber(2).multipliedBy(arrLinks.length);
 
@@ -72,7 +79,25 @@ export const sendCyberlinkArray = async (
   );
 
   const result = throwErrorOrResponse(response);
+
   const { transactionHash } = result;
+
+  const links = arrLinks.map((item) => {
+    return {
+      from: item.from,
+      to: item.to,
+      transactionHash,
+      timestamp: getNowUtcNumber(),
+      neuron,
+    } as LinkDto;
+  });
+
+  await senseApi?.putCyberlink(links);
+
+  await asyncForEach(links, async (item: LinkDto) => {
+    await senseApi?.addCyberlinkLocal(item);
+  });
+
   return transactionHash;
 };
 

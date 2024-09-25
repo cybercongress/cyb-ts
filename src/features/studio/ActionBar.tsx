@@ -7,10 +7,11 @@ import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
 import { InputMemo } from 'src/pages/teleport/components/Inputs';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { sendCyberlinkArray } from 'src/services/neuron/neuronApi';
+import { routes } from 'src/routes';
+import { useNavigate } from 'react-router-dom';
 import { KeywordsItem, useStudioContext } from './studio.context';
-import { useAdviser } from '../adviser/context';
-import { AdviserColors } from '../adviser/Adviser/Adviser';
 import { checkLoopLinks, mapLinks, reduceLoopKeywords } from './utils/utils';
+import useAdviserTexts from '../adviser/useAdviserTexts';
 
 // function execute (content: any[]) {
 
@@ -43,8 +44,9 @@ import { checkLoopLinks, mapLinks, reduceLoopKeywords } from './utils/utils';
 
 function ActionBarContainer() {
   const { signer, signingClient } = useSigningClient();
-  const { isIpfsInitialized, ipfsApi } = useBackend();
-  const { setAdviser } = useAdviser();
+  const { isIpfsInitialized, ipfsApi, senseApi, isDbInitialized } =
+    useBackend();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
@@ -74,6 +76,12 @@ function ActionBarContainer() {
   useWaitForTransaction({
     hash: tx.hash,
     onSuccess: tx.onSuccess,
+  });
+
+  const { setAdviser } = useAdviserTexts({
+    isLoading: loading,
+    loadingText: 'transaction pending...',
+    error,
   });
 
   const addNewKeywords = useCallback(async () => {
@@ -106,26 +114,11 @@ function ActionBarContainer() {
   }, [newKeywords, ipfsApi, addKeywords, stateActionBar, setStateActionBar]);
 
   useEffect(() => {
-    let content;
-    let adviserColor: keyof typeof AdviserColors = 'blue';
-
-    if (error) {
-      content = error;
-      adviserColor = 'red';
-    } else if (loading) {
-      content = 'transaction pending...';
-      adviserColor = 'yellow';
-    }
-
-    setAdviser(content, adviserColor);
-  }, [loading, error, setAdviser]);
-
-  useEffect(() => {
     setError(undefined);
   }, [currentMarkdown]);
 
   const createCyberlinkTx = async () => {
-    if (!signer || !signingClient) {
+    if (!signer || !signingClient || !senseApi || !isDbInitialized) {
       return;
     }
 
@@ -156,20 +149,20 @@ function ActionBarContainer() {
 
     if (!uniqueLinks.length) {
       setTimeout(() => {
-        setAdviser('try adding more unique keywords', 'yellow');
+        setError('try adding more unique keywords');
       }, 5000);
       return;
     }
 
-    setAdviser('transaction pending...', 'yellow');
     setLoading(true);
 
-    await sendCyberlinkArray(address, uniqueLinks, signingClient)
+    await sendCyberlinkArray(address, uniqueLinks, { signingClient, senseApi })
       .then((txHash) => {
         setTx({
           hash: txHash,
           onSuccess: () => {
             setLoading(false);
+            navigate(routes.ipfs.getLink(currentMarkdownCid));
           },
         });
       })
