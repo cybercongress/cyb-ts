@@ -1,0 +1,25 @@
+@import '../../../../components/containerGradient/saber/index.module.scss';
+
+.header {
+  margin: 10px 0 -5px;
+  padding: 17px 12px 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+
+  @include saber('blue', top);
+
+  @media (max-width: 680px) {
+    gap: 40px 0;
+    flex-wrap: wrap;
+  }
+}
+
+.total {
+  color: rgba(221, 255, 255, 0.38);
+
+  span {
+    color: rgba(255, 255, 255, 0.78);
+  }
+}

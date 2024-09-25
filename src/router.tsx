@@ -59,6 +59,7 @@ import Cybernet from './features/cybernet/ui/Cybernet';
 import Settings from './pages/Settings/Settings';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
+import Inference from './features/Inference/Inference';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -146,6 +147,8 @@ function AppRouter() {
             element={<Navigate to={routes.oracle.path} />}
           />
           <Route path="/search/:query" element={<ToOracleAsk />} />
+
+          <Route path="/oracle/inference/:query" element={<Inference />} />
 
           <Route path="/senate" element={<Governance />} />
           <Route

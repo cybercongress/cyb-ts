@@ -72,6 +72,10 @@ export const routes = {
     path: '/search',
     getLink: (search: string) => `/oracle/ask/${search}`,
   },
+  inference: {
+    path: '/inference',
+    getLink: (search: string) => `/oracle/inference/${search}`,
+  },
   teleport: {
     path: '/teleport',
     send: {
