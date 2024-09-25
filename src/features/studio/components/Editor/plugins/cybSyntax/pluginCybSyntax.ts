@@ -1,5 +1,10 @@
-import { $command, $inputRule, $markSchema, $remark } from '@milkdown/utils';
-import { markRule } from '@milkdown/prose';
+import {
+  $command,
+  $inputRule,
+  $markSchema,
+  $remark,
+} from '@milkdown/kit/utils';
+import { markRule } from '@milkdown/kit/prose';
 import {
   CYBERLINK_REGEX,
   NEURON_REGEX,
@@ -28,7 +33,7 @@ const markSchemaCybSyntax = $markSchema('link-cyber', () => ({
     },
     runner: (state, node, markType) => {
       const attrs = node.url as string;
-      console.log('node', node)
+      console.log('node', node);
       state.openMark(markType, { href: attrs });
       state.next(node.children);
       state.closeMark(markType);

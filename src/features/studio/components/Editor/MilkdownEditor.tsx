@@ -2,8 +2,8 @@ import { Milkdown } from '@milkdown/react';
 import '@milkdown/theme-nord/style.css';
 import './Editor.css';
 import { RefObject, useImperativeHandle } from 'react';
-import { editorViewCtx, parserCtx } from '@milkdown/core';
-import { Slice } from '@milkdown/prose/model';
+import { editorViewCtx, parserCtx } from '@milkdown/kit/core';
+import { Slice } from '@milkdown/kit/prose/model';
 import useMilkdownEditor from './hooks/useMilkdownEditor';
 
 export interface MilkdownRef {

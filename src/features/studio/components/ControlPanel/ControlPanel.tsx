@@ -1,5 +1,5 @@
-import type { CmdKey } from '@milkdown/core';
-import { callCommand } from '@milkdown/utils';
+import type { CmdKey } from '@milkdown/kit/core';
+import { callCommand } from '@milkdown/kit/utils';
 import { useInstance } from '@milkdown/react';
 import Links from 'src/components/search/Spark/Meta/Links/Links';
 import { formatCurrency } from 'src/utils/utils';

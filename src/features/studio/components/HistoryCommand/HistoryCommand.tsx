@@ -1,6 +1,6 @@
 import cx from 'classnames';
 import ButtonsGroup from 'src/components/buttons/ButtonsGroup/ButtonsGroup';
-import { CmdKey } from '@milkdown/core';
+import { CmdKey } from '@milkdown/kit/core';
 import { redoCommand, undoCommand } from '@milkdown/kit/plugin/history';
 import styles from './HistoryCommand.modules.scss';
 import reload from './reload.png';

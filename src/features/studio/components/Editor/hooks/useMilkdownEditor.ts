@@ -3,7 +3,7 @@ import {
   Editor,
   editorViewOptionsCtx,
   rootCtx,
-} from '@milkdown/core';
+} from '@milkdown/kit/core';
 import { commonmark } from '@milkdown/kit/preset/commonmark';
 import { nord } from '@milkdown/theme-nord';
 import { automd } from '@milkdown/plugin-automd';

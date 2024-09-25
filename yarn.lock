@@ -7897,7 +7897,7 @@
     tslib "^2.5.0"
     unist-util-visit "^5.0.0"
 
-"@milkdown/core@7.5.0", "@milkdown/core@^7.5.0":
+"@milkdown/core@7.5.0":
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/@milkdown/core/-/core-7.5.0.tgz#e8b1d27adb7f4dd358d87bcb5d42d3c66746dd54"
   integrity sha512-s2kjp6QkCKON6xWHJEZXPhgQd2ZxQjXf2/qmTQXXSsiEkdviflnXfP7SuH+ivsBnxlxvkQn2b5RLo7sa30fhYw==
@@ -7908,7 +7908,7 @@
     tslib "^2.5.0"
     unified "^11.0.3"
 
-"@milkdown/ctx@7.5.0", "@milkdown/ctx@^7.5.0":
+"@milkdown/ctx@7.5.0":
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/@milkdown/ctx/-/ctx-7.5.0.tgz#0dd88b1ac5c7264914cebefb546cc9159ddacbdb"
   integrity sha512-RKGhEh7LCCTb/iY7TOgrN3vKGtQdsNi7039PY5Y561o+KLldQE5BdkPyqwedZwSszZrsDO8L6IT/SxWgtj1tRg==
@@ -7969,7 +7969,7 @@
     lodash.throttle "^4.1.1"
     tslib "^2.5.0"
 
-"@milkdown/plugin-clipboard@7.5.0", "@milkdown/plugin-clipboard@^7.5.0":
+"@milkdown/plugin-clipboard@7.5.0":
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/@milkdown/plugin-clipboard/-/plugin-clipboard-7.5.0.tgz#06b917f849483f890ad66c33668079b526a4f115"
   integrity sha512-8AISCDWyLYHEPIpckO3P5+mpxCAAP8S7IF4+1J0xcjVzFx6RTDQiIEgutqjqq4hl3edhaXBK7oNhNNrmWw3j6g==
@@ -8001,7 +8001,7 @@
     "@milkdown/utils" "7.5.0"
     tslib "^2.5.0"
 
-"@milkdown/plugin-listener@7.5.0", "@milkdown/plugin-listener@^7.5.0":
+"@milkdown/plugin-listener@7.5.0":
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/@milkdown/plugin-listener/-/plugin-listener-7.5.0.tgz#e6dccaf35d9b52f2e1709932c049d3fafd05792d"
   integrity sha512-Dz6BPKYgJ5iNbyoC7D+gXDf14U+71w39VqxKDyZKMRN5RC8QTjaVVolduVLaiXxgN6jm6DKQq46nQxVxMxMf4Q==
@@ -8053,7 +8053,7 @@
     "@milkdown/utils" "7.5.0"
     tslib "^2.5.0"
 
-"@milkdown/preset-commonmark@7.5.0", "@milkdown/preset-commonmark@^7.5.0":
+"@milkdown/preset-commonmark@7.5.0":
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/@milkdown/preset-commonmark/-/preset-commonmark-7.5.0.tgz#dceca30657425df9b0479e6dbce4be757061d62e"
   integrity sha512-tBQlBuCfoJgKsHH5Xf6pBCMrsOhxrYNxfOUqH3Lwybrw05SV0vqIrBnjTQvhMKnWCKaomYkE3G0NnoSbCgrEuQ==
@@ -8076,7 +8076,7 @@
     remark-gfm "^4.0.0"
     tslib "^2.5.0"
 
-"@milkdown/prose@7.5.0", "@milkdown/prose@^7.5.0":
+"@milkdown/prose@7.5.0":
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/@milkdown/prose/-/prose-7.5.0.tgz#5cb316d9f2d71cf707af8eb8cb35f859ad91d874"
   integrity sha512-zufSFhQJ24SI/gsRXRuOoB5buSYIl5455fdknOBHjmK98qnLWZcUs/RZcBQezZXmNc+5gINkoDmAnQPiB18H7A==
@@ -8113,7 +8113,7 @@
     clsx "^2.0.0"
     tslib "^2.5.0"
 
-"@milkdown/transformer@7.5.0", "@milkdown/transformer@^7.5.0":
+"@milkdown/transformer@7.5.0":
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/@milkdown/transformer/-/transformer-7.5.0.tgz#0259bf774f160e0fe31162c1b2ba3d251331aee4"
   integrity sha512-RL4OAINlf5IZQkiknxftye8Gyu1jJ9FcbkQwsEDfprK4mt5b9eeJO/o5PGv/U8GMgfmDX5nMHQ8IqNrA4hcPzA==
@@ -8125,7 +8125,7 @@
     tslib "^2.5.0"
     unified "^11.0.3"
 
-"@milkdown/utils@7.5.0", "@milkdown/utils@^7.5.0":
+"@milkdown/utils@7.5.0":
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/@milkdown/utils/-/utils-7.5.0.tgz#5f969fb9fee3820534abd70bb779673bbe3858d1"
   integrity sha512-Y5sZWkgWDOH9Hz/i2XPRw3QHKENDtII87xThBCpWJMkoYrl5p8ldYx+j21hax0ZjYaDsvgj58SAruABMdG0wNQ==
@@ -8440,22 +8440,6 @@
   version "2.11.8"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
-
-"@prosemirror-adapter/core@0.2.6":
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/@prosemirror-adapter/core/-/core-0.2.6.tgz#7f14bf568ef30a6d085bffdb1112de7426b42452"
-  integrity sha512-7GXWQBR/bd6ngvek8SgtlEVC0x3KL7LKZ5cxyZl4IBAlRDbITQWsuKLChEXNan9A6+9Ry4a46crbDGTQlzooOg==
-  dependencies:
-    tslib "^2.5.0"
-
-"@prosemirror-adapter/react@^0.2.6":
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/@prosemirror-adapter/react/-/react-0.2.6.tgz#2375f74d42dad1373f139af2053810ef8fd89ed9"
-  integrity sha512-JdDqAJV7FnRyIlnXPP+E0Iu80BQPvHeB+7c0ZfdcHLfVb2BLTNHk6iOoqJmBJmqqHt/KjxXXTmxRUS4EEsjVlg==
-  dependencies:
-    "@prosemirror-adapter/core" "0.2.6"
-    nanoid "^4.0.2"
-    tslib "^2.5.0"
 
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
@@ -25842,7 +25826,7 @@ nanoid@^3.1.20, nanoid@^3.1.23, nanoid@^3.3.6:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.6.tgz#443380c856d6e9f9824267d960b4236ad583ea4c"
   integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
 
-nanoid@^4.0.0, nanoid@^4.0.2:
+nanoid@^4.0.0:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-4.0.2.tgz#140b3c5003959adbebf521c170f282c5e7f9fb9e"
   integrity sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==
