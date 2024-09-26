@@ -75,8 +75,6 @@ function RobotRoutes() {
           <Route key={path} path={path} element={<SensePage />} />
         ))}
 
-        <Route path="hotkeys" element={<Hotkeys />} />
-
         <Route path="*" element={<p>Page should not exist</p>} />
       </Route>
     </Routes>

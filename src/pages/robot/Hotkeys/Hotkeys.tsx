@@ -2,6 +2,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Display } from 'src/components';
 import Table from 'src/components/Table/Table';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import styles from './Hotkeys.module.scss';
 
 const columnHelper = createColumnHelper();
 
@@ -35,6 +36,9 @@ function Hotkeys() {
         columns={[
           columnHelper.accessor('hotkey', {
             header: 'Hotkey',
+            cell: (row) => (
+              <code className={styles.hotkey}>{row.getValue()}</code>
+            ),
           }),
           columnHelper.accessor('page', {
             header: 'Page',
