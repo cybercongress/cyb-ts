@@ -1,6 +1,6 @@
-import * as THREE from 'three';
 import ContentItem from 'src/components/ContentItem/contentItem';
 import { useMemo } from 'react';
+import * as THREE from 'three';
 import styles from './GraphHoverInfo.module.scss';
 
 // fix
@@ -10,7 +10,10 @@ type Props = {
   size: number;
 };
 
-function HoverInfo({ node, camera, size }: Props) {
+function HoverInfo({ node, camera, size, left, top }: Props) {
+  let l = left;
+  let t = top;
+
   const calc = useMemo(() => {
     if (!node || !camera) {
       return null;
@@ -32,11 +35,15 @@ function HoverInfo({ node, camera, size }: Props) {
     };
   }, [camera, node]);
 
-  if (!calc) {
-    return null;
+  if (calc) {
+    const { posX, posY } = calc;
+    l = posX;
+    t = posY;
   }
 
-  const { posX, posY } = calc;
+  if (!node?.id) {
+    return null;
+  }
 
   const isCid = node.id.startsWith('Qm');
 
@@ -49,8 +56,8 @@ function HoverInfo({ node, camera, size }: Props) {
     <div
       className={styles.hoverInfo}
       style={{
-        top: posY,
-        left: posX,
+        top: t,
+        left: l,
       }}
     >
       <ContentItem cid={node.id} />

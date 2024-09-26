@@ -155,6 +155,7 @@
     "@cosmjs/proto-signing": "0.29.0",
     "@cosmjs/stargate": "0.32.0",
     "@cosmjs/tendermint-rpc": "0.29.0",
+    "@cosmograph/react": "^1.4.0",
     "@cybercongress/cyber-js": "^0.3.92",
     "@cybercongress/gravity": "0.0.15",
     "@ethersproject/providers": "^5.7.2",

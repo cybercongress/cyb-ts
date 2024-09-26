@@ -1,6 +1,5 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { useMemo } from 'react';
-import { SubnetInfo } from '../../../../types';
 import { createColumnHelper } from '@tanstack/react-table';
 import Table from 'src/components/Table/Table';
 import { useNavigate } from 'react-router-dom';
@@ -8,17 +7,20 @@ import { routes } from 'src/routes';
 
 import { Account, Cid, Tooltip } from 'src/components';
 
-import useDelegate from '../../../hooks/useDelegate';
-import useCurrentAddress from 'src/features/cybernet/_move/useCurrentAddress';
-import GradeSetterInput from '../../Subnet/GradeSetterInput/GradeSetterInput';
-import { useSubnet } from '../../Subnet/subnet.context';
-import { routes as subnetRoutes } from '../../../routes';
-import useCybernetTexts from '../../../useCybernetTexts';
-import { useCurrentContract, useCybernet } from '../../../cybernet.context';
-import SubnetPreview from '../../../components/SubnetPreview/SubnetPreview';
 import CIDResolver from 'src/components/CIDResolver/CIDResolver';
 import { trimString } from 'src/utils/utils';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { tableIDs } from 'src/components/Table/tableIDs';
+import useDelegate from '../../../hooks/useDelegate';
+
+import GradeSetterInput from '../../Subnet/GradeSetterInput/GradeSetterInput';
+import { useSubnet } from '../../Subnet/subnet.context';
+
+import useCybernetTexts from '../../../useCybernetTexts';
+import { routes as subnetRoutes } from '../../../routes';
+import { useCurrentContract, useCybernet } from '../../../cybernet.context';
+import SubnetPreview from '../../../components/SubnetPreview/SubnetPreview';
+import { SubnetInfo } from '../../../../types';
 
 type Props = {
   data: SubnetInfo[];

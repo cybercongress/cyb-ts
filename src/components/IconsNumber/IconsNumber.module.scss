@@ -7,6 +7,7 @@
 .icon {
   display: flex;
   flex-direction: row;
+  margin-left: 3px;
 
   .vertical {
     flex-direction: column;
@@ -15,4 +16,12 @@
 
 .tooltipWrapper {
   white-space: nowrap;
+}
+
+.hydrogenPlaceholder {
+  display: flex;
+  width: 30px;
+  height: 20px;
+  justify-content: center;
+  align-items: center;
 }

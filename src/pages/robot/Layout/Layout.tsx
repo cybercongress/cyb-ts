@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Loader2 from 'src/components/ui/Loader2';
 import { MainContainer } from 'src/components';
 import { useRobotContext } from '../robot.context';
@@ -8,6 +8,8 @@ import RobotHeader from './RobotHeader/RobotHeader';
 
 function Layout() {
   const { address, isLoading, nickname, isOwner } = useRobotContext();
+
+  const location = useLocation();
 
   const counts = useMenuCounts(address);
 
@@ -22,7 +24,7 @@ function Layout() {
           {!isOwner && <RobotHeader menuCounts={counts} />}
           <Outlet />
 
-          <WrappedActionBar />
+          {!location.pathname.includes('brain') && <WrappedActionBar />}
         </>
       )}
     </MainContainer>
