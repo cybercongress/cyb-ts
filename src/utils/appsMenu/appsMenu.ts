@@ -43,6 +43,11 @@ const getMenuItems = () => {
           icon: require('./images/tag@2x.png'),
         },
         {
+          name: 'brain',
+          to: routes.brain.path,
+          icon: '🧠',
+        },
+        {
           name: 'Stats',
           to: '/oracle/stats',
           icon: require('./images/avatar@2x.png'),
