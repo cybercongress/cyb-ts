@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { Dots } from 'src/components';
 import getPrefixNumber from 'src/utils/getPrefixNumber';
-import styles from '../../RobotHeader.module.scss';
+import styles from './Level.module.scss';
 
 const POWER = 1000;
 
@@ -35,8 +35,8 @@ function Level({ value }: { value: Props }) {
   }, [value]);
 
   return (
-    <span className={styles.levelText}>
-      level <span className={styles.levelValue}>{level}</span>
+    <span className={styles.text}>
+      level <span className={styles.value}>{level}</span>
     </span>
   );
 }
