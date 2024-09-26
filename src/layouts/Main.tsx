@@ -20,6 +20,7 @@ import SenseButton from '../features/sense/ui/SenseButton/SenseButton';
 import styles from './Main.module.scss';
 import SideHydrogenBtn from './ui/SideHydrogenBtn/SideHydrogenBtn';
 
+// TODO: seems merge with App.tsx
 function MainLayout({ children }: { children: JSX.Element }) {
   const currentAddress = useCurrentAddress();
   const { viewportWidth } = useDevice();
@@ -27,14 +28,15 @@ function MainLayout({ children }: { children: JSX.Element }) {
   const dispatch = useAppDispatch();
   const [isRenderGraph, setIsRenderGraph] = useState(false);
 
-  const location = useLocation();
-
   const graphSize = Math.min(viewportWidth * 0.13, 220);
   const isMobile =
     viewportWidth <= Number(stylesOracle.mobileBreakpoint.replace('px', ''));
 
+  const location = useLocation();
+
+  // TODO: move setFocus to App.tsx, not layout
   useEffect(() => {
-    if (!location.pathname.includes('brain')) {
+    if (location.pathname.includes('brain')) {
       dispatch(setFocus(true));
     }
 
@@ -45,7 +47,9 @@ function MainLayout({ children }: { children: JSX.Element }) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [dispatch, location]);
+    // location is not needed, only initial render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   useEffect(() => {
     if (!ref.current) {
@@ -64,10 +68,10 @@ function MainLayout({ children }: { children: JSX.Element }) {
       <Header />
 
       {currentAddress && !isMobile && (
-        <>
-          {CHAIN_ID === Networks.BOSTROM && !isMobile && <SenseButton />}
+        <div className={styles.widgetWrapper}>
+          {CHAIN_ID === Networks.BOSTROM && <SenseButton />}
           <SideHydrogenBtn />
-        </>
+        </div>
       )}
 
       {children}

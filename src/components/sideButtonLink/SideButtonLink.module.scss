@@ -1,59 +1,60 @@
 .main {
   display: flex;
-  position: fixed;
+  justify-content: center;
+  align-items: center;
   z-index: 3;
-  top: 45%;
-  transform: translateY(-50%);
-  padding: 40px 10px;
+  padding: 10px 10px;
   backdrop-filter: blur(15px);
-  border-radius: 50px;
+  pointer-events: auto;
 
   > span {
     font-size: 14px;
-    margin-top: 5px;
     color: white;
 
     &:last-of-type {
-      margin-top: 4px;
       font-size: 16px;
     }
   }
 
   &:hover {
     transition: all 0.3s;
-    background-color: var(--green-light);
+    background-color: #74ff00;
 
     span {
-      color: var(--green-light);
+      color: #74ff00;
     }
   }
 }
 
 .sense {
   flex-direction: column;
-  padding-left: 3px;
+  border-radius: 0px 15px 15px 0px;
   background: linear-gradient(
     to right,
-    black 90%,
+    black 93%,
     rgba(255, 255, 255, 0.5) 100%
   );
 
   &:hover {
-    padding-right: 30px;
+    padding-right: 20px;
   }
 }
 
+.sense div {
+  display: flex;
+  flex-direction: column;
+  margin-right: 5px;
+}
+
 .hydrogen {
-  right: 0;
-  align-items: center;
   background: linear-gradient(
     to left,
-    black 90%,
+    black 93%,
     rgba(255, 255, 255, 0.5) 100%
   );
-
+  border-radius: 15px 0px 0px 15px;
   &:hover {
-    padding-left: 30px;
+    padding-left: 20px;
   }
 }
 
