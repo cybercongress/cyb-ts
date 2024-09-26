@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { Dots } from 'src/components';
 import getPrefixNumber from 'src/utils/getPrefixNumber';
+import styles from './Level.module.scss';
 
 const POWER = 1000;
 
@@ -33,7 +34,11 @@ function Level({ value }: { value: Props }) {
     }, 0);
   }, [value]);
 
-  return <span>level {level}</span>;
+  return (
+    <span className={styles.text}>
+      level <span className={styles.value}>{level}</span>
+    </span>
+  );
 }
 
 export default Level;
