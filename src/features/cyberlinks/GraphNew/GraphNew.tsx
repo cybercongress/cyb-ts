@@ -220,6 +220,8 @@ export default function GraphNew({ address, data, size }) {
             nodeLabelColor="white"
             simulationFriction={0.95}
             simulationDecay={5000}
+            nodeGreyoutOpacity={0.35}
+            linkGreyoutOpacity={0.35}
             hoveredNodeLabelColor="white"
             nodeSize={(n) => n.size ?? null}
             // nodeColor={nodeColor}
