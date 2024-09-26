@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
-import { AppDispatch } from 'src/redux/store';
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 
@@ -23,13 +22,14 @@ import { PreviousPageProvider } from 'src/contexts/previousPage';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 import styles from './styles.scss';
+import { setFocus } from './Header/Commander/commander.redux';
 
 export const PORTAL_ID = 'portal';
 
 initCyblog();
 
 function App() {
-  const dispatch: AppDispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const { defaultAccount } = useAppSelector((state) => state.pocket);
   const queryClient = useQueryClient();
 
@@ -109,6 +109,15 @@ function App() {
   //     localStorage.setItem('thanks', JSON.stringify(parsed.thanks));
   //   }
   // };
+
+  // initial focus on commander
+  useEffect(() => {
+    const isGraphPages = window.location.pathname.includes('/brain');
+
+    if (!isGraphPages) {
+      dispatch(setFocus(true));
+    }
+  }, [dispatch]);
 
   return (
     <PreviousPageProvider>
