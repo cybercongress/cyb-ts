@@ -199,7 +199,7 @@ export default function GraphNew({ address, data, size }) {
               // debugger;
 
               if (!cosmograph.current?.isSimulationRunning && !node) {
-                cosmograph.current?.start();
+                cosmograph.current?.restart();
               } else {
                 cosmograph.current?.pause();
               }
