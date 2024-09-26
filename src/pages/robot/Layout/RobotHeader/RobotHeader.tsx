@@ -17,7 +17,12 @@ function RobotHeader({ menuCounts }) {
       <Display noPadding color="blue">
         <div className={styles.content}>
           <div className={styles.level}>
-            {nickname && <h3 className={styles.name}>{nickname}.moon</h3>}
+            {nickname && (
+              <h3 className={styles.name}>
+                {nickname}
+                <span>.moon</span>
+              </h3>
+            )}
 
             <AdviserHoverWrapper adviserContent="the level increases based on your stats, such as sigma, karma, brain, and others">
               <Level value={menuCounts} />

@@ -32,10 +32,19 @@
     font-weight: 400;
   }
 
+  .levelText {
+    color: var(--grayscale-dark);
+  }
+  .levelValue {
+    color: var(--blue-light);
+  }
   .name {
     color: #ffffff;
     font-size: 20px;
     font-weight: 400;
+  }
+  .name span {
+    color: var(--grayscale-dark);
   }
 
   img {
