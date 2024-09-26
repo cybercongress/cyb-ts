@@ -62,6 +62,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   const noAccount = !defaultAccount.account;
   const noPassport = CHAIN_ID === Networks.BOSTROM && !passport;
 
+  // FIXME: refactor
   const exception =
     (!location.pathname.includes('/keys') &&
       !location.pathname.includes('/drive') &&
@@ -87,7 +88,8 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
     (noAccount || noPassport) &&
     // maybe change to props
     exception &&
-    !location.pathname.includes(routes.gift.path)
+    !location.pathname.includes(routes.gift.path) &&
+    !location.pathname.includes('/brain') // both full and robot
   ) {
     return (
       <ActionBarContainer>
@@ -103,7 +105,8 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
   if (
     !signerReady &&
     exception &&
-    !location.pathname.includes(routes.gift.path)
+    !location.pathname.includes(routes.gift.path) &&
+    !location.pathname.includes('/brain') // both full and robot
   ) {
     const activeAddress =
       defaultAccount.account?.cyber.name ||
