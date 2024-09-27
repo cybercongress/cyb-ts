@@ -17,8 +17,6 @@ import { useCyberlinkWithWaitAndAdviser } from '../hooks/useCyberlink';
 import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
 import GraphActionBar from '../graph/GraphActionBar/GraphActionBar';
 
-const randomBoolean = (() => Math.random() > 0.5)();
-
 function GraphNew({ address, data, size }) {
   const cosmograph = useRef<CosmographRef>();
   // const histogram = useRef<CosmographHistogramRef<Node>>();
@@ -29,7 +27,7 @@ function GraphNew({ address, data, size }) {
 
   const [degree, setDegree] = useState<number[]>([]);
 
-  const { limit } = useGraphLimit();
+  const { limit, isCurvedStyle } = useGraphLimit();
 
   // max 2 nodes
   const [selectedNodes, setSelectedNodes] = useState<CosmosInputNode[]>([]);
@@ -206,7 +204,7 @@ function GraphNew({ address, data, size }) {
             showDynamicLabels={false}
             linkArrows={false}
             linkWidth={2}
-            curvedLinks={randomBoolean}
+            curvedLinks={isCurvedStyle}
             onZoom={(zoom) => {
               // cosmograph.current?.pause();
             }}
