@@ -43,6 +43,11 @@ const getMenuItems = () => {
           icon: require('./images/tag@2x.png'),
         },
         {
+          name: 'brain',
+          to: routes.brain.path,
+          icon: '🧠',
+        },
+        {
           name: 'Stats',
           to: '/oracle/stats',
           icon: require('./images/avatar@2x.png'),
@@ -191,6 +196,12 @@ const getMenuItems = () => {
         },
 
     { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
+    {
+      name: 'Studio',
+      icon: require('./images/studio.png'),
+      to: routes.studio.path,
+      subItems: [],
+    },
     // {
     //   name: 'Help',
     //   icon: zhdun,

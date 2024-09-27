@@ -2,14 +2,17 @@ import { PORTAL_ID } from 'src/containers/application/App';
 import { useState } from 'react';
 import useEventListener from 'src/hooks/dom/useEventListener';
 import { Button } from 'src/components';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 import styles from './GraphFullscreenBtn.module.scss';
+import expandIcon from './images/expand.svg';
+import minimizeIcon from './images/minimize.svg';
 
 export function useFullscreen() {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const handleFullscreenChange = () => {
+  function handleFullscreenChange() {
     setIsFullscreen(document.fullscreenElement !== null);
-  };
+  }
 
   useEventListener('fullscreenchange', handleFullscreenChange, document);
 
@@ -51,10 +54,14 @@ function GraphFullscreenBtn() {
     }
   }
 
+  const text = isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen';
+
   return (
-    <Button className={styles.btn} onClick={onClick}>
-      {isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-    </Button>
+    <AdviserHoverWrapper adviserContent={text}>
+      <Button className={styles.btn} onClick={onClick}>
+        <img src={isFullscreen ? minimizeIcon : expandIcon} alt={text} />
+      </Button>
+    </AdviserHoverWrapper>
   );
 }
 

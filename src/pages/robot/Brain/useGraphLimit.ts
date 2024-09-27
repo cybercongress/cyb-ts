@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-const DEFAULT_LIMIT = 20000;
+const DEFAULT_LIMIT = 10000;
 
 function useGraphLimit(initialLimit?: number) {
   const [searchParams, setSearchParams] = useSearchParams();

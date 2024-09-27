@@ -10,6 +10,7 @@ import tocyb from 'images/boot.png';
 import boot from 'images/large-green.png';
 import defaultImg from 'images/large-orange-circle.png';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
+import { checkIsEmoji } from 'src/utils/emoji';
 import Tooltip from '../tooltip/tooltip';
 import { trimString } from '../../utils/utils';
 import styles from './TextDenom.module.scss';
@@ -105,8 +106,7 @@ function ImgDenom({
     }
   }, [coinDenom, infoDenom, fetchWithDetails, getImgFromIpfsByCid]);
 
-  // refactor
-  const isEmoji = imgDenom && imgDenom?.length < 3;
+  const isEmoji = imgDenom && checkIsEmoji(imgDenom);
 
   const img = isEmoji ? (
     imgDenom

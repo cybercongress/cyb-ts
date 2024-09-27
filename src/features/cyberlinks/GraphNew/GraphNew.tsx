@@ -17,6 +17,8 @@ import { useCyberlinkWithWaitAndAdviser } from '../hooks/useCyberlink';
 import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
 import GraphActionBar from '../graph/GraphActionBar/GraphActionBar';
 
+const randomBoolean = (() => Math.random() > 0.5)();
+
 function GraphNew({ address, data, size }) {
   const cosmograph = useRef<CosmographRef>();
   // const histogram = useRef<CosmographHistogramRef<Node>>();
@@ -58,13 +60,12 @@ function GraphNew({ address, data, size }) {
     }
   }, [degree]);
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      cosmograph.current?.pause();
-    }, 5000);
-
-    return () => clearTimeout(timeoutId);
-  }, []);
+  // useEffect(() => {
+  //   const timeoutId = setTimeout(() => {
+  //     cosmograph.current?.pause();
+  //   }, 5000);
+  //   return () => clearTimeout(timeoutId);
+  // }, []);
 
   // const nodeColor = useCallback(
   //   (n: Node, index: number) => {
@@ -141,7 +142,7 @@ function GraphNew({ address, data, size }) {
     const links = [...data.links, ...localData.links].map((link) => {
       return {
         ...link,
-        width: 2.5,
+        width: 3.5,
         color: link.color || 'rgba(9,255,13,1)',
       };
     });
@@ -172,7 +173,7 @@ function GraphNew({ address, data, size }) {
         node={node}
         left={!toRight ? xOffset : undefined}
         right={toRight ? xOffset : undefined}
-        top={'42.5vh'}
+        top="42.5vh"
         size={size || window.innerWidth}
       />
     );
@@ -205,8 +206,18 @@ function GraphNew({ address, data, size }) {
             showDynamicLabels={false}
             linkArrows={false}
             linkWidth={2}
+            curvedLinks={randomBoolean}
+            onZoom={(zoom) => {
+              // cosmograph.current?.pause();
+            }}
             onClick={(node) => {
-              cosmograph.current?.pause();
+              // debugger;
+
+              if (!cosmograph.current?.isSimulationRunning && !node) {
+                cosmograph.current?.restart();
+              } else {
+                cosmograph.current?.pause();
+              }
 
               if (node) {
                 // setShowLabelsFor([node]);
@@ -234,6 +245,8 @@ function GraphNew({ address, data, size }) {
             nodeLabelColor="white"
             simulationFriction={0.95}
             simulationDecay={5000}
+            nodeGreyoutOpacity={0.35}
+            linkGreyoutOpacity={0.35}
             hoveredNodeLabelColor="white"
             nodeSize={(n) => n.size ?? null}
             // nodeColor={nodeColor}
@@ -243,6 +256,7 @@ function GraphNew({ address, data, size }) {
             // linkColor={(l: Link) => l.color ?? null}
 
             onNodeMouseOver={(n, _, _1, e) => {
+              cosmograph.current?.pause();
               setHoverNode(n);
 
               if (e) {
