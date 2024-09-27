@@ -140,4 +140,8 @@ export const routes = {
   settings: {
     path: '/settings',
   },
+  studio: {
+    path: '/studio',
+    getLink: (hash: string) => `/studio/${hash}`,
+  },
 };

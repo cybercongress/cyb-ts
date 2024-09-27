@@ -4,6 +4,7 @@ import Layout from './Layout/Layout';
 import Keys from '../Keys/Keys';
 import Hub from '../Hub/hub';
 import Audio from './Audio/Audio';
+import Hotkeys from '../robot/Hotkeys/Hotkeys';
 
 function Settings() {
   return (
@@ -12,6 +13,8 @@ function Settings() {
         <Route index element={<IpfsSettings />} />
         <Route path="keys" element={<Keys />} />
         <Route path="audio" element={<Audio />} />
+
+        <Route path="hotkeys" element={<Hotkeys />} />
 
         <Route path="/*" element={<Hub />} />
       </Route>

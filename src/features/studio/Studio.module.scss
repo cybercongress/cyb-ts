@@ -1,0 +1,36 @@
+@import '../../layouts/variables.module';
+
+$controlPanelHeight: 60px;
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: inherit;
+  min-height: 200px;
+  gap: 15px;
+  // min-height: calc(
+  //   100vh - $reservedTopHeight - $actionBarHeight - $controlPanelHeight
+  // );
+
+  > :first-child {
+    > div {
+      // don't understand this scroll
+      overflow: hidden;
+    }
+  }
+}
+
+.containerEditor {
+  display: grid;
+  height: 100%;
+  // padding: 20px;
+  gap: 20px;
+  grid-template-columns: 150px 1fr 150px;
+
+  > :nth-child(2) {
+    > div {
+      // don't understand this scroll
+      overflow: hidden;
+    }
+  }
+}

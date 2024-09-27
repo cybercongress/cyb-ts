@@ -31,6 +31,10 @@
     }
 
     border-right: unset !important;
+
+    &.vertical {
+      border-bottom: unset !important;
+    }
   }
 
   &.right {
@@ -40,6 +44,10 @@
     }
 
     border-left: unset !important;
+
+    &.vertical {
+      border-top: unset !important;
+    }
   }
 
   .inner {
@@ -61,6 +69,11 @@
       padding-top: unset;
       padding-bottom: unset;
     }
+  }
+
+  &.header {
+    position: relative;
+    top: -$display-padding-top;
   }
 
   @include blueScroll;

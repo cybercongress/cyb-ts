@@ -2,13 +2,17 @@
 import { Coin, OfflineSigner, StdFee } from '@cosmjs/launchpad';
 import { SigningCyberClient } from '@cybercongress/cyber-js';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
-import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { CyberLinkSimple, NeuronAddress, ParticleCid } from 'src/types/base';
 import { getNowUtcNumber } from 'src/utils/date';
 
 import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
 import { CONTRACT_ADDRESS_PASSPORT } from 'src/containers/portal/utils';
+import BigNumber from 'bignumber.js';
+import { asyncForEach } from 'src/utils/utils';
 import { LinkDto } from '../CozoDb/types/dto';
 import { throwErrorOrResponse } from './errors';
+
+import Soft3MessageFactory from '../soft.js/api/msgs';
 
 const defaultFee = {
   amount: [],
@@ -43,6 +47,56 @@ export const sendCyberlink = async (
   // TODO: add from/toparticle to DB ??
   await senseApi?.putCyberlink(link);
   await senseApi?.addCyberlinkLocal(link);
+
+  return transactionHash;
+};
+
+export const sendCyberlinkArray = async (
+  neuron: NeuronAddress,
+  arrLinks: CyberLinkSimple[],
+  {
+    signingClient,
+    senseApi,
+  }: {
+    senseApi: SenseApi;
+    signingClient: SigningCyberClient;
+  }
+) => {
+  const multiplier = new BigNumber(2).multipliedBy(arrLinks.length);
+
+  const cyberlinkMsg = {
+    typeUrl: '/cyber.graph.v1beta1.MsgCyberlink',
+    value: {
+      neuron,
+      links: arrLinks,
+    },
+  };
+
+  const response = await signingClient.signAndBroadcast(
+    neuron,
+    [cyberlinkMsg],
+    Soft3MessageFactory.fee(multiplier.toNumber())
+  );
+
+  const result = throwErrorOrResponse(response);
+
+  const { transactionHash } = result;
+
+  const links = arrLinks.map((item) => {
+    return {
+      from: item.from,
+      to: item.to,
+      transactionHash,
+      timestamp: getNowUtcNumber(),
+      neuron,
+    } as LinkDto;
+  });
+
+  await senseApi?.putCyberlink(links);
+
+  await asyncForEach(links, async (item: LinkDto) => {
+    await senseApi?.addCyberlinkLocal(item);
+  });
 
   return transactionHash;
 };

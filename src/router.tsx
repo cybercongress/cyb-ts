@@ -9,8 +9,6 @@ import {
 } from 'react-router-dom';
 import App from './containers/application/App';
 import Home from './containers/home/home';
-import Governance from './containers/governance/governance';
-import ProposalsDetail from './containers/governance/proposalsDetail';
 import Validators from './containers/Validators/Validators';
 import Story from './containers/story/story';
 import TxsDetails from './containers/txs/txsDetails';
@@ -61,6 +59,7 @@ import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleId
 import Map from './pages/Portal/Map/Map';
 import { Networks } from './types/networks';
 import GovernanceRoutes from './containers/governance/GovernanceRoutes';
+import StudioWrapper from './features/studio/StudioWrapper';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -228,6 +227,10 @@ function AppRouter() {
           <Route path="/settings/*" element={<Settings />} />
 
           <Route path={routes.social.path} element={<Social />} />
+
+          {['/studio', '/studio/:cid'].map((path) => (
+            <Route key={path} path={path} element={<StudioWrapper />} />
+          ))}
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />
