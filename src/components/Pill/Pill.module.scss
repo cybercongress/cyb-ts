@@ -37,6 +37,12 @@
     color: #000;
   }
 
+  &.green-outline {
+    color: var(--primary-color);
+    background-color: #000;
+    border: 1px solid rgba(54, 214, 174, 0.2);
+  }
+
   &.red {
     background-color: #c80000;
   }

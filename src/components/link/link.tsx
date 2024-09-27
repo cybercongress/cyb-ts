@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
+import { trimString } from 'src/utils/utils';
 import styles from './cid.modules.scss';
-import React from 'react';
 
 export function LinkWindow({ to, children, ...props }) {
   return (
@@ -18,7 +18,7 @@ type Props = {
 export function Cid({ cid, children }: Props) {
   return (
     <Link to={`/ipfs/${cid}`} className={styles.cid}>
-      {children || cid}
+      {children || trimString(cid, 5, 4)}
     </Link>
   );
 }

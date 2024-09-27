@@ -18,6 +18,7 @@ import Heroes from './_refactor/account/tabs/heroes';
 import Karma from './Karma/Karma';
 import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
+import Hotkeys from './Hotkeys/Hotkeys';
 
 function RobotRoutes() {
   const { address, isFetched } = useRobotContext();

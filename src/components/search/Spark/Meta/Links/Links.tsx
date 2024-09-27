@@ -6,10 +6,27 @@ type Props = {
   to: number;
   from: number;
   value: LinksTypeFilter;
+  tooltip: {
+    from: string;
+    to: string;
+    particle: string;
+  };
   onChange: () => void;
 };
 
-function Links({ to = 0, from = 0, value, onChange }: Props) {
+const tooltipDefault: Props['tooltip'] = {
+  from: 'show only outcoming particles - answers',
+  to: 'show only incoming particles - asks',
+  particle: 'show all particles',
+};
+
+function Links({
+  to = 0,
+  from = 0,
+  value,
+  tooltip = tooltipDefault,
+  onChange,
+}: Props) {
   return (
     <div className={styles.links}>
       <ButtonsGroup
@@ -20,7 +37,7 @@ function Links({ to = 0, from = 0, value, onChange }: Props) {
             label: String(to),
             name: LinksTypeFilter.to,
             checked: value === LinksTypeFilter.to,
-            tooltip: 'show only incoming particles - asks',
+            tooltip: tooltip.to,
           },
           {
             label: <>&rarr;</>,
@@ -30,7 +47,7 @@ function Links({ to = 0, from = 0, value, onChange }: Props) {
             label: <span />,
             name: LinksTypeFilter.all,
             checked: value === LinksTypeFilter.all,
-            tooltip: 'show all particles',
+            tooltip: tooltip.particle,
           },
           {
             label: <>&rarr;</>,
@@ -40,7 +57,7 @@ function Links({ to = 0, from = 0, value, onChange }: Props) {
             label: String(from),
             name: LinksTypeFilter.from,
             checked: value === LinksTypeFilter.from,
-            tooltip: 'show only outcoming particles - answers',
+            tooltip: tooltip.from,
           },
         ]}
       />
