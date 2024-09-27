@@ -1,9 +1,14 @@
 import dateFormat from 'dateformat';
 import { RegistryTypes } from 'src/services/soft.js/types';
+// import { TxResponse } from '@cybercongress/cyber-ts/cosmos/base/abci/v1beta1/abci';
 import { LogItem } from './type';
 
 export const mapLogData = (data: any): LogItem[] =>
   data.reduce((acc, item) => {
+    return acc;
+    // debugger;
+    // const t = TxResponse.decode(item.tx.value);
+
     let cyberLinkMessage = item.tx.body.messages[0];
 
     if (!cyberLinkMessage) {
