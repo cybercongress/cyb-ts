@@ -53,7 +53,7 @@ import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
-import Cybernet from './features/cybernet/ui/Cybernet';
+
 import Settings from './pages/Settings/Settings';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
@@ -217,10 +217,10 @@ function AppRouter() {
 
           <Route path="/nebula" element={<Nebula />} />
 
-          {/* seems shouldn't be build */}
+          {/* seems shouldn't be build
           {process.env.CHAIN_ID === Networks.SPACE_PUSSY && (
             <Route path="/cyberver/*" element={<Cybernet />} />
-          )}
+          )} */}
 
           <Route path="/keys" element={<Keys />} />
 
