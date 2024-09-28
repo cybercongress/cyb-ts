@@ -26,12 +26,12 @@ export const getFollowsAsCid = async (
     },
   });
 
-  if (!response.data.txs) {
+  if (!response.txResponses.length) {
     return [];
   }
-  return response.data.txs.map(
-    (item) => item.tx.value.msg[0].value.links[0].to
-  );
+
+  debugger;
+  return response.txs.map((item) => item.tx.value.msg[0].value.links[0].to);
 };
 
 export const getFollowers = async (
@@ -59,8 +59,10 @@ export const getFollowers = async (
     },
   });
 
-  if (!response.data.txs) {
+  if (!response.txResponses.length) {
     return [];
   }
-  return response.data.txs.map((item) => item.tx.value.msg[0].value.neuron);
+
+  debugger;
+  return response.txs.map((item) => item.tx.value.msg[0].value.neuron);
 };

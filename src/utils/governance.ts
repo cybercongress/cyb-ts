@@ -1,8 +1,5 @@
 import axios from 'axios';
-import {
-  GetTxsEventResponse,
-  OrderBy,
-} from 'cosmjs-types/cosmos/tx/v1beta1/service';
+import { OrderBy } from 'cosmjs-types/cosmos/tx/v1beta1/service';
 import { LCD_URL } from 'src/constants/config';
 import { getTransactions } from 'src/services/transactions/lcd';
 
@@ -88,11 +85,7 @@ export const getTableVoters = async (id, offset = 0, limit = 20) => {
       orderBy: OrderBy.ORDER_BY_DESC,
     });
 
-    const r: Omit<GetTxsEventResponse, 'txResponses'> & {
-      tx_responses: GetTxsEventResponse['txResponses'];
-    } = response.data;
-
-    return r;
+    return response;
   } catch (error) {
     return null;
   }

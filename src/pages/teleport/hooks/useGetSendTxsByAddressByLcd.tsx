@@ -12,7 +12,7 @@ const limit = 5;
 const concatResponse = (arr: undefined | InfiniteData<{ data: any }>) => {
   return (
     arr?.pages?.reduce((acc, page) => {
-      return acc.concat(page.data.tx_responses);
+      return acc.concat(page.data.txResponses);
     }, []) || []
   );
 };

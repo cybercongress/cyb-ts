@@ -4,10 +4,10 @@ import ActionBarContainer from 'src/pages/robot/_refactor/account/actionBar';
 
 import { chekFollow as checkFollow } from 'src/utils/search/utils';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
-import { useRobotContext } from '../robot.context';
 
 import { ActionBar } from 'src/components';
 import { useAppSelector } from 'src/redux/hooks';
+import { useRobotContext } from '../robot.context';
 
 function WrappedActionBar() {
   const { defaultAccount } = useAppSelector((state) => state.pocket);
@@ -28,7 +28,9 @@ function WrappedActionBar() {
     const addressFromIpfs = await getIpfsHash(address);
     const response = await checkFollow(activeAddress, addressFromIpfs);
 
-    if (response && Number(response.total_count) === 0) {
+    // debugger;
+
+    if (response && Number(response.txResponses.length) === 0) {
       setFollow(true);
       // setTweets(false);
     } else {

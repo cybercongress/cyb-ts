@@ -447,7 +447,7 @@ const getLink = async (
       orderBy: order,
     });
 
-    return response.data;
+    return response;
   } catch (e) {
     console.log(e);
     return null;
@@ -480,7 +480,7 @@ export const getSendBySenderRecipient = async (
       orderBy: OrderBy.ORDER_BY_DESC,
     });
 
-    return response.data;
+    return response;
   } catch (e) {
     console.log(e);
     return undefined;
@@ -497,7 +497,7 @@ export const getFollows = async (address) => {
       pagination: { limit: 1000000000 },
     });
 
-    return response.data;
+    return response;
   } catch (e) {
     console.log(e);
     return null;
@@ -513,7 +513,7 @@ export const getTweet = async (address) => {
       ],
       pagination: { limit: 1000000000 },
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.log(error);
     return null;
@@ -530,7 +530,7 @@ export const chekFollow = async (address, addressFollowHash) => {
       ],
       pagination: { limit: 1000000000 },
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.log(error);
     return null;
@@ -547,7 +547,7 @@ export async function getCyberlinksTotal(address: string) {
       pagination: { limit: 5, offset: 0 },
     });
 
-    return response.data?.pagination?.total;
+    return response?.pagination?.total;
   } catch (error) {
     console.log(error);
     return undefined;
@@ -572,7 +572,7 @@ export const getFollowers = async (addressHash) => {
       },
     });
 
-    return response.data;
+    return response;
   } catch (error) {
     console.log(error);
     return null;
@@ -608,17 +608,17 @@ export const getCreator = async (cid) => {
       },
     });
 
-    const h1 = Number(response.data.tx_responses?.[0]?.height || 0);
-    const h2 = Number(response2.data.tx_responses?.[0]?.height || 0);
+    const h1 = Number(response.txResponses?.[0]?.height || 0);
+    const h2 = Number(response2.txResponses?.[0]?.height || 0);
 
     if (h1 === 0) {
-      return response2.data;
+      return response2;
     }
     if (h2 === 0) {
-      return response.data;
+      return response;
     }
 
-    return h1 < h2 ? response.data : response2.data;
+    return h1 < h2 ? response : response2;
   } catch (error) {
     console.log(error);
     return null;

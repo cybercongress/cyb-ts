@@ -15,8 +15,8 @@ function useGetCreator(cid: string) {
   );
 
   let creator: Option<CreatorCyberLink>;
-  if (data?.tx_responses?.length > 0) {
-    const { tx_responses: txResponses } = data;
+  if (data?.txResponses?.length > 0) {
+    const { txResponses } = data;
 
     const { neuron, sender } = txResponses[0].tx.body.messages[0];
     const addressCreator = sender || neuron;

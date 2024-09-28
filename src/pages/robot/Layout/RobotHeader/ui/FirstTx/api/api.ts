@@ -8,11 +8,10 @@ const request = async (address: string, offset: number, limit: number) => {
       value: address,
     },
   ];
-  const response = await getTransactions({
+  return getTransactions({
     events,
     pagination: { limit, offset },
   });
-  return response.data;
 };
 
 const LIMIT = 1;

@@ -1,6 +1,7 @@
 import {
   GetTxsEventRequest,
   GetTxsEventResponse,
+  GetTxsEventResponseAmino,
 } from '@cybercongress/cyber-ts/cosmos/tx/v1beta1/service';
 import axios from 'axios';
 import { LCD_URL } from 'src/constants/config';
@@ -19,16 +20,32 @@ export async function getTransactions({
   config,
 }: PropsTx) {
   const { offset, limit } = pagination;
-  return axios.get<GetTxsEventResponse>(`${LCD_URL}/cosmos/tx/v1beta1/txs`, {
-    params: {
-      'pagination.offset': offset,
-      'pagination.limit': limit,
-      orderBy,
-      events: events.map((evn) => `${evn.key}='${evn.value}'`),
-    },
-    paramsSerializer: {
-      indexes: null,
-    },
-    signal: config?.signal,
-  });
+  const response = await axios.get<GetTxsEventResponseAmino>(
+    `${LCD_URL}/cosmos/tx/v1beta1/txs`,
+    {
+      params: {
+        'pagination.offset': offset,
+        'pagination.limit': limit,
+        orderBy,
+        events: events.map((evn) => `${evn.key}='${evn.value}'`),
+      },
+      paramsSerializer: {
+        indexes: null,
+      },
+      signal: config?.signal,
+    }
+  );
+
+  try {
+    const formatted = GetTxsEventResponse.fromAmino(response.data);
+    return formatted;
+  } catch (error) {
+    console.log(error);
+
+    // debugger;
+
+    // FIXME:
+    return { txResponses: [] };
+    // throw error;
+  }
 }
