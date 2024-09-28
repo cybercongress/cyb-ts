@@ -1,5 +1,5 @@
-import { getTransactions } from 'src/utils/search/utils';
 import { CyberLinkSimple } from 'src/types/base';
+import { getTransactions } from 'src/services/transactions/lcd';
 import { KeywordsItem } from '../studio.context';
 
 export const checkLoopLinks = async (links: CyberLinkSimple[]) => {
