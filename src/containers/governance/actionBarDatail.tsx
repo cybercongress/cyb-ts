@@ -14,6 +14,7 @@ import {
   BASE_DENOM,
   MEMO_KEPLR,
 } from 'src/constants/config';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -44,7 +45,13 @@ const {
   STAGE_ERROR,
 } = LEDGER;
 
-function ActionBarDetail({ proposals, id, addressActive, update }) {
+type Props = {
+  proposals: any;
+  id: number;
+  update: () => void;
+};
+
+function ActionBarDetail({ proposals, id, update }: Props) {
   const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
@@ -53,6 +60,8 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [valueSelect, setValueSelect] = useState(1);
   const [valueDeposit, setValueDeposit] = useState('');
+
+  const addressActive = useCurrentAddress();
 
   useEffect(() => {
     const confirmTx = async () => {
@@ -100,7 +109,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
     if (signingClient && signer && Object.keys(proposals).length > 0) {
       try {
         const [{ address }] = await signer.getAccounts();
-        if (addressActive !== null && addressActive.bech32 === address) {
+        if (addressActive === address) {
           let response = {};
           const fee = {
             amount: [],
@@ -134,7 +143,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
             );
           }
 
-          console.log(`response`, response);
           if (response.code === 0) {
             setTxHash(response.transactionHash);
           } else {

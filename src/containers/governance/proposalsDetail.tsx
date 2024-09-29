@@ -10,6 +10,7 @@ import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 import { useGovParam } from 'src/hooks/governance/params/useGovParams';
 import { useAppSelector } from 'src/redux/hooks';
 import {
+  Account,
   ActionBar,
   ContainerGradientText,
   IconStatus,
@@ -180,7 +181,7 @@ function ProposalsDetail() {
   return (
     <>
       <MainContainer>
-        <Pane display="flex" alignItems="center">
+        <Pane display="flex" alignItems="center" marginBottom={20}>
           <Text fontSize="25px" color="#fff">
             {proposals.title && ` #${proposalId} ${proposals.title}`}
           </Text>
@@ -190,16 +191,22 @@ function ProposalsDetail() {
             <IconStatus status={proposals.status} text marginRight={8} />
           </Pane>
         )}
+        <br />
         <ContainerGradientText>
-          <Item
-            marginBottom={15}
-            title="Proposer"
-            value={
-              <Link to={`/network/bostrom/contract/${proposals.proposer}`}>
-                {proposals.proposer}
-              </Link>
-            }
-          />
+          {/* fix, should be something */}
+          {proposals.proposer && (
+            <Item
+              marginBottom={15}
+              title="Proposer"
+              value={
+                // <Link to={`/network/bostrom/contract/${proposals.proposer}`}>
+                //   {proposals.proposer}
+                // </Link>
+
+                <Account address={proposals.proposer} avatar />
+              }
+            />
+          )}
           {proposals.type && (
             <Item
               marginBottom={15}

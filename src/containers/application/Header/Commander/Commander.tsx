@@ -26,6 +26,7 @@ function Commander() {
     function handleKeyPress(event: KeyboardEvent) {
       if (
         event.key === '/' &&
+        window.location.pathname !== routes.studio.path &&
         commanderRef.current &&
         commanderRef.current !== document.activeElement &&
         event.target &&

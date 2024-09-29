@@ -57,6 +57,7 @@ import Teleport from './pages/teleport/Teleport';
 import { routes } from './routes';
 // import Cybernet from './features/cybernet/ui/Cybernet';
 import Cybernet from './features/cybernet/ui/Cybernet';
+import StudioWrapper from './features/studio/StudioWrapper';
 import Map from './pages/Portal/Map/Map';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Settings from './pages/Settings/Settings';
@@ -231,6 +232,10 @@ function AppRouter() {
           <Route path="/settings/*" element={<Settings />} />
 
           <Route path={routes.social.path} element={<Social />} />
+
+          {['/studio', '/studio/:cid'].map((path) => (
+            <Route key={path} path={path} element={<StudioWrapper />} />
+          ))}
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />

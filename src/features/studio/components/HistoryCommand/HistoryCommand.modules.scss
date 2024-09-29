@@ -1,0 +1,13 @@
+.wrapper {
+  display: flex;
+  gap: 20px;
+}
+
+.reloadImg {
+  width: 16px;
+  height: 16px;
+
+  &.reverse {
+    transform: scaleX(-1)
+  }
+}
