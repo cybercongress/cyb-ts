@@ -81,7 +81,7 @@ function PageNotExist() {
         textAlign: 'center',
       }}
     >
-      page not exists
+      page does not exists
       <br />
       <Link to={routes.home.path}>Home</Link>
     </div>
