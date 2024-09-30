@@ -36,7 +36,10 @@ export async function getTransactions({
     }
   );
 
+  const t = GetTxsEventResponse;
+
   try {
+    // debugger;
     const formatted = GetTxsEventResponse.fromAmino(response.data);
     return formatted;
   } catch (error) {
