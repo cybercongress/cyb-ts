@@ -258,6 +258,11 @@ const getMenuItems = () => {
           to: routes.portal.routes.map.path,
           icon: require('./images/world-map.png'),
         },
+        {
+          name: 'AOS',
+          to: '/genesis',
+          icon: require('./images/aos.png'),
+        },
         // { name: 'Release', to: '/release' },
       ],
     });
