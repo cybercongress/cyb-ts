@@ -7,12 +7,14 @@ import { useRobotContext } from '../robot.context';
 import TreedView from './ui/TreedView';
 import styles from './Brain.module.scss';
 import GraphView from './ui/GraphView';
+import GraphViewVR from './ui/GraphViewVR';
 import useGraphLimit from './useGraphLimit';
 
 enum TabsKey {
   graph3d = 'graph3d',
   graph = 'graph',
   list = 'list',
+  vr = 'vr',
 }
 
 function Brain() {
@@ -52,6 +54,10 @@ function Brain() {
               text: '2d graph',
             },
             {
+              key: TabsKey.vr,
+              to: './vr',
+            },
+            {
               key: TabsKey.list,
               to: './list',
               text: 'last cyberlinks',
@@ -67,6 +73,13 @@ function Brain() {
             key={path}
             path={path}
             element={<Graph2d address={address} />}
+          />
+        ))}
+        {['/', 'vr'].map((path) => (
+          <Route
+            key={path}
+            path={path}
+            element={<GraphViewVR address={address} />}
           />
         ))}
 

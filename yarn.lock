@@ -11652,6 +11652,20 @@ aframe@^1.4:
     three-bmfont-text dmarcos/three-bmfont-text#21d017046216e318362c48abd1a48bddfb6e0733
     webvr-polyfill "^0.10.12"
 
+aframe@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/aframe/-/aframe-1.6.0.tgz#7f17461b36e08f3548e23d6d6bf8fbc0386c586f"
+  integrity sha512-+P1n2xKGZQbCNW4lTwfue9in2KmfAwYD/BZOU5uXKrJCTegPyUZZX/haJRR9Rb33ij+KPj3vFdwT5ALaucXTNA==
+  dependencies:
+    buffer "^6.0.3"
+    debug "^4.3.4"
+    deep-assign "^2.0.0"
+    load-bmfont "^1.2.3"
+    super-animejs "^3.1.0"
+    three "npm:super-three@0.164.0"
+    three-bmfont-text dmarcos/three-bmfont-text#eed4878795be9b3e38cf6aec6b903f56acd1f695
+    webvr-polyfill "^0.10.12"
+
 agent-base@5:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-5.1.1.tgz#e8fb3f242959db44d63be665db7a8e739537a32c"
@@ -19569,7 +19583,7 @@ gopd@^1.0.1:
   dependencies:
     get-intrinsic "^1.1.3"
 
-got@9.6.0:
+got@9.6.0, got@^9.2.2:
   version "9.6.0"
   resolved "https://registry.yarnpkg.com/got/-/got-9.6.0.tgz#edf45e7d67f99545705de1f7bbeeeb121765ed85"
   integrity sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==
@@ -26035,6 +26049,16 @@ nice-color-palettes@^1.0.1:
     new-array "^1.0.0"
     xhr-request "^1.0.1"
 
+nice-color-palettes@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/nice-color-palettes/-/nice-color-palettes-3.0.0.tgz#1ec31927cfc4ce8a51822b6bab2c64845d181abb"
+  integrity sha512-lL4AjabAAFi313tjrtmgm/bxCRzp4l3vCshojfV/ij3IPdtnRqv6Chcw+SqJUhbe7g3o3BecaqCJYUNLswGBhQ==
+  dependencies:
+    got "^9.2.2"
+    map-limit "0.0.1"
+    minimist "^1.2.0"
+    new-array "^1.0.0"
+
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
@@ -32452,6 +32476,15 @@ three-bmfont-text@dmarcos/three-bmfont-text#21d017046216e318362c48abd1a48bddfb6e
     quad-indices "^2.0.1"
     three-buffer-vertex-data dmarcos/three-buffer-vertex-data#69378fc58daf27d3b1d930df9f233473e4a4818c
 
+three-bmfont-text@dmarcos/three-bmfont-text#eed4878795be9b3e38cf6aec6b903f56acd1f695:
+  version "3.0.0"
+  resolved "https://codeload.github.com/dmarcos/three-bmfont-text/tar.gz/eed4878795be9b3e38cf6aec6b903f56acd1f695"
+  dependencies:
+    array-shuffle "^1.0.1"
+    layout-bmfont-text "^1.2.0"
+    nice-color-palettes "^3.0.0"
+    quad-indices "^2.0.1"
+
 three-buffer-vertex-data@dmarcos/three-buffer-vertex-data#69378fc58daf27d3b1d930df9f233473e4a4818c:
   version "1.1.0"
   resolved "https://codeload.github.com/dmarcos/three-buffer-vertex-data/tar.gz/69378fc58daf27d3b1d930df9f233473e4a4818c"
@@ -32493,6 +32526,11 @@ three-render-objects@^1.28:
   version "0.150.1"
   resolved "https://registry.yarnpkg.com/three/-/three-0.150.1.tgz#870d324a4d2daf1c7d55be97f3f73d83783e28be"
   integrity sha512-5C1MqKUWaHYo13BX0Q64qcdwImgnnjSOFgBscOzAo8MYCzEtqfQqorEKMcajnA3FHy1yVlIe9AmaMQ0OQracNA==
+
+"three@npm:super-three@0.164.0":
+  version "0.164.0"
+  resolved "https://registry.yarnpkg.com/super-three/-/super-three-0.164.0.tgz#2aaac4e551a1c54ff0522a41b81800b7aadad93a"
+  integrity sha512-yMtOkw2hSXfIvGlwcghCbhHGsKRAmh8ksDeOo/0HI7KlEVoIYKHiYLYe9GF6QBViNwzKGpMIz77XUDRveZ4XJg==
 
 throat@^4.1.0:
   version "4.1.0"
