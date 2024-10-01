@@ -36,19 +36,20 @@ export async function getTransactions({
     }
   );
 
-  const t = GetTxsEventResponse;
+  const { txs } = response.data;
 
-  try {
-    // debugger;
-    const formatted = GetTxsEventResponse.fromAmino(response.data);
-    return formatted;
-  } catch (error) {
-    console.log(error);
+  // bullshit formatting FIXME:
+  //   const formatted = GetTxsEventResponse.fromAmino(response.data);
+  // from amino to protobuf
+  const formatted = {
+    txs,
+    pagination: response.data.pagination || {},
+    txResponses: response.data.tx_responses,
+  } as GetTxsEventResponse;
 
-    // debugger;
-
-    // FIXME:
-    return { txResponses: [] };
-    // throw error;
+  if (!formatted.pagination?.total) {
+    formatted.pagination.total = formatted.txResponses.length;
   }
+
+  return formatted;
 }

@@ -30,8 +30,9 @@ export const getFollowsAsCid = async (
     return [];
   }
 
-  debugger;
-  return response.txs.map((item) => item.tx.value.msg[0].value.links[0].to);
+  return response.txResponses.map(
+    (item) => item?.tx?.body.messages[0].links[0].to
+  );
 };
 
 export const getFollowers = async (
@@ -64,5 +65,9 @@ export const getFollowers = async (
   }
 
   debugger;
-  return response.txs.map((item) => item.tx.value.msg[0].value.neuron);
+  // check
+
+  return response.txResponses.map(
+    (item) => item?.tx?.body.messages[0].value.neuron
+  );
 };
