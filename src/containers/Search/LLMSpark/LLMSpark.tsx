@@ -13,16 +13,20 @@ const provider = createOpenRouter({
 
 const model = provider.chat('meta-llama/llama-3-8b-instruct:free');
 
+export async function llmRequest(prompt) {
+  const { text } = await generateText({
+    model,
+    prompt,
+  });
+
+  return text;
+}
+
 function useLLMResponse(text) {
   const { data, isLoading, error } = useQuery(
     ['llm', text],
     async () => {
-      const { text: t } = await generateText({
-        model,
-        prompt: `what is ${text}`,
-      });
-
-      return t;
+      return llmRequest(`what is ${text}`);
     },
     {
       enabled: Boolean(text),
