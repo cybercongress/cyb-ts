@@ -61,7 +61,7 @@ function LLMSpark({ searchText }: { searchText: string }) {
 
           const hash = await execute();
 
-          navigate(routes.oracle.ask.getLink(hash));
+          navigate(`${routes.oracle.ask.getLink(hash)}?type=llm`);
         }}
       >
         {!isLoading && data}

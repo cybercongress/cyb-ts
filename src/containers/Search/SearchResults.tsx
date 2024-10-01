@@ -16,6 +16,7 @@ import { IpfsContentType } from 'src/services/ipfs/types';
 import useIsOnline from 'src/hooks/useIsOnline';
 import { getSearchQuery } from 'src/utils/search/utils';
 import { routes } from 'src/routes';
+import { ActionBar, Button } from 'src/components';
 import ActionBarContainer from './ActionBarContainer';
 import Filters from './Filters/Filters';
 import styles from './SearchResults.module.scss';
@@ -43,6 +44,8 @@ function SearchResults({
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [neuron, setNeuron] = useState(searchParams.get(NEURON_SEARCH_KEY));
+
+  const isLLM = searchParams.get('type') === 'llm';
 
   const location = useLocation();
 
@@ -215,15 +218,23 @@ function SearchResults({
 
       {!mobile && (
         <div className={styles.actionBar}>
-          <ActionBarContainer
-            textBtn={actionBarTextBtn}
-            keywordHash={keywordHash}
-            update={() => {
-              refetch();
-              setRankLink(null);
-            }}
-            rankLink={rankLink}
-          />
+          {isLLM ? (
+            <ActionBar>
+              <Button link={`${routes.studio.path}?cid=${keywordHash}`}>
+                Edit & Cyberlink
+              </Button>
+            </ActionBar>
+          ) : (
+            <ActionBarContainer
+              textBtn={actionBarTextBtn}
+              keywordHash={keywordHash}
+              update={() => {
+                refetch();
+                setRankLink(null);
+              }}
+              rankLink={rankLink}
+            />
+          )}
         </div>
       )}
     </>
