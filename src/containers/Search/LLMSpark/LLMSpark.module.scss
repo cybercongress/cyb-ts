@@ -1,8 +1,15 @@
+@import '../../../components/containerGradient/saber/index.module';
+
 .wrapper {
   position: relative;
 
   * {
     color: white;
+  }
+
+  > div:last-of-type {
+    @include saber('purple', left, 'color');
+    @include saber('purple', right, 'color');
   }
 }
 
