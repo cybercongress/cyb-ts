@@ -24,7 +24,7 @@ import FirstItems from './_FirstItems.refactor';
 import { initialContentTypeFilterState } from './constants';
 import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
-import LLMSpark from './LLMSpark/LLMSpark';
+import LLMSpark, { useIsLLMPageParam } from './LLMSpark/LLMSpark';
 
 const sortByLSKey = 'search-sort';
 const NEURON_SEARCH_KEY = 'neuron';
@@ -45,7 +45,7 @@ function SearchResults({
   const [searchParams, setSearchParams] = useSearchParams();
   const [neuron, setNeuron] = useState(searchParams.get(NEURON_SEARCH_KEY));
 
-  const isLLM = searchParams.get('type') === 'llm';
+  const isLLM = useIsLLMPageParam();
 
   const location = useLocation();
 

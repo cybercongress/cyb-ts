@@ -1,7 +1,7 @@
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { useQuery } from '@tanstack/react-query';
 import { generateText } from 'ai';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Display } from 'src/components';
 import useAddToIPFS from 'src/features/ipfs/hooks/useAddToIPFS';
 import { routes } from 'src/routes';
@@ -12,6 +12,8 @@ import useGetIPFSHash from 'src/features/ipfs/hooks/useGetIPFSHash';
 import { isCID } from 'src/utils/ipfs/helpers';
 import { testVar } from '.';
 import styles from './LLMSpark.module.scss';
+
+// WIP
 
 const provider = createOpenRouter({
   ['a' + 'piK' + 'ey']: `sk-or-v1-${atob(testVar)}`,
@@ -46,6 +48,38 @@ function useLLMResponse(text) {
   };
 }
 
+export function useIsLLMPageParam() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const isLLM = searchParams.get('llm') === 'true';
+
+  console.log(isLLM);
+
+  return isLLM;
+}
+
+export function LLMAvatar() {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <img
+        src="https://robohash.org/llama"
+        style={{
+          width: '20px',
+          height: '20px',
+          borderRadius: '50%',
+          marginRight: '5px',
+        }}
+      />
+      {model.modelId}
+    </div>
+  );
+}
+
 function LLMSpark({ searchText }: { searchText: string }) {
   const { data, isLoading } = useLLMResponse(searchText);
   const { execute } = useAddToIPFS(data);
@@ -70,10 +104,14 @@ function LLMSpark({ searchText }: { searchText: string }) {
 
         const hash = await execute();
 
-        navigate(`${routes.oracle.ask.getLink(hash)}?type=llm`);
+        navigate(`${routes.oracle.ask.getLink(hash)}?llm=true`);
       }}
     >
-      {hovering && <div className={styles.left}>{model.modelId}</div>}
+      {hovering && (
+        <div className={styles.left}>
+          <LLMAvatar />
+        </div>
+      )}
       <Display color={isLoading ? 'yellow' : 'blue'}>
         {isLoading && <Loader2 text="llm is generating response" />}
         {data && <TextMarkdown preview>{data}</TextMarkdown>}
