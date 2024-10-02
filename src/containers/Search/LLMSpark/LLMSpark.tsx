@@ -115,7 +115,7 @@ function LLMSpark({ searchText }: { searchText: string }) {
           <LLMAvatar />
         </div>
       )}
-      <Display color={isLoading ? 'yellow' : 'blue'}>
+      <Display color={isLoading ? 'yellow' : 'purple'}>
         {isLoading && <Loader2 text="llm is generating response" />}
         {data && <TextMarkdown preview>{data}</TextMarkdown>}
       </Display>
