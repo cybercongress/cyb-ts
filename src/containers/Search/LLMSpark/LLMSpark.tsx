@@ -10,6 +10,7 @@ import { useHover } from 'src/hooks/useHover';
 import Loader2 from 'src/components/ui/Loader2';
 import useGetIPFSHash from 'src/features/ipfs/hooks/useGetIPFSHash';
 import { isCID } from 'src/utils/ipfs/helpers';
+import { isDevEnv } from 'src/utils/dev';
 import { testVar } from '.';
 import styles from './LLMSpark.module.scss';
 
@@ -19,7 +20,11 @@ const provider = createOpenRouter({
   ['a' + 'piK' + 'ey']: `sk-or-v1-${atob(testVar)}`,
 });
 
-const model = provider.chat('meta-llama/llama-3-8b-instruct:free');
+const modelName = !isDevEnv()
+  ? 'meta-llama/llama-3-8b-instruct:free'
+  : 'openai/gpt-4o-mini';
+
+const model = provider.chat(modelName);
 
 export async function llmRequest(prompt) {
   const { text } = await generateText({
@@ -49,11 +54,9 @@ function useLLMResponse(text) {
 }
 
 export function useIsLLMPageParam() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const isLLM = searchParams.get('llm') === 'true';
-
-  console.log(isLLM);
 
   return isLLM;
 }
