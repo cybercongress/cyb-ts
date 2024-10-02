@@ -74,7 +74,7 @@ function Ipfs() {
 
   return (
     <MainContainer width="62%" resetMaxWidth>
-      <div className={styles.wrapper}>
+      <div className={styles.particle}>
         {status === 'completed' && details ? (
           <ContentIpfs content={content} details={details} cid={cid} />
         ) : isText ? (
@@ -95,8 +95,11 @@ function Ipfs() {
             cid={cid}
           />
         )}
+
+        {details && (
+          <SoulCompanion cid={cid} details={details} skip={mutated} />
+        )}
       </div>
-      <SoulCompanion cid={cid} details={details} skip={mutated} />
       <SearchResults />
     </MainContainer>
   );

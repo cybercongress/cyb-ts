@@ -3,6 +3,10 @@ import { timeSince, formatCurrency } from 'src/utils/utils';
 import useRank from 'src/features/cyberlinks/rank/useRank';
 import { Link } from 'react-router-dom';
 import { routes } from 'src/routes';
+import {
+  LLMAvatar,
+  useIsLLMPageParam,
+} from 'src/containers/Search/LLMSpark/LLMSpark';
 import useGetCreator from '../../hooks/useGetCreator';
 import { PREFIXES } from '../metaInfo';
 import styles from './AdviserMeta.module.scss';
@@ -16,6 +20,8 @@ type Props = {
 function AdviserMeta({ cid, type, size }: Props) {
   const { creator } = useGetCreator(cid);
   const rank = useRank(cid);
+
+  const isLLM = useIsLLMPageParam();
 
   return (
     <div className={styles.meta}>
@@ -38,14 +44,23 @@ function AdviserMeta({ cid, type, size }: Props) {
           </div>
         )}
       </div>
-      {creator && (
-        <div className={styles.center}>
-          <span className={styles.date}>
-            {timeSince(Date.now() - Date.parse(creator.timestamp))} ago
-          </span>
-          <Account sizeAvatar="20px" address={creator.address} avatar />
-        </div>
+
+      {isLLM ? (
+        <LLMAvatar />
+      ) : (
+        // eslint-disable-next-line react/jsx-no-useless-fragment
+        <>
+          {creator && (
+            <div className={styles.center}>
+              <span className={styles.date}>
+                {timeSince(Date.now() - Date.parse(creator.timestamp))} ago
+              </span>
+              <Account sizeAvatar="20px" address={creator.address} avatar />
+            </div>
+          )}
+        </>
       )}
+
       <div className={styles.right}>
         <span>
           🟥 {size ? formatCurrency(size, 'B', 0, PREFIXES) : 'unknown'}

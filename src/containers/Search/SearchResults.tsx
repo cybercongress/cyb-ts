@@ -1,7 +1,6 @@
 import {
   matchPath,
   useLocation,
-  useNavigate,
   useParams,
   useSearchParams,
 } from 'react-router-dom';
@@ -15,15 +14,17 @@ import { useDevice } from 'src/contexts/device';
 import { IpfsContentType } from 'src/services/ipfs/types';
 
 import useIsOnline from 'src/hooks/useIsOnline';
+import { getSearchQuery } from 'src/utils/search/utils';
+import { routes } from 'src/routes';
+import { ActionBar, Button } from 'src/components';
 import ActionBarContainer from './ActionBarContainer';
 import Filters from './Filters/Filters';
 import styles from './SearchResults.module.scss';
 import FirstItems from './_FirstItems.refactor';
 import { initialContentTypeFilterState } from './constants';
-import { getSearchQuery } from 'src/utils/search/utils';
 import useSearchData from './hooks/useSearchData';
 import { LinksTypeFilter, SortBy } from './types';
-import { routes } from 'src/routes';
+import LLMSpark, { useIsLLMPageParam } from './LLMSpark/LLMSpark';
 
 const sortByLSKey = 'search-sort';
 const NEURON_SEARCH_KEY = 'neuron';
@@ -43,6 +44,8 @@ function SearchResults({
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [neuron, setNeuron] = useState(searchParams.get(NEURON_SEARCH_KEY));
+
+  const isLLM = useIsLLMPageParam();
 
   const location = useLocation();
 
@@ -189,6 +192,7 @@ function SearchResults({
       />
 
       <div className={styles.search}>
+        {!isLLM && <LLMSpark searchText={query} />}
         <FirstItems query={query} />
 
         {isInitialLoading ? (
@@ -214,15 +218,23 @@ function SearchResults({
 
       {!mobile && (
         <div className={styles.actionBar}>
-          <ActionBarContainer
-            textBtn={actionBarTextBtn}
-            keywordHash={keywordHash}
-            update={() => {
-              refetch();
-              setRankLink(null);
-            }}
-            rankLink={rankLink}
-          />
+          {isLLM ? (
+            <ActionBar>
+              <Button link={`${routes.studio.path}?cid=${keywordHash}`}>
+                Edit & Cyberlink
+              </Button>
+            </ActionBar>
+          ) : (
+            <ActionBarContainer
+              textBtn={actionBarTextBtn}
+              keywordHash={keywordHash}
+              update={() => {
+                refetch();
+                setRankLink(null);
+              }}
+              rankLink={rankLink}
+            />
+          )}
         </div>
       )}
     </>

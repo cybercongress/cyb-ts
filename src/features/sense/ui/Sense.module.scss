@@ -1,13 +1,11 @@
-@import '../../../layouts/variables.module.scss';
+@import '../../../layouts/variables.module';
 
 .wrapper {
   display: flex;
   align-content: stretch;
-
   height: 100%;
-  max-height: calc(
-    100vh - $reservedTopHeight - $actionBarHeight
-  );
+  min-height: 50vh;
+  max-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
 
   &.NotOwner {
     max-height: calc(

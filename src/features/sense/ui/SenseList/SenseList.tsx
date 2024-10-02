@@ -1,22 +1,22 @@
 import { useState } from 'react';
 
 import { useAppSelector } from 'src/redux/hooks';
-import styles from './SenseList.module.scss';
 import Display from 'src/components/containerGradient/Display/Display';
 import Loader2 from 'src/components/ui/Loader2';
 import cx from 'classnames';
+import { isParticle } from 'src/features/particle/utils';
+import styles from './SenseList.module.scss';
 import SenseListFilters from './SenseListFilters/SenseListFilters';
 import { Filters } from '../types';
 import { AdviserProps } from '../Sense';
 import SenseListItemContainer from './SenseListItem/SenseListItem.container';
-import { isParticle } from 'src/features/particle/utils';
 
 type Props = {
   select: (id: string) => void;
   selected?: string;
 } & AdviserProps;
 
-function SenseList({ select, selected }: Props) {
+function SenseList({ select, selected, setFilter: setFilterParent }: Props) {
   const [filter, setFilter] = useState(Filters.All);
 
   const senseList = useAppSelector((store) => store.sense.list);
@@ -32,6 +32,10 @@ function SenseList({ select, selected }: Props) {
         !particle === (filter === Filters.Neuron)
       );
     });
+  }
+
+  if (filter === Filters.LLM) {
+    items = [];
   }
 
   function getFilterText(filter: Filters) {
@@ -53,7 +57,10 @@ function SenseList({ select, selected }: Props) {
         <div className={styles.filters}>
           <SenseListFilters
             selected={filter}
-            onChangeFilter={(filter: Filters) => setFilter(filter)}
+            onChangeFilter={(filter: Filters) => {
+              setFilter(filter);
+              setFilterParent(filter === Filters.LLM);
+            }}
           />
         </div>
 

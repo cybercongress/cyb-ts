@@ -14,6 +14,7 @@ import { convertTimestampToString } from 'src/utils/date';
 import { useRobotContext } from 'src/pages/robot/robot.context';
 import ActionBar from './ActionBar/ActionBar';
 import styles from './Sense.module.scss';
+import ActionBarLLM from './ActionBar/ActionBarLLM/ActionBarLLM';
 
 export type AdviserProps = {
   adviser: {
@@ -47,6 +48,8 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
   const [adviserText, setAdviserText] = useState('');
+
+  const [isLLMFilter, setIsLLMFilter] = useState(false);
 
   useEffect(() => {
     if (!selected || !senseApi) {
@@ -137,12 +140,16 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
             }}
             selected={selected}
             adviser={adviserProps}
+            setFilter={setIsLLMFilter}
           />
         )}
         <SenseViewer selected={selected} adviser={adviserProps} />
       </div>
 
-      <ActionBar id={selected} adviser={adviserProps} update={update} />
+      {!isLLMFilter && (
+        <ActionBar id={selected} adviser={adviserProps} update={update} />
+      )}
+      {isLLMFilter && <ActionBarLLM />}
     </>
   );
 }
