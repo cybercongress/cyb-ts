@@ -9,6 +9,7 @@ import TextMarkdown from 'src/components/TextMarkdown';
 import { useHover } from 'src/hooks/useHover';
 import Loader2 from 'src/components/ui/Loader2';
 import useGetIPFSHash from 'src/features/ipfs/hooks/useGetIPFSHash';
+import { isCID } from 'src/utils/ipfs/helpers';
 import { testVar } from '.';
 import styles from './LLMSpark.module.scss';
 
@@ -54,6 +55,10 @@ function LLMSpark({ searchText }: { searchText: string }) {
   const cid = useGetIPFSHash(data);
 
   const navigate = useNavigate();
+
+  if (isCID(searchText)) {
+    return null;
+  }
 
   return (
     <Link
