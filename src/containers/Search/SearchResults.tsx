@@ -192,7 +192,7 @@ function SearchResults({
       />
 
       <div className={styles.search}>
-        <LLMSpark searchText={query} />
+        {!isLLM && <LLMSpark searchText={query} />}
         <FirstItems query={query} />
 
         {isInitialLoading ? (

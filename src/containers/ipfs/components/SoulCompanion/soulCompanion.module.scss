@@ -1,12 +1,11 @@
 .itemLinks {
   display: flex;
-
   list-style-type: none;
   font-size: 14px;
 }
 
 .soulCompanion {
-  margin: -10px 0;
+  // margin: -10px 0;
 }
 
 .itemText {
@@ -16,7 +15,7 @@
 
 .itemLink {
   margin: 0 5px;
-  display: block;
+
   // white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
