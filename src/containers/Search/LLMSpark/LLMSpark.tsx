@@ -20,7 +20,7 @@ const provider = createOpenRouter({
   ['a' + 'piK' + 'ey']: `sk-or-v1-${atob(testVar)}`,
 });
 
-const modelName = !isDevEnv()
+const modelName = isDevEnv()
   ? 'meta-llama/llama-3-8b-instruct:free'
   : 'openai/gpt-4o-mini';
 
