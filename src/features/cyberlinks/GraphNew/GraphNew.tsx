@@ -179,12 +179,26 @@ function GraphNew({ address, data, size }) {
 
   return (
     <div className={styles.wrapper}>
-      {(selectedNodes[0] || (hoverNode && selectedNodes.length !== 1)) &&
+      {/* complex checks, change carefully */}
+      {(selectedNodes[0] || hoverNode) &&
         renderInfo(
-          (selectedNodes.length !== 1 && hoverNode) || selectedNodes[0]
+          (hoverNode &&
+          (selectedNodes.length === 0 ||
+            (selectedNodes[1] && selectedNodes[1].id !== hoverNode.id))
+            ? hoverNode
+            : false) || selectedNodes[0]
         )}
-      {(selectedNodes[1] || (selectedNodes.length === 1 && hoverNode)) &&
-        renderInfo(hoverNode || selectedNodes[1], 'right')}
+
+      {(selectedNodes[1] || (hoverNode && selectedNodes.length === 1)) &&
+        renderInfo(
+          (hoverNode &&
+          // render right only if first node selected
+          selectedNodes.length === 1 &&
+          selectedNodes[0].id !== hoverNode.id
+            ? hoverNode
+            : false) || selectedNodes[1],
+          'right'
+        )}
 
       <CosmographProvider nodes={nodes} links={links}>
         {/* <CosmographSearch
