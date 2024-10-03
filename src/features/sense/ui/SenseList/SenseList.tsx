@@ -16,7 +16,7 @@ type Props = {
   selected?: string;
 } & AdviserProps;
 
-function SenseList({ select, selected }: Props) {
+function SenseList({ select, selected, setFilter: setFilterParent }: Props) {
   const [filter, setFilter] = useState(Filters.All);
 
   const senseList = useAppSelector((store) => store.sense.list);
@@ -32,6 +32,10 @@ function SenseList({ select, selected }: Props) {
         !particle === (filter === Filters.Neuron)
       );
     });
+  }
+
+  if (filter === Filters.LLM) {
+    items = [];
   }
 
   function getFilterText(filter: Filters) {
@@ -53,7 +57,10 @@ function SenseList({ select, selected }: Props) {
         <div className={styles.filters}>
           <SenseListFilters
             selected={filter}
-            onChangeFilter={(filter: Filters) => setFilter(filter)}
+            onChangeFilter={(filter: Filters) => {
+              setFilter(filter);
+              setFilterParent(filter === Filters.LLM);
+            }}
           />
         </div>
 
