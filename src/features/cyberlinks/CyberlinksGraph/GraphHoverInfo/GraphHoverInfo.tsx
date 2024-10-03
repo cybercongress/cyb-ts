@@ -1,6 +1,6 @@
-import ContentItem from 'src/components/ContentItem/contentItem';
 import { useMemo } from 'react';
 import * as THREE from 'three';
+import ContentItem from 'src/components/ContentItem/contentItem';
 import styles from './GraphHoverInfo.module.scss';
 
 // fix
@@ -61,6 +61,7 @@ function HoverInfo({ node, camera, size, left, top, right }: Props) {
         right,
       }}
     >
+      {/* {node.id} */}
       <ContentItem cid={node.id} />
     </div>
   );

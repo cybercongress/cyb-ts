@@ -1,5 +1,4 @@
-import { scaleSymlog } from 'd3-scale';
-import { useState, useRef, useMemo, useEffect } from 'react';
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import {
   CosmographProvider,
   Cosmograph,
@@ -11,7 +10,9 @@ import { Button } from 'src/components';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import useGraphLimit from 'src/pages/robot/Brain/useGraphLimit';
 import { useLocation } from 'react-router-dom';
-import { Node } from './data';
+import { isDevEnv } from 'src/utils/dev';
+import useForceUpdate from 'src/hooks/react/useForceUpdate';
+import { scaleSymlog } from 'd3-scale';
 import styles from './GraphNew.module.scss';
 import { useCyberlinkWithWaitAndAdviser } from '../hooks/useCyberlink';
 import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
@@ -29,9 +30,6 @@ function GraphNew({ address, data, size }) {
 
   const { limit, isCurvedStyle } = useGraphLimit();
 
-  // max 2 nodes
-  const [selectedNodes, setSelectedNodes] = useState<CosmosInputNode[]>([]);
-
   const [localData, setLocalData] = useState<{
     nodes: CosmosInputNode[];
     links: CosmosInputLink[];
@@ -40,9 +38,23 @@ function GraphNew({ address, data, size }) {
     nodes: [],
   });
 
-  const [hoverNode, setHoverNode] = useState(null);
-  const [nodePostion, setNodePostion] = useState(null);
-  const [selectedNode, setSelectedNode] = useState<Node | undefined>();
+  const [hoverNode, setHoverNode] = useState<CosmosInputNode>();
+
+  const { forceUpdate } = useForceUpdate();
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      cosmograph.current?.pause();
+    }, 6000);
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  // const onSearchSelectResult = useCallback<
+  //   Exclude<CosmographSearchInputConfig<Node>['onSelectResult'], undefined>
+  // >((n) => {
+  //   setShowLabelsFor(n ? [n] : undefined);
+  //   setSelectedNode(n);
+  // }, []);
 
   const scaleColor = useRef(
     scaleSymlog<string, string>()
@@ -58,64 +70,15 @@ function GraphNew({ address, data, size }) {
     }
   }, [degree]);
 
-  // useEffect(() => {
-  //   const timeoutId = setTimeout(() => {
-  //     cosmograph.current?.pause();
-  //   }, 5000);
-  //   return () => clearTimeout(timeoutId);
-  // }, []);
-
-  // const nodeColor = useCallback(
-  //   (n: Node, index: number) => {
-  //     if (index === undefined) {
-  //       return null;
-  //     }
-
-  //     const degreeValue = degree[index];
-  //     if (degreeValue === undefined) {
-  //       return null;
-  //     }
-  //     return scaleColor.current?.(degreeValue);
-  //   },
-  //   [degree]
-  // );
-
-  // const [showLabelsFor, setShowLabelsFor] = useState<Node[] | undefined>(
-  //   undefined
-  // );
-
-  // const onCosmographClick = useCallback<
-  //   Exclude<CosmographInputConfig<Node, Link>['onClick'], undefined>
-  // >((n) => {
-  //   search?.current?.clearInput();
-  //   if (n) {
-  //     cosmograph.current?.selectNode(n);
-  //     setShowLabelsFor([n]);
-  //     setSelectedNode(n);
-  //   } else {
-  //     cosmograph.current?.unselectNodes();
-  //     setShowLabelsFor(undefined);
-  //     setSelectedNode(undefined);
-  //   }
-  // }, []);
-
-  // const onSearchSelectResult = useCallback<
-  //   Exclude<CosmographSearchInputConfig<Node>['onSelectResult'], undefined>
-  // >((n) => {
-  //   setShowLabelsFor(n ? [n] : undefined);
-  //   setSelectedNode(n);
-  // }, []);
+  const selectedNodes = cosmograph.current?.getSelectedNodes()?.reverse();
+  console.log('selectedNodes', selectedNodes);
 
   function callback() {
-    cosmograph.current?.unselectNodes();
-    // setShowLabelsFor(undefined);
-    setSelectedNode(undefined);
+    debugger;
 
     setLocalData({
-      nodes: [
-        ...localData.nodes,
-        ...selectedNodes.map((node) => ({ ...node, color: 'orange' })),
-      ],
+      ...localData,
+
       links: [
         ...localData.links,
         {
@@ -125,6 +88,8 @@ function GraphNew({ address, data, size }) {
         },
       ],
     });
+
+    cosmograph.current?.unselectNodes();
   }
 
   const { links, nodes } = useMemo(() => {
@@ -177,26 +142,60 @@ function GraphNew({ address, data, size }) {
     );
   }
 
+  const handleNodeSelection = useCallback(
+    (node?: CosmosInputNode) => {
+      if (!node) {
+        cosmograph.current?.unselectNodes();
+        forceUpdate();
+        return;
+      }
+
+      let newNodes = [...(selectedNodes || [])];
+
+      // check for duplicate
+      if (newNodes.find((n) => n.id === node.id)) {
+        newNodes = newNodes.filter((n) => n.id !== node.id);
+      } else if (newNodes.length < 2) {
+        newNodes.push(node);
+      } else {
+        newNodes = [node];
+      }
+
+      if (newNodes.length === 0) {
+        cosmograph.current?.unselectNodes();
+      } else {
+        cosmograph.current?.selectNodes(newNodes);
+        forceUpdate();
+      }
+    },
+    [selectedNodes, forceUpdate]
+  );
+
+  const selectedNodeIds = selectedNodes?.map((n) => n.id) || [];
+
+  const selectedNodesToRender = selectedNodes || [];
+
   return (
     <div className={styles.wrapper}>
       {/* complex checks, change carefully */}
-      {(selectedNodes[0] || hoverNode) &&
+      {(selectedNodesToRender[0] || hoverNode) &&
         renderInfo(
           (hoverNode &&
-          (selectedNodes.length === 0 ||
-            (selectedNodes[1] && selectedNodes[1].id !== hoverNode.id))
+          // (selectedNodesToRender[1] && selectedNodesToRender[1].id !== hoverNode.id))
+          selectedNodesToRender.length === 0
             ? hoverNode
-            : false) || selectedNodes[0]
+            : false) || selectedNodesToRender[0]
         )}
 
-      {(selectedNodes[1] || (hoverNode && selectedNodes.length === 1)) &&
+      {(selectedNodesToRender[1] ||
+        (hoverNode && selectedNodesToRender.length === 1)) &&
         renderInfo(
           (hoverNode &&
           // render right only if first node selected
-          selectedNodes.length === 1 &&
-          selectedNodes[0].id !== hoverNode.id
+          selectedNodesToRender.length === 1 &&
+          selectedNodesToRender[0].id !== hoverNode.id
             ? hoverNode
-            : false) || selectedNodes[1],
+            : false) || selectedNodesToRender[1],
           'right'
         )}
 
@@ -218,40 +217,8 @@ function GraphNew({ address, data, size }) {
             showDynamicLabels={false}
             linkArrows={false}
             linkWidth={2}
+            focusedNodeRingColor="rgba(243, 30, 30, 0.5)"
             curvedLinks={isCurvedStyle}
-            onZoom={(zoom) => {
-              // cosmograph.current?.pause();
-            }}
-            onClick={(node) => {
-              // debugger;
-
-              if (!cosmograph.current?.isSimulationRunning && !node) {
-                cosmograph.current?.restart();
-              } else {
-                cosmograph.current?.pause();
-              }
-
-              if (node) {
-                // setShowLabelsFor([node]);
-
-                // check for duplicate
-
-                let newNodes = [...selectedNodes];
-
-                if (newNodes.length < 2) {
-                  newNodes.push(node);
-                } else {
-                  newNodes = [node];
-                }
-
-                setSelectedNodes(newNodes);
-                cosmograph.current?.selectNodes(newNodes);
-              } else {
-                cosmograph.current?.unselectNodes();
-                // setShowLabelsFor(undefined);
-                setSelectedNodes([]);
-              }
-            }}
             // showLabelsFor={showLabelsFor}
             showHoveredNodeLabel={false}
             nodeLabelColor="white"
@@ -262,46 +229,35 @@ function GraphNew({ address, data, size }) {
             hoveredNodeLabelColor="white"
             nodeSize={(n) => n.size ?? null}
             // nodeColor={nodeColor}
-            nodeColor={(d) => d.color}
+            nodeColor={(d) => {
+              return selectedNodeIds.includes(d.id)
+                ? 'rgb(246, 43, 253)'
+                : d.color;
+            }}
             linkColor={(d) => d.color}
             // linkWidth={(l: Link) => l.width ?? null}
             // linkColor={(l: Link) => l.color ?? null}
 
-            onNodeMouseOver={(n, _, _1, e) => {
-              cosmograph.current?.pause();
-              setHoverNode(n);
+            onClick={(node) => {
+              handleNodeSelection(node);
 
-              if (e) {
-                setNodePostion({
-                  x: e.clientX,
-                  y: e.clientY,
-                });
+              if (!cosmograph.current?.isSimulationRunning && !node) {
+                cosmograph.current?.restart();
+              } else {
+                cosmograph.current?.pause();
               }
             }}
-            onNodeMouseOut={() => {
-              setHoverNode(null);
-              setNodePostion(null);
+            onNodeMouseOver={(n) => {
+              cosmograph.current?.pause();
+              setHoverNode(n);
             }}
-            showFPSMonitor={process.env.NODE_ENV === 'development'}
+            onNodeMouseOut={() => {
+              setHoverNode(undefined);
+            }}
+            showFPSMonitor={isDevEnv()}
           />
         )}
-        <div className="sidebarStyle">
-          {selectedNode ? (
-            <div className="infoStyle">
-              {`id: ${selectedNode?.id}
-            value: ${selectedNode?.value}`}
-            </div>
-          ) : (
-            <></>
-          )}
-          {/* <div className="histogramWrapper">
-            <CosmographHistogram
-              className="histogramStyle"
-              ref={histogram}
-              barCount={100}
-            />
-          </div> */}
-        </div>
+
         {/* <CosmographTimeline
           className="timelineStyle"
           ref={timeline}
@@ -311,7 +267,10 @@ function GraphNew({ address, data, size }) {
 
       {location.pathname !== '/brain' && (
         <GraphActionBar>
-          <ActionBar selectedNodes={selectedNodes} callback={callback} />
+          <ActionBar
+            selectedNodes={selectedNodesToRender}
+            callback={callback}
+          />
         </GraphActionBar>
       )}
     </div>
