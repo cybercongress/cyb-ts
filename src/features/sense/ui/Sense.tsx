@@ -12,9 +12,14 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import { convertTimestampToString } from 'src/utils/date';
 import { useRobotContext } from 'src/pages/robot/robot.context';
-import ActionBar from './ActionBar/ActionBar';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  selectLLMThread,
+  createLLMThread,
+} from 'src/features/sense/redux/sense.redux';
 import styles from './Sense.module.scss';
-import ActionBarLLM from './ActionBar/ActionBarLLM/ActionBarLLM';
+import ActionBarLLM from './ActionBar/ActionBarLLM';
+import ActionBar from './ActionBar/ActionBar';
 
 export type AdviserProps = {
   adviser: {
@@ -32,10 +37,11 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
 
   const navigate = useNavigate();
 
-  const [selected, setSelected] = useState<string | undefined | null>(
+  const [selected, setSelected] = useState<string | undefined>(
     urlSenseId
   );
 
+  // **Removed null from the type**
   // update state asap
   if (urlSenseId !== selected) {
     setSelected(urlSenseId);
@@ -50,6 +56,7 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   const [adviserText, setAdviserText] = useState('');
 
   const [isLLMFilter, setIsLLMFilter] = useState(false);
+  const currentThreadId = useAppSelector((state) => state.sense.llm.currentThreadId);
 
   useEffect(() => {
     if (!selected || !senseApi) {
@@ -122,6 +129,16 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
     // );
   }
 
+  useEffect(() => {
+    if (isLLMFilter && !currentThreadId) {
+      // Create a new thread when LLM filter is selected and no thread is active
+      const newThreadId = uuidv4();
+      dispatch(createLLMThread({ id: newThreadId }));
+      dispatch(selectLLMThread({ id: newThreadId }));
+      setSelected(newThreadId);
+    }
+  }, [isLLMFilter, currentThreadId, dispatch]);
+
   return (
     <>
       <div className={cx(styles.wrapper, { [styles.NotOwner]: !isOwner })}>
@@ -129,13 +146,15 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
           <SenseList
             select={(id: string) => {
               setSelected(id);
-
-              if (!paramSenseId) {
-                navigate(`./${id}`);
-              } else {
-                navigate(`../${id}`, {
-                  relative: 'path',
-                });
+              // Navigate only if not LLM chat
+              if (id !== 'llm') {
+                if (!paramSenseId) {
+                  navigate(`./${id}`);
+                } else {
+                  navigate(`../${id}`, {
+                    relative: 'path',
+                  });
+                }
               }
             }}
             selected={selected}
@@ -143,13 +162,18 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
             setFilter={setIsLLMFilter}
           />
         )}
-        <SenseViewer selected={selected} adviser={adviserProps} />
+        <SenseViewer
+          selected={selected}
+          isLLMFilter={isLLMFilter}
+          adviser={adviserProps}
+        />
       </div>
 
-      {!isLLMFilter && (
+      {isLLMFilter ? (
+        <ActionBarLLM />
+      ) : (
         <ActionBar id={selected} adviser={adviserProps} update={update} />
       )}
-      {isLLMFilter && <ActionBarLLM />}
     </>
   );
 }

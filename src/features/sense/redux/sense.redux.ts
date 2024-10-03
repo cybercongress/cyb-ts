@@ -19,6 +19,7 @@ import {
   MsgSendValue,
 } from 'src/services/backend/services/indexer/types';
 import { RootState } from 'src/redux/store';
+import { v4 as uuidv4 } from 'uuid'; // Add this import for generating unique thread IDs
 
 // similar to blockchain/tx/message type
 export type SenseItem = {
@@ -62,6 +63,11 @@ type SliceState = {
       neurons: number;
     };
   };
+  llm: {
+    // Change from messages array to threads array
+    threads: LLMThread[];
+    currentThreadId: string | null; // Keep track of the currently selected thread
+  };
 };
 
 const initialState: SliceState = {
@@ -77,6 +83,11 @@ const initialState: SliceState = {
       particles: 0,
       neurons: 0,
     },
+  },
+  llm: {
+    // Change from messages array to threads array
+    threads: JSON.parse(localStorage.getItem('llmThreads') || '[]') as LLMThread[],
+    currentThreadId: null, // Keep track of the currently selected thread
   },
 };
 
@@ -224,6 +235,20 @@ function checkIfMessageExists(chat: Chat, newMessage: SenseItem) {
   return isMessageExists;
 }
 
+// Add LLM types
+export interface LLMMessage {
+  text: string;
+  sender: 'user' | 'llm';
+  timestamp: number;
+}
+
+export interface LLMThread {
+  id: string;
+  messages: LLMMessage[];
+  // Optionally, add a title or summary for the thread
+  title?: string;  
+}
+
 const slice = createSlice({
   name: 'sense',
   initialState,
@@ -331,6 +356,53 @@ const slice = createSlice({
     },
     reset() {
       return initialState;
+    },
+    // LLM reducers
+    createLLMThread(
+      state,
+      action: PayloadAction<{ id: string; title?: string }>
+    ) {
+      const newThread: LLMThread = {
+        id: action.payload.id,
+        messages: [],
+        title: action.payload.title || `Conversation ${state.llm.threads.length + 1}`,
+      };
+      state.llm.threads.push(newThread);
+      state.llm.currentThreadId = action.payload.id;
+      localStorage.setItem('llmThreads', JSON.stringify(state.llm.threads));
+    },
+
+    selectLLMThread(state, action: PayloadAction<{ id: string }>) {
+      state.llm.currentThreadId = action.payload.id;
+    },
+
+    addLLMMessageToThread(
+      state,
+      action: PayloadAction<{ threadId: string; message: LLMMessage }>
+    ) {
+      const thread = state.llm.threads.find((t) => t.id === action.payload.threadId);
+      if (thread) {
+        thread.messages.push(action.payload.message);
+        localStorage.setItem('llmThreads', JSON.stringify(state.llm.threads));
+      }
+    },
+
+    // Add action to replace the last message (for updating "waiting..." message)
+    replaceLastLLMMessageInThread(
+      state,
+      action: PayloadAction<{ threadId: string; message: LLMMessage }>
+    ) {
+      const thread = state.llm.threads.find((t) => t.id === action.payload.threadId);
+      if (thread && thread.messages.length > 0) {
+        thread.messages[thread.messages.length - 1] = action.payload.message;
+        localStorage.setItem('llmThreads', JSON.stringify(state.llm.threads));
+      }
+    },
+
+    clearLLMThreads(state) {
+      state.llm.threads = [];
+      state.llm.currentThreadId = null;
+      localStorage.removeItem('llmThreads');
     },
   },
 
@@ -451,7 +523,7 @@ const selectUnreadCounts = createSelector(
   }
 );
 
-export const { addSenseItem, updateSenseItem, updateSenseList, reset } =
+export const { addSenseItem, updateSenseItem, updateSenseList, reset, createLLMThread, selectLLMThread, addLLMMessageToThread, replaceLastLLMMessageInThread, clearLLMThreads } =
   slice.actions;
 
 export { getSenseList, getSenseChat, markAsRead };
