@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ActionBar, Button, Input } from 'src/components';
-// Import necessary hooks and types
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import {
   createLLMThread,
   addLLMMessageToThread,
   replaceLastLLMMessageInThread,
 } from 'src/features/sense/redux/sense.redux';
-import { v4 as uuidv4 } from 'uuid'; // Import UUID for unique thread IDs
+import { v4 as uuidv4 } from 'uuid';
 import styles from './ActionBar.module.scss';
-import { llmRequest } from "../../../../containers/Search/LLMSpark/LLMSpark"; // Import styles
+import { llmRequest } from "../../../../containers/Search/LLMSpark/LLMSpark";
+import VoiceInteraction from '../VoiceInteraction/VoiceInteraction';
 
 function ActionBarLLM() {
   const [text, setText] = useState('');
@@ -76,12 +76,12 @@ function ActionBarLLM() {
         placeholder="Ask the model"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        // Add styling if needed
         className={styles.input}
       />
       <Button onClick={sendMessage}>
         Send
       </Button>
+      <VoiceInteraction />
     </ActionBar>
   );
 }

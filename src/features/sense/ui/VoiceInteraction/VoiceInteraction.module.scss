@@ -1,0 +1,33 @@
+.voiceInteraction {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: #45a049;
+    }
+
+    &:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+  }
+
+  p {
+    margin-left: 10px;
+    font-style: italic;
+  }
+}

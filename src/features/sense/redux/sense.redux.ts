@@ -246,7 +246,7 @@ export interface LLMThread {
   id: string;
   messages: LLMMessage[];
   // Optionally, add a title or summary for the thread
-  title?: string;  
+  title?: string;
 }
 
 const slice = createSlice({
