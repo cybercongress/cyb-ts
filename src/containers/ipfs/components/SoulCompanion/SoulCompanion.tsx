@@ -1,16 +1,14 @@
 import { Link } from 'react-router-dom';
-import {
-  ScriptingContextType,
-  useScripting,
-} from 'src/contexts/scripting/scripting';
+import { useScripting } from 'src/contexts/scripting/scripting';
 import type { ScriptMyCampanion } from 'src/services/scripting/types';
-import styles from './soulCompanion.module.scss';
 import { shortenString } from 'src/utils/string';
 import { ParticleCid } from 'src/types/base';
 import { IPFSContentDetails } from 'src/services/ipfs/types';
 import { Option } from 'src/types';
 import { useEffect, useState } from 'react';
 import { proxy } from 'comlink';
+import Loader2 from 'src/components/ui/Loader2';
+import styles from './SoulCompanion.module.scss';
 
 type AskCompanionStatus = 'loading' | 'ready' | 'pending' | 'done' | 'error';
 
@@ -58,21 +56,20 @@ function SoulCompanion({
   }, [cid]);
 
   if (status !== 'done' && metaItems) {
-    return (
-      <div
-        className={styles.itemText}
-      >{`soul companion status: ${status}`}</div>
-    );
+    return <Loader2 text="" />;
   }
+
+  console.log('metaItems', metaItems);
+
   return (
-    <div className={styles.soulCompanion}>
+    <div className={styles.wrapper}>
       {metaItems.map((row, index) => (
         <ul className={styles.itemLinks} key={`soul_comp_row_${index}`}>
           {(Array.isArray(row) ? row : [row]).map((item, index) => (
             <li key={`soul_comp_col_${index}`}>
-              {item.type === 'text' && (
+              {/* {item.type === 'text' && (
                 <p className={styles.itemText}>{item.text}</p>
-              )}
+              )} */}
               {item.type === 'link' && (
                 <Link className={styles.itemLink} to={item.url}>
                   {shortenString(item.title, 64)}
