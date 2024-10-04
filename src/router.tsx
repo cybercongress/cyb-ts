@@ -9,8 +9,6 @@ import {
 } from 'react-router-dom';
 import App from './containers/application/App';
 import Home from './containers/home/home';
-import Governance from './containers/governance/governance';
-import ProposalsDetail from './containers/governance/proposalsDetail';
 import Validators from './containers/Validators/Validators';
 import Story from './containers/story/story';
 import TxsDetails from './containers/txs/txsDetails';
@@ -55,10 +53,12 @@ import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
 import Brain from './pages/Brain/Brain';
-import Cybernet from './features/cybernet/ui/Cybernet';
+
 import Settings from './pages/Settings/Settings';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
+import { Networks } from './types/networks';
+import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
 
 type WrappedRouterProps = {
@@ -148,11 +148,7 @@ function AppRouter() {
           />
           <Route path="/search/:query" element={<ToOracleAsk />} />
 
-          <Route path="/senate" element={<Governance />} />
-          <Route
-            path={routes.senateProposal.path}
-            element={<ProposalsDetail />}
-          />
+          <Route path="/senate/*" element={<GovernanceRoutes />} />
 
           {/* old links - start */}
           <Route path="/halloffame" element={<Navigate to="/sphere" />} />
@@ -221,7 +217,10 @@ function AppRouter() {
 
           <Route path="/nebula" element={<Nebula />} />
 
-          <Route path="/cyberver/*" element={<Cybernet />} />
+          {/* seems shouldn't be build
+          {process.env.CHAIN_ID === Networks.SPACE_PUSSY && (
+            <Route path="/cyberver/*" element={<Cybernet />} />
+          )} */}
 
           <Route path="/keys" element={<Keys />} />
 

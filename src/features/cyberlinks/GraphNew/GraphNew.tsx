@@ -17,7 +17,7 @@ import { useCyberlinkWithWaitAndAdviser } from '../hooks/useCyberlink';
 import GraphHoverInfo from '../CyberlinksGraph/GraphHoverInfo/GraphHoverInfo';
 import GraphActionBar from '../graph/GraphActionBar/GraphActionBar';
 
-export default function GraphNew({ address, data, size }) {
+function GraphNew({ address, data, size }) {
   const cosmograph = useRef<CosmographRef>();
   // const histogram = useRef<CosmographHistogramRef<Node>>();
   // const timeline = useRef<CosmographTimelineRef<Link>>();
@@ -276,6 +276,8 @@ export default function GraphNew({ address, data, size }) {
     </div>
   );
 }
+
+export default GraphNew;
 
 type Props2 = {
   selectedNodes: CosmosInputNode[];
