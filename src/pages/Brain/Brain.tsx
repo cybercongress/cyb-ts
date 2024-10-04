@@ -1,7 +1,5 @@
 import CyberlinksGraphContainer from 'src/features/cyberlinks/CyberlinksGraph/CyberlinksGraphContainer';
-import { Button } from 'src/components';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
-import GraphActionBar from 'src/features/cyberlinks/graph/GraphActionBar/GraphActionBar';
 import styles from './Brain.module.scss';
 import useGraphLimit from '../robot/Brain/useGraphLimit';
 
@@ -16,14 +14,14 @@ function Brain() {
     <div className={styles.wrapper}>
       <CyberlinksGraphContainer toPortal limit={limit} />
 
-      <GraphActionBar>
+      {/* <GraphActionBar>
         <Button
           className={styles.link}
           link="https://cosmograph.app/run/?data=https://gateway.ipfs.cybernode.ai/ipfs/QmQ3snofqRrDhpANRCwZrCPG7rAvABrkL9KHreMtmYDiCL"
         >
           External graph <span />
         </Button>
-      </GraphActionBar>
+      </GraphActionBar> */}
     </div>
   );
 }
