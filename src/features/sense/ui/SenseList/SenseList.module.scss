@@ -4,20 +4,22 @@
   width: 300px;
 
   .center {
-    margin: auto;
+    display: block;
     color: #616161;
+    text-align: center;
+    margin-top: 100%;
   }
 
-  > div {
-    display: flex;
-    flex-direction: column;
-  }
+  // > div {
+  //   display: flex;
+  //   flex-direction: column;
+  // }
 
   > ul {
     li {
       &,
       &:not(:last-child) {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+        border-bottom: 1px solid rgb(255 255 255 / 11%);
       }
     }
   }
@@ -41,7 +43,6 @@
       height: 100%;
       left: 0;
       top: -$blur;
-
       filter: blur($blur);
     }
 
@@ -53,6 +54,7 @@
 
       > * {
         width: 30px;
+
         label {
           font-size: 20px;
           display: block;

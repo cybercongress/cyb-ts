@@ -70,7 +70,7 @@ $saber-border-width: 2px;
   @if ($borderColor == 'color') {
     border-#{$position}: $saber-border-width
       solid
-      rgb(var(--color-r), var(--color-g), var(--color-b));
+      rgb(var(--color-r), var(--color-g), var(--color-b)) !important;
   } @else {
     border-#{$position}: $saber-border-width solid white;
   }
