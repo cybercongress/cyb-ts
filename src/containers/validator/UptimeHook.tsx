@@ -26,7 +26,7 @@
 // }
 
 function useUptime({ consensusPub }: { consensusPub: string }) {
-  return 'fixuptime';
+  return '';
 }
 
 export default useUptime;

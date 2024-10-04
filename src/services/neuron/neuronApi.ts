@@ -139,21 +139,6 @@ export const investmint = async (
   length: number,
   signingClient: SigningCyberClient
 ) => {
-  console.log(address, amount, resource, length, 'auto');
-
-  // await signingClient.simulate(
-  //   address,
-  //   MsgData.fromPartial({
-  //     investmint: {
-  //       amount,
-  //       resource,
-  //       length,
-  //     },
-  //   }),
-  //   ''
-  // );
-
-  // debugger;
   const response = await signingClient.investmint(
     address,
     amount,
@@ -161,8 +146,6 @@ export const investmint = async (
     length,
     'auto'
   );
-
-  console.error(response);
 
   const { transactionHash } = throwErrorOrResponse(response);
   return transactionHash;

@@ -120,6 +120,7 @@ export const getTxs = async (txsHash) => {
       method: 'get',
       url: `${LCD_URL}/cosmos/tx/v1beta1/txs/${txsHash}`,
     });
+    debugger;
     return response.data;
   } catch (e) {
     console.error(e);

@@ -28,8 +28,6 @@ function WrappedActionBar() {
     const addressFromIpfs = await getIpfsHash(address);
     const response = await checkFollow(activeAddress, addressFromIpfs);
 
-    // debugger;
-
     if (response && Number(response.txResponses.length) === 0) {
       setFollow(true);
       // setTweets(false);
