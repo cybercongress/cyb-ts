@@ -195,7 +195,13 @@ function AppRouter() {
           <Route
             path="/warp/:tab"
             element={
-              <div>warp actions temporary disabled due to upgrade issues</div>
+              <div
+                style={{
+                  textAlign: 'center',
+                }}
+              >
+                warp actions temporary disabled due to upgrade issues
+              </div>
             }
           />
           <Route path="/genesis" element={<Movie />} />

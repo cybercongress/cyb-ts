@@ -15,7 +15,17 @@ function TeleportRouter() {
         <Route index element={<TeleportMainScreen />} />
         <Route
           path="swap"
-          element={<div>swap temporary disabled due to upgrade issues</div>}
+          element={
+            <div
+              style={{
+                textAlign: 'center',
+                zIndex: 10,
+                position: 'relative',
+              }}
+            >
+              swap temporary disabled due to upgrade issues
+            </div>
+          }
         />
         <Route path="send" element={<Send />} />
         <Route path="bridge" element={<Bridge />} />
