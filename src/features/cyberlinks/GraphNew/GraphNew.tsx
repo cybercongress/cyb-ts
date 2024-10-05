@@ -70,7 +70,7 @@ function GraphNew({ address, data, size }) {
     }
   }, [degree]);
 
-  const selectedNodes = cosmograph.current?.getSelectedNodes()?.reverse();
+  const selectedNodes = cosmograph.current?.getSelectedNodes();
   console.log('selectedNodes', selectedNodes);
 
   function callback() {
@@ -160,6 +160,8 @@ function GraphNew({ address, data, size }) {
       } else {
         newNodes = [node];
       }
+
+      console.log('nodes to update', newNodes);
 
       if (newNodes.length === 0) {
         cosmograph.current?.unselectNodes();
