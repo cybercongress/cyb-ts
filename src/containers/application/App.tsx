@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
 import { AppDispatch } from 'src/redux/store';
@@ -22,6 +22,7 @@ import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.
 import { PreviousPageProvider } from 'src/contexts/previousPage';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 import styles from './styles.scss';
 
@@ -42,6 +43,19 @@ function App() {
   const location = useLocation();
   const adviserContext = useAdviser();
   useSenseManager();
+
+  useAdviserTexts({
+    defaultText: useMemo(
+      () => (
+        <>
+          app is having some issues after network upgrade <br />
+          check updates in social groups
+        </>
+      ),
+      []
+    ),
+    priority: true,
+  });
 
   const { ipfsError } = useBackend();
 
