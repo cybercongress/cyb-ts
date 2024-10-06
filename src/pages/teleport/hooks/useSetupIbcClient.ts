@@ -4,10 +4,10 @@ import { GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { Decimal } from '@cosmjs/math';
+import { CHAIN_ID } from 'src/constants/config';
 import useGetBalancesIbc from './useGetBalancesIbc';
 
 import networks from '../../../utils/networkListIbc';
-import { CHAIN_ID } from 'src/constants/config';
 
 function useSetupIbcClient(denom, network) {
   const { signingClient } = useSigningClient();

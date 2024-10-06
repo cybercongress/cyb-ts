@@ -194,7 +194,8 @@ function InputAutoSize({
       value={value}
       id="myInput"
       maxValue={maxValue}
-      onkeypress={changefontsize()}
+      // no such event handler
+      // onkeypress={changefontsize()}
       autoFocus={autoFocus}
       onValueChange={onChangeInputAmount}
       placeholder={placeholder}

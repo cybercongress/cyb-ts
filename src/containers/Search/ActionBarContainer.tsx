@@ -210,6 +210,7 @@ const ActionBarContainer: FC<Props> = ({
   };
 
   const confirmTx = async () => {
+    console.log('Confirm TX', { timeOut });
     try {
       if (!txHash) {
         throw new TxError('txHash is null');
@@ -217,7 +218,7 @@ const ActionBarContainer: FC<Props> = ({
 
       dispatch(setActionBarStage(ActionBarStates.STAGE_CONFIRMING));
 
-      const data = await getTxs(txHash);
+      const data = (await getTxs(txHash))?.tx_response;
       if (data === null || data?.code || !data?.logs) {
         const message = getConfirmTxErrorMessage(data);
 

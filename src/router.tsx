@@ -11,8 +11,6 @@ import App from './containers/application/App';
 import Block from './containers/blok';
 import BlockDetails from './containers/blok/blockDetails';
 import ForceQuitter from './containers/forceGraph/forceQuitter';
-import Governance from './containers/governance/governance';
-import ProposalsDetail from './containers/governance/proposalsDetail';
 import Home from './containers/home/home';
 import Ipfs from './containers/ipfs/ipfs';
 import Market from './containers/market';
@@ -44,7 +42,6 @@ import {
 } from './containers/wasm';
 
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
-import Warp from './containers/warp/Warp';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Brain from './pages/Brain/Brain';
 import Keys from './pages/Keys/Keys';
@@ -56,7 +53,8 @@ import Social from './pages/Social/Social';
 import Teleport from './pages/teleport/Teleport';
 import { routes } from './routes';
 // import Cybernet from './features/cybernet/ui/Cybernet';
-import Cybernet from './features/cybernet/ui/Cybernet';
+
+import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
 import Map from './pages/Portal/Map/Map';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
@@ -152,11 +150,7 @@ function AppRouter() {
           />
           <Route path="/search/:query" element={<ToOracleAsk />} />
 
-          <Route path="/senate" element={<Governance />} />
-          <Route
-            path={routes.senateProposal.path}
-            element={<ProposalsDetail />}
-          />
+          <Route path="/senate/*" element={<GovernanceRoutes />} />
 
           {/* old links - start */}
           <Route path="/halloffame" element={<Navigate to="/sphere" />} />
@@ -202,7 +196,18 @@ function AppRouter() {
           <Route path="/teleport/*" element={<Teleport />} />
 
           <Route path="/warp" element={<WarpDashboardPools />} />
-          <Route path="/warp/:tab" element={<Warp />} />
+          <Route
+            path="/warp/:tab"
+            element={
+              <div
+                style={{
+                  textAlign: 'center',
+                }}
+              >
+                warp actions temporary disabled due to upgrade issues
+              </div>
+            }
+          />
           <Route path="/genesis" element={<Movie />} />
           <Route path="/citizenship" element={<PortalCitizenship />} />
           <Route path="/gift" element={<PortalGift />} />
@@ -225,7 +230,10 @@ function AppRouter() {
 
           <Route path="/nebula" element={<Nebula />} />
 
-          <Route path="/cyberver/*" element={<Cybernet />} />
+          {/* seems shouldn't be build
+          {process.env.CHAIN_ID === Networks.SPACE_PUSSY && (
+            <Route path="/cyberver/*" element={<Cybernet />} />
+          )} */}
 
           <Route path="/keys" element={<Keys />} />
 

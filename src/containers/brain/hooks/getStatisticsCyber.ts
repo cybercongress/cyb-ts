@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
-import { getInlfation } from '../../../utils/search/utils';
+import { useCyberClient } from 'src/contexts/queryCyberClient';
+
 import { getProposals } from '../../../utils/governance';
-import { coinDecimals } from '../../../utils/utils';
+import { coinDecimals, covertUint8ArrayToString } from '../../../utils/utils';
 
 function useGetStatisticsCyber() {
   const queryClient = useQueryClient();
@@ -12,13 +13,18 @@ function useGetStatisticsCyber() {
     linksCount: 0,
     cidsCount: 0,
     accountsCount: 0,
-    inlfation: 0,
     staked: 0,
     activeValidatorsCount: 0,
   });
   const [government, setGovernment] = useState({
     proposals: 0,
     communityPool: 0,
+  });
+
+  const { hooks } = useCyberClient();
+
+  const { data: inflationData } = hooks.cosmos.mint.v1beta1.useInflation({
+    request: {},
   });
 
   useEffect(() => {
@@ -49,7 +55,6 @@ function useGetStatisticsCyber() {
       if (queryClient) {
         const totalCyb = {};
         let staked = 0;
-        let inlfation = 0;
 
         const responseGraphStats = await queryClient.graphStats();
         const { cyberlinks, particles } = responseGraphStats;
@@ -84,23 +89,25 @@ function useGetStatisticsCyber() {
           ...item,
           staked,
         }));
-
-        const dataInlfation = await getInlfation();
-        if (dataInlfation !== null) {
-          inlfation = dataInlfation;
-        }
-        setKnowledge((item) => ({
-          ...item,
-          inlfation,
-        }));
       }
     };
     getStatisticsBrain();
   }, [queryClient]);
 
+  const inflation = useMemo(() => {
+    if (inflationData) {
+      return (
+        // add 10 ** 18 to variable
+        BigNumber(covertUint8ArrayToString(inflationData.inflation)) / 10 ** 18
+      );
+    }
+    return;
+  }, [inflationData]);
+
   return {
     ...government,
     ...knowledge,
+    inlfation: inflation,
   };
 }
 

@@ -49,7 +49,7 @@ function HoverInfo({ node, camera, size, left, top }: Props) {
 
   if (!isCid) {
     // debug, delete
-    debugger;
+    // debugger;
   }
 
   return (

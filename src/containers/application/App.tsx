@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   Link,
   Outlet,
@@ -20,15 +20,17 @@ import { routes } from 'src/routes';
 
 import AdviserContainer from 'src/features/adviser/AdviserContainer';
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useAppDispatch } from 'src/redux/hooks';
 import { initCyblog } from 'src/utils/logging/bootstrap';
 import { setNavigate } from 'src/utils/shareNavigation';
 
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 
 import { PreviousPageProvider } from 'src/contexts/previousPage';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import styles from './styles.scss';
 
 export const PORTAL_ID = 'portal';
@@ -37,17 +39,30 @@ initCyblog();
 
 function App() {
   const dispatch: AppDispatch = useAppDispatch();
-  const { defaultAccount } = useAppSelector((state) => state.pocket);
   const queryClient = useQueryClient();
 
-  const address = defaultAccount.account?.cyber?.bech32;
-  // cyblog.info('TEST!!!!');
+  const address = useCurrentAddress();
+
   // const { community, communityLoaded } = useGetCommunity(address || null, {
   //   main: true,
   // });
+
   const location = useLocation();
   const adviserContext = useAdviser();
   useSenseManager();
+
+  useAdviserTexts({
+    defaultText: useMemo(
+      () => (
+        <>
+          app is having some issues after network upgrade <br />
+          check updates in social groups
+        </>
+      ),
+      []
+    ),
+    priority: true,
+  });
 
   const { ipfsError } = useBackend();
   const navigate = useNavigate();
@@ -64,6 +79,7 @@ function App() {
     if (!address || !queryClient) {
       return;
     }
+
     dispatch(
       getPassport({
         address,
@@ -73,7 +89,6 @@ function App() {
   }, [address, queryClient, dispatch]);
 
   // reset
-
   // useEffect(() => {
   //   if (communityLoaded) {
   //     dispatch(setCommunity(community));
@@ -83,9 +98,11 @@ function App() {
   useEffect(() => {
     // tabs
     if (
-      [cybernetRoutes.verse.path, routes.senateProposal.path].some((path) => {
-        return matchPath(path, location.pathname);
-      })
+      [cybernetRoutes.verse.path, routes.senate.routes.proposal.path].some(
+        (path) => {
+          return matchPath(path, location.pathname);
+        }
+      )
     ) {
       return;
     }

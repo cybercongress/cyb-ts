@@ -145,7 +145,7 @@ function formatApiData(item: SenseListItem): SenseItem {
 
     default:
       // sholdn't be
-      debugger;
+      // debugger;
       return {};
   }
 
