@@ -54,7 +54,6 @@ function App() {
       ),
       []
     ),
-    priority: true,
   });
 
   const { ipfsError } = useBackend();
