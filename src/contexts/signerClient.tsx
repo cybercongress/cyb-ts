@@ -32,16 +32,9 @@ type SignerClientContextType = {
   setSigner(signer: Option<OfflineSigner>): void;
 };
 
-<<<<<<< HEAD
 async function createClient(signer: OfflineSigner): Promise<CybSignerClient> {
   const client = await CybSignerClient.connectWithSigner(RPC_URL, signer);
 
-=======
-async function createClient(
-  signer: OfflineSigner
-): Promise<SigningCyberClient> {
-  const client = await SigningCyberClient.connectWithSigner(RPC_URL, signer);
->>>>>>> 393683b1a060f5ffaa184b5d5fbd5c2f5a36f159
   return client;
 }
 
@@ -128,18 +121,18 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
     }
   }, [selectAddress]);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const windowKeplr = await getKeplr();
-  //     if (windowKeplr) {
-  //       initSigner();
-  //     }
-  //   })();
-  // }, [initSigner]);
+  useEffect(() => {
+    (async () => {
+      const windowKeplr = await getKeplr();
+      if (windowKeplr) {
+        initSigner();
+      }
+    })();
+  }, [initSigner]);
 
-  // useEffect(() => {
-  //   window.addEventListener('keplr_keystorechange', initSigner);
-  // }, [initSigner]);
+  useEffect(() => {
+    window.addEventListener('keplr_keystorechange', initSigner);
+  }, [initSigner]);
 
   useEffect(() => {
     (async () => {

@@ -8,17 +8,6 @@ import {
   useParams,
 } from 'react-router-dom';
 import App from './containers/application/App';
-<<<<<<< HEAD
-=======
-import Home from './containers/home/home';
-import Validators from './containers/Validators/Validators';
-import Story from './containers/story/story';
-import TxsDetails from './containers/txs/txsDetails';
-import ValidatorsDetails from './containers/validator';
-import Ipfs from './containers/ipfs/ipfs';
-import BlockDetails from './containers/blok/blockDetails';
-import Txs from './containers/txs';
->>>>>>> 393683b1a060f5ffaa184b5d5fbd5c2f5a36f159
 import Block from './containers/blok';
 import BlockDetails from './containers/blok/blockDetails';
 import ForceQuitter from './containers/forceGraph/forceQuitter';
@@ -52,12 +41,6 @@ import {
   DashboardPage,
 } from './containers/wasm';
 
-<<<<<<< HEAD
-=======
-import { routes } from './routes';
-import WarpDashboardPools from './containers/warp/WarpDashboardPools';
-import Robot from './pages/robot/Robot';
->>>>>>> 393683b1a060f5ffaa184b5d5fbd5c2f5a36f159
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Brain from './pages/Brain/Brain';
@@ -67,18 +50,10 @@ import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Robot from './pages/robot/Robot';
 import Social from './pages/Social/Social';
-<<<<<<< HEAD
 import Teleport from './pages/teleport/Teleport';
 import { routes } from './routes';
 // import Cybernet from './features/cybernet/ui/Cybernet';
 
-=======
-import Brain from './pages/Brain/Brain';
-
-import Settings from './pages/Settings/Settings';
-import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
-import Map from './pages/Portal/Map/Map';
->>>>>>> 393683b1a060f5ffaa184b5d5fbd5c2f5a36f159
 import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
 import Map from './pages/Portal/Map/Map';
