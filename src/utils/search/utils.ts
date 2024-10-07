@@ -2,13 +2,13 @@ import axios from 'axios';
 
 import { CyberClient } from '@cybercongress/cyber-js';
 import { DelegationResponse } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
+import { OrderBy } from 'cosmjs-types/cosmos/tx/v1beta1/service';
 import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
 import { LCD_URL } from 'src/constants/config';
-import { LinksType, LinksTypeFilter } from 'src/containers/Search/types';
-import { ParticleCid } from 'src/types/base';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { LinksType, LinksTypeFilter } from 'src/containers/Search/types';
 import { getTransactions } from 'src/services/transactions/lcd';
-import { OrderBy } from 'cosmjs-types/cosmos/tx/v1beta1/service';
+import { ParticleCid } from 'src/types/base';
 import { getIpfsHash } from '../ipfs/helpers';
 import { encodeSlash } from '../utils';
 
@@ -114,13 +114,13 @@ export const getRelevance = async (page = 0, limit = 50) => {
   }
 };
 
-export const getTxs = async (txsHash) => {
+export const getTxs = async (txs: string) => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${LCD_URL}/cosmos/tx/v1beta1/txs/${txsHash}`,
+      url: `${LCD_URL}/cosmos/tx/v1beta1/txs/${txs}`,
     });
-    debugger;
+
     return response.data;
   } catch (e) {
     console.error(e);
@@ -128,7 +128,7 @@ export const getTxs = async (txsHash) => {
   }
 };
 
-export const getValidatorsInfo = async (address) => {
+export const getValidatorsInfo = async (address: string) => {
   try {
     const response = await axios({
       method: 'get',
@@ -141,7 +141,7 @@ export const getValidatorsInfo = async (address) => {
   }
 };
 
-export const keybaseCheck = async (identity) => {
+export const keybaseCheck = async (identity: string) => {
   try {
     const response = await axios({
       method: 'get',
@@ -154,7 +154,7 @@ export const keybaseCheck = async (identity) => {
   }
 };
 
-export const keybaseAvatar = async (identity) => {
+export const keybaseAvatar = async (identity: string) => {
   try {
     const response = await axios({
       method: 'get',
@@ -167,7 +167,7 @@ export const keybaseAvatar = async (identity) => {
   }
 };
 
-export const getDelegators = async (validatorAddr) => {
+export const getDelegators = async (validatorAddr: string) => {
   try {
     const response = await axios({
       method: 'get',
@@ -429,7 +429,7 @@ export const getParamNetwork = async (address, node) => {
 const getLink = async (
   cid: string,
   type: LinksType = LinksTypeFilter.from,
-  { offset, limit, order = OrderBy.ORDER_BY_DESC }
+  { offset, limit, order = OrderBy.ORDER_BY_DESC }: any
 ) => {
   try {
     const response = await getTransactions({

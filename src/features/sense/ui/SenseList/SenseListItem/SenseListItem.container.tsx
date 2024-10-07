@@ -1,16 +1,12 @@
-import useParticleDetails from '../../../../particle/useParticleDetails';
+import { Dots } from 'src/components';
+import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
+import { isParticle } from 'src/features/particle/utils';
+import { SenseItemId } from 'src/features/sense/types/sense';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
-import { contentTypeConfig } from 'src/containers/Search/Filters/Filters';
-import { Account, Dots } from 'src/components';
-import SenseListItem from './SenseListItem';
+import useParticleDetails from '../../../../particle/useParticleDetails';
 import { formatSenseItemDataToUI } from '../../utils/format';
-import { SenseItemId } from 'src/features/sense/types/sense';
-import CoinsAmount, {
-  CoinAction,
-} from '../../components/CoinAmount/CoinAmount';
-import { isParticle } from 'src/features/particle/utils';
-import { cutSenseItem } from '../../utils';
+import SenseListItem from './SenseListItem';
 
 type Props = {
   senseItemId: SenseItemId;
