@@ -11,6 +11,7 @@ import { getTransactions } from 'src/services/transactions/lcd';
 import { ParticleCid } from 'src/types/base';
 import { getIpfsHash } from '../ipfs/helpers';
 import { encodeSlash } from '../utils';
+import { requestWithRetry } from '../request-with-retry';
 
 export const formatNumber = (number, toFixed) => {
   let formatted = +number;
@@ -117,6 +118,20 @@ export const getRelevance = async (page = 0, limit = 50) => {
 export const getTxs = async (txs: string) => {
   try {
     const response = await axios({
+      method: 'get',
+      url: `${LCD_URL}/cosmos/tx/v1beta1/txs/${txs}`,
+    });
+
+    return response.data;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
+
+export const getTxsWithRetry = async (txs: string) => {
+  try {
+    const response = await requestWithRetry({
       method: 'get',
       url: `${LCD_URL}/cosmos/tx/v1beta1/txs/${txs}`,
     });

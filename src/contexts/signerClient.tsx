@@ -144,8 +144,8 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
             const signer = await getOfflineSigner(mnemonic);
             const clientJs = await createClient(signer);
 
-            window.signer = signer;
-            window.signingClient = clientJs;
+            // window.signer = signer;
+            // window.signingClient = clientJs;
 
             console.log('Signer is set');
 

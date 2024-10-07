@@ -1,8 +1,8 @@
 /* eslint-disable */
 // @ts-expect-error
 import { ActionBar, Pane } from '@cybercongress/gravity';
-import React, { Component, FC, useCallback, useEffect, useState } from 'react';
-import { ConnectedProps, connect } from 'react-redux';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import {
   ActionBarContentText,
   ButtonImgText,
@@ -13,11 +13,8 @@ import {
   TransactionSubmitted,
 } from '../../components';
 
-import { getTxs } from '../../utils/search/utils';
-
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
-import { SenseApi } from 'src/contexts/backend/services/senseApi';
-import withIpfsAndKeplr from 'src/hocs/withIpfsAndKeplr';
+import useIpfsAndKeplr from 'src/hooks/useIpfsAndKepr';
 import {
   clearActionBarState,
   LSAddress,
@@ -30,13 +27,12 @@ import {
   setTxHash,
   setTxHeight,
 } from 'src/redux/features/action-bar';
-import type { RootState } from 'src/redux/store';
-import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
-import { sendCyberlink } from 'src/services/neuron/neuronApi';
-import { trimString } from '../../utils/utils';
-import { ActionBarStates } from './constants';
 import { useAppDispatch } from 'src/redux/hooks';
-import { OfflineSigner } from '@cosmjs/proto-signing';
+import type { RootState } from 'src/redux/store';
+import { sendCyberlink } from 'src/services/neuron/neuronApi';
+import { getTxsWithRetry } from 'src/utils/search/utils';
+import { trimString } from 'src/utils/utils';
+import { ActionBarStates } from './constants';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -48,10 +44,6 @@ interface Props extends ConnectedProps<typeof connector> {
   placeholder?: string;
   rankLink?: string;
   update: () => void;
-  signer?: OfflineSigner;
-  ipfsApi: BackgroundWorker['ipfsApi'];
-  senseApi: SenseApi;
-  signingClient: any;
   keywordHash: string;
 }
 
@@ -66,11 +58,11 @@ class TxError extends Error {
 }
 
 const getConfirmTxErrorMessage = (
-  data: { code?: string; raw_log?: string } | null
+  data?: { code?: string; raw_log?: string } | null
 ): string =>
   data === null
     ? 'Transaction data is null'
-    : data.code && data.raw_log
+    : data?.code && data.raw_log
     ? data.raw_log
     : 'Data logs are empty';
 const getGenerateTxErrorMessage = (address: string) =>
@@ -81,7 +73,6 @@ let timeOut: any = null;
 let transport: any = null;
 const ActionBarContainer: FC<Props> = ({
   defaultAccount,
-  ipfsApi,
   contentHash,
   address,
   actionBarStage: stage,
@@ -92,21 +83,49 @@ const ActionBarContainer: FC<Props> = ({
   placeholder,
   rankLink,
   keywordHash,
-  toCid,
-  fromCid,
-  signer,
-  signingClient,
-  senseApi,
   address: addressLocalStor,
   update,
 }) => {
   const dispatch = useAppDispatch();
   const inputOpenFileRef: any = React.createRef();
   const [file, setFile] = useState<File | null>(null);
+  const { ipfsApi, senseApi, signer, signingClient } = useIpfsAndKeplr();
 
   useEffect(() => {
     checkAddressLocalStorage();
   }, [defaultAccount]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        if (txHash) {
+          dispatch(setActionBarStage(ActionBarStates.STAGE_CONFIRMING));
+
+          const data = (await getTxsWithRetry(txHash))?.tx_response;
+          if (data === null || data?.code || !data?.logs) {
+            const message = getConfirmTxErrorMessage(data);
+
+            throw new TxError(message, data?.height);
+          }
+
+          dispatch(setActionBarStage(ActionBarStates.STAGE_CONFIRMED));
+          dispatch(setTxHeight(data.txHeight));
+
+          update?.();
+        }
+      } catch (error) {
+        dispatch(setActionBarStage(ActionBarStates.STAGE_ERROR));
+        if (error instanceof TxError && error.height) {
+          dispatch(setTxHeight(error.height));
+        }
+        dispatch(
+          setErrorMessage(
+            error instanceof Error ? error.message : 'unknown error'
+          )
+        );
+      }
+    })();
+  }, [txHash]);
 
   const checkAddressLocalStorage = useCallback(async () => {
     const { account } = defaultAccount;
@@ -139,7 +158,7 @@ const ActionBarContainer: FC<Props> = ({
 
     const newToCid = shouldNotAdd
       ? content
-      : (await ipfsApi.addContent(content)) ?? null;
+      : (await ipfsApi!.addContent(content)) ?? null;
 
     dispatch(setToCid(newToCid));
 
@@ -148,7 +167,7 @@ const ActionBarContainer: FC<Props> = ({
 
   const calculationIpfsFrom = useCallback(async () => {
     const newFromCid = !keywordHash.match(PATTERN_IPFS_HASH)
-      ? (await ipfsApi.addContent(keywordHash)) ?? null
+      ? (await ipfsApi!.addContent(keywordHash)) ?? null
       : keywordHash;
 
     dispatch(setFromCid(newFromCid));
@@ -184,8 +203,6 @@ const ActionBarContainer: FC<Props> = ({
 
       dispatch(setActionBarStage(ActionBarStates.STAGE_SUBMITTED));
       dispatch(setTxHash(txHash));
-
-      timeOut = setTimeout(confirmTx, 1500);
     } catch (error) {
       console.log(`[ActionBarContainer] generateTx error:`, error);
 
@@ -209,42 +226,6 @@ const ActionBarContainer: FC<Props> = ({
     }
   };
 
-  const confirmTx = async () => {
-    console.log('Confirm TX', { timeOut });
-    try {
-      if (!txHash) {
-        throw new TxError('txHash is null');
-      }
-
-      dispatch(setActionBarStage(ActionBarStates.STAGE_CONFIRMING));
-
-      const data = (await getTxs(txHash))?.tx_response;
-      if (data === null || data?.code || !data?.logs) {
-        const message = getConfirmTxErrorMessage(data);
-
-        throw new TxError(message, data?.height);
-      }
-
-      dispatch(setActionBarStage(ActionBarStates.STAGE_CONFIRMED));
-      dispatch(setTxHeight(data.txHeight));
-
-      update?.();
-    } catch (error) {
-      dispatch(setActionBarStage(ActionBarStates.STAGE_ERROR));
-      if (error instanceof TxError && error.height) {
-        dispatch(setTxHeight(error.height));
-      }
-      dispatch(
-        setErrorMessage(
-          error instanceof Error ? error.message : 'unknown error'
-        )
-      );
-    }
-
-    // FIXME: WTF? Neverend story 🦄
-    timeOut = setTimeout(confirmTx, 1500);
-  };
-
   const onChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setContentHash(e.target.value));
   };
@@ -258,6 +239,7 @@ const ActionBarContainer: FC<Props> = ({
     clearState();
 
     dispatch(setActionBarStage(ActionBarStates.STAGE_INIT));
+    dispatch(clearActionBarState());
   };
 
   const onClickClear = () => {
@@ -305,6 +287,7 @@ const ActionBarContainer: FC<Props> = ({
     return (
       <ActionBar>
         <ActionBarContentText>
+          {/* @ts-expect-error */}
           <ButtonImgText
             text={
               <Pane alignItems="center" display="flex">
@@ -413,13 +396,9 @@ const connector = connect((state: RootState) => ({
   actionBarStage: state.actionBar.stage,
   address: state.actionBar.address,
   contentHash: state.actionBar.contentHash,
-  toCid: state.actionBar.toCid,
-  fromCid: state.actionBar.fromCid,
   txHash: state.actionBar.txHash,
   txHeight: state.actionBar.txHeight,
   errorMessage: state.actionBar.errorMessage,
 }));
 
-const ActionBarHOC = withIpfsAndKeplr(connector(ActionBarContainer));
-
-export default ActionBarHOC;
+export default connector(ActionBarContainer);

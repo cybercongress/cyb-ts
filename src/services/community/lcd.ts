@@ -67,7 +67,7 @@ export const getFollowers = async (
   // debugger;
   // check
 
-  return response.txResponses.map(
-    (item) => item?.tx?.body.messages[0].value.neuron
-  );
+  return response.txResponses
+    .map((item) => item?.tx?.body?.messages?.[0].value?.neuron)
+    .filter(Boolean);
 };

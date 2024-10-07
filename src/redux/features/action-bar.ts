@@ -56,7 +56,7 @@ const actionBarSlice = createSlice({
       state.errorMessage = payload;
     },
     clearActionBarState() {
-      return initialState;
+      return { ...initialState };
     },
   },
 });
