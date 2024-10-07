@@ -435,8 +435,9 @@ const getLink = async (
     const response = await getTransactions({
       events: [
         {
-          key: `cyberlink.particle${type === LinksTypeFilter.to ? 'To' : 'From'
-            }`,
+          key: `cyberlink.particle${
+            type === LinksTypeFilter.to ? 'To' : 'From'
+          }`,
           value: cid,
         },
       ],
