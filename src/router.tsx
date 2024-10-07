@@ -43,6 +43,7 @@ import MainPartal from './containers/portal/mainPortal';
 
 import { routes } from './routes';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
+import Warp from './containers/warp/Warp';
 import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
 import Keys from './pages/Keys/Keys';
@@ -56,6 +57,7 @@ import Brain from './pages/Brain/Brain';
 import Settings from './pages/Settings/Settings';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
+import { Networks } from './types/networks';
 import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
 
@@ -192,18 +194,7 @@ function AppRouter() {
           <Route path="/teleport/*" element={<Teleport />} />
 
           <Route path="/warp" element={<WarpDashboardPools />} />
-          <Route
-            path="/warp/:tab"
-            element={
-              <div
-                style={{
-                  textAlign: 'center',
-                }}
-              >
-                warp actions temporary disabled due to upgrade issues
-              </div>
-            }
-          />
+          <Route path="/warp/:tab" element={<Warp />} />
           <Route path="/genesis" element={<Movie />} />
           <Route path="/citizenship" element={<PortalCitizenship />} />
           <Route path="/gift" element={<PortalGift />} />
