@@ -39,11 +39,13 @@ export async function getTransactions({
   const { txs } = response.data;
 
   // bullshit formatting FIXME:
-  //   const formatted = GetTxsEventResponse.fromAmino(response.data);
+  // const formatted = GetTxsEventResponse.fromAmino(response.data);
   // from amino to protobuf
   const formatted = {
     txs,
-    pagination: response.data.pagination || {},
+    pagination: response.data.pagination || {
+      total: response.data.total,
+    },
     txResponses: response.data.tx_responses,
   } as GetTxsEventResponse;
 
