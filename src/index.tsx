@@ -36,7 +36,6 @@ import HubProvider from './contexts/hub';
 import ScriptingProvider from './contexts/scripting/scripting';
 import { localStorageKeys } from './constants/localStorageKeys';
 import CyberClientProvider from './contexts/queryCyberClient';
-import NewVersionChecker from './components/NewVersionChecker/NewVersionChecker';
 import apolloClient from './services/graphql';
 
 const queryClient = new QueryClient({
@@ -76,7 +75,6 @@ function Providers({ children }: { children: React.ReactNode }) {
                             <ScriptingProvider>
                               <DeviceProvider>
                                 <AdviserProvider>
-                                  <NewVersionChecker />
                                   <ErrorBoundary>{children}</ErrorBoundary>
                                 </AdviserProvider>
                               </DeviceProvider>

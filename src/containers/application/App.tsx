@@ -21,6 +21,7 @@ import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.
 import { PreviousPageProvider } from 'src/contexts/previousPage';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import NewVersionChecker from 'src/components/NewVersionChecker/NewVersionChecker';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 import styles from './styles.scss';
@@ -136,6 +137,7 @@ function App() {
 
   return (
     <PreviousPageProvider>
+      <NewVersionChecker />
       <MainLayout>
         <>
           {/* not move portal order */}
