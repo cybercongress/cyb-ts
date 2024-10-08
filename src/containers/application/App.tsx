@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
-import { AppDispatch } from 'src/redux/store';
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 
@@ -25,15 +24,15 @@ import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 import styles from './styles.scss';
+import { setFocus } from './Header/Commander/commander.redux';
 
 export const PORTAL_ID = 'portal';
 
 initCyblog();
 
 function App() {
-  const dispatch: AppDispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-
   const address = useCurrentAddress();
 
   // const { community, communityLoaded } = useGetCommunity(address || null, {
@@ -125,6 +124,15 @@ function App() {
   //     localStorage.setItem('thanks', JSON.stringify(parsed.thanks));
   //   }
   // };
+
+  // initial focus on commander
+  useEffect(() => {
+    const isGraphPages = window.location.pathname.includes('/brain');
+
+    if (!isGraphPages) {
+      dispatch(setFocus(true));
+    }
+  }, [dispatch]);
 
   return (
     <PreviousPageProvider>

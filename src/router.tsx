@@ -52,12 +52,11 @@ import OracleLanding from './pages/oracle/landing/OracleLanding';
 import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
-import Brain from './pages/Brain/Brain';
-
-import Settings from './pages/Settings/Settings';
+// import Cybernet from './features/cybernet/ui/Cybernet';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
-import { Networks } from './types/networks';
+import BrainRoutes from './routing/Brain';
+import Settings from './pages/Settings/Settings';
 import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
 
@@ -105,11 +104,6 @@ function ValidatorsRedirect() {
 function RedirectToRobot() {
   const params = useParams();
   return <Navigate to={`/neuron/${params.address}`} replace />;
-}
-
-function RedirectToRobotBrain() {
-  const params = useParams();
-  return <Navigate to={`/neuron/${params.agent}/brain`} replace />;
 }
 
 function AppRouter() {
@@ -161,11 +155,7 @@ function AppRouter() {
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
 
-          {['/graph', '/brain'].map((path) => (
-            <Route key={path} path={path} element={<Brain />} />
-          ))}
-
-          <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
+          {BrainRoutes()}
 
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
