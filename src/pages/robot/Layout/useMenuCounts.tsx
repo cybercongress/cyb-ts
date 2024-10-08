@@ -16,9 +16,9 @@ import {
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { convertResources, reduceBalances } from 'src/utils/utils';
 import { useGetKarma } from 'src/containers/application/Karma/useGetKarma';
-import { useRobotContext } from '../robot.context';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectUnreadCounts } from 'src/features/sense/redux/sense.redux';
+import { useRobotContext } from '../robot.context';
 
 function useMenuCounts(address: string | null) {
   const [tweetsCount, setTweetsCount] = useState();
@@ -35,7 +35,7 @@ function useMenuCounts(address: string | null) {
   async function getTweetCount() {
     try {
       const response = await getTweet(address);
-      setTweetsCount(response?.total_count);
+      setTweetsCount(response?.pagination?.total || 0);
     } catch (error) {
       console.error(error);
     }
@@ -105,8 +105,8 @@ function useMenuCounts(address: string | null) {
       const addressHash = await getIpfsHash(address);
       const response = await getFollowers(addressHash);
 
-      if (response?.total_count) {
-        setFollowers(response.total_count);
+      if (response?.pagination?.total) {
+        setFollowers(response.pagination.total);
       }
     } catch (error) {
       console.error(error);
