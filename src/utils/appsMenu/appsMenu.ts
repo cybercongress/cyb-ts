@@ -13,6 +13,7 @@ import { routes } from 'src/routes';
 import { Networks } from 'src/types/networks';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { CHAIN_ID } from 'src/constants/config';
+import { isPussyChain } from '../chains/pussy';
 
 const getMenuItems = () => {
   const listItemMenu = [
@@ -147,7 +148,7 @@ const getMenuItems = () => {
     // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
 
-    CHAIN_ID === Networks.BOSTROM
+    !isPussyChain
       ? {
           name: 'Cyberver 🟣',
           icon: require('src/image/new_icons/cyberver.svg'),

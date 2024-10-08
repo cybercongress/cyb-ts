@@ -10,10 +10,11 @@ import dateFormat from 'dateformat';
 import { useQuery } from '@tanstack/react-query';
 
 import Loader2 from 'src/components/ui/Loader2';
+import { routes } from 'src/routes';
 import { getProposals } from '../../utils/governance';
 import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
-import { CardStatisics, MainContainer } from '../../components';
+import { ActionBar, CardStatisics } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
 import styles from './components/styles.module.scss';
 
@@ -226,21 +227,26 @@ function Governance() {
     ));
 
   return (
-    <MainContainer>
-      <>
-        <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
+    <>
+      <Statistics communityPoolCyber={communityPoolCyber} staked={staked} />
 
-        {isLoadingProposals ? (
-          <Loader2 />
-        ) : (
-          <div className={styles.column}>
-            <Columns title="Active">{active}</Columns>
-            <Columns title="Accepted">{accepted}</Columns>
-            <Columns title="Rejected">{rejected}</Columns>
-          </div>
-        )}
-      </>
-    </MainContainer>
+      {isLoadingProposals ? (
+        <Loader2 />
+      ) : (
+        <div className={styles.column}>
+          <Columns title="Active">{active}</Columns>
+          <Columns title="Accepted">{accepted}</Columns>
+          <Columns title="Rejected">{rejected}</Columns>
+        </div>
+      )}
+
+      <ActionBar
+        button={{
+          text: 'Propose',
+          link: routes.senate.routes.new.path,
+        }}
+      />
+    </>
   );
 }
 

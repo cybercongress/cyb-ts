@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { DENOM_LIQUID } from 'src/constants/config';
 import { reduceBalances } from '../utils/utils';
 import { authAccounts } from '../utils/search/utils';
-import { DENOM_LIQUID } from 'src/constants/config';
 
 const MILLISECONDS_IN_SECOND = 1000;
 
@@ -40,7 +40,7 @@ const getVestingPeriodsData = (data, startTime) => {
   return vestedAmount;
 };
 
-function useGetBalances(addressActive) {
+function useGetBalances(addressActive: string | undefined) {
   const queryClient = useQueryClient();
   const [allBalances, setAllBalances] = useState(null);
   const [vestedAmount, setVestedAmount] = useState(null);
@@ -48,14 +48,14 @@ function useGetBalances(addressActive) {
   const [update, setUpdate] = useState(0);
 
   const refresh = () => {
-    setUpdate((item) => item + 1)
-  }
+    setUpdate((item) => item + 1);
+  };
 
   useEffect(() => {
     const getAllBalances = async () => {
       if (queryClient && addressActive) {
         const getAllBalancesPromise = await queryClient.getAllBalances(
-          addressActive.bech32
+          addressActive
         );
         const balances = reduceBalances(getAllBalancesPromise);
         setAllBalances(balances);
@@ -65,54 +65,56 @@ function useGetBalances(addressActive) {
   }, [addressActive, queryClient, update]);
 
   useEffect(() => {
-    const getAuth = async () => {
-      if (addressActive) {
-        const vested = {
-          [DENOM_LIQUID]: 0,
-          millivolt: 0,
-          milliampere: 0,
-        };
-        const getAccount = await authAccounts(addressActive.bech32);
-        if (
-          getAccount.result.value.vesting_periods &&
-          getAccount.result.value.base_vesting_account.original_vesting
-        ) {
-          const { vesting_periods: vestingPeriods } = getAccount.result.value;
-          const { original_vesting: originalVestingAmount } =
-            getAccount.result.value.base_vesting_account;
-          const { start_time: startTime } = getAccount.result.value;
-          const reduceOriginalVestingAmount = reduceBalances(
-            originalVestingAmount
-          );
-          // eslint-disable-next-line no-restricted-syntax
-          for (const key in reduceOriginalVestingAmount) {
-            if (Object.hasOwnProperty.call(reduceOriginalVestingAmount, key)) {
-              const element = reduceOriginalVestingAmount[key];
-              if (Object.hasOwnProperty.call(vested, key)) {
-                vested[key] += element;
-              }
-            }
-          }
+    (async () => {
+      if (!addressActive) {
+        return;
+      }
 
-          const vestedAmountReduce = getVestingPeriodsData(
-            vestingPeriods,
-            startTime
-          );
-          // eslint-disable-next-line no-restricted-syntax
-          for (const key in vestedAmountReduce) {
-            if (Object.hasOwnProperty.call(vestedAmountReduce, key)) {
-              const element = vestedAmountReduce[key];
-              if (Object.hasOwnProperty.call(vested, key)) {
-                vested[key] -= element;
-              }
+      const vested = {
+        [DENOM_LIQUID]: 0,
+        millivolt: 0,
+        milliampere: 0,
+      };
+
+      const getAccount = await authAccounts(addressActive);
+      if (
+        getAccount.account.vesting_periods &&
+        getAccount.account.base_vesting_account.original_vesting
+      ) {
+        const { vesting_periods: vestingPeriods } = getAccount.account;
+        const { original_vesting: originalVestingAmount } =
+          getAccount.account.base_vesting_account;
+        const { start_time: startTime } = getAccount.account;
+        const reduceOriginalVestingAmount = reduceBalances(
+          originalVestingAmount
+        );
+        // eslint-disable-next-line no-restricted-syntax
+        for (const key in reduceOriginalVestingAmount) {
+          if (Object.hasOwnProperty.call(reduceOriginalVestingAmount, key)) {
+            const element = reduceOriginalVestingAmount[key];
+            if (Object.hasOwnProperty.call(vested, key)) {
+              vested[key] += element;
             }
           }
         }
-        setVestedAmount(vested);
+
+        const vestedAmountReduce = getVestingPeriodsData(
+          vestingPeriods,
+          startTime
+        );
+        // eslint-disable-next-line no-restricted-syntax
+        for (const key in vestedAmountReduce) {
+          if (Object.hasOwnProperty.call(vestedAmountReduce, key)) {
+            const element = vestedAmountReduce[key];
+            if (Object.hasOwnProperty.call(vested, key)) {
+              vested[key] -= element;
+            }
+          }
+        }
       }
-    };
-    getAuth();
-  }, [update, addressActive]);
+      setVestedAmount(vested);
+    })();
+  }, [update, addressActive, queryClient]);
 
   useEffect(() => {
     if (allBalances !== null && vestedAmount !== null) {

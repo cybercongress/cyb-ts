@@ -16,6 +16,8 @@ const DEFAULT_CHAIN_ID: Networks.BOSTROM | Networks.SPACE_PUSSY =
 
 export const CHAIN_ID = DEFAULT_CHAIN_ID;
 
+console.log('CHAIN_ID', CHAIN_ID);
+
 export const LCD_URL =
   process.env.LCD_URL || defaultNetworks[DEFAULT_CHAIN_ID].LCD_URL;
 

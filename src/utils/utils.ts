@@ -408,6 +408,10 @@ const accountsKeplr = (accounts: Key): AccountValue => {
   };
 };
 
+export function covertUint8ArrayToString(data: Uint8Array): string {
+  return new TextDecoder().decode(data);
+}
+
 export {
   formatNumber,
   asyncForEach,

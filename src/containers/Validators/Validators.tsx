@@ -5,18 +5,20 @@ import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
 import { getDelegatorDelegations } from 'src/utils/search/utils';
-import { BondStatus } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
-import { DenomArr, MainContainer } from 'src/components';
+import {
+  BondStatus,
+  Validator,
+} from 'cosmjs-types/cosmos/staking/v1beta1/staking';
+import { DenomArr, MainContainer, Loading } from 'src/components';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
+import useStakingParams from 'src/features/staking/useStakingParams';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
-import { Loading } from '../../components';
 import ActionBarContainer from './ActionBarContainer';
 import { TableHeroes, TableItem, InfoBalance } from './components';
 import getHeroes from './getHeroesHook';
 import { useGetBalance } from '../../pages/robot/_refactor/account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import styles from './Validators.module.scss';
-import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
-import useStakingParams from 'src/features/staking/useStakingParams';
 
 function Validators({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
@@ -37,7 +39,7 @@ function Validators({ defaultAccount }) {
   const [selectedIndex, setSelectedIndex] = useState('');
   const [unStake, setUnStake] = useState(false);
   const [delegationsData, setDelegationsData] = useState([]);
-  const [validatorsData, setValidatorsData] = useState([]);
+  const [validatorsData, setValidatorsData] = useState<Validator[]>([]);
   // FIXME: use useGetHeroes hook instead
 
   const { setAdviser } = useAdviser();
@@ -240,7 +242,7 @@ function Validators({ defaultAccount }) {
               );
               return (
                 <TableItem
-                  key={validator.operator_address}
+                  key={validator.operatorAddress}
                   staking={staking}
                   commission={commission}
                   item={validator}

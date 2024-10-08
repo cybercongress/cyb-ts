@@ -1,21 +1,10 @@
 // eslint-disable-next-line import/no-unused-modules
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { OperationDefinitionNode } from 'graphql';
 
 import { createRoot } from 'react-dom/client';
 
-import {
-  ApolloClient,
-  InMemoryCache,
-  HttpLink,
-  ApolloLink,
-  split,
-  ApolloProvider,
-} from '@apollo/client';
-import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
-import { createClient } from 'graphql-ws';
-import { getMainDefinition } from '@apollo/client/utilities';
+import { ApolloProvider } from '@apollo/client';
 
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -44,45 +33,11 @@ import BackendProvider from './contexts/backend/backend';
 import AdviserProvider from './features/adviser/context';
 import HubProvider from './contexts/hub';
 
-import { INDEX_HTTPS, INDEX_WEBSOCKET } from './constants/config';
 import ScriptingProvider from './contexts/scripting/scripting';
 import { localStorageKeys } from './constants/localStorageKeys';
+import CyberClientProvider from './contexts/queryCyberClient';
 import NewVersionChecker from './components/NewVersionChecker/NewVersionChecker';
-
-const httpLink = new HttpLink({
-  uri: INDEX_HTTPS,
-  headers: {
-    'content-type': 'application/json',
-    authorization: '',
-  },
-});
-
-const wsLink = new GraphQLWsLink(
-  createClient({
-    url: INDEX_WEBSOCKET,
-  })
-);
-
-const terminatingLink = split(
-  ({ query }) => {
-    const { kind, operation } = getMainDefinition(
-      query
-    ) as OperationDefinitionNode;
-    return kind === 'OperationDefinition' && operation === 'subscription';
-  },
-  wsLink,
-  httpLink
-);
-
-const link = ApolloLink.from([terminatingLink]);
-
-const cache = new InMemoryCache();
-
-// TODO: replace with @apollo/client
-const client = new ApolloClient({
-  link,
-  cache,
-});
+import apolloClient from './services/graphql';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -110,28 +65,30 @@ function Providers({ children }: { children: React.ReactNode }) {
       <NetworksProvider>
         <QueryClientProvider client={queryClient}>
           <SdkQueryClientProvider>
-            <SigningClientProvider>
-              <HubProvider>
-                <IbcDenomProvider>
-                  <WebsocketsProvider>
-                    <DataProvider>
-                      <ApolloProvider client={client}>
-                        <BackendProvider>
-                          <ScriptingProvider>
-                            <DeviceProvider>
-                              <AdviserProvider>
-                                <NewVersionChecker />
-                                <ErrorBoundary>{children}</ErrorBoundary>
-                              </AdviserProvider>
-                            </DeviceProvider>
-                          </ScriptingProvider>
-                        </BackendProvider>
-                      </ApolloProvider>
-                    </DataProvider>
-                  </WebsocketsProvider>
-                </IbcDenomProvider>
-              </HubProvider>
-            </SigningClientProvider>
+            <CyberClientProvider>
+              <SigningClientProvider>
+                <HubProvider>
+                  <IbcDenomProvider>
+                    <WebsocketsProvider>
+                      <DataProvider>
+                        <ApolloProvider client={apolloClient}>
+                          <BackendProvider>
+                            <ScriptingProvider>
+                              <DeviceProvider>
+                                <AdviserProvider>
+                                  <NewVersionChecker />
+                                  <ErrorBoundary>{children}</ErrorBoundary>
+                                </AdviserProvider>
+                              </DeviceProvider>
+                            </ScriptingProvider>
+                          </BackendProvider>
+                        </ApolloProvider>
+                      </DataProvider>
+                    </WebsocketsProvider>
+                  </IbcDenomProvider>
+                </HubProvider>
+              </SigningClientProvider>
+            </CyberClientProvider>
           </SdkQueryClientProvider>
         </QueryClientProvider>
       </NetworksProvider>
