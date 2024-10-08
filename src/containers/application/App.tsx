@@ -43,18 +43,6 @@ function App() {
   const adviserContext = useAdviser();
   useSenseManager();
 
-  useAdviserTexts({
-    defaultText: useMemo(
-      () => (
-        <>
-          app is having some issues after network upgrade <br />
-          check updates in social groups
-        </>
-      ),
-      []
-    ),
-  });
-
   const { ipfsError } = useBackend();
 
   useEffect(() => {
