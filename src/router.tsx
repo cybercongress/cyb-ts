@@ -9,8 +9,6 @@ import {
 } from 'react-router-dom';
 import App from './containers/application/App';
 import Home from './containers/home/home';
-import Governance from './containers/governance/governance';
-import ProposalsDetail from './containers/governance/proposalsDetail';
 import Validators from './containers/Validators/Validators';
 import Story from './containers/story/story';
 import TxsDetails from './containers/txs/txsDetails';
@@ -54,10 +52,13 @@ import OracleLanding from './pages/oracle/landing/OracleLanding';
 import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
 import Social from './pages/Social/Social';
-import Brain from './pages/Brain/Brain';
-import Settings from './pages/Settings/Settings';
+// import Cybernet from './features/cybernet/ui/Cybernet';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
+import BrainRoutes from './routing/Brain';
+import Settings from './pages/Settings/Settings';
+import GovernanceRoutes from './containers/governance/GovernanceRoutes';
+import StudioWrapper from './features/studio/StudioWrapper';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -105,11 +106,6 @@ function RedirectToRobot() {
   return <Navigate to={`/neuron/${params.address}`} replace />;
 }
 
-function RedirectToRobotBrain() {
-  const params = useParams();
-  return <Navigate to={`/neuron/${params.agent}/brain`} replace />;
-}
-
 function AppRouter() {
   return (
     <WrappedRouter>
@@ -146,11 +142,7 @@ function AppRouter() {
           />
           <Route path="/search/:query" element={<ToOracleAsk />} />
 
-          <Route path="/senate" element={<Governance />} />
-          <Route
-            path={routes.senateProposal.path}
-            element={<ProposalsDetail />}
-          />
+          <Route path="/senate/*" element={<GovernanceRoutes />} />
 
           {/* old links - start */}
           <Route path="/halloffame" element={<Navigate to="/sphere" />} />
@@ -163,11 +155,7 @@ function AppRouter() {
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
 
-          {['/graph', '/brain'].map((path) => (
-            <Route key={path} path={path} element={<Brain />} />
-          ))}
-
-          <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
+          {BrainRoutes()}
 
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
@@ -219,13 +207,20 @@ function AppRouter() {
 
           <Route path="/nebula" element={<Nebula />} />
 
-          {/* <Route path="/cyberver/*" element={<Cybernet />} /> */}
+          {/* seems shouldn't be build
+          {process.env.CHAIN_ID === Networks.SPACE_PUSSY && (
+            <Route path="/cyberver/*" element={<Cybernet />} />
+          )} */}
 
           <Route path="/keys" element={<Keys />} />
 
           <Route path="/settings/*" element={<Settings />} />
 
           <Route path={routes.social.path} element={<Social />} />
+
+          {['/studio', '/studio/:cid'].map((path) => (
+            <Route key={path} path={path} element={<StudioWrapper />} />
+          ))}
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />

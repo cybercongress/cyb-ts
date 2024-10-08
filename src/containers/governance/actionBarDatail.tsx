@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 import { NumericFormat } from 'react-number-format';
 import { ActionBar, Pane } from '@cybercongress/gravity';
 import { coins } from '@cosmjs/launchpad';
-import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import {
   VoteOption,
@@ -14,6 +13,7 @@ import {
   BASE_DENOM,
   MEMO_KEPLR,
 } from 'src/constants/config';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -44,7 +44,13 @@ const {
   STAGE_ERROR,
 } = LEDGER;
 
-function ActionBarDetail({ proposals, id, addressActive, update }) {
+type Props = {
+  proposals: any;
+  id: number;
+  update: () => void;
+};
+
+function ActionBarDetail({ proposals, id, update }: Props) {
   const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
@@ -54,17 +60,15 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
   const [valueSelect, setValueSelect] = useState(1);
   const [valueDeposit, setValueDeposit] = useState('');
 
+  const addressActive = useCurrentAddress();
+
   useEffect(() => {
     const confirmTx = async () => {
-      if (queryClient && txHash !== null) {
+      if (txHash !== null) {
         setStage(STAGE_CONFIRMING);
-        const response = await getTxs(txHash);
-        console.log('response :>> ', response);
-
-        const responseGetTx = await queryClient.getTx(txHash);
-        console.log('responseGetTx :>> ', responseGetTx);
-
-        if (response && response !== null) {
+        const res = await getTxs(txHash);
+        if (res) {
+          const response = res.tx_response;
           if (response.logs) {
             setStage(STAGE_CONFIRMED);
             setTxHeight(response.height);
@@ -85,7 +89,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
     };
     confirmTx();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryClient, txHash]);
+  }, [txHash]);
 
   const clearState = () => {
     setStage(STAGE_INIT);
@@ -100,7 +104,7 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
     if (signingClient && signer && Object.keys(proposals).length > 0) {
       try {
         const [{ address }] = await signer.getAccounts();
-        if (addressActive !== null && addressActive.bech32 === address) {
+        if (addressActive === address) {
           let response = {};
           const fee = {
             amount: [],
@@ -134,7 +138,6 @@ function ActionBarDetail({ proposals, id, addressActive, update }) {
             );
           }
 
-          console.log(`response`, response);
           if (response.code === 0) {
             setTxHash(response.transactionHash);
           } else {

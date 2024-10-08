@@ -13,6 +13,7 @@ import { routes } from 'src/routes';
 import { Networks } from 'src/types/networks';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { CHAIN_ID } from 'src/constants/config';
+import { isPussyChain } from '../chains/pussy';
 
 const getMenuItems = () => {
   const listItemMenu = [
@@ -41,6 +42,11 @@ const getMenuItems = () => {
           name: 'Particles',
           to: '/particles',
           icon: require('./images/tag@2x.png'),
+        },
+        {
+          name: 'brain',
+          to: routes.brain.path,
+          icon: '🧠',
         },
         {
           name: 'Stats',
@@ -142,7 +148,7 @@ const getMenuItems = () => {
     // },
     { name: 'Senate', icon: senate, to: '/senate', subItems: [] },
 
-    CHAIN_ID === Networks.BOSTROM
+    !isPussyChain
       ? {
           name: 'Cyberver 🟣',
           icon: require('src/image/new_icons/cyberver.svg'),
@@ -191,6 +197,12 @@ const getMenuItems = () => {
         },
 
     { name: 'About', icon: congress, to: routes.social.path, subItems: [] },
+    {
+      name: 'Studio',
+      icon: require('./images/studio.png'),
+      to: routes.studio.path,
+      subItems: [],
+    },
     // {
     //   name: 'Help',
     //   icon: zhdun,
@@ -257,6 +269,11 @@ const getMenuItems = () => {
           name: 'Map',
           to: routes.portal.routes.map.path,
           icon: require('./images/world-map.png'),
+        },
+        {
+          name: 'AOS',
+          to: '/genesis',
+          icon: require('./images/aos.png'),
         },
         // { name: 'Release', to: '/release' },
       ],

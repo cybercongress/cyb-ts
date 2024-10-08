@@ -2,6 +2,9 @@ import { createPortal } from 'react-dom';
 import { Loading } from 'src/components';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
+import { Stars } from 'src/containers/portal/components';
+import ErrorBoundary from 'src/components/ErrorBoundary/ErrorBoundary';
+import { useEffect } from 'react';
 import useCyberlinks from './useCyberlinks';
 import { PORTAL_ID } from '../../../containers/application/App';
 import GraphNew from '../GraphNew/GraphNew';
@@ -19,6 +22,9 @@ type Props = {
   limit?: number | false;
   data?: any;
   type?: Types;
+
+  // temp
+  minVersion?: boolean;
 };
 
 function CyberlinksGraphContainer({
@@ -27,6 +33,7 @@ function CyberlinksGraphContainer({
   size,
   limit,
   data,
+  minVersion,
   type = Types['2d'],
 }: Props) {
   const { data: fetchData, loading } = useCyberlinks(
@@ -63,11 +70,18 @@ function CyberlinksGraphContainer({
       </p>
     </div>
   ) : (
-    <Comp
-      data={data || fetchData}
-      size={size}
-      currentAddress={currentAddress}
-    />
+    <>
+      {!minVersion && <Stars />}
+
+      <ErrorBoundary fallback={<GraphRenderFallbackError />}>
+        <Comp
+          data={data || fetchData}
+          size={size}
+          minVersion={minVersion}
+          currentAddress={currentAddress}
+        />
+      </ErrorBoundary>
+    </>
   );
 
   const portalEl = document.getElementById(PORTAL_ID);
@@ -76,3 +90,10 @@ function CyberlinksGraphContainer({
 }
 
 export default CyberlinksGraphContainer;
+
+function GraphRenderFallbackError() {
+  useEffect(() => {
+    alert('Graph render error');
+  }, []);
+  return <div>Graph render error</div>;
+}

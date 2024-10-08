@@ -1,27 +1,18 @@
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  ActionBar,
-  BandwidthBar,
-  Button,
-  Input,
-  MainContainer,
-} from 'src/components';
+import { ActionBar, BandwidthBar, Input, MainContainer } from 'src/components';
 import { routes } from 'src/routes';
 import { useEffect, useState } from 'react';
 import { useAdviser } from 'src/features/adviser/context';
-import { useQueryClient } from 'src/contexts/queryClient';
-import { selectCurrentAddress } from 'src/redux/features/pocket';
-import { useSigningClient } from 'src/contexts/signerClient';
-import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import { Networks } from 'src/types/networks';
 import useGetSlots from 'src/containers/mint/useGetSlots';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useBackend } from 'src/contexts/backend/backend';
-import { sendCyberlink } from 'src/services/neuron/neuronApi';
-import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
+
 import { CHAIN_ID } from 'src/constants/config';
+import { useCyberlinkWithWaitAndAdviser } from 'src/features/cyberlinks/hooks/useCyberlink';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import TitleText from '../landing/components/TitleText/TitleText';
 import KeywordButton from '../landing/components/KeywordButton/KeywordButton';
 import styles from './Learn.module.scss';
@@ -49,49 +40,37 @@ function Learn() {
   const [ask, setAsk] = useState('');
   const [answer, setAnswer] = useState('');
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>();
+  const {
+    execute: cyberlink,
+    isReady,
+    isLoading: loading,
+  } = useCyberlinkWithWaitAndAdviser({
+    from: ask,
+    to: answer,
+    callback: ({ toCid }) => {
+      navigate(routes.ipfs.getLink(toCid));
+    },
+  });
 
-  const { isIpfsInitialized, ipfsApi, senseApi } = useBackend();
+  const { isIpfsInitialized } = useBackend();
 
-  const queryClient = useQueryClient();
+  const address = useCurrentAddress();
 
-  const address = useAppSelector(selectCurrentAddress);
-
-  const { signer, signingClient } = useSigningClient();
   const navigate = useNavigate();
 
-  const { balancesResource } = useGetSlots(address);
-
   const citizenship = useAppSelector(selectCurrentPassport);
-
   const noPassport = CHAIN_ID === Networks.BOSTROM && !citizenship;
 
-  const [tx, setTx] = useState({
-    hash: '',
-    onSuccess: () => {},
-  });
-
-  useWaitForTransaction({
-    hash: tx.hash,
-    onSuccess: tx.onSuccess,
-  });
+  const { balancesResource } = useGetSlots(address);
+  const noEnergy = !balancesResource.millivolt || !balancesResource.milliampere;
 
   const { setAdviser } = useAdviser();
-
-  const noEnergy = !balancesResource.millivolt || !balancesResource.milliampere;
 
   useEffect(() => {
     let content;
     let adviserColor: keyof typeof AdviserColors = 'blue';
 
-    if (error) {
-      content = error;
-      adviserColor = 'red';
-    } else if (loading) {
-      content = 'transaction pending...';
-      adviserColor = 'yellow';
-    } else if (noPassport) {
+    if (noPassport) {
       content = (
         <>
           moon <Link to={routes.portal.path}>citizenship</Link> unlocks all
@@ -112,59 +91,7 @@ function Learn() {
     }
 
     setAdviser(content, adviserColor);
-  }, [noPassport, noEnergy, loading, error, setAdviser]);
-
-  useEffect(() => {
-    setError(undefined);
-  }, [ask, answer]);
-
-  async function cyberlink() {
-    if (
-      !isIpfsInitialized ||
-      !queryClient ||
-      !address ||
-      !signer ||
-      !signingClient
-    ) {
-      return;
-    }
-
-    const [{ address: signerAddress }] = await signer.getAccounts();
-
-    if (signerAddress !== address) {
-      setError('Signer address is not equal to current account');
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const fromCid = await addIfpsMessageOrCid(ask, { ipfsApi });
-      const toCid = await addIfpsMessageOrCid(answer, { ipfsApi });
-
-      const txHash = await sendCyberlink(address, fromCid, toCid, {
-        signingClient,
-        senseApi,
-      });
-
-      setTx({
-        hash: txHash,
-        onSuccess: () => {
-          navigate(routes.ipfs.getLink(toCid));
-        },
-      });
-    } catch (e) {
-      // better use code of error
-      if (e.message === 'Request rejected') {
-        return;
-      }
-
-      console.error(error);
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+  }, [noPassport, noEnergy, setAdviser]);
 
   return (
     <MainContainer>
@@ -229,7 +156,7 @@ function Learn() {
           <div className={styles.inputs}>
             <Input
               value={ask}
-              disabled={loading}
+              disabled={noEnergy || loading}
               placeholder="Ask"
               color="pink"
               onChange={(e) => setAsk(e.target.value)}
@@ -237,7 +164,7 @@ function Learn() {
             <span className={styles.tilde}>~</span>
             <Input
               value={answer}
-              disabled={loading}
+              disabled={noEnergy || loading}
               placeholder="Answer"
               color="pink"
               onChange={(e) => setAnswer(e.target.value)}
@@ -254,14 +181,14 @@ function Learn() {
           </div>
         </div>
 
-        <ActionBar>
-          <Button
-            disabled={!ask || !answer || !isIpfsInitialized || !queryClient}
-            onClick={cyberlink}
-          >
-            {isIpfsInitialized ? 'cyberlink' : 'node is loading...'}
-          </Button>
-        </ActionBar>
+        <ActionBar
+          button={{
+            disabled: !ask || !answer || !isReady || noEnergy,
+            pending: loading,
+            onClick: cyberlink,
+            text: isIpfsInitialized ? 'cyberlink' : 'ipfs is preparing...',
+          }}
+        />
       </div>
     </MainContainer>
   );

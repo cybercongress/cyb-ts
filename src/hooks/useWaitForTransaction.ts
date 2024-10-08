@@ -1,6 +1,5 @@
 import { IndexedTx } from '@cosmjs/stargate';
-import { useQuery } from '@tanstack/react-query';
-import { useQueryClient } from 'src/contexts/queryClient';
+import { useCyberClient } from 'src/contexts/queryCyberClient';
 
 // from
 // https://wagmi.sh/react/hooks/useWaitForTransaction
@@ -10,36 +9,59 @@ export type Props = {
   onSuccess?: (response: IndexedTx) => void;
 };
 
-const NO_RESPONSE_ERROR = 'No response';
+// const NO_RESPONSE_ERROR = 'No response';
 
 function useWaitForTransaction({ hash, onSuccess }: Props) {
-  const queryClient = useQueryClient();
+  const { hooks } = useCyberClient();
 
-  const { data, isFetching, error } = useQuery(
-    ['tx', hash],
-    async () => {
-      const response = await queryClient!.getTx(hash!);
-
-      if (!response) {
-        // seems not working with retry and retryDelay
-        throw new Error(NO_RESPONSE_ERROR);
-      } else if (response.code !== 0) {
-        throw new Error(response.rawLog);
-      }
-
-      return response;
+  const { data, isFetching, error } = hooks.cosmos.tx.v1beta1.useGetTx({
+    request: {
+      hash: hash!,
     },
-    {
-      enabled: Boolean(queryClient && hash),
+    options: {
+      enabled: Boolean(hash),
       retry: (_, error) => {
-        return error.message === NO_RESPONSE_ERROR;
+        return error.message.includes('NotFound');
       },
       retryDelay: 2500,
       onSuccess: (response) => {
         onSuccess && onSuccess(response);
       },
-    }
-  );
+    },
+  });
+
+  // const { data, isFetching, error } = useQuery(
+  //   ['tx', hash],
+  //   async () => {
+  //     const response = await queryClient!.getTx(hash!);
+
+  //     if (!response) {
+  //       // seems not working with retry and retryDelay
+  //       throw new Error(NO_RESPONSE_ERROR);
+  //     } else if (response.code !== 0) {
+  //       throw new Error(response.rawLog);
+  //     }
+
+  //     return response;
+  //   },
+  //   {
+  //     enabled: Boolean(queryClient && hash),
+  //     retry: (_, error) => {
+  //       return error.message === NO_RESPONSE_ERROR;
+  //     },
+  //     retryDelay: 2500,
+  //     onSuccess: (response) => {
+  //       onSuccess && onSuccess(response);
+  //     },
+  //   }
+  // );
+
+  // const formattedData = useMemo(() => {
+  //   if (data) {
+
+  //     return
+  //   }
+  // }, [data]);
 
   return {
     data,

@@ -3,6 +3,7 @@ import { Pane, TableEv as Table } from '@cybercongress/gravity';
 import { Link } from 'react-router-dom';
 import { useTransactionsSubscription } from 'src/generated/graphql';
 
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { trimString, formatNumber } from '../../utils/utils';
 import { Loading, MainContainer, MsgType, TextTable } from '../../components';
 
@@ -11,6 +12,10 @@ import statusFalseImg from '../../image/ionicons_svg_ios-close-circle.svg';
 
 function Txs() {
   const { loading, error, data } = useTransactionsSubscription();
+
+  useAdviserTexts({
+    defaultText: 'Transactions',
+  });
 
   function renderRows() {
     return (data?.transaction || []).map((item, index) => (
@@ -84,7 +89,7 @@ function Txs() {
             <TextTable>tx</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell flex={1.3} textAlign="center">
-            <TextTable>timestamp, UTC</TextTable>
+            <TextTable>block height</TextTable>
           </Table.TextHeaderCell>
           <Table.TextHeaderCell textAlign="center">
             <TextTable>type</TextTable>

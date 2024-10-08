@@ -15,13 +15,10 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  _coin: { input: any; output: any; }
   _text: { input: any; output: any; }
   bigint: { input: any; output: any; }
   coin: { input: any; output: any; }
-  date: { input: any; output: any; }
-  float8: { input: any; output: any; }
-  json: { input: any; output: any; }
+  coin_scalar: { input: any; output: any; }
   jsonb: { input: any; output: any; }
   numeric: { input: any; output: any; }
   timestamp: { input: any; output: any; }
@@ -51,6 +48,23 @@ export type Int_Comparison_Exp = {
   _lte?: InputMaybe<Scalars['Int']['input']>;
   _neq?: InputMaybe<Scalars['Int']['input']>;
   _nin?: InputMaybe<Array<Scalars['Int']['input']>>;
+};
+
+/** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
+export type String_Array_Comparison_Exp = {
+  /** is the array contained in the given array value */
+  _contained_in?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** does the array contain the given value */
+  _contains?: InputMaybe<Array<Scalars['String']['input']>>;
+  _eq?: InputMaybe<Array<Scalars['String']['input']>>;
+  _gt?: InputMaybe<Array<Scalars['String']['input']>>;
+  _gte?: InputMaybe<Array<Scalars['String']['input']>>;
+  _in?: InputMaybe<Array<Array<Scalars['String']['input']>>>;
+  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Array<Scalars['String']['input']>>;
+  _lte?: InputMaybe<Array<Scalars['String']['input']>>;
+  _neq?: InputMaybe<Array<Scalars['String']['input']>>;
+  _nin?: InputMaybe<Array<Array<Scalars['String']['input']>>>;
 };
 
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
@@ -86,413 +100,12 @@ export type String_Comparison_Exp = {
   _similar?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Boolean expression to compare columns of type "_coin". All fields are combined with logical 'AND'. */
-export type _Coin_Comparison_Exp = {
-  _eq?: InputMaybe<Scalars['_coin']['input']>;
-  _gt?: InputMaybe<Scalars['_coin']['input']>;
-  _gte?: InputMaybe<Scalars['_coin']['input']>;
-  _in?: InputMaybe<Array<Scalars['_coin']['input']>>;
-  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
-  _lt?: InputMaybe<Scalars['_coin']['input']>;
-  _lte?: InputMaybe<Scalars['_coin']['input']>;
-  _neq?: InputMaybe<Scalars['_coin']['input']>;
-  _nin?: InputMaybe<Array<Scalars['_coin']['input']>>;
-};
-
-/** Boolean expression to compare columns of type "_text". All fields are combined with logical 'AND'. */
-export type _Text_Comparison_Exp = {
-  _eq?: InputMaybe<Scalars['_text']['input']>;
-  _gt?: InputMaybe<Scalars['_text']['input']>;
-  _gte?: InputMaybe<Scalars['_text']['input']>;
-  _in?: InputMaybe<Array<Scalars['_text']['input']>>;
-  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
-  _lt?: InputMaybe<Scalars['_text']['input']>;
-  _lte?: InputMaybe<Scalars['_text']['input']>;
-  _neq?: InputMaybe<Scalars['_text']['input']>;
-  _nin?: InputMaybe<Array<Scalars['_text']['input']>>;
-};
-
-/** columns and relationships of "_transaction" */
-export type _Transaction = {
-  fee?: Maybe<Scalars['jsonb']['output']>;
-  gas_used?: Maybe<Scalars['bigint']['output']>;
-  gas_wanted?: Maybe<Scalars['bigint']['output']>;
-  hash?: Maybe<Scalars['String']['output']>;
-  height?: Maybe<Scalars['bigint']['output']>;
-  index?: Maybe<Scalars['bigint']['output']>;
-  involved_accounts_addresses?: Maybe<Scalars['_text']['output']>;
-  logs?: Maybe<Scalars['jsonb']['output']>;
-  memo?: Maybe<Scalars['String']['output']>;
-  messages?: Maybe<Scalars['jsonb']['output']>;
-  raw_log?: Maybe<Scalars['String']['output']>;
-  signatures?: Maybe<Scalars['_text']['output']>;
-  signer_infos?: Maybe<Scalars['jsonb']['output']>;
-  subject1?: Maybe<Scalars['String']['output']>;
-  subject2?: Maybe<Scalars['String']['output']>;
-  success?: Maybe<Scalars['Boolean']['output']>;
-  transaction_hash?: Maybe<Scalars['String']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-  value?: Maybe<Scalars['jsonb']['output']>;
-};
-
-
-/** columns and relationships of "_transaction" */
-export type _TransactionFeeArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** columns and relationships of "_transaction" */
-export type _TransactionLogsArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** columns and relationships of "_transaction" */
-export type _TransactionMessagesArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** columns and relationships of "_transaction" */
-export type _TransactionSigner_InfosArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/** columns and relationships of "_transaction" */
-export type _TransactionValueArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** aggregated selection of "_transaction" */
-export type _Transaction_Aggregate = {
-  aggregate?: Maybe<_Transaction_Aggregate_Fields>;
-  nodes: Array<_Transaction>;
-};
-
-/** aggregate fields of "_transaction" */
-export type _Transaction_Aggregate_Fields = {
-  avg?: Maybe<_Transaction_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<_Transaction_Max_Fields>;
-  min?: Maybe<_Transaction_Min_Fields>;
-  stddev?: Maybe<_Transaction_Stddev_Fields>;
-  stddev_pop?: Maybe<_Transaction_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<_Transaction_Stddev_Samp_Fields>;
-  sum?: Maybe<_Transaction_Sum_Fields>;
-  var_pop?: Maybe<_Transaction_Var_Pop_Fields>;
-  var_samp?: Maybe<_Transaction_Var_Samp_Fields>;
-  variance?: Maybe<_Transaction_Variance_Fields>;
-};
-
-
-/** aggregate fields of "_transaction" */
-export type _Transaction_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<_Transaction_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type _Transaction_Avg_Fields = {
-  gas_used?: Maybe<Scalars['Float']['output']>;
-  gas_wanted?: Maybe<Scalars['Float']['output']>;
-  height?: Maybe<Scalars['Float']['output']>;
-  index?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "_transaction". All fields are combined with a logical 'AND'. */
-export type _Transaction_Bool_Exp = {
-  _and?: InputMaybe<Array<_Transaction_Bool_Exp>>;
-  _not?: InputMaybe<_Transaction_Bool_Exp>;
-  _or?: InputMaybe<Array<_Transaction_Bool_Exp>>;
-  fee?: InputMaybe<Jsonb_Comparison_Exp>;
-  gas_used?: InputMaybe<Bigint_Comparison_Exp>;
-  gas_wanted?: InputMaybe<Bigint_Comparison_Exp>;
-  hash?: InputMaybe<String_Comparison_Exp>;
-  height?: InputMaybe<Bigint_Comparison_Exp>;
-  index?: InputMaybe<Bigint_Comparison_Exp>;
-  involved_accounts_addresses?: InputMaybe<_Text_Comparison_Exp>;
-  logs?: InputMaybe<Jsonb_Comparison_Exp>;
-  memo?: InputMaybe<String_Comparison_Exp>;
-  messages?: InputMaybe<Jsonb_Comparison_Exp>;
-  raw_log?: InputMaybe<String_Comparison_Exp>;
-  signatures?: InputMaybe<_Text_Comparison_Exp>;
-  signer_infos?: InputMaybe<Jsonb_Comparison_Exp>;
-  subject1?: InputMaybe<String_Comparison_Exp>;
-  subject2?: InputMaybe<String_Comparison_Exp>;
-  success?: InputMaybe<Boolean_Comparison_Exp>;
-  transaction_hash?: InputMaybe<String_Comparison_Exp>;
-  type?: InputMaybe<String_Comparison_Exp>;
-  value?: InputMaybe<Jsonb_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type _Transaction_Max_Fields = {
-  gas_used?: Maybe<Scalars['bigint']['output']>;
-  gas_wanted?: Maybe<Scalars['bigint']['output']>;
-  hash?: Maybe<Scalars['String']['output']>;
-  height?: Maybe<Scalars['bigint']['output']>;
-  index?: Maybe<Scalars['bigint']['output']>;
-  memo?: Maybe<Scalars['String']['output']>;
-  raw_log?: Maybe<Scalars['String']['output']>;
-  subject1?: Maybe<Scalars['String']['output']>;
-  subject2?: Maybe<Scalars['String']['output']>;
-  transaction_hash?: Maybe<Scalars['String']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type _Transaction_Min_Fields = {
-  gas_used?: Maybe<Scalars['bigint']['output']>;
-  gas_wanted?: Maybe<Scalars['bigint']['output']>;
-  hash?: Maybe<Scalars['String']['output']>;
-  height?: Maybe<Scalars['bigint']['output']>;
-  index?: Maybe<Scalars['bigint']['output']>;
-  memo?: Maybe<Scalars['String']['output']>;
-  raw_log?: Maybe<Scalars['String']['output']>;
-  subject1?: Maybe<Scalars['String']['output']>;
-  subject2?: Maybe<Scalars['String']['output']>;
-  transaction_hash?: Maybe<Scalars['String']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "_transaction". */
-export type _Transaction_Order_By = {
-  fee?: InputMaybe<Order_By>;
-  gas_used?: InputMaybe<Order_By>;
-  gas_wanted?: InputMaybe<Order_By>;
-  hash?: InputMaybe<Order_By>;
-  height?: InputMaybe<Order_By>;
-  index?: InputMaybe<Order_By>;
-  involved_accounts_addresses?: InputMaybe<Order_By>;
-  logs?: InputMaybe<Order_By>;
-  memo?: InputMaybe<Order_By>;
-  messages?: InputMaybe<Order_By>;
-  raw_log?: InputMaybe<Order_By>;
-  signatures?: InputMaybe<Order_By>;
-  signer_infos?: InputMaybe<Order_By>;
-  subject1?: InputMaybe<Order_By>;
-  subject2?: InputMaybe<Order_By>;
-  success?: InputMaybe<Order_By>;
-  transaction_hash?: InputMaybe<Order_By>;
-  type?: InputMaybe<Order_By>;
-  value?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "_transaction" */
-export enum _Transaction_Select_Column {
-  /** column name */
-  Fee = 'fee',
-  /** column name */
-  GasUsed = 'gas_used',
-  /** column name */
-  GasWanted = 'gas_wanted',
-  /** column name */
-  Hash = 'hash',
-  /** column name */
-  Height = 'height',
-  /** column name */
-  Index = 'index',
-  /** column name */
-  InvolvedAccountsAddresses = 'involved_accounts_addresses',
-  /** column name */
-  Logs = 'logs',
-  /** column name */
-  Memo = 'memo',
-  /** column name */
-  Messages = 'messages',
-  /** column name */
-  RawLog = 'raw_log',
-  /** column name */
-  Signatures = 'signatures',
-  /** column name */
-  SignerInfos = 'signer_infos',
-  /** column name */
-  Subject1 = 'subject1',
-  /** column name */
-  Subject2 = 'subject2',
-  /** column name */
-  Success = 'success',
-  /** column name */
-  TransactionHash = 'transaction_hash',
-  /** column name */
-  Type = 'type',
-  /** column name */
-  Value = 'value'
-}
-
-/** aggregate stddev on columns */
-export type _Transaction_Stddev_Fields = {
-  gas_used?: Maybe<Scalars['Float']['output']>;
-  gas_wanted?: Maybe<Scalars['Float']['output']>;
-  height?: Maybe<Scalars['Float']['output']>;
-  index?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type _Transaction_Stddev_Pop_Fields = {
-  gas_used?: Maybe<Scalars['Float']['output']>;
-  gas_wanted?: Maybe<Scalars['Float']['output']>;
-  height?: Maybe<Scalars['Float']['output']>;
-  index?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type _Transaction_Stddev_Samp_Fields = {
-  gas_used?: Maybe<Scalars['Float']['output']>;
-  gas_wanted?: Maybe<Scalars['Float']['output']>;
-  height?: Maybe<Scalars['Float']['output']>;
-  index?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type _Transaction_Sum_Fields = {
-  gas_used?: Maybe<Scalars['bigint']['output']>;
-  gas_wanted?: Maybe<Scalars['bigint']['output']>;
-  height?: Maybe<Scalars['bigint']['output']>;
-  index?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type _Transaction_Var_Pop_Fields = {
-  gas_used?: Maybe<Scalars['Float']['output']>;
-  gas_wanted?: Maybe<Scalars['Float']['output']>;
-  height?: Maybe<Scalars['Float']['output']>;
-  index?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type _Transaction_Var_Samp_Fields = {
-  gas_used?: Maybe<Scalars['Float']['output']>;
-  gas_wanted?: Maybe<Scalars['Float']['output']>;
-  height?: Maybe<Scalars['Float']['output']>;
-  index?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type _Transaction_Variance_Fields = {
-  gas_used?: Maybe<Scalars['Float']['output']>;
-  gas_wanted?: Maybe<Scalars['Float']['output']>;
-  height?: Maybe<Scalars['Float']['output']>;
-  index?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "_uptime_temp" */
-export type _Uptime_Temp = {
-  pre_commits?: Maybe<Scalars['bigint']['output']>;
-  validator_address?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregated selection of "_uptime_temp" */
-export type _Uptime_Temp_Aggregate = {
-  aggregate?: Maybe<_Uptime_Temp_Aggregate_Fields>;
-  nodes: Array<_Uptime_Temp>;
-};
-
-/** aggregate fields of "_uptime_temp" */
-export type _Uptime_Temp_Aggregate_Fields = {
-  avg?: Maybe<_Uptime_Temp_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<_Uptime_Temp_Max_Fields>;
-  min?: Maybe<_Uptime_Temp_Min_Fields>;
-  stddev?: Maybe<_Uptime_Temp_Stddev_Fields>;
-  stddev_pop?: Maybe<_Uptime_Temp_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<_Uptime_Temp_Stddev_Samp_Fields>;
-  sum?: Maybe<_Uptime_Temp_Sum_Fields>;
-  var_pop?: Maybe<_Uptime_Temp_Var_Pop_Fields>;
-  var_samp?: Maybe<_Uptime_Temp_Var_Samp_Fields>;
-  variance?: Maybe<_Uptime_Temp_Variance_Fields>;
-};
-
-
-/** aggregate fields of "_uptime_temp" */
-export type _Uptime_Temp_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<_Uptime_Temp_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type _Uptime_Temp_Avg_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "_uptime_temp". All fields are combined with a logical 'AND'. */
-export type _Uptime_Temp_Bool_Exp = {
-  _and?: InputMaybe<Array<_Uptime_Temp_Bool_Exp>>;
-  _not?: InputMaybe<_Uptime_Temp_Bool_Exp>;
-  _or?: InputMaybe<Array<_Uptime_Temp_Bool_Exp>>;
-  pre_commits?: InputMaybe<Bigint_Comparison_Exp>;
-  validator_address?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type _Uptime_Temp_Max_Fields = {
-  pre_commits?: Maybe<Scalars['bigint']['output']>;
-  validator_address?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type _Uptime_Temp_Min_Fields = {
-  pre_commits?: Maybe<Scalars['bigint']['output']>;
-  validator_address?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "_uptime_temp". */
-export type _Uptime_Temp_Order_By = {
-  pre_commits?: InputMaybe<Order_By>;
-  validator_address?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "_uptime_temp" */
-export enum _Uptime_Temp_Select_Column {
-  /** column name */
-  PreCommits = 'pre_commits',
-  /** column name */
-  ValidatorAddress = 'validator_address'
-}
-
-/** aggregate stddev on columns */
-export type _Uptime_Temp_Stddev_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type _Uptime_Temp_Stddev_Pop_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type _Uptime_Temp_Stddev_Samp_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type _Uptime_Temp_Sum_Fields = {
-  pre_commits?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type _Uptime_Temp_Var_Pop_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type _Uptime_Temp_Var_Samp_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type _Uptime_Temp_Variance_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
 /** columns and relationships of "account" */
 export type Account = {
   /** An object relationship */
   account_balance?: Maybe<Account_Balance>;
   address: Scalars['String']['output'];
-  /** fetch data from the table: "cyberlinks" */
+  /** An array relationship */
   cyberlinks: Array<Cyberlinks>;
   /** An aggregate relationship */
   cyberlinks_aggregate: Cyberlinks_Aggregate;
@@ -512,6 +125,10 @@ export type Account = {
   routesBySource_aggregate: Routes_Aggregate;
   /** An aggregate relationship */
   routes_aggregate: Routes_Aggregate;
+  /** An array relationship */
+  vesting_accounts: Array<Vesting_Account>;
+  /** An aggregate relationship */
+  vesting_accounts_aggregate: Vesting_Account_Aggregate;
 };
 
 
@@ -614,6 +231,26 @@ export type AccountRoutes_AggregateArgs = {
   where?: InputMaybe<Routes_Bool_Exp>;
 };
 
+
+/** columns and relationships of "account" */
+export type AccountVesting_AccountsArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Account_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vesting_Account_Order_By>>;
+  where?: InputMaybe<Vesting_Account_Bool_Exp>;
+};
+
+
+/** columns and relationships of "account" */
+export type AccountVesting_Accounts_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Account_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vesting_Account_Order_By>>;
+  where?: InputMaybe<Vesting_Account_Bool_Exp>;
+};
+
 /** aggregated selection of "account" */
 export type Account_Aggregate = {
   aggregate?: Maybe<Account_Aggregate_Fields>;
@@ -639,7 +276,7 @@ export type Account_Balance = {
   /** An object relationship */
   account: Account;
   address: Scalars['String']['output'];
-  coins: Scalars['_coin']['output'];
+  coins: Array<Scalars['coin']['output']>;
   height: Scalars['bigint']['output'];
 };
 
@@ -683,19 +320,21 @@ export type Account_Balance_Bool_Exp = {
   _or?: InputMaybe<Array<Account_Balance_Bool_Exp>>;
   account?: InputMaybe<Account_Bool_Exp>;
   address?: InputMaybe<String_Comparison_Exp>;
-  coins?: InputMaybe<_Coin_Comparison_Exp>;
+  coins?: InputMaybe<Coin_Array_Comparison_Exp>;
   height?: InputMaybe<Bigint_Comparison_Exp>;
 };
 
 /** aggregate max on columns */
 export type Account_Balance_Max_Fields = {
   address?: Maybe<Scalars['String']['output']>;
+  coins?: Maybe<Array<Scalars['coin']['output']>>;
   height?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate min on columns */
 export type Account_Balance_Min_Fields = {
   address?: Maybe<Scalars['String']['output']>;
+  coins?: Maybe<Array<Scalars['coin']['output']>>;
   height?: Maybe<Scalars['bigint']['output']>;
 };
 
@@ -732,6 +371,21 @@ export type Account_Balance_Stddev_Samp_Fields = {
   height?: Maybe<Scalars['Float']['output']>;
 };
 
+/** Streaming cursor of the table "account_balance" */
+export type Account_Balance_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Account_Balance_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Account_Balance_Stream_Cursor_Value_Input = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  coins?: InputMaybe<Array<Scalars['coin']['input']>>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+};
+
 /** aggregate sum on columns */
 export type Account_Balance_Sum_Fields = {
   height?: Maybe<Scalars['bigint']['output']>;
@@ -760,10 +414,17 @@ export type Account_Bool_Exp = {
   account_balance?: InputMaybe<Account_Balance_Bool_Exp>;
   address?: InputMaybe<String_Comparison_Exp>;
   cyberlinks?: InputMaybe<Cyberlinks_Bool_Exp>;
+  cyberlinks_aggregate?: InputMaybe<Cyberlinks_Aggregate_Bool_Exp>;
   investmints?: InputMaybe<Investmints_Bool_Exp>;
+  investmints_aggregate?: InputMaybe<Investmints_Aggregate_Bool_Exp>;
   particles?: InputMaybe<Particles_Bool_Exp>;
+  particles_aggregate?: InputMaybe<Particles_Aggregate_Bool_Exp>;
   routes?: InputMaybe<Routes_Bool_Exp>;
   routesBySource?: InputMaybe<Routes_Bool_Exp>;
+  routesBySource_aggregate?: InputMaybe<Routes_Aggregate_Bool_Exp>;
+  routes_aggregate?: InputMaybe<Routes_Aggregate_Bool_Exp>;
+  vesting_accounts?: InputMaybe<Vesting_Account_Bool_Exp>;
+  vesting_accounts_aggregate?: InputMaybe<Vesting_Account_Aggregate_Bool_Exp>;
 };
 
 /** aggregate max on columns */
@@ -785,6 +446,7 @@ export type Account_Order_By = {
   particles_aggregate?: InputMaybe<Particles_Aggregate_Order_By>;
   routesBySource_aggregate?: InputMaybe<Routes_Aggregate_Order_By>;
   routes_aggregate?: InputMaybe<Routes_Aggregate_Order_By>;
+  vesting_accounts_aggregate?: InputMaybe<Vesting_Account_Aggregate_Order_By>;
 };
 
 /** select columns of table "account" */
@@ -792,6 +454,567 @@ export enum Account_Select_Column {
   /** column name */
   Address = 'address'
 }
+
+/** Streaming cursor of the table "account" */
+export type Account_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Account_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Account_Stream_Cursor_Value_Input = {
+  address?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** columns and relationships of "average_block_time_from_genesis" */
+export type Average_Block_Time_From_Genesis = {
+  average_time: Scalars['numeric']['output'];
+  height: Scalars['bigint']['output'];
+  one_row_id: Scalars['Boolean']['output'];
+};
+
+/** aggregated selection of "average_block_time_from_genesis" */
+export type Average_Block_Time_From_Genesis_Aggregate = {
+  aggregate?: Maybe<Average_Block_Time_From_Genesis_Aggregate_Fields>;
+  nodes: Array<Average_Block_Time_From_Genesis>;
+};
+
+/** aggregate fields of "average_block_time_from_genesis" */
+export type Average_Block_Time_From_Genesis_Aggregate_Fields = {
+  avg?: Maybe<Average_Block_Time_From_Genesis_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Average_Block_Time_From_Genesis_Max_Fields>;
+  min?: Maybe<Average_Block_Time_From_Genesis_Min_Fields>;
+  stddev?: Maybe<Average_Block_Time_From_Genesis_Stddev_Fields>;
+  stddev_pop?: Maybe<Average_Block_Time_From_Genesis_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Average_Block_Time_From_Genesis_Stddev_Samp_Fields>;
+  sum?: Maybe<Average_Block_Time_From_Genesis_Sum_Fields>;
+  var_pop?: Maybe<Average_Block_Time_From_Genesis_Var_Pop_Fields>;
+  var_samp?: Maybe<Average_Block_Time_From_Genesis_Var_Samp_Fields>;
+  variance?: Maybe<Average_Block_Time_From_Genesis_Variance_Fields>;
+};
+
+
+/** aggregate fields of "average_block_time_from_genesis" */
+export type Average_Block_Time_From_Genesis_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Average_Block_Time_From_Genesis_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Average_Block_Time_From_Genesis_Avg_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "average_block_time_from_genesis". All fields are combined with a logical 'AND'. */
+export type Average_Block_Time_From_Genesis_Bool_Exp = {
+  _and?: InputMaybe<Array<Average_Block_Time_From_Genesis_Bool_Exp>>;
+  _not?: InputMaybe<Average_Block_Time_From_Genesis_Bool_Exp>;
+  _or?: InputMaybe<Array<Average_Block_Time_From_Genesis_Bool_Exp>>;
+  average_time?: InputMaybe<Numeric_Comparison_Exp>;
+  height?: InputMaybe<Bigint_Comparison_Exp>;
+  one_row_id?: InputMaybe<Boolean_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Average_Block_Time_From_Genesis_Max_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate min on columns */
+export type Average_Block_Time_From_Genesis_Min_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** Ordering options when selecting data from "average_block_time_from_genesis". */
+export type Average_Block_Time_From_Genesis_Order_By = {
+  average_time?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  one_row_id?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "average_block_time_from_genesis" */
+export enum Average_Block_Time_From_Genesis_Select_Column {
+  /** column name */
+  AverageTime = 'average_time',
+  /** column name */
+  Height = 'height',
+  /** column name */
+  OneRowId = 'one_row_id'
+}
+
+/** aggregate stddev on columns */
+export type Average_Block_Time_From_Genesis_Stddev_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Average_Block_Time_From_Genesis_Stddev_Pop_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Average_Block_Time_From_Genesis_Stddev_Samp_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "average_block_time_from_genesis" */
+export type Average_Block_Time_From_Genesis_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Average_Block_Time_From_Genesis_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Average_Block_Time_From_Genesis_Stream_Cursor_Value_Input = {
+  average_time?: InputMaybe<Scalars['numeric']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  one_row_id?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Average_Block_Time_From_Genesis_Sum_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Average_Block_Time_From_Genesis_Var_Pop_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Average_Block_Time_From_Genesis_Var_Samp_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Average_Block_Time_From_Genesis_Variance_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** columns and relationships of "average_block_time_per_day" */
+export type Average_Block_Time_Per_Day = {
+  average_time: Scalars['numeric']['output'];
+  height: Scalars['bigint']['output'];
+  one_row_id: Scalars['Boolean']['output'];
+};
+
+/** aggregated selection of "average_block_time_per_day" */
+export type Average_Block_Time_Per_Day_Aggregate = {
+  aggregate?: Maybe<Average_Block_Time_Per_Day_Aggregate_Fields>;
+  nodes: Array<Average_Block_Time_Per_Day>;
+};
+
+/** aggregate fields of "average_block_time_per_day" */
+export type Average_Block_Time_Per_Day_Aggregate_Fields = {
+  avg?: Maybe<Average_Block_Time_Per_Day_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Average_Block_Time_Per_Day_Max_Fields>;
+  min?: Maybe<Average_Block_Time_Per_Day_Min_Fields>;
+  stddev?: Maybe<Average_Block_Time_Per_Day_Stddev_Fields>;
+  stddev_pop?: Maybe<Average_Block_Time_Per_Day_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Average_Block_Time_Per_Day_Stddev_Samp_Fields>;
+  sum?: Maybe<Average_Block_Time_Per_Day_Sum_Fields>;
+  var_pop?: Maybe<Average_Block_Time_Per_Day_Var_Pop_Fields>;
+  var_samp?: Maybe<Average_Block_Time_Per_Day_Var_Samp_Fields>;
+  variance?: Maybe<Average_Block_Time_Per_Day_Variance_Fields>;
+};
+
+
+/** aggregate fields of "average_block_time_per_day" */
+export type Average_Block_Time_Per_Day_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Average_Block_Time_Per_Day_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Average_Block_Time_Per_Day_Avg_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "average_block_time_per_day". All fields are combined with a logical 'AND'. */
+export type Average_Block_Time_Per_Day_Bool_Exp = {
+  _and?: InputMaybe<Array<Average_Block_Time_Per_Day_Bool_Exp>>;
+  _not?: InputMaybe<Average_Block_Time_Per_Day_Bool_Exp>;
+  _or?: InputMaybe<Array<Average_Block_Time_Per_Day_Bool_Exp>>;
+  average_time?: InputMaybe<Numeric_Comparison_Exp>;
+  height?: InputMaybe<Bigint_Comparison_Exp>;
+  one_row_id?: InputMaybe<Boolean_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Average_Block_Time_Per_Day_Max_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate min on columns */
+export type Average_Block_Time_Per_Day_Min_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** Ordering options when selecting data from "average_block_time_per_day". */
+export type Average_Block_Time_Per_Day_Order_By = {
+  average_time?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  one_row_id?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "average_block_time_per_day" */
+export enum Average_Block_Time_Per_Day_Select_Column {
+  /** column name */
+  AverageTime = 'average_time',
+  /** column name */
+  Height = 'height',
+  /** column name */
+  OneRowId = 'one_row_id'
+}
+
+/** aggregate stddev on columns */
+export type Average_Block_Time_Per_Day_Stddev_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Average_Block_Time_Per_Day_Stddev_Pop_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Average_Block_Time_Per_Day_Stddev_Samp_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "average_block_time_per_day" */
+export type Average_Block_Time_Per_Day_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Average_Block_Time_Per_Day_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Average_Block_Time_Per_Day_Stream_Cursor_Value_Input = {
+  average_time?: InputMaybe<Scalars['numeric']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  one_row_id?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Average_Block_Time_Per_Day_Sum_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Average_Block_Time_Per_Day_Var_Pop_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Average_Block_Time_Per_Day_Var_Samp_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Average_Block_Time_Per_Day_Variance_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** columns and relationships of "average_block_time_per_hour" */
+export type Average_Block_Time_Per_Hour = {
+  average_time: Scalars['numeric']['output'];
+  height: Scalars['bigint']['output'];
+  one_row_id: Scalars['Boolean']['output'];
+};
+
+/** aggregated selection of "average_block_time_per_hour" */
+export type Average_Block_Time_Per_Hour_Aggregate = {
+  aggregate?: Maybe<Average_Block_Time_Per_Hour_Aggregate_Fields>;
+  nodes: Array<Average_Block_Time_Per_Hour>;
+};
+
+/** aggregate fields of "average_block_time_per_hour" */
+export type Average_Block_Time_Per_Hour_Aggregate_Fields = {
+  avg?: Maybe<Average_Block_Time_Per_Hour_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Average_Block_Time_Per_Hour_Max_Fields>;
+  min?: Maybe<Average_Block_Time_Per_Hour_Min_Fields>;
+  stddev?: Maybe<Average_Block_Time_Per_Hour_Stddev_Fields>;
+  stddev_pop?: Maybe<Average_Block_Time_Per_Hour_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Average_Block_Time_Per_Hour_Stddev_Samp_Fields>;
+  sum?: Maybe<Average_Block_Time_Per_Hour_Sum_Fields>;
+  var_pop?: Maybe<Average_Block_Time_Per_Hour_Var_Pop_Fields>;
+  var_samp?: Maybe<Average_Block_Time_Per_Hour_Var_Samp_Fields>;
+  variance?: Maybe<Average_Block_Time_Per_Hour_Variance_Fields>;
+};
+
+
+/** aggregate fields of "average_block_time_per_hour" */
+export type Average_Block_Time_Per_Hour_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Average_Block_Time_Per_Hour_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Average_Block_Time_Per_Hour_Avg_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "average_block_time_per_hour". All fields are combined with a logical 'AND'. */
+export type Average_Block_Time_Per_Hour_Bool_Exp = {
+  _and?: InputMaybe<Array<Average_Block_Time_Per_Hour_Bool_Exp>>;
+  _not?: InputMaybe<Average_Block_Time_Per_Hour_Bool_Exp>;
+  _or?: InputMaybe<Array<Average_Block_Time_Per_Hour_Bool_Exp>>;
+  average_time?: InputMaybe<Numeric_Comparison_Exp>;
+  height?: InputMaybe<Bigint_Comparison_Exp>;
+  one_row_id?: InputMaybe<Boolean_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Average_Block_Time_Per_Hour_Max_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate min on columns */
+export type Average_Block_Time_Per_Hour_Min_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** Ordering options when selecting data from "average_block_time_per_hour". */
+export type Average_Block_Time_Per_Hour_Order_By = {
+  average_time?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  one_row_id?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "average_block_time_per_hour" */
+export enum Average_Block_Time_Per_Hour_Select_Column {
+  /** column name */
+  AverageTime = 'average_time',
+  /** column name */
+  Height = 'height',
+  /** column name */
+  OneRowId = 'one_row_id'
+}
+
+/** aggregate stddev on columns */
+export type Average_Block_Time_Per_Hour_Stddev_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Average_Block_Time_Per_Hour_Stddev_Pop_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Average_Block_Time_Per_Hour_Stddev_Samp_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "average_block_time_per_hour" */
+export type Average_Block_Time_Per_Hour_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Average_Block_Time_Per_Hour_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Average_Block_Time_Per_Hour_Stream_Cursor_Value_Input = {
+  average_time?: InputMaybe<Scalars['numeric']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  one_row_id?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Average_Block_Time_Per_Hour_Sum_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Average_Block_Time_Per_Hour_Var_Pop_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Average_Block_Time_Per_Hour_Var_Samp_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Average_Block_Time_Per_Hour_Variance_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** columns and relationships of "average_block_time_per_minute" */
+export type Average_Block_Time_Per_Minute = {
+  average_time: Scalars['numeric']['output'];
+  height: Scalars['bigint']['output'];
+  one_row_id: Scalars['Boolean']['output'];
+};
+
+/** aggregated selection of "average_block_time_per_minute" */
+export type Average_Block_Time_Per_Minute_Aggregate = {
+  aggregate?: Maybe<Average_Block_Time_Per_Minute_Aggregate_Fields>;
+  nodes: Array<Average_Block_Time_Per_Minute>;
+};
+
+/** aggregate fields of "average_block_time_per_minute" */
+export type Average_Block_Time_Per_Minute_Aggregate_Fields = {
+  avg?: Maybe<Average_Block_Time_Per_Minute_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Average_Block_Time_Per_Minute_Max_Fields>;
+  min?: Maybe<Average_Block_Time_Per_Minute_Min_Fields>;
+  stddev?: Maybe<Average_Block_Time_Per_Minute_Stddev_Fields>;
+  stddev_pop?: Maybe<Average_Block_Time_Per_Minute_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Average_Block_Time_Per_Minute_Stddev_Samp_Fields>;
+  sum?: Maybe<Average_Block_Time_Per_Minute_Sum_Fields>;
+  var_pop?: Maybe<Average_Block_Time_Per_Minute_Var_Pop_Fields>;
+  var_samp?: Maybe<Average_Block_Time_Per_Minute_Var_Samp_Fields>;
+  variance?: Maybe<Average_Block_Time_Per_Minute_Variance_Fields>;
+};
+
+
+/** aggregate fields of "average_block_time_per_minute" */
+export type Average_Block_Time_Per_Minute_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Average_Block_Time_Per_Minute_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Average_Block_Time_Per_Minute_Avg_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "average_block_time_per_minute". All fields are combined with a logical 'AND'. */
+export type Average_Block_Time_Per_Minute_Bool_Exp = {
+  _and?: InputMaybe<Array<Average_Block_Time_Per_Minute_Bool_Exp>>;
+  _not?: InputMaybe<Average_Block_Time_Per_Minute_Bool_Exp>;
+  _or?: InputMaybe<Array<Average_Block_Time_Per_Minute_Bool_Exp>>;
+  average_time?: InputMaybe<Numeric_Comparison_Exp>;
+  height?: InputMaybe<Bigint_Comparison_Exp>;
+  one_row_id?: InputMaybe<Boolean_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Average_Block_Time_Per_Minute_Max_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate min on columns */
+export type Average_Block_Time_Per_Minute_Min_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** Ordering options when selecting data from "average_block_time_per_minute". */
+export type Average_Block_Time_Per_Minute_Order_By = {
+  average_time?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  one_row_id?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "average_block_time_per_minute" */
+export enum Average_Block_Time_Per_Minute_Select_Column {
+  /** column name */
+  AverageTime = 'average_time',
+  /** column name */
+  Height = 'height',
+  /** column name */
+  OneRowId = 'one_row_id'
+}
+
+/** aggregate stddev on columns */
+export type Average_Block_Time_Per_Minute_Stddev_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Average_Block_Time_Per_Minute_Stddev_Pop_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Average_Block_Time_Per_Minute_Stddev_Samp_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "average_block_time_per_minute" */
+export type Average_Block_Time_Per_Minute_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Average_Block_Time_Per_Minute_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Average_Block_Time_Per_Minute_Stream_Cursor_Value_Input = {
+  average_time?: InputMaybe<Scalars['numeric']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  one_row_id?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Average_Block_Time_Per_Minute_Sum_Fields = {
+  average_time?: Maybe<Scalars['numeric']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Average_Block_Time_Per_Minute_Var_Pop_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Average_Block_Time_Per_Minute_Var_Samp_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Average_Block_Time_Per_Minute_Variance_Fields = {
+  average_time?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+};
 
 /** Boolean expression to compare columns of type "bigint". All fields are combined with logical 'AND'. */
 export type Bigint_Comparison_Exp = {
@@ -808,7 +1031,7 @@ export type Bigint_Comparison_Exp = {
 
 /** columns and relationships of "block" */
 export type Block = {
-  /** fetch data from the table: "cyberlinks" */
+  /** An array relationship */
   cyberlinks: Array<Cyberlinks>;
   /** An aggregate relationship */
   cyberlinks_aggregate: Cyberlinks_Aggregate;
@@ -828,8 +1051,16 @@ export type Block = {
   routes: Array<Routes>;
   /** An aggregate relationship */
   routes_aggregate: Routes_Aggregate;
+  /** An array relationship */
+  swaps: Array<Swaps>;
+  /** An aggregate relationship */
+  swaps_aggregate: Swaps_Aggregate;
   timestamp: Scalars['timestamp']['output'];
   total_gas?: Maybe<Scalars['bigint']['output']>;
+  /** An array relationship */
+  transaction_0s: Array<Transaction_0>;
+  /** An aggregate relationship */
+  transaction_0s_aggregate: Transaction_0_Aggregate;
   /** An array relationship */
   transactions: Array<Transaction>;
   /** An aggregate relationship */
@@ -920,6 +1151,46 @@ export type BlockRoutes_AggregateArgs = {
 
 
 /** columns and relationships of "block" */
+export type BlockSwapsArgs = {
+  distinct_on?: InputMaybe<Array<Swaps_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Swaps_Order_By>>;
+  where?: InputMaybe<Swaps_Bool_Exp>;
+};
+
+
+/** columns and relationships of "block" */
+export type BlockSwaps_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Swaps_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Swaps_Order_By>>;
+  where?: InputMaybe<Swaps_Bool_Exp>;
+};
+
+
+/** columns and relationships of "block" */
+export type BlockTransaction_0sArgs = {
+  distinct_on?: InputMaybe<Array<Transaction_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Transaction_0_Order_By>>;
+  where?: InputMaybe<Transaction_0_Bool_Exp>;
+};
+
+
+/** columns and relationships of "block" */
+export type BlockTransaction_0s_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Transaction_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Transaction_0_Order_By>>;
+  where?: InputMaybe<Transaction_0_Bool_Exp>;
+};
+
+
+/** columns and relationships of "block" */
 export type BlockTransactionsArgs = {
   distinct_on?: InputMaybe<Array<Transaction_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -942,6 +1213,17 @@ export type BlockTransactions_AggregateArgs = {
 export type Block_Aggregate = {
   aggregate?: Maybe<Block_Aggregate_Fields>;
   nodes: Array<Block>;
+};
+
+export type Block_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Block_Aggregate_Bool_Exp_Count>;
+};
+
+export type Block_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Block_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Block_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "block" */
@@ -1001,16 +1283,25 @@ export type Block_Bool_Exp = {
   _not?: InputMaybe<Block_Bool_Exp>;
   _or?: InputMaybe<Array<Block_Bool_Exp>>;
   cyberlinks?: InputMaybe<Cyberlinks_Bool_Exp>;
+  cyberlinks_aggregate?: InputMaybe<Cyberlinks_Aggregate_Bool_Exp>;
   hash?: InputMaybe<String_Comparison_Exp>;
   height?: InputMaybe<Bigint_Comparison_Exp>;
   investmints?: InputMaybe<Investmints_Bool_Exp>;
+  investmints_aggregate?: InputMaybe<Investmints_Aggregate_Bool_Exp>;
   num_txs?: InputMaybe<Int_Comparison_Exp>;
   particles?: InputMaybe<Particles_Bool_Exp>;
+  particles_aggregate?: InputMaybe<Particles_Aggregate_Bool_Exp>;
   proposer_address?: InputMaybe<String_Comparison_Exp>;
   routes?: InputMaybe<Routes_Bool_Exp>;
+  routes_aggregate?: InputMaybe<Routes_Aggregate_Bool_Exp>;
+  swaps?: InputMaybe<Swaps_Bool_Exp>;
+  swaps_aggregate?: InputMaybe<Swaps_Aggregate_Bool_Exp>;
   timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
   total_gas?: InputMaybe<Bigint_Comparison_Exp>;
+  transaction_0s?: InputMaybe<Transaction_0_Bool_Exp>;
+  transaction_0s_aggregate?: InputMaybe<Transaction_0_Aggregate_Bool_Exp>;
   transactions?: InputMaybe<Transaction_Bool_Exp>;
+  transactions_aggregate?: InputMaybe<Transaction_Aggregate_Bool_Exp>;
   validator?: InputMaybe<Validator_Bool_Exp>;
 };
 
@@ -1064,8 +1355,10 @@ export type Block_Order_By = {
   particles_aggregate?: InputMaybe<Particles_Aggregate_Order_By>;
   proposer_address?: InputMaybe<Order_By>;
   routes_aggregate?: InputMaybe<Routes_Aggregate_Order_By>;
+  swaps_aggregate?: InputMaybe<Swaps_Aggregate_Order_By>;
   timestamp?: InputMaybe<Order_By>;
   total_gas?: InputMaybe<Order_By>;
+  transaction_0s_aggregate?: InputMaybe<Transaction_0_Aggregate_Order_By>;
   transactions_aggregate?: InputMaybe<Transaction_Aggregate_Order_By>;
   validator?: InputMaybe<Validator_Order_By>;
 };
@@ -1128,6 +1421,24 @@ export type Block_Stddev_Samp_Order_By = {
   total_gas?: InputMaybe<Order_By>;
 };
 
+/** Streaming cursor of the table "block" */
+export type Block_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Block_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Block_Stream_Cursor_Value_Input = {
+  hash?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  num_txs?: InputMaybe<Scalars['Int']['input']>;
+  proposer_address?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  total_gas?: InputMaybe<Scalars['bigint']['input']>;
+};
+
 /** aggregate sum on columns */
 export type Block_Sum_Fields = {
   height?: Maybe<Scalars['bigint']['output']>;
@@ -1185,16 +1496,33 @@ export type Block_Variance_Order_By = {
 };
 
 /** Boolean expression to compare columns of type "coin". All fields are combined with logical 'AND'. */
-export type Coin_Comparison_Exp = {
-  _eq?: InputMaybe<Scalars['coin']['input']>;
-  _gt?: InputMaybe<Scalars['coin']['input']>;
-  _gte?: InputMaybe<Scalars['coin']['input']>;
-  _in?: InputMaybe<Array<Scalars['coin']['input']>>;
+export type Coin_Array_Comparison_Exp = {
+  /** is the array contained in the given array value */
+  _contained_in?: InputMaybe<Array<Scalars['coin']['input']>>;
+  /** does the array contain the given value */
+  _contains?: InputMaybe<Array<Scalars['coin']['input']>>;
+  _eq?: InputMaybe<Array<Scalars['coin']['input']>>;
+  _gt?: InputMaybe<Array<Scalars['coin']['input']>>;
+  _gte?: InputMaybe<Array<Scalars['coin']['input']>>;
+  _in?: InputMaybe<Array<Array<Scalars['coin']['input']>>>;
   _is_null?: InputMaybe<Scalars['Boolean']['input']>;
-  _lt?: InputMaybe<Scalars['coin']['input']>;
-  _lte?: InputMaybe<Scalars['coin']['input']>;
-  _neq?: InputMaybe<Scalars['coin']['input']>;
-  _nin?: InputMaybe<Array<Scalars['coin']['input']>>;
+  _lt?: InputMaybe<Array<Scalars['coin']['input']>>;
+  _lte?: InputMaybe<Array<Scalars['coin']['input']>>;
+  _neq?: InputMaybe<Array<Scalars['coin']['input']>>;
+  _nin?: InputMaybe<Array<Array<Scalars['coin']['input']>>>;
+};
+
+/** Boolean expression to compare columns of type "coin_scalar". All fields are combined with logical 'AND'. */
+export type Coin_Scalar_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars['coin_scalar']['input']>;
+  _gt?: InputMaybe<Scalars['coin_scalar']['input']>;
+  _gte?: InputMaybe<Scalars['coin_scalar']['input']>;
+  _in?: InputMaybe<Array<Scalars['coin_scalar']['input']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
+  _lt?: InputMaybe<Scalars['coin_scalar']['input']>;
+  _lte?: InputMaybe<Scalars['coin_scalar']['input']>;
+  _neq?: InputMaybe<Scalars['coin_scalar']['input']>;
+  _nin?: InputMaybe<Array<Scalars['coin_scalar']['input']>>;
 };
 
 /** columns and relationships of "contracts" */
@@ -1358,6 +1686,28 @@ export type Contracts_Stddev_Samp_Fields = {
   tx?: Maybe<Scalars['Float']['output']>;
 };
 
+/** Streaming cursor of the table "contracts" */
+export type Contracts_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Contracts_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Contracts_Stream_Cursor_Value_Input = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  admin?: InputMaybe<Scalars['String']['input']>;
+  code_id?: InputMaybe<Scalars['bigint']['input']>;
+  creation_time?: InputMaybe<Scalars['String']['input']>;
+  creator?: InputMaybe<Scalars['String']['input']>;
+  fees?: InputMaybe<Scalars['bigint']['input']>;
+  gas?: InputMaybe<Scalars['bigint']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  label?: InputMaybe<Scalars['String']['input']>;
+  tx?: InputMaybe<Scalars['bigint']['input']>;
+};
+
 /** aggregate sum on columns */
 export type Contracts_Sum_Fields = {
   code_id?: Maybe<Scalars['bigint']['output']>;
@@ -1394,698 +1744,13 @@ export type Contracts_Variance_Fields = {
   tx?: Maybe<Scalars['Float']['output']>;
 };
 
-/** columns and relationships of "cyb_cohort" */
-export type Cyb_Cohort = {
-  cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_percent?: Maybe<Scalars['float8']['output']>;
-  hero_hired_percent?: Maybe<Scalars['float8']['output']>;
-  investmint_percent?: Maybe<Scalars['float8']['output']>;
-  neurons_activated?: Maybe<Scalars['bigint']['output']>;
-  redelegation_percent?: Maybe<Scalars['float8']['output']>;
-  swap_percent?: Maybe<Scalars['float8']['output']>;
-  undelegation_percent?: Maybe<Scalars['float8']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** aggregated selection of "cyb_cohort" */
-export type Cyb_Cohort_Aggregate = {
-  aggregate?: Maybe<Cyb_Cohort_Aggregate_Fields>;
-  nodes: Array<Cyb_Cohort>;
-};
-
-/** aggregate fields of "cyb_cohort" */
-export type Cyb_Cohort_Aggregate_Fields = {
-  avg?: Maybe<Cyb_Cohort_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Cyb_Cohort_Max_Fields>;
-  min?: Maybe<Cyb_Cohort_Min_Fields>;
-  stddev?: Maybe<Cyb_Cohort_Stddev_Fields>;
-  stddev_pop?: Maybe<Cyb_Cohort_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Cyb_Cohort_Stddev_Samp_Fields>;
-  sum?: Maybe<Cyb_Cohort_Sum_Fields>;
-  var_pop?: Maybe<Cyb_Cohort_Var_Pop_Fields>;
-  var_samp?: Maybe<Cyb_Cohort_Var_Samp_Fields>;
-  variance?: Maybe<Cyb_Cohort_Variance_Fields>;
-};
-
-
-/** aggregate fields of "cyb_cohort" */
-export type Cyb_Cohort_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Cyb_Cohort_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Cyb_Cohort_Avg_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neurons_activated?: Maybe<Scalars['Float']['output']>;
-  redelegation_percent?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-  undelegation_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "cyb_cohort". All fields are combined with a logical 'AND'. */
-export type Cyb_Cohort_Bool_Exp = {
-  _and?: InputMaybe<Array<Cyb_Cohort_Bool_Exp>>;
-  _not?: InputMaybe<Cyb_Cohort_Bool_Exp>;
-  _or?: InputMaybe<Array<Cyb_Cohort_Bool_Exp>>;
-  cyberlink_10_percent?: InputMaybe<Float8_Comparison_Exp>;
-  cyberlink_100_percent?: InputMaybe<Float8_Comparison_Exp>;
-  cyberlink_percent?: InputMaybe<Float8_Comparison_Exp>;
-  hero_hired_percent?: InputMaybe<Float8_Comparison_Exp>;
-  investmint_percent?: InputMaybe<Float8_Comparison_Exp>;
-  neurons_activated?: InputMaybe<Bigint_Comparison_Exp>;
-  redelegation_percent?: InputMaybe<Float8_Comparison_Exp>;
-  swap_percent?: InputMaybe<Float8_Comparison_Exp>;
-  undelegation_percent?: InputMaybe<Float8_Comparison_Exp>;
-  week?: InputMaybe<Date_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Cyb_Cohort_Max_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_percent?: Maybe<Scalars['float8']['output']>;
-  hero_hired_percent?: Maybe<Scalars['float8']['output']>;
-  investmint_percent?: Maybe<Scalars['float8']['output']>;
-  neurons_activated?: Maybe<Scalars['bigint']['output']>;
-  redelegation_percent?: Maybe<Scalars['float8']['output']>;
-  swap_percent?: Maybe<Scalars['float8']['output']>;
-  undelegation_percent?: Maybe<Scalars['float8']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** aggregate min on columns */
-export type Cyb_Cohort_Min_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_percent?: Maybe<Scalars['float8']['output']>;
-  hero_hired_percent?: Maybe<Scalars['float8']['output']>;
-  investmint_percent?: Maybe<Scalars['float8']['output']>;
-  neurons_activated?: Maybe<Scalars['bigint']['output']>;
-  redelegation_percent?: Maybe<Scalars['float8']['output']>;
-  swap_percent?: Maybe<Scalars['float8']['output']>;
-  undelegation_percent?: Maybe<Scalars['float8']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** Ordering options when selecting data from "cyb_cohort". */
-export type Cyb_Cohort_Order_By = {
-  cyberlink_10_percent?: InputMaybe<Order_By>;
-  cyberlink_100_percent?: InputMaybe<Order_By>;
-  cyberlink_percent?: InputMaybe<Order_By>;
-  hero_hired_percent?: InputMaybe<Order_By>;
-  investmint_percent?: InputMaybe<Order_By>;
-  neurons_activated?: InputMaybe<Order_By>;
-  redelegation_percent?: InputMaybe<Order_By>;
-  swap_percent?: InputMaybe<Order_By>;
-  undelegation_percent?: InputMaybe<Order_By>;
-  week?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "cyb_cohort" */
-export enum Cyb_Cohort_Select_Column {
-  /** column name */
-  Cyberlink_10Percent = 'cyberlink_10_percent',
-  /** column name */
-  Cyberlink_100Percent = 'cyberlink_100_percent',
-  /** column name */
-  CyberlinkPercent = 'cyberlink_percent',
-  /** column name */
-  HeroHiredPercent = 'hero_hired_percent',
-  /** column name */
-  InvestmintPercent = 'investmint_percent',
-  /** column name */
-  NeuronsActivated = 'neurons_activated',
-  /** column name */
-  RedelegationPercent = 'redelegation_percent',
-  /** column name */
-  SwapPercent = 'swap_percent',
-  /** column name */
-  UndelegationPercent = 'undelegation_percent',
-  /** column name */
-  Week = 'week'
+/** ordering argument of a cursor */
+export enum Cursor_Ordering {
+  /** ascending ordering of the cursor */
+  Asc = 'ASC',
+  /** descending ordering of the cursor */
+  Desc = 'DESC'
 }
-
-/** aggregate stddev on columns */
-export type Cyb_Cohort_Stddev_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neurons_activated?: Maybe<Scalars['Float']['output']>;
-  redelegation_percent?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-  undelegation_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Cyb_Cohort_Stddev_Pop_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neurons_activated?: Maybe<Scalars['Float']['output']>;
-  redelegation_percent?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-  undelegation_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Cyb_Cohort_Stddev_Samp_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neurons_activated?: Maybe<Scalars['Float']['output']>;
-  redelegation_percent?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-  undelegation_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Cyb_Cohort_Sum_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_percent?: Maybe<Scalars['float8']['output']>;
-  hero_hired_percent?: Maybe<Scalars['float8']['output']>;
-  investmint_percent?: Maybe<Scalars['float8']['output']>;
-  neurons_activated?: Maybe<Scalars['bigint']['output']>;
-  redelegation_percent?: Maybe<Scalars['float8']['output']>;
-  swap_percent?: Maybe<Scalars['float8']['output']>;
-  undelegation_percent?: Maybe<Scalars['float8']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Cyb_Cohort_Var_Pop_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neurons_activated?: Maybe<Scalars['Float']['output']>;
-  redelegation_percent?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-  undelegation_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Cyb_Cohort_Var_Samp_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neurons_activated?: Maybe<Scalars['Float']['output']>;
-  redelegation_percent?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-  undelegation_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Cyb_Cohort_Variance_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neurons_activated?: Maybe<Scalars['Float']['output']>;
-  redelegation_percent?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-  undelegation_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "cyb_new_cohort" */
-export type Cyb_New_Cohort = {
-  cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_percent?: Maybe<Scalars['float8']['output']>;
-  hero_hired_percent?: Maybe<Scalars['float8']['output']>;
-  investmint_percent?: Maybe<Scalars['float8']['output']>;
-  neuron_activation?: Maybe<Scalars['numeric']['output']>;
-  swap_percent?: Maybe<Scalars['float8']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** aggregated selection of "cyb_new_cohort" */
-export type Cyb_New_Cohort_Aggregate = {
-  aggregate?: Maybe<Cyb_New_Cohort_Aggregate_Fields>;
-  nodes: Array<Cyb_New_Cohort>;
-};
-
-/** aggregate fields of "cyb_new_cohort" */
-export type Cyb_New_Cohort_Aggregate_Fields = {
-  avg?: Maybe<Cyb_New_Cohort_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Cyb_New_Cohort_Max_Fields>;
-  min?: Maybe<Cyb_New_Cohort_Min_Fields>;
-  stddev?: Maybe<Cyb_New_Cohort_Stddev_Fields>;
-  stddev_pop?: Maybe<Cyb_New_Cohort_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Cyb_New_Cohort_Stddev_Samp_Fields>;
-  sum?: Maybe<Cyb_New_Cohort_Sum_Fields>;
-  var_pop?: Maybe<Cyb_New_Cohort_Var_Pop_Fields>;
-  var_samp?: Maybe<Cyb_New_Cohort_Var_Samp_Fields>;
-  variance?: Maybe<Cyb_New_Cohort_Variance_Fields>;
-};
-
-
-/** aggregate fields of "cyb_new_cohort" */
-export type Cyb_New_Cohort_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Cyb_New_Cohort_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Cyb_New_Cohort_Avg_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activation?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "cyb_new_cohort". All fields are combined with a logical 'AND'. */
-export type Cyb_New_Cohort_Bool_Exp = {
-  _and?: InputMaybe<Array<Cyb_New_Cohort_Bool_Exp>>;
-  _not?: InputMaybe<Cyb_New_Cohort_Bool_Exp>;
-  _or?: InputMaybe<Array<Cyb_New_Cohort_Bool_Exp>>;
-  cyberlink_10_percent?: InputMaybe<Float8_Comparison_Exp>;
-  cyberlink_100_percent?: InputMaybe<Float8_Comparison_Exp>;
-  cyberlink_percent?: InputMaybe<Float8_Comparison_Exp>;
-  hero_hired_percent?: InputMaybe<Float8_Comparison_Exp>;
-  investmint_percent?: InputMaybe<Float8_Comparison_Exp>;
-  neuron_activation?: InputMaybe<Numeric_Comparison_Exp>;
-  swap_percent?: InputMaybe<Float8_Comparison_Exp>;
-  week?: InputMaybe<Date_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Cyb_New_Cohort_Max_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_percent?: Maybe<Scalars['float8']['output']>;
-  hero_hired_percent?: Maybe<Scalars['float8']['output']>;
-  investmint_percent?: Maybe<Scalars['float8']['output']>;
-  neuron_activation?: Maybe<Scalars['numeric']['output']>;
-  swap_percent?: Maybe<Scalars['float8']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** aggregate min on columns */
-export type Cyb_New_Cohort_Min_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_percent?: Maybe<Scalars['float8']['output']>;
-  hero_hired_percent?: Maybe<Scalars['float8']['output']>;
-  investmint_percent?: Maybe<Scalars['float8']['output']>;
-  neuron_activation?: Maybe<Scalars['numeric']['output']>;
-  swap_percent?: Maybe<Scalars['float8']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** Ordering options when selecting data from "cyb_new_cohort". */
-export type Cyb_New_Cohort_Order_By = {
-  cyberlink_10_percent?: InputMaybe<Order_By>;
-  cyberlink_100_percent?: InputMaybe<Order_By>;
-  cyberlink_percent?: InputMaybe<Order_By>;
-  hero_hired_percent?: InputMaybe<Order_By>;
-  investmint_percent?: InputMaybe<Order_By>;
-  neuron_activation?: InputMaybe<Order_By>;
-  swap_percent?: InputMaybe<Order_By>;
-  week?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "cyb_new_cohort" */
-export enum Cyb_New_Cohort_Select_Column {
-  /** column name */
-  Cyberlink_10Percent = 'cyberlink_10_percent',
-  /** column name */
-  Cyberlink_100Percent = 'cyberlink_100_percent',
-  /** column name */
-  CyberlinkPercent = 'cyberlink_percent',
-  /** column name */
-  HeroHiredPercent = 'hero_hired_percent',
-  /** column name */
-  InvestmintPercent = 'investmint_percent',
-  /** column name */
-  NeuronActivation = 'neuron_activation',
-  /** column name */
-  SwapPercent = 'swap_percent',
-  /** column name */
-  Week = 'week'
-}
-
-/** aggregate stddev on columns */
-export type Cyb_New_Cohort_Stddev_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activation?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Cyb_New_Cohort_Stddev_Pop_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activation?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Cyb_New_Cohort_Stddev_Samp_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activation?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Cyb_New_Cohort_Sum_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['float8']['output']>;
-  cyberlink_percent?: Maybe<Scalars['float8']['output']>;
-  hero_hired_percent?: Maybe<Scalars['float8']['output']>;
-  investmint_percent?: Maybe<Scalars['float8']['output']>;
-  neuron_activation?: Maybe<Scalars['numeric']['output']>;
-  swap_percent?: Maybe<Scalars['float8']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Cyb_New_Cohort_Var_Pop_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activation?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Cyb_New_Cohort_Var_Samp_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activation?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Cyb_New_Cohort_Variance_Fields = {
-  cyberlink_10_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_100_percent?: Maybe<Scalars['Float']['output']>;
-  cyberlink_percent?: Maybe<Scalars['Float']['output']>;
-  hero_hired_percent?: Maybe<Scalars['Float']['output']>;
-  investmint_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activation?: Maybe<Scalars['Float']['output']>;
-  swap_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "cyber_gift" */
-export type Cyber_Gift = {
-  address: Scalars['String']['output'];
-  audience: Scalars['String']['output'];
-  gift: Scalars['numeric']['output'];
-  grade: Scalars['Int']['output'];
-  segment: Scalars['String']['output'];
-};
-
-/** aggregated selection of "cyber_gift" */
-export type Cyber_Gift_Aggregate = {
-  aggregate?: Maybe<Cyber_Gift_Aggregate_Fields>;
-  nodes: Array<Cyber_Gift>;
-};
-
-/** aggregate fields of "cyber_gift" */
-export type Cyber_Gift_Aggregate_Fields = {
-  avg?: Maybe<Cyber_Gift_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Cyber_Gift_Max_Fields>;
-  min?: Maybe<Cyber_Gift_Min_Fields>;
-  stddev?: Maybe<Cyber_Gift_Stddev_Fields>;
-  stddev_pop?: Maybe<Cyber_Gift_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Cyber_Gift_Stddev_Samp_Fields>;
-  sum?: Maybe<Cyber_Gift_Sum_Fields>;
-  var_pop?: Maybe<Cyber_Gift_Var_Pop_Fields>;
-  var_samp?: Maybe<Cyber_Gift_Var_Samp_Fields>;
-  variance?: Maybe<Cyber_Gift_Variance_Fields>;
-};
-
-
-/** aggregate fields of "cyber_gift" */
-export type Cyber_Gift_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Cyber_Gift_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Cyber_Gift_Avg_Fields = {
-  gift?: Maybe<Scalars['Float']['output']>;
-  grade?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "cyber_gift". All fields are combined with a logical 'AND'. */
-export type Cyber_Gift_Bool_Exp = {
-  _and?: InputMaybe<Array<Cyber_Gift_Bool_Exp>>;
-  _not?: InputMaybe<Cyber_Gift_Bool_Exp>;
-  _or?: InputMaybe<Array<Cyber_Gift_Bool_Exp>>;
-  address?: InputMaybe<String_Comparison_Exp>;
-  audience?: InputMaybe<String_Comparison_Exp>;
-  gift?: InputMaybe<Numeric_Comparison_Exp>;
-  grade?: InputMaybe<Int_Comparison_Exp>;
-  segment?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Cyber_Gift_Max_Fields = {
-  address?: Maybe<Scalars['String']['output']>;
-  audience?: Maybe<Scalars['String']['output']>;
-  gift?: Maybe<Scalars['numeric']['output']>;
-  grade?: Maybe<Scalars['Int']['output']>;
-  segment?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type Cyber_Gift_Min_Fields = {
-  address?: Maybe<Scalars['String']['output']>;
-  audience?: Maybe<Scalars['String']['output']>;
-  gift?: Maybe<Scalars['numeric']['output']>;
-  grade?: Maybe<Scalars['Int']['output']>;
-  segment?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "cyber_gift". */
-export type Cyber_Gift_Order_By = {
-  address?: InputMaybe<Order_By>;
-  audience?: InputMaybe<Order_By>;
-  gift?: InputMaybe<Order_By>;
-  grade?: InputMaybe<Order_By>;
-  segment?: InputMaybe<Order_By>;
-};
-
-/** columns and relationships of "cyber_gift_proofs" */
-export type Cyber_Gift_Proofs = {
-  address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['bigint']['output']>;
-  details?: Maybe<Scalars['json']['output']>;
-  proof?: Maybe<Scalars['String']['output']>;
-};
-
-
-/** columns and relationships of "cyber_gift_proofs" */
-export type Cyber_Gift_ProofsDetailsArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** aggregated selection of "cyber_gift_proofs" */
-export type Cyber_Gift_Proofs_Aggregate = {
-  aggregate?: Maybe<Cyber_Gift_Proofs_Aggregate_Fields>;
-  nodes: Array<Cyber_Gift_Proofs>;
-};
-
-/** aggregate fields of "cyber_gift_proofs" */
-export type Cyber_Gift_Proofs_Aggregate_Fields = {
-  avg?: Maybe<Cyber_Gift_Proofs_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Cyber_Gift_Proofs_Max_Fields>;
-  min?: Maybe<Cyber_Gift_Proofs_Min_Fields>;
-  stddev?: Maybe<Cyber_Gift_Proofs_Stddev_Fields>;
-  stddev_pop?: Maybe<Cyber_Gift_Proofs_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Cyber_Gift_Proofs_Stddev_Samp_Fields>;
-  sum?: Maybe<Cyber_Gift_Proofs_Sum_Fields>;
-  var_pop?: Maybe<Cyber_Gift_Proofs_Var_Pop_Fields>;
-  var_samp?: Maybe<Cyber_Gift_Proofs_Var_Samp_Fields>;
-  variance?: Maybe<Cyber_Gift_Proofs_Variance_Fields>;
-};
-
-
-/** aggregate fields of "cyber_gift_proofs" */
-export type Cyber_Gift_Proofs_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Cyber_Gift_Proofs_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Cyber_Gift_Proofs_Avg_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "cyber_gift_proofs". All fields are combined with a logical 'AND'. */
-export type Cyber_Gift_Proofs_Bool_Exp = {
-  _and?: InputMaybe<Array<Cyber_Gift_Proofs_Bool_Exp>>;
-  _not?: InputMaybe<Cyber_Gift_Proofs_Bool_Exp>;
-  _or?: InputMaybe<Array<Cyber_Gift_Proofs_Bool_Exp>>;
-  address?: InputMaybe<String_Comparison_Exp>;
-  amount?: InputMaybe<Bigint_Comparison_Exp>;
-  details?: InputMaybe<Json_Comparison_Exp>;
-  proof?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Cyber_Gift_Proofs_Max_Fields = {
-  address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['bigint']['output']>;
-  proof?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type Cyber_Gift_Proofs_Min_Fields = {
-  address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['bigint']['output']>;
-  proof?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "cyber_gift_proofs". */
-export type Cyber_Gift_Proofs_Order_By = {
-  address?: InputMaybe<Order_By>;
-  amount?: InputMaybe<Order_By>;
-  details?: InputMaybe<Order_By>;
-  proof?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "cyber_gift_proofs" */
-export enum Cyber_Gift_Proofs_Select_Column {
-  /** column name */
-  Address = 'address',
-  /** column name */
-  Amount = 'amount',
-  /** column name */
-  Details = 'details',
-  /** column name */
-  Proof = 'proof'
-}
-
-/** aggregate stddev on columns */
-export type Cyber_Gift_Proofs_Stddev_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Cyber_Gift_Proofs_Stddev_Pop_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Cyber_Gift_Proofs_Stddev_Samp_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Cyber_Gift_Proofs_Sum_Fields = {
-  amount?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Cyber_Gift_Proofs_Var_Pop_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Cyber_Gift_Proofs_Var_Samp_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Cyber_Gift_Proofs_Variance_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** select columns of table "cyber_gift" */
-export enum Cyber_Gift_Select_Column {
-  /** column name */
-  Address = 'address',
-  /** column name */
-  Audience = 'audience',
-  /** column name */
-  Gift = 'gift',
-  /** column name */
-  Grade = 'grade',
-  /** column name */
-  Segment = 'segment'
-}
-
-/** aggregate stddev on columns */
-export type Cyber_Gift_Stddev_Fields = {
-  gift?: Maybe<Scalars['Float']['output']>;
-  grade?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Cyber_Gift_Stddev_Pop_Fields = {
-  gift?: Maybe<Scalars['Float']['output']>;
-  grade?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Cyber_Gift_Stddev_Samp_Fields = {
-  gift?: Maybe<Scalars['Float']['output']>;
-  grade?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Cyber_Gift_Sum_Fields = {
-  gift?: Maybe<Scalars['numeric']['output']>;
-  grade?: Maybe<Scalars['Int']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Cyber_Gift_Var_Pop_Fields = {
-  gift?: Maybe<Scalars['Float']['output']>;
-  grade?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Cyber_Gift_Var_Samp_Fields = {
-  gift?: Maybe<Scalars['Float']['output']>;
-  grade?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Cyber_Gift_Variance_Fields = {
-  gift?: Maybe<Scalars['Float']['output']>;
-  grade?: Maybe<Scalars['Float']['output']>;
-};
 
 /** columns and relationships of "cyberlinks" */
 export type Cyberlinks = {
@@ -2093,18 +1758,12 @@ export type Cyberlinks = {
   account: Account;
   /** An object relationship */
   block: Block;
-  /** An object relationship */
-  from?: Maybe<Particles>;
   height: Scalars['bigint']['output'];
   id: Scalars['Int']['output'];
   neuron: Scalars['String']['output'];
   particle_from: Scalars['String']['output'];
   particle_to: Scalars['String']['output'];
   timestamp: Scalars['timestamp']['output'];
-  /** An object relationship */
-  to?: Maybe<Particles>;
-  /** An object relationship */
-  transaction: Transaction;
   transaction_hash: Scalars['String']['output'];
 };
 
@@ -2112,6 +1771,17 @@ export type Cyberlinks = {
 export type Cyberlinks_Aggregate = {
   aggregate?: Maybe<Cyberlinks_Aggregate_Fields>;
   nodes: Array<Cyberlinks>;
+};
+
+export type Cyberlinks_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Cyberlinks_Aggregate_Bool_Exp_Count>;
+};
+
+export type Cyberlinks_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Cyberlinks_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Cyberlinks_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "cyberlinks" */
@@ -2170,15 +1840,12 @@ export type Cyberlinks_Bool_Exp = {
   _or?: InputMaybe<Array<Cyberlinks_Bool_Exp>>;
   account?: InputMaybe<Account_Bool_Exp>;
   block?: InputMaybe<Block_Bool_Exp>;
-  from?: InputMaybe<Particles_Bool_Exp>;
   height?: InputMaybe<Bigint_Comparison_Exp>;
   id?: InputMaybe<Int_Comparison_Exp>;
   neuron?: InputMaybe<String_Comparison_Exp>;
   particle_from?: InputMaybe<String_Comparison_Exp>;
   particle_to?: InputMaybe<String_Comparison_Exp>;
   timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
-  to?: InputMaybe<Particles_Bool_Exp>;
-  transaction?: InputMaybe<Transaction_Bool_Exp>;
   transaction_hash?: InputMaybe<String_Comparison_Exp>;
 };
 
@@ -2230,15 +1897,12 @@ export type Cyberlinks_Min_Order_By = {
 export type Cyberlinks_Order_By = {
   account?: InputMaybe<Account_Order_By>;
   block?: InputMaybe<Block_Order_By>;
-  from?: InputMaybe<Particles_Order_By>;
   height?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   neuron?: InputMaybe<Order_By>;
   particle_from?: InputMaybe<Order_By>;
   particle_to?: InputMaybe<Order_By>;
   timestamp?: InputMaybe<Order_By>;
-  to?: InputMaybe<Particles_Order_By>;
-  transaction?: InputMaybe<Transaction_Order_By>;
   transaction_hash?: InputMaybe<Order_By>;
 };
 
@@ -2259,130 +1923,6 @@ export enum Cyberlinks_Select_Column {
   /** column name */
   TransactionHash = 'transaction_hash'
 }
-
-/** columns and relationships of "cyberlinks_stats" */
-export type Cyberlinks_Stats = {
-  cyberlinks?: Maybe<Scalars['numeric']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-};
-
-/** aggregated selection of "cyberlinks_stats" */
-export type Cyberlinks_Stats_Aggregate = {
-  aggregate?: Maybe<Cyberlinks_Stats_Aggregate_Fields>;
-  nodes: Array<Cyberlinks_Stats>;
-};
-
-/** aggregate fields of "cyberlinks_stats" */
-export type Cyberlinks_Stats_Aggregate_Fields = {
-  avg?: Maybe<Cyberlinks_Stats_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Cyberlinks_Stats_Max_Fields>;
-  min?: Maybe<Cyberlinks_Stats_Min_Fields>;
-  stddev?: Maybe<Cyberlinks_Stats_Stddev_Fields>;
-  stddev_pop?: Maybe<Cyberlinks_Stats_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Cyberlinks_Stats_Stddev_Samp_Fields>;
-  sum?: Maybe<Cyberlinks_Stats_Sum_Fields>;
-  var_pop?: Maybe<Cyberlinks_Stats_Var_Pop_Fields>;
-  var_samp?: Maybe<Cyberlinks_Stats_Var_Samp_Fields>;
-  variance?: Maybe<Cyberlinks_Stats_Variance_Fields>;
-};
-
-
-/** aggregate fields of "cyberlinks_stats" */
-export type Cyberlinks_Stats_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Cyberlinks_Stats_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Cyberlinks_Stats_Avg_Fields = {
-  cyberlinks?: Maybe<Scalars['Float']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "cyberlinks_stats". All fields are combined with a logical 'AND'. */
-export type Cyberlinks_Stats_Bool_Exp = {
-  _and?: InputMaybe<Array<Cyberlinks_Stats_Bool_Exp>>;
-  _not?: InputMaybe<Cyberlinks_Stats_Bool_Exp>;
-  _or?: InputMaybe<Array<Cyberlinks_Stats_Bool_Exp>>;
-  cyberlinks?: InputMaybe<Numeric_Comparison_Exp>;
-  cyberlinks_per_day?: InputMaybe<Bigint_Comparison_Exp>;
-  date?: InputMaybe<Date_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Cyberlinks_Stats_Max_Fields = {
-  cyberlinks?: Maybe<Scalars['numeric']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-};
-
-/** aggregate min on columns */
-export type Cyberlinks_Stats_Min_Fields = {
-  cyberlinks?: Maybe<Scalars['numeric']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-};
-
-/** Ordering options when selecting data from "cyberlinks_stats". */
-export type Cyberlinks_Stats_Order_By = {
-  cyberlinks?: InputMaybe<Order_By>;
-  cyberlinks_per_day?: InputMaybe<Order_By>;
-  date?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "cyberlinks_stats" */
-export enum Cyberlinks_Stats_Select_Column {
-  /** column name */
-  Cyberlinks = 'cyberlinks',
-  /** column name */
-  CyberlinksPerDay = 'cyberlinks_per_day',
-  /** column name */
-  Date = 'date'
-}
-
-/** aggregate stddev on columns */
-export type Cyberlinks_Stats_Stddev_Fields = {
-  cyberlinks?: Maybe<Scalars['Float']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Cyberlinks_Stats_Stddev_Pop_Fields = {
-  cyberlinks?: Maybe<Scalars['Float']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Cyberlinks_Stats_Stddev_Samp_Fields = {
-  cyberlinks?: Maybe<Scalars['Float']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Cyberlinks_Stats_Sum_Fields = {
-  cyberlinks?: Maybe<Scalars['numeric']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Cyberlinks_Stats_Var_Pop_Fields = {
-  cyberlinks?: Maybe<Scalars['Float']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Cyberlinks_Stats_Var_Samp_Fields = {
-  cyberlinks?: Maybe<Scalars['Float']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Cyberlinks_Stats_Variance_Fields = {
-  cyberlinks?: Maybe<Scalars['Float']['output']>;
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-};
 
 /** aggregate stddev on columns */
 export type Cyberlinks_Stddev_Fields = {
@@ -2418,6 +1958,25 @@ export type Cyberlinks_Stddev_Samp_Fields = {
 export type Cyberlinks_Stddev_Samp_Order_By = {
   height?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "cyberlinks" */
+export type Cyberlinks_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Cyberlinks_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Cyberlinks_Stream_Cursor_Value_Input = {
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  neuron?: InputMaybe<Scalars['String']['input']>;
+  particle_from?: InputMaybe<Scalars['String']['input']>;
+  particle_to?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_hash?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** aggregate sum on columns */
@@ -2468,627 +2027,148 @@ export type Cyberlinks_Variance_Order_By = {
   id?: InputMaybe<Order_By>;
 };
 
-/** columns and relationships of "daily_amount_of_active_neurons" */
-export type Daily_Amount_Of_Active_Neurons = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
+/** columns and relationships of "genesis" */
+export type Genesis = {
+  chain_id: Scalars['String']['output'];
+  initial_height: Scalars['bigint']['output'];
+  one_row_id: Scalars['Boolean']['output'];
+  time: Scalars['timestamp']['output'];
 };
 
-/** aggregated selection of "daily_amount_of_active_neurons" */
-export type Daily_Amount_Of_Active_Neurons_Aggregate = {
-  aggregate?: Maybe<Daily_Amount_Of_Active_Neurons_Aggregate_Fields>;
-  nodes: Array<Daily_Amount_Of_Active_Neurons>;
+/** aggregated selection of "genesis" */
+export type Genesis_Aggregate = {
+  aggregate?: Maybe<Genesis_Aggregate_Fields>;
+  nodes: Array<Genesis>;
 };
 
-/** aggregate fields of "daily_amount_of_active_neurons" */
-export type Daily_Amount_Of_Active_Neurons_Aggregate_Fields = {
-  avg?: Maybe<Daily_Amount_Of_Active_Neurons_Avg_Fields>;
+/** aggregate fields of "genesis" */
+export type Genesis_Aggregate_Fields = {
+  avg?: Maybe<Genesis_Avg_Fields>;
   count: Scalars['Int']['output'];
-  max?: Maybe<Daily_Amount_Of_Active_Neurons_Max_Fields>;
-  min?: Maybe<Daily_Amount_Of_Active_Neurons_Min_Fields>;
-  stddev?: Maybe<Daily_Amount_Of_Active_Neurons_Stddev_Fields>;
-  stddev_pop?: Maybe<Daily_Amount_Of_Active_Neurons_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Daily_Amount_Of_Active_Neurons_Stddev_Samp_Fields>;
-  sum?: Maybe<Daily_Amount_Of_Active_Neurons_Sum_Fields>;
-  var_pop?: Maybe<Daily_Amount_Of_Active_Neurons_Var_Pop_Fields>;
-  var_samp?: Maybe<Daily_Amount_Of_Active_Neurons_Var_Samp_Fields>;
-  variance?: Maybe<Daily_Amount_Of_Active_Neurons_Variance_Fields>;
+  max?: Maybe<Genesis_Max_Fields>;
+  min?: Maybe<Genesis_Min_Fields>;
+  stddev?: Maybe<Genesis_Stddev_Fields>;
+  stddev_pop?: Maybe<Genesis_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Genesis_Stddev_Samp_Fields>;
+  sum?: Maybe<Genesis_Sum_Fields>;
+  var_pop?: Maybe<Genesis_Var_Pop_Fields>;
+  var_samp?: Maybe<Genesis_Var_Samp_Fields>;
+  variance?: Maybe<Genesis_Variance_Fields>;
 };
 
 
-/** aggregate fields of "daily_amount_of_active_neurons" */
-export type Daily_Amount_Of_Active_Neurons_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Select_Column>>;
+/** aggregate fields of "genesis" */
+export type Genesis_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Genesis_Select_Column>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** aggregate avg on columns */
-export type Daily_Amount_Of_Active_Neurons_Avg_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
+export type Genesis_Avg_Fields = {
+  initial_height?: Maybe<Scalars['Float']['output']>;
 };
 
-/** Boolean expression to filter rows from the table "daily_amount_of_active_neurons". All fields are combined with a logical 'AND'. */
-export type Daily_Amount_Of_Active_Neurons_Bool_Exp = {
-  _and?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Bool_Exp>>;
-  _not?: InputMaybe<Daily_Amount_Of_Active_Neurons_Bool_Exp>;
-  _or?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Bool_Exp>>;
-  count?: InputMaybe<Bigint_Comparison_Exp>;
-  date?: InputMaybe<Date_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Daily_Amount_Of_Active_Neurons_Max_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-};
-
-/** aggregate min on columns */
-export type Daily_Amount_Of_Active_Neurons_Min_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-};
-
-/** Ordering options when selecting data from "daily_amount_of_active_neurons". */
-export type Daily_Amount_Of_Active_Neurons_Order_By = {
-  count?: InputMaybe<Order_By>;
-  date?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "daily_amount_of_active_neurons" */
-export enum Daily_Amount_Of_Active_Neurons_Select_Column {
-  /** column name */
-  Count = 'count',
-  /** column name */
-  Date = 'date'
-}
-
-/** aggregate stddev on columns */
-export type Daily_Amount_Of_Active_Neurons_Stddev_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Daily_Amount_Of_Active_Neurons_Stddev_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Daily_Amount_Of_Active_Neurons_Stddev_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Daily_Amount_Of_Active_Neurons_Sum_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Daily_Amount_Of_Active_Neurons_Var_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Daily_Amount_Of_Active_Neurons_Var_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Daily_Amount_Of_Active_Neurons_Variance_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "daily_amount_of_used_gas" */
-export type Daily_Amount_Of_Used_Gas = {
-  daily_gas?: Maybe<Scalars['numeric']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-  gas_total?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregated selection of "daily_amount_of_used_gas" */
-export type Daily_Amount_Of_Used_Gas_Aggregate = {
-  aggregate?: Maybe<Daily_Amount_Of_Used_Gas_Aggregate_Fields>;
-  nodes: Array<Daily_Amount_Of_Used_Gas>;
-};
-
-/** aggregate fields of "daily_amount_of_used_gas" */
-export type Daily_Amount_Of_Used_Gas_Aggregate_Fields = {
-  avg?: Maybe<Daily_Amount_Of_Used_Gas_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Daily_Amount_Of_Used_Gas_Max_Fields>;
-  min?: Maybe<Daily_Amount_Of_Used_Gas_Min_Fields>;
-  stddev?: Maybe<Daily_Amount_Of_Used_Gas_Stddev_Fields>;
-  stddev_pop?: Maybe<Daily_Amount_Of_Used_Gas_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Daily_Amount_Of_Used_Gas_Stddev_Samp_Fields>;
-  sum?: Maybe<Daily_Amount_Of_Used_Gas_Sum_Fields>;
-  var_pop?: Maybe<Daily_Amount_Of_Used_Gas_Var_Pop_Fields>;
-  var_samp?: Maybe<Daily_Amount_Of_Used_Gas_Var_Samp_Fields>;
-  variance?: Maybe<Daily_Amount_Of_Used_Gas_Variance_Fields>;
-};
-
-
-/** aggregate fields of "daily_amount_of_used_gas" */
-export type Daily_Amount_Of_Used_Gas_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Daily_Amount_Of_Used_Gas_Avg_Fields = {
-  daily_gas?: Maybe<Scalars['Float']['output']>;
-  gas_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "daily_amount_of_used_gas". All fields are combined with a logical 'AND'. */
-export type Daily_Amount_Of_Used_Gas_Bool_Exp = {
-  _and?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Bool_Exp>>;
-  _not?: InputMaybe<Daily_Amount_Of_Used_Gas_Bool_Exp>;
-  _or?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Bool_Exp>>;
-  daily_gas?: InputMaybe<Numeric_Comparison_Exp>;
-  date?: InputMaybe<Date_Comparison_Exp>;
-  gas_total?: InputMaybe<Numeric_Comparison_Exp>;
+/** Boolean expression to filter rows from the table "genesis". All fields are combined with a logical 'AND'. */
+export type Genesis_Bool_Exp = {
+  _and?: InputMaybe<Array<Genesis_Bool_Exp>>;
+  _not?: InputMaybe<Genesis_Bool_Exp>;
+  _or?: InputMaybe<Array<Genesis_Bool_Exp>>;
+  chain_id?: InputMaybe<String_Comparison_Exp>;
+  initial_height?: InputMaybe<Bigint_Comparison_Exp>;
+  one_row_id?: InputMaybe<Boolean_Comparison_Exp>;
+  time?: InputMaybe<Timestamp_Comparison_Exp>;
 };
 
 /** aggregate max on columns */
-export type Daily_Amount_Of_Used_Gas_Max_Fields = {
-  daily_gas?: Maybe<Scalars['numeric']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-  gas_total?: Maybe<Scalars['numeric']['output']>;
+export type Genesis_Max_Fields = {
+  chain_id?: Maybe<Scalars['String']['output']>;
+  initial_height?: Maybe<Scalars['bigint']['output']>;
+  time?: Maybe<Scalars['timestamp']['output']>;
 };
 
 /** aggregate min on columns */
-export type Daily_Amount_Of_Used_Gas_Min_Fields = {
-  daily_gas?: Maybe<Scalars['numeric']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-  gas_total?: Maybe<Scalars['numeric']['output']>;
+export type Genesis_Min_Fields = {
+  chain_id?: Maybe<Scalars['String']['output']>;
+  initial_height?: Maybe<Scalars['bigint']['output']>;
+  time?: Maybe<Scalars['timestamp']['output']>;
 };
 
-/** Ordering options when selecting data from "daily_amount_of_used_gas". */
-export type Daily_Amount_Of_Used_Gas_Order_By = {
-  daily_gas?: InputMaybe<Order_By>;
-  date?: InputMaybe<Order_By>;
-  gas_total?: InputMaybe<Order_By>;
+/** Ordering options when selecting data from "genesis". */
+export type Genesis_Order_By = {
+  chain_id?: InputMaybe<Order_By>;
+  initial_height?: InputMaybe<Order_By>;
+  one_row_id?: InputMaybe<Order_By>;
+  time?: InputMaybe<Order_By>;
 };
 
-/** select columns of table "daily_amount_of_used_gas" */
-export enum Daily_Amount_Of_Used_Gas_Select_Column {
+/** select columns of table "genesis" */
+export enum Genesis_Select_Column {
   /** column name */
-  DailyGas = 'daily_gas',
+  ChainId = 'chain_id',
   /** column name */
-  Date = 'date',
+  InitialHeight = 'initial_height',
   /** column name */
-  GasTotal = 'gas_total'
+  OneRowId = 'one_row_id',
+  /** column name */
+  Time = 'time'
 }
 
 /** aggregate stddev on columns */
-export type Daily_Amount_Of_Used_Gas_Stddev_Fields = {
-  daily_gas?: Maybe<Scalars['Float']['output']>;
-  gas_total?: Maybe<Scalars['Float']['output']>;
+export type Genesis_Stddev_Fields = {
+  initial_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_pop on columns */
-export type Daily_Amount_Of_Used_Gas_Stddev_Pop_Fields = {
-  daily_gas?: Maybe<Scalars['Float']['output']>;
-  gas_total?: Maybe<Scalars['Float']['output']>;
+export type Genesis_Stddev_Pop_Fields = {
+  initial_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate stddev_samp on columns */
-export type Daily_Amount_Of_Used_Gas_Stddev_Samp_Fields = {
-  daily_gas?: Maybe<Scalars['Float']['output']>;
-  gas_total?: Maybe<Scalars['Float']['output']>;
+export type Genesis_Stddev_Samp_Fields = {
+  initial_height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "genesis" */
+export type Genesis_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Genesis_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Genesis_Stream_Cursor_Value_Input = {
+  chain_id?: InputMaybe<Scalars['String']['input']>;
+  initial_height?: InputMaybe<Scalars['bigint']['input']>;
+  one_row_id?: InputMaybe<Scalars['Boolean']['input']>;
+  time?: InputMaybe<Scalars['timestamp']['input']>;
 };
 
 /** aggregate sum on columns */
-export type Daily_Amount_Of_Used_Gas_Sum_Fields = {
-  daily_gas?: Maybe<Scalars['numeric']['output']>;
-  gas_total?: Maybe<Scalars['numeric']['output']>;
+export type Genesis_Sum_Fields = {
+  initial_height?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate var_pop on columns */
-export type Daily_Amount_Of_Used_Gas_Var_Pop_Fields = {
-  daily_gas?: Maybe<Scalars['Float']['output']>;
-  gas_total?: Maybe<Scalars['Float']['output']>;
+export type Genesis_Var_Pop_Fields = {
+  initial_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_samp on columns */
-export type Daily_Amount_Of_Used_Gas_Var_Samp_Fields = {
-  daily_gas?: Maybe<Scalars['Float']['output']>;
-  gas_total?: Maybe<Scalars['Float']['output']>;
+export type Genesis_Var_Samp_Fields = {
+  initial_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate variance on columns */
-export type Daily_Amount_Of_Used_Gas_Variance_Fields = {
-  daily_gas?: Maybe<Scalars['Float']['output']>;
-  gas_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "daily_number_of_transactions" */
-export type Daily_Number_Of_Transactions = {
-  date?: Maybe<Scalars['date']['output']>;
-  txs_per_day?: Maybe<Scalars['bigint']['output']>;
-  txs_total?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregated selection of "daily_number_of_transactions" */
-export type Daily_Number_Of_Transactions_Aggregate = {
-  aggregate?: Maybe<Daily_Number_Of_Transactions_Aggregate_Fields>;
-  nodes: Array<Daily_Number_Of_Transactions>;
-};
-
-/** aggregate fields of "daily_number_of_transactions" */
-export type Daily_Number_Of_Transactions_Aggregate_Fields = {
-  avg?: Maybe<Daily_Number_Of_Transactions_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Daily_Number_Of_Transactions_Max_Fields>;
-  min?: Maybe<Daily_Number_Of_Transactions_Min_Fields>;
-  stddev?: Maybe<Daily_Number_Of_Transactions_Stddev_Fields>;
-  stddev_pop?: Maybe<Daily_Number_Of_Transactions_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Daily_Number_Of_Transactions_Stddev_Samp_Fields>;
-  sum?: Maybe<Daily_Number_Of_Transactions_Sum_Fields>;
-  var_pop?: Maybe<Daily_Number_Of_Transactions_Var_Pop_Fields>;
-  var_samp?: Maybe<Daily_Number_Of_Transactions_Var_Samp_Fields>;
-  variance?: Maybe<Daily_Number_Of_Transactions_Variance_Fields>;
-};
-
-
-/** aggregate fields of "daily_number_of_transactions" */
-export type Daily_Number_Of_Transactions_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Daily_Number_Of_Transactions_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Daily_Number_Of_Transactions_Avg_Fields = {
-  txs_per_day?: Maybe<Scalars['Float']['output']>;
-  txs_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "daily_number_of_transactions". All fields are combined with a logical 'AND'. */
-export type Daily_Number_Of_Transactions_Bool_Exp = {
-  _and?: InputMaybe<Array<Daily_Number_Of_Transactions_Bool_Exp>>;
-  _not?: InputMaybe<Daily_Number_Of_Transactions_Bool_Exp>;
-  _or?: InputMaybe<Array<Daily_Number_Of_Transactions_Bool_Exp>>;
-  date?: InputMaybe<Date_Comparison_Exp>;
-  txs_per_day?: InputMaybe<Bigint_Comparison_Exp>;
-  txs_total?: InputMaybe<Numeric_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Daily_Number_Of_Transactions_Max_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  txs_per_day?: Maybe<Scalars['bigint']['output']>;
-  txs_total?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate min on columns */
-export type Daily_Number_Of_Transactions_Min_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  txs_per_day?: Maybe<Scalars['bigint']['output']>;
-  txs_total?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** Ordering options when selecting data from "daily_number_of_transactions". */
-export type Daily_Number_Of_Transactions_Order_By = {
-  date?: InputMaybe<Order_By>;
-  txs_per_day?: InputMaybe<Order_By>;
-  txs_total?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "daily_number_of_transactions" */
-export enum Daily_Number_Of_Transactions_Select_Column {
-  /** column name */
-  Date = 'date',
-  /** column name */
-  TxsPerDay = 'txs_per_day',
-  /** column name */
-  TxsTotal = 'txs_total'
-}
-
-/** aggregate stddev on columns */
-export type Daily_Number_Of_Transactions_Stddev_Fields = {
-  txs_per_day?: Maybe<Scalars['Float']['output']>;
-  txs_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Daily_Number_Of_Transactions_Stddev_Pop_Fields = {
-  txs_per_day?: Maybe<Scalars['Float']['output']>;
-  txs_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Daily_Number_Of_Transactions_Stddev_Samp_Fields = {
-  txs_per_day?: Maybe<Scalars['Float']['output']>;
-  txs_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Daily_Number_Of_Transactions_Sum_Fields = {
-  txs_per_day?: Maybe<Scalars['bigint']['output']>;
-  txs_total?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Daily_Number_Of_Transactions_Var_Pop_Fields = {
-  txs_per_day?: Maybe<Scalars['Float']['output']>;
-  txs_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Daily_Number_Of_Transactions_Var_Samp_Fields = {
-  txs_per_day?: Maybe<Scalars['Float']['output']>;
-  txs_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Daily_Number_Of_Transactions_Variance_Fields = {
-  txs_per_day?: Maybe<Scalars['Float']['output']>;
-  txs_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to compare columns of type "date". All fields are combined with logical 'AND'. */
-export type Date_Comparison_Exp = {
-  _eq?: InputMaybe<Scalars['date']['input']>;
-  _gt?: InputMaybe<Scalars['date']['input']>;
-  _gte?: InputMaybe<Scalars['date']['input']>;
-  _in?: InputMaybe<Array<Scalars['date']['input']>>;
-  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
-  _lt?: InputMaybe<Scalars['date']['input']>;
-  _lte?: InputMaybe<Scalars['date']['input']>;
-  _neq?: InputMaybe<Scalars['date']['input']>;
-  _nin?: InputMaybe<Array<Scalars['date']['input']>>;
-};
-
-/** Boolean expression to compare columns of type "float8". All fields are combined with logical 'AND'. */
-export type Float8_Comparison_Exp = {
-  _eq?: InputMaybe<Scalars['float8']['input']>;
-  _gt?: InputMaybe<Scalars['float8']['input']>;
-  _gte?: InputMaybe<Scalars['float8']['input']>;
-  _in?: InputMaybe<Array<Scalars['float8']['input']>>;
-  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
-  _lt?: InputMaybe<Scalars['float8']['input']>;
-  _lte?: InputMaybe<Scalars['float8']['input']>;
-  _neq?: InputMaybe<Scalars['float8']['input']>;
-  _nin?: InputMaybe<Array<Scalars['float8']['input']>>;
-};
-
-/** columns and relationships of "follow_stats" */
-export type Follow_Stats = {
-  date?: Maybe<Scalars['date']['output']>;
-  follow_total?: Maybe<Scalars['numeric']['output']>;
-  follows_per_day?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregated selection of "follow_stats" */
-export type Follow_Stats_Aggregate = {
-  aggregate?: Maybe<Follow_Stats_Aggregate_Fields>;
-  nodes: Array<Follow_Stats>;
-};
-
-/** aggregate fields of "follow_stats" */
-export type Follow_Stats_Aggregate_Fields = {
-  avg?: Maybe<Follow_Stats_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Follow_Stats_Max_Fields>;
-  min?: Maybe<Follow_Stats_Min_Fields>;
-  stddev?: Maybe<Follow_Stats_Stddev_Fields>;
-  stddev_pop?: Maybe<Follow_Stats_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Follow_Stats_Stddev_Samp_Fields>;
-  sum?: Maybe<Follow_Stats_Sum_Fields>;
-  var_pop?: Maybe<Follow_Stats_Var_Pop_Fields>;
-  var_samp?: Maybe<Follow_Stats_Var_Samp_Fields>;
-  variance?: Maybe<Follow_Stats_Variance_Fields>;
-};
-
-
-/** aggregate fields of "follow_stats" */
-export type Follow_Stats_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Follow_Stats_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Follow_Stats_Avg_Fields = {
-  follow_total?: Maybe<Scalars['Float']['output']>;
-  follows_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "follow_stats". All fields are combined with a logical 'AND'. */
-export type Follow_Stats_Bool_Exp = {
-  _and?: InputMaybe<Array<Follow_Stats_Bool_Exp>>;
-  _not?: InputMaybe<Follow_Stats_Bool_Exp>;
-  _or?: InputMaybe<Array<Follow_Stats_Bool_Exp>>;
-  date?: InputMaybe<Date_Comparison_Exp>;
-  follow_total?: InputMaybe<Numeric_Comparison_Exp>;
-  follows_per_day?: InputMaybe<Bigint_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Follow_Stats_Max_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  follow_total?: Maybe<Scalars['numeric']['output']>;
-  follows_per_day?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate min on columns */
-export type Follow_Stats_Min_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  follow_total?: Maybe<Scalars['numeric']['output']>;
-  follows_per_day?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** Ordering options when selecting data from "follow_stats". */
-export type Follow_Stats_Order_By = {
-  date?: InputMaybe<Order_By>;
-  follow_total?: InputMaybe<Order_By>;
-  follows_per_day?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "follow_stats" */
-export enum Follow_Stats_Select_Column {
-  /** column name */
-  Date = 'date',
-  /** column name */
-  FollowTotal = 'follow_total',
-  /** column name */
-  FollowsPerDay = 'follows_per_day'
-}
-
-/** aggregate stddev on columns */
-export type Follow_Stats_Stddev_Fields = {
-  follow_total?: Maybe<Scalars['Float']['output']>;
-  follows_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Follow_Stats_Stddev_Pop_Fields = {
-  follow_total?: Maybe<Scalars['Float']['output']>;
-  follows_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Follow_Stats_Stddev_Samp_Fields = {
-  follow_total?: Maybe<Scalars['Float']['output']>;
-  follows_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Follow_Stats_Sum_Fields = {
-  follow_total?: Maybe<Scalars['numeric']['output']>;
-  follows_per_day?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Follow_Stats_Var_Pop_Fields = {
-  follow_total?: Maybe<Scalars['Float']['output']>;
-  follows_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Follow_Stats_Var_Samp_Fields = {
-  follow_total?: Maybe<Scalars['Float']['output']>;
-  follows_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Follow_Stats_Variance_Fields = {
-  follow_total?: Maybe<Scalars['Float']['output']>;
-  follows_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "genesis_neurons_activation" */
-export type Genesis_Neurons_Activation = {
-  count?: Maybe<Scalars['float8']['output']>;
-  neurons?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregated selection of "genesis_neurons_activation" */
-export type Genesis_Neurons_Activation_Aggregate = {
-  aggregate?: Maybe<Genesis_Neurons_Activation_Aggregate_Fields>;
-  nodes: Array<Genesis_Neurons_Activation>;
-};
-
-/** aggregate fields of "genesis_neurons_activation" */
-export type Genesis_Neurons_Activation_Aggregate_Fields = {
-  avg?: Maybe<Genesis_Neurons_Activation_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Genesis_Neurons_Activation_Max_Fields>;
-  min?: Maybe<Genesis_Neurons_Activation_Min_Fields>;
-  stddev?: Maybe<Genesis_Neurons_Activation_Stddev_Fields>;
-  stddev_pop?: Maybe<Genesis_Neurons_Activation_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Genesis_Neurons_Activation_Stddev_Samp_Fields>;
-  sum?: Maybe<Genesis_Neurons_Activation_Sum_Fields>;
-  var_pop?: Maybe<Genesis_Neurons_Activation_Var_Pop_Fields>;
-  var_samp?: Maybe<Genesis_Neurons_Activation_Var_Samp_Fields>;
-  variance?: Maybe<Genesis_Neurons_Activation_Variance_Fields>;
-};
-
-
-/** aggregate fields of "genesis_neurons_activation" */
-export type Genesis_Neurons_Activation_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Genesis_Neurons_Activation_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Genesis_Neurons_Activation_Avg_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "genesis_neurons_activation". All fields are combined with a logical 'AND'. */
-export type Genesis_Neurons_Activation_Bool_Exp = {
-  _and?: InputMaybe<Array<Genesis_Neurons_Activation_Bool_Exp>>;
-  _not?: InputMaybe<Genesis_Neurons_Activation_Bool_Exp>;
-  _or?: InputMaybe<Array<Genesis_Neurons_Activation_Bool_Exp>>;
-  count?: InputMaybe<Float8_Comparison_Exp>;
-  neurons?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Genesis_Neurons_Activation_Max_Fields = {
-  count?: Maybe<Scalars['float8']['output']>;
-  neurons?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type Genesis_Neurons_Activation_Min_Fields = {
-  count?: Maybe<Scalars['float8']['output']>;
-  neurons?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "genesis_neurons_activation". */
-export type Genesis_Neurons_Activation_Order_By = {
-  count?: InputMaybe<Order_By>;
-  neurons?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "genesis_neurons_activation" */
-export enum Genesis_Neurons_Activation_Select_Column {
-  /** column name */
-  Count = 'count',
-  /** column name */
-  Neurons = 'neurons'
-}
-
-/** aggregate stddev on columns */
-export type Genesis_Neurons_Activation_Stddev_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Genesis_Neurons_Activation_Stddev_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Genesis_Neurons_Activation_Stddev_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Genesis_Neurons_Activation_Sum_Fields = {
-  count?: Maybe<Scalars['float8']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Genesis_Neurons_Activation_Var_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Genesis_Neurons_Activation_Var_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Genesis_Neurons_Activation_Variance_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
+export type Genesis_Variance_Fields = {
+  initial_height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "investmints" */
 export type Investmints = {
   /** An object relationship */
   account: Account;
-  amount: Scalars['coin']['output'];
+  amount: Scalars['coin_scalar']['output'];
   /** An object relationship */
   block: Block;
   height: Scalars['bigint']['output'];
@@ -3097,8 +2177,6 @@ export type Investmints = {
   neuron: Scalars['String']['output'];
   resource: Scalars['String']['output'];
   timestamp: Scalars['timestamp']['output'];
-  /** An object relationship */
-  transaction: Transaction;
   transaction_hash: Scalars['String']['output'];
 };
 
@@ -3106,6 +2184,17 @@ export type Investmints = {
 export type Investmints_Aggregate = {
   aggregate?: Maybe<Investmints_Aggregate_Fields>;
   nodes: Array<Investmints>;
+};
+
+export type Investmints_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Investmints_Aggregate_Bool_Exp_Count>;
+};
+
+export type Investmints_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Investmints_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Investmints_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "investmints" */
@@ -3165,7 +2254,7 @@ export type Investmints_Bool_Exp = {
   _not?: InputMaybe<Investmints_Bool_Exp>;
   _or?: InputMaybe<Array<Investmints_Bool_Exp>>;
   account?: InputMaybe<Account_Bool_Exp>;
-  amount?: InputMaybe<Coin_Comparison_Exp>;
+  amount?: InputMaybe<Coin_Scalar_Comparison_Exp>;
   block?: InputMaybe<Block_Bool_Exp>;
   height?: InputMaybe<Bigint_Comparison_Exp>;
   id?: InputMaybe<Int_Comparison_Exp>;
@@ -3173,12 +2262,12 @@ export type Investmints_Bool_Exp = {
   neuron?: InputMaybe<String_Comparison_Exp>;
   resource?: InputMaybe<String_Comparison_Exp>;
   timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
-  transaction?: InputMaybe<Transaction_Bool_Exp>;
   transaction_hash?: InputMaybe<String_Comparison_Exp>;
 };
 
 /** aggregate max on columns */
 export type Investmints_Max_Fields = {
+  amount?: Maybe<Scalars['coin_scalar']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   length?: Maybe<Scalars['bigint']['output']>;
@@ -3190,6 +2279,7 @@ export type Investmints_Max_Fields = {
 
 /** order by max() on columns of table "investmints" */
 export type Investmints_Max_Order_By = {
+  amount?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   length?: InputMaybe<Order_By>;
@@ -3201,6 +2291,7 @@ export type Investmints_Max_Order_By = {
 
 /** aggregate min on columns */
 export type Investmints_Min_Fields = {
+  amount?: Maybe<Scalars['coin_scalar']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   length?: Maybe<Scalars['bigint']['output']>;
@@ -3212,6 +2303,7 @@ export type Investmints_Min_Fields = {
 
 /** order by min() on columns of table "investmints" */
 export type Investmints_Min_Order_By = {
+  amount?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
   length?: InputMaybe<Order_By>;
@@ -3232,7 +2324,6 @@ export type Investmints_Order_By = {
   neuron?: InputMaybe<Order_By>;
   resource?: InputMaybe<Order_By>;
   timestamp?: InputMaybe<Order_By>;
-  transaction?: InputMaybe<Transaction_Order_By>;
   transaction_hash?: InputMaybe<Order_By>;
 };
 
@@ -3298,6 +2389,26 @@ export type Investmints_Stddev_Samp_Order_By = {
   length?: InputMaybe<Order_By>;
 };
 
+/** Streaming cursor of the table "investmints" */
+export type Investmints_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Investmints_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Investmints_Stream_Cursor_Value_Input = {
+  amount?: InputMaybe<Scalars['coin_scalar']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  length?: InputMaybe<Scalars['bigint']['input']>;
+  neuron?: InputMaybe<Scalars['String']['input']>;
+  resource?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_hash?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** aggregate sum on columns */
 export type Investmints_Sum_Fields = {
   height?: Maybe<Scalars['bigint']['output']>;
@@ -3354,21 +2465,13 @@ export type Investmints_Variance_Order_By = {
   length?: InputMaybe<Order_By>;
 };
 
-/** Boolean expression to compare columns of type "json". All fields are combined with logical 'AND'. */
-export type Json_Comparison_Exp = {
-  _eq?: InputMaybe<Scalars['json']['input']>;
-  _gt?: InputMaybe<Scalars['json']['input']>;
-  _gte?: InputMaybe<Scalars['json']['input']>;
-  _in?: InputMaybe<Array<Scalars['json']['input']>>;
-  _is_null?: InputMaybe<Scalars['Boolean']['input']>;
-  _lt?: InputMaybe<Scalars['json']['input']>;
-  _lte?: InputMaybe<Scalars['json']['input']>;
-  _neq?: InputMaybe<Scalars['json']['input']>;
-  _nin?: InputMaybe<Array<Scalars['json']['input']>>;
+export type Jsonb_Cast_Exp = {
+  String?: InputMaybe<String_Comparison_Exp>;
 };
 
 /** Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'. */
 export type Jsonb_Comparison_Exp = {
+  _cast?: InputMaybe<Jsonb_Cast_Exp>;
   /** is the column contained in the given json value */
   _contained_in?: InputMaybe<Scalars['jsonb']['input']>;
   /** does the column contain the given json value at the top level */
@@ -3392,10 +2495,12 @@ export type Jsonb_Comparison_Exp = {
 
 /** columns and relationships of "message" */
 export type Message = {
+  height: Scalars['bigint']['output'];
   index: Scalars['bigint']['output'];
-  involved_accounts_addresses?: Maybe<Scalars['_text']['output']>;
+  involved_accounts_addresses: Array<Scalars['String']['output']>;
+  partition_id: Scalars['bigint']['output'];
   /** An object relationship */
-  transaction: Transaction;
+  transaction?: Maybe<Transaction>;
   transaction_hash: Scalars['String']['output'];
   type: Scalars['String']['output'];
   value: Scalars['jsonb']['output'];
@@ -3407,10 +2512,310 @@ export type MessageValueArgs = {
   path?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** columns and relationships of "message_0" */
+export type Message_0 = {
+  height: Scalars['bigint']['output'];
+  index: Scalars['bigint']['output'];
+  involved_accounts_addresses: Array<Scalars['String']['output']>;
+  partition_id: Scalars['bigint']['output'];
+  /** An object relationship */
+  transaction?: Maybe<Transaction>;
+  transaction_hash: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  value: Scalars['jsonb']['output'];
+};
+
+
+/** columns and relationships of "message_0" */
+export type Message_0ValueArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "message_0" */
+export type Message_0_Aggregate = {
+  aggregate?: Maybe<Message_0_Aggregate_Fields>;
+  nodes: Array<Message_0>;
+};
+
+export type Message_0_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Message_0_Aggregate_Bool_Exp_Count>;
+};
+
+export type Message_0_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Message_0_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Message_0_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "message_0" */
+export type Message_0_Aggregate_Fields = {
+  avg?: Maybe<Message_0_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Message_0_Max_Fields>;
+  min?: Maybe<Message_0_Min_Fields>;
+  stddev?: Maybe<Message_0_Stddev_Fields>;
+  stddev_pop?: Maybe<Message_0_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Message_0_Stddev_Samp_Fields>;
+  sum?: Maybe<Message_0_Sum_Fields>;
+  var_pop?: Maybe<Message_0_Var_Pop_Fields>;
+  var_samp?: Maybe<Message_0_Var_Samp_Fields>;
+  variance?: Maybe<Message_0_Variance_Fields>;
+};
+
+
+/** aggregate fields of "message_0" */
+export type Message_0_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Message_0_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "message_0" */
+export type Message_0_Aggregate_Order_By = {
+  avg?: InputMaybe<Message_0_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Message_0_Max_Order_By>;
+  min?: InputMaybe<Message_0_Min_Order_By>;
+  stddev?: InputMaybe<Message_0_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Message_0_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Message_0_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Message_0_Sum_Order_By>;
+  var_pop?: InputMaybe<Message_0_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Message_0_Var_Samp_Order_By>;
+  variance?: InputMaybe<Message_0_Variance_Order_By>;
+};
+
+/** aggregate avg on columns */
+export type Message_0_Avg_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "message_0" */
+export type Message_0_Avg_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "message_0". All fields are combined with a logical 'AND'. */
+export type Message_0_Bool_Exp = {
+  _and?: InputMaybe<Array<Message_0_Bool_Exp>>;
+  _not?: InputMaybe<Message_0_Bool_Exp>;
+  _or?: InputMaybe<Array<Message_0_Bool_Exp>>;
+  height?: InputMaybe<Bigint_Comparison_Exp>;
+  index?: InputMaybe<Bigint_Comparison_Exp>;
+  involved_accounts_addresses?: InputMaybe<String_Array_Comparison_Exp>;
+  partition_id?: InputMaybe<Bigint_Comparison_Exp>;
+  transaction?: InputMaybe<Transaction_Bool_Exp>;
+  transaction_hash?: InputMaybe<String_Comparison_Exp>;
+  type?: InputMaybe<String_Comparison_Exp>;
+  value?: InputMaybe<Jsonb_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Message_0_Max_Fields = {
+  height?: Maybe<Scalars['bigint']['output']>;
+  index?: Maybe<Scalars['bigint']['output']>;
+  involved_accounts_addresses?: Maybe<Array<Scalars['String']['output']>>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
+  transaction_hash?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+};
+
+/** order by max() on columns of table "message_0" */
+export type Message_0_Max_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  involved_accounts_addresses?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+  transaction_hash?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Message_0_Min_Fields = {
+  height?: Maybe<Scalars['bigint']['output']>;
+  index?: Maybe<Scalars['bigint']['output']>;
+  involved_accounts_addresses?: Maybe<Array<Scalars['String']['output']>>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
+  transaction_hash?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+};
+
+/** order by min() on columns of table "message_0" */
+export type Message_0_Min_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  involved_accounts_addresses?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+  transaction_hash?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
+};
+
+/** Ordering options when selecting data from "message_0". */
+export type Message_0_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  involved_accounts_addresses?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+  transaction?: InputMaybe<Transaction_Order_By>;
+  transaction_hash?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
+  value?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "message_0" */
+export enum Message_0_Select_Column {
+  /** column name */
+  Height = 'height',
+  /** column name */
+  Index = 'index',
+  /** column name */
+  InvolvedAccountsAddresses = 'involved_accounts_addresses',
+  /** column name */
+  PartitionId = 'partition_id',
+  /** column name */
+  TransactionHash = 'transaction_hash',
+  /** column name */
+  Type = 'type',
+  /** column name */
+  Value = 'value'
+}
+
+/** aggregate stddev on columns */
+export type Message_0_Stddev_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "message_0" */
+export type Message_0_Stddev_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Message_0_Stddev_Pop_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_pop() on columns of table "message_0" */
+export type Message_0_Stddev_Pop_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Message_0_Stddev_Samp_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_samp() on columns of table "message_0" */
+export type Message_0_Stddev_Samp_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "message_0" */
+export type Message_0_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Message_0_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Message_0_Stream_Cursor_Value_Input = {
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  index?: InputMaybe<Scalars['bigint']['input']>;
+  involved_accounts_addresses?: InputMaybe<Array<Scalars['String']['input']>>;
+  partition_id?: InputMaybe<Scalars['bigint']['input']>;
+  transaction_hash?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
+  value?: InputMaybe<Scalars['jsonb']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Message_0_Sum_Fields = {
+  height?: Maybe<Scalars['bigint']['output']>;
+  index?: Maybe<Scalars['bigint']['output']>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by sum() on columns of table "message_0" */
+export type Message_0_Sum_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_pop on columns */
+export type Message_0_Var_Pop_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_pop() on columns of table "message_0" */
+export type Message_0_Var_Pop_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_samp on columns */
+export type Message_0_Var_Samp_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_samp() on columns of table "message_0" */
+export type Message_0_Var_Samp_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate variance on columns */
+export type Message_0_Variance_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "message_0" */
+export type Message_0_Variance_Order_By = {
+  height?: InputMaybe<Order_By>;
+  index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
 /** aggregated selection of "message" */
 export type Message_Aggregate = {
   aggregate?: Maybe<Message_Aggregate_Fields>;
   nodes: Array<Message>;
+};
+
+export type Message_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Message_Aggregate_Bool_Exp_Count>;
+};
+
+export type Message_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Message_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Message_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "message" */
@@ -3452,12 +2857,16 @@ export type Message_Aggregate_Order_By = {
 
 /** aggregate avg on columns */
 export type Message_Avg_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
   index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by avg() on columns of table "message" */
 export type Message_Avg_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "message". All fields are combined with a logical 'AND'. */
@@ -3465,8 +2874,10 @@ export type Message_Bool_Exp = {
   _and?: InputMaybe<Array<Message_Bool_Exp>>;
   _not?: InputMaybe<Message_Bool_Exp>;
   _or?: InputMaybe<Array<Message_Bool_Exp>>;
+  height?: InputMaybe<Bigint_Comparison_Exp>;
   index?: InputMaybe<Bigint_Comparison_Exp>;
-  involved_accounts_addresses?: InputMaybe<_Text_Comparison_Exp>;
+  involved_accounts_addresses?: InputMaybe<String_Array_Comparison_Exp>;
+  partition_id?: InputMaybe<Bigint_Comparison_Exp>;
   transaction?: InputMaybe<Transaction_Bool_Exp>;
   transaction_hash?: InputMaybe<String_Comparison_Exp>;
   type?: InputMaybe<String_Comparison_Exp>;
@@ -3475,36 +2886,50 @@ export type Message_Bool_Exp = {
 
 /** aggregate max on columns */
 export type Message_Max_Fields = {
+  height?: Maybe<Scalars['bigint']['output']>;
   index?: Maybe<Scalars['bigint']['output']>;
+  involved_accounts_addresses?: Maybe<Array<Scalars['String']['output']>>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
   transaction_hash?: Maybe<Scalars['String']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
 /** order by max() on columns of table "message" */
 export type Message_Max_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
+  involved_accounts_addresses?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
   transaction_hash?: InputMaybe<Order_By>;
   type?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
 export type Message_Min_Fields = {
+  height?: Maybe<Scalars['bigint']['output']>;
   index?: Maybe<Scalars['bigint']['output']>;
+  involved_accounts_addresses?: Maybe<Array<Scalars['String']['output']>>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
   transaction_hash?: Maybe<Scalars['String']['output']>;
   type?: Maybe<Scalars['String']['output']>;
 };
 
 /** order by min() on columns of table "message" */
 export type Message_Min_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
+  involved_accounts_addresses?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
   transaction_hash?: InputMaybe<Order_By>;
   type?: InputMaybe<Order_By>;
 };
 
 /** Ordering options when selecting data from "message". */
 export type Message_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
   involved_accounts_addresses?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
   transaction?: InputMaybe<Transaction_Order_By>;
   transaction_hash?: InputMaybe<Order_By>;
   type?: InputMaybe<Order_By>;
@@ -3514,9 +2939,13 @@ export type Message_Order_By = {
 /** select columns of table "message" */
 export enum Message_Select_Column {
   /** column name */
+  Height = 'height',
+  /** column name */
   Index = 'index',
   /** column name */
   InvolvedAccountsAddresses = 'involved_accounts_addresses',
+  /** column name */
+  PartitionId = 'partition_id',
   /** column name */
   TransactionHash = 'transaction_hash',
   /** column name */
@@ -3527,76 +2956,268 @@ export enum Message_Select_Column {
 
 /** aggregate stddev on columns */
 export type Message_Stddev_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
   index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddev() on columns of table "message" */
 export type Message_Stddev_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_pop on columns */
 export type Message_Stddev_Pop_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
   index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddev_pop() on columns of table "message" */
 export type Message_Stddev_Pop_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
 export type Message_Stddev_Samp_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
   index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddev_samp() on columns of table "message" */
 export type Message_Stddev_Samp_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "message" */
+export type Message_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Message_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Message_Stream_Cursor_Value_Input = {
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  index?: InputMaybe<Scalars['bigint']['input']>;
+  involved_accounts_addresses?: InputMaybe<Array<Scalars['String']['input']>>;
+  partition_id?: InputMaybe<Scalars['bigint']['input']>;
+  transaction_hash?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
+  value?: InputMaybe<Scalars['jsonb']['input']>;
 };
 
 /** aggregate sum on columns */
 export type Message_Sum_Fields = {
+  height?: Maybe<Scalars['bigint']['output']>;
   index?: Maybe<Scalars['bigint']['output']>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** order by sum() on columns of table "message" */
 export type Message_Sum_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** columns and relationships of "message_type" */
+export type Message_Type = {
+  height: Scalars['bigint']['output'];
+  label: Scalars['String']['output'];
+  module: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+/** aggregated selection of "message_type" */
+export type Message_Type_Aggregate = {
+  aggregate?: Maybe<Message_Type_Aggregate_Fields>;
+  nodes: Array<Message_Type>;
+};
+
+/** aggregate fields of "message_type" */
+export type Message_Type_Aggregate_Fields = {
+  avg?: Maybe<Message_Type_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Message_Type_Max_Fields>;
+  min?: Maybe<Message_Type_Min_Fields>;
+  stddev?: Maybe<Message_Type_Stddev_Fields>;
+  stddev_pop?: Maybe<Message_Type_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Message_Type_Stddev_Samp_Fields>;
+  sum?: Maybe<Message_Type_Sum_Fields>;
+  var_pop?: Maybe<Message_Type_Var_Pop_Fields>;
+  var_samp?: Maybe<Message_Type_Var_Samp_Fields>;
+  variance?: Maybe<Message_Type_Variance_Fields>;
+};
+
+
+/** aggregate fields of "message_type" */
+export type Message_Type_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Message_Type_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Message_Type_Avg_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "message_type". All fields are combined with a logical 'AND'. */
+export type Message_Type_Bool_Exp = {
+  _and?: InputMaybe<Array<Message_Type_Bool_Exp>>;
+  _not?: InputMaybe<Message_Type_Bool_Exp>;
+  _or?: InputMaybe<Array<Message_Type_Bool_Exp>>;
+  height?: InputMaybe<Bigint_Comparison_Exp>;
+  label?: InputMaybe<String_Comparison_Exp>;
+  module?: InputMaybe<String_Comparison_Exp>;
+  type?: InputMaybe<String_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Message_Type_Max_Fields = {
+  height?: Maybe<Scalars['bigint']['output']>;
+  label?: Maybe<Scalars['String']['output']>;
+  module?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+};
+
+/** aggregate min on columns */
+export type Message_Type_Min_Fields = {
+  height?: Maybe<Scalars['bigint']['output']>;
+  label?: Maybe<Scalars['String']['output']>;
+  module?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+};
+
+/** Ordering options when selecting data from "message_type". */
+export type Message_Type_Order_By = {
+  height?: InputMaybe<Order_By>;
+  label?: InputMaybe<Order_By>;
+  module?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "message_type" */
+export enum Message_Type_Select_Column {
+  /** column name */
+  Height = 'height',
+  /** column name */
+  Label = 'label',
+  /** column name */
+  Module = 'module',
+  /** column name */
+  Type = 'type'
+}
+
+/** aggregate stddev on columns */
+export type Message_Type_Stddev_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Message_Type_Stddev_Pop_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Message_Type_Stddev_Samp_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "message_type" */
+export type Message_Type_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Message_Type_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Message_Type_Stream_Cursor_Value_Input = {
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  label?: InputMaybe<Scalars['String']['input']>;
+  module?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Message_Type_Sum_Fields = {
+  height?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Message_Type_Var_Pop_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Message_Type_Var_Samp_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Message_Type_Variance_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
 };
 
 /** aggregate var_pop on columns */
 export type Message_Var_Pop_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
   index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by var_pop() on columns of table "message" */
 export type Message_Var_Pop_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_samp on columns */
 export type Message_Var_Samp_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
   index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by var_samp() on columns of table "message" */
 export type Message_Var_Samp_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate variance on columns */
 export type Message_Variance_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
   index?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by variance() on columns of table "message" */
 export type Message_Variance_Order_By = {
+  height?: InputMaybe<Order_By>;
   index?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 export type Messages_By_Address_Args = {
   addresses?: InputMaybe<Scalars['_text']['input']>;
+  limit?: InputMaybe<Scalars['bigint']['input']>;
+  offset?: InputMaybe<Scalars['bigint']['input']>;
+  types?: InputMaybe<Scalars['_text']['input']>;
+};
+
+export type Messages_By_Type_Args = {
   limit?: InputMaybe<Scalars['bigint']['input']>;
   offset?: InputMaybe<Scalars['bigint']['input']>;
   types?: InputMaybe<Scalars['_text']['input']>;
@@ -3656,282 +3277,17 @@ export enum Modules_Select_Column {
   ModuleName = 'module_name'
 }
 
-/** columns and relationships of "neuron_activation_source" */
-export type Neuron_Activation_Source = {
-  genesis_percent?: Maybe<Scalars['float8']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['float8']['output']>;
-  neuron_activated?: Maybe<Scalars['bigint']['output']>;
-  recieve_percent?: Maybe<Scalars['float8']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
+/** Streaming cursor of the table "modules" */
+export type Modules_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Modules_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
 };
 
-/** aggregated selection of "neuron_activation_source" */
-export type Neuron_Activation_Source_Aggregate = {
-  aggregate?: Maybe<Neuron_Activation_Source_Aggregate_Fields>;
-  nodes: Array<Neuron_Activation_Source>;
-};
-
-/** aggregate fields of "neuron_activation_source" */
-export type Neuron_Activation_Source_Aggregate_Fields = {
-  avg?: Maybe<Neuron_Activation_Source_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Neuron_Activation_Source_Max_Fields>;
-  min?: Maybe<Neuron_Activation_Source_Min_Fields>;
-  stddev?: Maybe<Neuron_Activation_Source_Stddev_Fields>;
-  stddev_pop?: Maybe<Neuron_Activation_Source_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Neuron_Activation_Source_Stddev_Samp_Fields>;
-  sum?: Maybe<Neuron_Activation_Source_Sum_Fields>;
-  var_pop?: Maybe<Neuron_Activation_Source_Var_Pop_Fields>;
-  var_samp?: Maybe<Neuron_Activation_Source_Var_Samp_Fields>;
-  variance?: Maybe<Neuron_Activation_Source_Variance_Fields>;
-};
-
-
-/** aggregate fields of "neuron_activation_source" */
-export type Neuron_Activation_Source_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Neuron_Activation_Source_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Neuron_Activation_Source_Avg_Fields = {
-  genesis_percent?: Maybe<Scalars['Float']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activated?: Maybe<Scalars['Float']['output']>;
-  recieve_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "neuron_activation_source". All fields are combined with a logical 'AND'. */
-export type Neuron_Activation_Source_Bool_Exp = {
-  _and?: InputMaybe<Array<Neuron_Activation_Source_Bool_Exp>>;
-  _not?: InputMaybe<Neuron_Activation_Source_Bool_Exp>;
-  _or?: InputMaybe<Array<Neuron_Activation_Source_Bool_Exp>>;
-  genesis_percent?: InputMaybe<Float8_Comparison_Exp>;
-  ibc_receive_percent?: InputMaybe<Float8_Comparison_Exp>;
-  neuron_activated?: InputMaybe<Bigint_Comparison_Exp>;
-  recieve_percent?: InputMaybe<Float8_Comparison_Exp>;
-  week?: InputMaybe<Date_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Neuron_Activation_Source_Max_Fields = {
-  genesis_percent?: Maybe<Scalars['float8']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['float8']['output']>;
-  neuron_activated?: Maybe<Scalars['bigint']['output']>;
-  recieve_percent?: Maybe<Scalars['float8']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** aggregate min on columns */
-export type Neuron_Activation_Source_Min_Fields = {
-  genesis_percent?: Maybe<Scalars['float8']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['float8']['output']>;
-  neuron_activated?: Maybe<Scalars['bigint']['output']>;
-  recieve_percent?: Maybe<Scalars['float8']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** Ordering options when selecting data from "neuron_activation_source". */
-export type Neuron_Activation_Source_Order_By = {
-  genesis_percent?: InputMaybe<Order_By>;
-  ibc_receive_percent?: InputMaybe<Order_By>;
-  neuron_activated?: InputMaybe<Order_By>;
-  recieve_percent?: InputMaybe<Order_By>;
-  week?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "neuron_activation_source" */
-export enum Neuron_Activation_Source_Select_Column {
-  /** column name */
-  GenesisPercent = 'genesis_percent',
-  /** column name */
-  IbcReceivePercent = 'ibc_receive_percent',
-  /** column name */
-  NeuronActivated = 'neuron_activated',
-  /** column name */
-  RecievePercent = 'recieve_percent',
-  /** column name */
-  Week = 'week'
-}
-
-/** aggregate stddev on columns */
-export type Neuron_Activation_Source_Stddev_Fields = {
-  genesis_percent?: Maybe<Scalars['Float']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activated?: Maybe<Scalars['Float']['output']>;
-  recieve_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Neuron_Activation_Source_Stddev_Pop_Fields = {
-  genesis_percent?: Maybe<Scalars['Float']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activated?: Maybe<Scalars['Float']['output']>;
-  recieve_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Neuron_Activation_Source_Stddev_Samp_Fields = {
-  genesis_percent?: Maybe<Scalars['Float']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activated?: Maybe<Scalars['Float']['output']>;
-  recieve_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Neuron_Activation_Source_Sum_Fields = {
-  genesis_percent?: Maybe<Scalars['float8']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['float8']['output']>;
-  neuron_activated?: Maybe<Scalars['bigint']['output']>;
-  recieve_percent?: Maybe<Scalars['float8']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Neuron_Activation_Source_Var_Pop_Fields = {
-  genesis_percent?: Maybe<Scalars['Float']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activated?: Maybe<Scalars['Float']['output']>;
-  recieve_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Neuron_Activation_Source_Var_Samp_Fields = {
-  genesis_percent?: Maybe<Scalars['Float']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activated?: Maybe<Scalars['Float']['output']>;
-  recieve_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Neuron_Activation_Source_Variance_Fields = {
-  genesis_percent?: Maybe<Scalars['Float']['output']>;
-  ibc_receive_percent?: Maybe<Scalars['Float']['output']>;
-  neuron_activated?: Maybe<Scalars['Float']['output']>;
-  recieve_percent?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "number_of_new_neurons" */
-export type Number_Of_New_Neurons = {
-  date?: Maybe<Scalars['date']['output']>;
-  new_neurons_daily?: Maybe<Scalars['bigint']['output']>;
-  new_neurons_total?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregated selection of "number_of_new_neurons" */
-export type Number_Of_New_Neurons_Aggregate = {
-  aggregate?: Maybe<Number_Of_New_Neurons_Aggregate_Fields>;
-  nodes: Array<Number_Of_New_Neurons>;
-};
-
-/** aggregate fields of "number_of_new_neurons" */
-export type Number_Of_New_Neurons_Aggregate_Fields = {
-  avg?: Maybe<Number_Of_New_Neurons_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Number_Of_New_Neurons_Max_Fields>;
-  min?: Maybe<Number_Of_New_Neurons_Min_Fields>;
-  stddev?: Maybe<Number_Of_New_Neurons_Stddev_Fields>;
-  stddev_pop?: Maybe<Number_Of_New_Neurons_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Number_Of_New_Neurons_Stddev_Samp_Fields>;
-  sum?: Maybe<Number_Of_New_Neurons_Sum_Fields>;
-  var_pop?: Maybe<Number_Of_New_Neurons_Var_Pop_Fields>;
-  var_samp?: Maybe<Number_Of_New_Neurons_Var_Samp_Fields>;
-  variance?: Maybe<Number_Of_New_Neurons_Variance_Fields>;
-};
-
-
-/** aggregate fields of "number_of_new_neurons" */
-export type Number_Of_New_Neurons_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Number_Of_New_Neurons_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Number_Of_New_Neurons_Avg_Fields = {
-  new_neurons_daily?: Maybe<Scalars['Float']['output']>;
-  new_neurons_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "number_of_new_neurons". All fields are combined with a logical 'AND'. */
-export type Number_Of_New_Neurons_Bool_Exp = {
-  _and?: InputMaybe<Array<Number_Of_New_Neurons_Bool_Exp>>;
-  _not?: InputMaybe<Number_Of_New_Neurons_Bool_Exp>;
-  _or?: InputMaybe<Array<Number_Of_New_Neurons_Bool_Exp>>;
-  date?: InputMaybe<Date_Comparison_Exp>;
-  new_neurons_daily?: InputMaybe<Bigint_Comparison_Exp>;
-  new_neurons_total?: InputMaybe<Numeric_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Number_Of_New_Neurons_Max_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  new_neurons_daily?: Maybe<Scalars['bigint']['output']>;
-  new_neurons_total?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate min on columns */
-export type Number_Of_New_Neurons_Min_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  new_neurons_daily?: Maybe<Scalars['bigint']['output']>;
-  new_neurons_total?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** Ordering options when selecting data from "number_of_new_neurons". */
-export type Number_Of_New_Neurons_Order_By = {
-  date?: InputMaybe<Order_By>;
-  new_neurons_daily?: InputMaybe<Order_By>;
-  new_neurons_total?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "number_of_new_neurons" */
-export enum Number_Of_New_Neurons_Select_Column {
-  /** column name */
-  Date = 'date',
-  /** column name */
-  NewNeuronsDaily = 'new_neurons_daily',
-  /** column name */
-  NewNeuronsTotal = 'new_neurons_total'
-}
-
-/** aggregate stddev on columns */
-export type Number_Of_New_Neurons_Stddev_Fields = {
-  new_neurons_daily?: Maybe<Scalars['Float']['output']>;
-  new_neurons_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Number_Of_New_Neurons_Stddev_Pop_Fields = {
-  new_neurons_daily?: Maybe<Scalars['Float']['output']>;
-  new_neurons_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Number_Of_New_Neurons_Stddev_Samp_Fields = {
-  new_neurons_daily?: Maybe<Scalars['Float']['output']>;
-  new_neurons_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Number_Of_New_Neurons_Sum_Fields = {
-  new_neurons_daily?: Maybe<Scalars['bigint']['output']>;
-  new_neurons_total?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Number_Of_New_Neurons_Var_Pop_Fields = {
-  new_neurons_daily?: Maybe<Scalars['Float']['output']>;
-  new_neurons_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Number_Of_New_Neurons_Var_Samp_Fields = {
-  new_neurons_daily?: Maybe<Scalars['Float']['output']>;
-  new_neurons_total?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Number_Of_New_Neurons_Variance_Fields = {
-  new_neurons_daily?: Maybe<Scalars['Float']['output']>;
-  new_neurons_total?: Maybe<Scalars['Float']['output']>;
+/** Initial value of the column from where the streaming should start */
+export type Modules_Stream_Cursor_Value_Input = {
+  module_name?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Boolean expression to compare columns of type "numeric". All fields are combined with logical 'AND'. */
@@ -3945,122 +3301,6 @@ export type Numeric_Comparison_Exp = {
   _lte?: InputMaybe<Scalars['numeric']['input']>;
   _neq?: InputMaybe<Scalars['numeric']['input']>;
   _nin?: InputMaybe<Array<Scalars['numeric']['input']>>;
-};
-
-/** columns and relationships of "old_precommits" */
-export type Old_Precommits = {
-  consensus_address: Scalars['String']['output'];
-  consensus_pubkey: Scalars['String']['output'];
-  precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregated selection of "old_precommits" */
-export type Old_Precommits_Aggregate = {
-  aggregate?: Maybe<Old_Precommits_Aggregate_Fields>;
-  nodes: Array<Old_Precommits>;
-};
-
-/** aggregate fields of "old_precommits" */
-export type Old_Precommits_Aggregate_Fields = {
-  avg?: Maybe<Old_Precommits_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Old_Precommits_Max_Fields>;
-  min?: Maybe<Old_Precommits_Min_Fields>;
-  stddev?: Maybe<Old_Precommits_Stddev_Fields>;
-  stddev_pop?: Maybe<Old_Precommits_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Old_Precommits_Stddev_Samp_Fields>;
-  sum?: Maybe<Old_Precommits_Sum_Fields>;
-  var_pop?: Maybe<Old_Precommits_Var_Pop_Fields>;
-  var_samp?: Maybe<Old_Precommits_Var_Samp_Fields>;
-  variance?: Maybe<Old_Precommits_Variance_Fields>;
-};
-
-
-/** aggregate fields of "old_precommits" */
-export type Old_Precommits_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Old_Precommits_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Old_Precommits_Avg_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "old_precommits". All fields are combined with a logical 'AND'. */
-export type Old_Precommits_Bool_Exp = {
-  _and?: InputMaybe<Array<Old_Precommits_Bool_Exp>>;
-  _not?: InputMaybe<Old_Precommits_Bool_Exp>;
-  _or?: InputMaybe<Array<Old_Precommits_Bool_Exp>>;
-  consensus_address?: InputMaybe<String_Comparison_Exp>;
-  consensus_pubkey?: InputMaybe<String_Comparison_Exp>;
-  precommits?: InputMaybe<Numeric_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Old_Precommits_Max_Fields = {
-  consensus_address?: Maybe<Scalars['String']['output']>;
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate min on columns */
-export type Old_Precommits_Min_Fields = {
-  consensus_address?: Maybe<Scalars['String']['output']>;
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** Ordering options when selecting data from "old_precommits". */
-export type Old_Precommits_Order_By = {
-  consensus_address?: InputMaybe<Order_By>;
-  consensus_pubkey?: InputMaybe<Order_By>;
-  precommits?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "old_precommits" */
-export enum Old_Precommits_Select_Column {
-  /** column name */
-  ConsensusAddress = 'consensus_address',
-  /** column name */
-  ConsensusPubkey = 'consensus_pubkey',
-  /** column name */
-  Precommits = 'precommits'
-}
-
-/** aggregate stddev on columns */
-export type Old_Precommits_Stddev_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Old_Precommits_Stddev_Pop_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Old_Precommits_Stddev_Samp_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Old_Precommits_Sum_Fields = {
-  precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Old_Precommits_Var_Pop_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Old_Precommits_Var_Samp_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Old_Precommits_Variance_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** column ordering options */
@@ -4087,66 +3327,27 @@ export type Particles = {
   block: Block;
   height: Scalars['bigint']['output'];
   id: Scalars['Int']['output'];
-  /** An array relationship */
-  in: Array<Cyberlinks>;
-  /** An aggregate relationship */
-  in_aggregate: Cyberlinks_Aggregate;
   neuron: Scalars['String']['output'];
-  /** An array relationship */
-  out: Array<Cyberlinks>;
-  /** An aggregate relationship */
-  out_aggregate: Cyberlinks_Aggregate;
   particle: Scalars['String']['output'];
   timestamp: Scalars['timestamp']['output'];
-  /** An object relationship */
-  transaction: Transaction;
   transaction_hash: Scalars['String']['output'];
-};
-
-
-/** columns and relationships of "particles" */
-export type ParticlesInArgs = {
-  distinct_on?: InputMaybe<Array<Cyberlinks_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyberlinks_Order_By>>;
-  where?: InputMaybe<Cyberlinks_Bool_Exp>;
-};
-
-
-/** columns and relationships of "particles" */
-export type ParticlesIn_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyberlinks_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyberlinks_Order_By>>;
-  where?: InputMaybe<Cyberlinks_Bool_Exp>;
-};
-
-
-/** columns and relationships of "particles" */
-export type ParticlesOutArgs = {
-  distinct_on?: InputMaybe<Array<Cyberlinks_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyberlinks_Order_By>>;
-  where?: InputMaybe<Cyberlinks_Bool_Exp>;
-};
-
-
-/** columns and relationships of "particles" */
-export type ParticlesOut_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyberlinks_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyberlinks_Order_By>>;
-  where?: InputMaybe<Cyberlinks_Bool_Exp>;
 };
 
 /** aggregated selection of "particles" */
 export type Particles_Aggregate = {
   aggregate?: Maybe<Particles_Aggregate_Fields>;
   nodes: Array<Particles>;
+};
+
+export type Particles_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Particles_Aggregate_Bool_Exp_Count>;
+};
+
+export type Particles_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Particles_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Particles_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "particles" */
@@ -4207,12 +3408,9 @@ export type Particles_Bool_Exp = {
   block?: InputMaybe<Block_Bool_Exp>;
   height?: InputMaybe<Bigint_Comparison_Exp>;
   id?: InputMaybe<Int_Comparison_Exp>;
-  in?: InputMaybe<Cyberlinks_Bool_Exp>;
   neuron?: InputMaybe<String_Comparison_Exp>;
-  out?: InputMaybe<Cyberlinks_Bool_Exp>;
   particle?: InputMaybe<String_Comparison_Exp>;
   timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
-  transaction?: InputMaybe<Transaction_Bool_Exp>;
   transaction_hash?: InputMaybe<String_Comparison_Exp>;
 };
 
@@ -4262,12 +3460,9 @@ export type Particles_Order_By = {
   block?: InputMaybe<Block_Order_By>;
   height?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
-  in_aggregate?: InputMaybe<Cyberlinks_Aggregate_Order_By>;
   neuron?: InputMaybe<Order_By>;
-  out_aggregate?: InputMaybe<Cyberlinks_Aggregate_Order_By>;
   particle?: InputMaybe<Order_By>;
   timestamp?: InputMaybe<Order_By>;
-  transaction?: InputMaybe<Transaction_Order_By>;
   transaction_hash?: InputMaybe<Order_By>;
 };
 
@@ -4323,6 +3518,24 @@ export type Particles_Stddev_Samp_Order_By = {
   id?: InputMaybe<Order_By>;
 };
 
+/** Streaming cursor of the table "particles" */
+export type Particles_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Particles_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Particles_Stream_Cursor_Value_Input = {
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  neuron?: InputMaybe<Scalars['String']['input']>;
+  particle?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_hash?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** aggregate sum on columns */
 export type Particles_Sum_Fields = {
   height?: Maybe<Scalars['bigint']['output']>;
@@ -4371,6 +3584,634 @@ export type Particles_Variance_Order_By = {
   id?: InputMaybe<Order_By>;
 };
 
+/** columns and relationships of "pools" */
+export type Pools = {
+  a_denom: Scalars['String']['output'];
+  address: Scalars['String']['output'];
+  b_denom: Scalars['String']['output'];
+  pool_denom: Scalars['String']['output'];
+  pool_id: Scalars['bigint']['output'];
+  pool_name: Scalars['String']['output'];
+};
+
+/** aggregated selection of "pools" */
+export type Pools_Aggregate = {
+  aggregate?: Maybe<Pools_Aggregate_Fields>;
+  nodes: Array<Pools>;
+};
+
+/** aggregate fields of "pools" */
+export type Pools_Aggregate_Fields = {
+  avg?: Maybe<Pools_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Pools_Max_Fields>;
+  min?: Maybe<Pools_Min_Fields>;
+  stddev?: Maybe<Pools_Stddev_Fields>;
+  stddev_pop?: Maybe<Pools_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Pools_Stddev_Samp_Fields>;
+  sum?: Maybe<Pools_Sum_Fields>;
+  var_pop?: Maybe<Pools_Var_Pop_Fields>;
+  var_samp?: Maybe<Pools_Var_Samp_Fields>;
+  variance?: Maybe<Pools_Variance_Fields>;
+};
+
+
+/** aggregate fields of "pools" */
+export type Pools_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Pools_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Pools_Avg_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "pools". All fields are combined with a logical 'AND'. */
+export type Pools_Bool_Exp = {
+  _and?: InputMaybe<Array<Pools_Bool_Exp>>;
+  _not?: InputMaybe<Pools_Bool_Exp>;
+  _or?: InputMaybe<Array<Pools_Bool_Exp>>;
+  a_denom?: InputMaybe<String_Comparison_Exp>;
+  address?: InputMaybe<String_Comparison_Exp>;
+  b_denom?: InputMaybe<String_Comparison_Exp>;
+  pool_denom?: InputMaybe<String_Comparison_Exp>;
+  pool_id?: InputMaybe<Bigint_Comparison_Exp>;
+  pool_name?: InputMaybe<String_Comparison_Exp>;
+};
+
+/** columns and relationships of "pools_liquidity" */
+export type Pools_Liquidity = {
+  liquidity_a: Scalars['bigint']['output'];
+  liquidity_b: Scalars['bigint']['output'];
+  pool_id: Scalars['bigint']['output'];
+  timestamp: Scalars['timestamp']['output'];
+};
+
+/** aggregated selection of "pools_liquidity" */
+export type Pools_Liquidity_Aggregate = {
+  aggregate?: Maybe<Pools_Liquidity_Aggregate_Fields>;
+  nodes: Array<Pools_Liquidity>;
+};
+
+/** aggregate fields of "pools_liquidity" */
+export type Pools_Liquidity_Aggregate_Fields = {
+  avg?: Maybe<Pools_Liquidity_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Pools_Liquidity_Max_Fields>;
+  min?: Maybe<Pools_Liquidity_Min_Fields>;
+  stddev?: Maybe<Pools_Liquidity_Stddev_Fields>;
+  stddev_pop?: Maybe<Pools_Liquidity_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Pools_Liquidity_Stddev_Samp_Fields>;
+  sum?: Maybe<Pools_Liquidity_Sum_Fields>;
+  var_pop?: Maybe<Pools_Liquidity_Var_Pop_Fields>;
+  var_samp?: Maybe<Pools_Liquidity_Var_Samp_Fields>;
+  variance?: Maybe<Pools_Liquidity_Variance_Fields>;
+};
+
+
+/** aggregate fields of "pools_liquidity" */
+export type Pools_Liquidity_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Pools_Liquidity_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Pools_Liquidity_Avg_Fields = {
+  liquidity_a?: Maybe<Scalars['Float']['output']>;
+  liquidity_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "pools_liquidity". All fields are combined with a logical 'AND'. */
+export type Pools_Liquidity_Bool_Exp = {
+  _and?: InputMaybe<Array<Pools_Liquidity_Bool_Exp>>;
+  _not?: InputMaybe<Pools_Liquidity_Bool_Exp>;
+  _or?: InputMaybe<Array<Pools_Liquidity_Bool_Exp>>;
+  liquidity_a?: InputMaybe<Bigint_Comparison_Exp>;
+  liquidity_b?: InputMaybe<Bigint_Comparison_Exp>;
+  pool_id?: InputMaybe<Bigint_Comparison_Exp>;
+  timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Pools_Liquidity_Max_Fields = {
+  liquidity_a?: Maybe<Scalars['bigint']['output']>;
+  liquidity_b?: Maybe<Scalars['bigint']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  timestamp?: Maybe<Scalars['timestamp']['output']>;
+};
+
+/** aggregate min on columns */
+export type Pools_Liquidity_Min_Fields = {
+  liquidity_a?: Maybe<Scalars['bigint']['output']>;
+  liquidity_b?: Maybe<Scalars['bigint']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  timestamp?: Maybe<Scalars['timestamp']['output']>;
+};
+
+/** Ordering options when selecting data from "pools_liquidity". */
+export type Pools_Liquidity_Order_By = {
+  liquidity_a?: InputMaybe<Order_By>;
+  liquidity_b?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
+  timestamp?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "pools_liquidity" */
+export enum Pools_Liquidity_Select_Column {
+  /** column name */
+  LiquidityA = 'liquidity_a',
+  /** column name */
+  LiquidityB = 'liquidity_b',
+  /** column name */
+  PoolId = 'pool_id',
+  /** column name */
+  Timestamp = 'timestamp'
+}
+
+/** aggregate stddev on columns */
+export type Pools_Liquidity_Stddev_Fields = {
+  liquidity_a?: Maybe<Scalars['Float']['output']>;
+  liquidity_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Pools_Liquidity_Stddev_Pop_Fields = {
+  liquidity_a?: Maybe<Scalars['Float']['output']>;
+  liquidity_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Pools_Liquidity_Stddev_Samp_Fields = {
+  liquidity_a?: Maybe<Scalars['Float']['output']>;
+  liquidity_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "pools_liquidity" */
+export type Pools_Liquidity_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Pools_Liquidity_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Pools_Liquidity_Stream_Cursor_Value_Input = {
+  liquidity_a?: InputMaybe<Scalars['bigint']['input']>;
+  liquidity_b?: InputMaybe<Scalars['bigint']['input']>;
+  pool_id?: InputMaybe<Scalars['bigint']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Pools_Liquidity_Sum_Fields = {
+  liquidity_a?: Maybe<Scalars['bigint']['output']>;
+  liquidity_b?: Maybe<Scalars['bigint']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Pools_Liquidity_Var_Pop_Fields = {
+  liquidity_a?: Maybe<Scalars['Float']['output']>;
+  liquidity_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Pools_Liquidity_Var_Samp_Fields = {
+  liquidity_a?: Maybe<Scalars['Float']['output']>;
+  liquidity_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Pools_Liquidity_Variance_Fields = {
+  liquidity_a?: Maybe<Scalars['Float']['output']>;
+  liquidity_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate max on columns */
+export type Pools_Max_Fields = {
+  a_denom?: Maybe<Scalars['String']['output']>;
+  address?: Maybe<Scalars['String']['output']>;
+  b_denom?: Maybe<Scalars['String']['output']>;
+  pool_denom?: Maybe<Scalars['String']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  pool_name?: Maybe<Scalars['String']['output']>;
+};
+
+/** aggregate min on columns */
+export type Pools_Min_Fields = {
+  a_denom?: Maybe<Scalars['String']['output']>;
+  address?: Maybe<Scalars['String']['output']>;
+  b_denom?: Maybe<Scalars['String']['output']>;
+  pool_denom?: Maybe<Scalars['String']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  pool_name?: Maybe<Scalars['String']['output']>;
+};
+
+/** Ordering options when selecting data from "pools". */
+export type Pools_Order_By = {
+  a_denom?: InputMaybe<Order_By>;
+  address?: InputMaybe<Order_By>;
+  b_denom?: InputMaybe<Order_By>;
+  pool_denom?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
+  pool_name?: InputMaybe<Order_By>;
+};
+
+/** columns and relationships of "pools_rates" */
+export type Pools_Rates = {
+  pool_id: Scalars['bigint']['output'];
+  rate: Scalars['String']['output'];
+  timestamp: Scalars['timestamp']['output'];
+};
+
+/** aggregated selection of "pools_rates" */
+export type Pools_Rates_Aggregate = {
+  aggregate?: Maybe<Pools_Rates_Aggregate_Fields>;
+  nodes: Array<Pools_Rates>;
+};
+
+/** aggregate fields of "pools_rates" */
+export type Pools_Rates_Aggregate_Fields = {
+  avg?: Maybe<Pools_Rates_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Pools_Rates_Max_Fields>;
+  min?: Maybe<Pools_Rates_Min_Fields>;
+  stddev?: Maybe<Pools_Rates_Stddev_Fields>;
+  stddev_pop?: Maybe<Pools_Rates_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Pools_Rates_Stddev_Samp_Fields>;
+  sum?: Maybe<Pools_Rates_Sum_Fields>;
+  var_pop?: Maybe<Pools_Rates_Var_Pop_Fields>;
+  var_samp?: Maybe<Pools_Rates_Var_Samp_Fields>;
+  variance?: Maybe<Pools_Rates_Variance_Fields>;
+};
+
+
+/** aggregate fields of "pools_rates" */
+export type Pools_Rates_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Pools_Rates_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Pools_Rates_Avg_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "pools_rates". All fields are combined with a logical 'AND'. */
+export type Pools_Rates_Bool_Exp = {
+  _and?: InputMaybe<Array<Pools_Rates_Bool_Exp>>;
+  _not?: InputMaybe<Pools_Rates_Bool_Exp>;
+  _or?: InputMaybe<Array<Pools_Rates_Bool_Exp>>;
+  pool_id?: InputMaybe<Bigint_Comparison_Exp>;
+  rate?: InputMaybe<String_Comparison_Exp>;
+  timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Pools_Rates_Max_Fields = {
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  rate?: Maybe<Scalars['String']['output']>;
+  timestamp?: Maybe<Scalars['timestamp']['output']>;
+};
+
+/** aggregate min on columns */
+export type Pools_Rates_Min_Fields = {
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  rate?: Maybe<Scalars['String']['output']>;
+  timestamp?: Maybe<Scalars['timestamp']['output']>;
+};
+
+/** Ordering options when selecting data from "pools_rates". */
+export type Pools_Rates_Order_By = {
+  pool_id?: InputMaybe<Order_By>;
+  rate?: InputMaybe<Order_By>;
+  timestamp?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "pools_rates" */
+export enum Pools_Rates_Select_Column {
+  /** column name */
+  PoolId = 'pool_id',
+  /** column name */
+  Rate = 'rate',
+  /** column name */
+  Timestamp = 'timestamp'
+}
+
+/** aggregate stddev on columns */
+export type Pools_Rates_Stddev_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Pools_Rates_Stddev_Pop_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Pools_Rates_Stddev_Samp_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "pools_rates" */
+export type Pools_Rates_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Pools_Rates_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Pools_Rates_Stream_Cursor_Value_Input = {
+  pool_id?: InputMaybe<Scalars['bigint']['input']>;
+  rate?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Pools_Rates_Sum_Fields = {
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Pools_Rates_Var_Pop_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Pools_Rates_Var_Samp_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Pools_Rates_Variance_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** select columns of table "pools" */
+export enum Pools_Select_Column {
+  /** column name */
+  ADenom = 'a_denom',
+  /** column name */
+  Address = 'address',
+  /** column name */
+  BDenom = 'b_denom',
+  /** column name */
+  PoolDenom = 'pool_denom',
+  /** column name */
+  PoolId = 'pool_id',
+  /** column name */
+  PoolName = 'pool_name'
+}
+
+/** aggregate stddev on columns */
+export type Pools_Stddev_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Pools_Stddev_Pop_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Pools_Stddev_Samp_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "pools" */
+export type Pools_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Pools_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Pools_Stream_Cursor_Value_Input = {
+  a_denom?: InputMaybe<Scalars['String']['input']>;
+  address?: InputMaybe<Scalars['String']['input']>;
+  b_denom?: InputMaybe<Scalars['String']['input']>;
+  pool_denom?: InputMaybe<Scalars['String']['input']>;
+  pool_id?: InputMaybe<Scalars['bigint']['input']>;
+  pool_name?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Pools_Sum_Fields = {
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Pools_Var_Pop_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Pools_Var_Samp_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Pools_Variance_Fields = {
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** columns and relationships of "pools_volumes" */
+export type Pools_Volumes = {
+  fee_a: Scalars['bigint']['output'];
+  fee_b: Scalars['bigint']['output'];
+  pool_id: Scalars['bigint']['output'];
+  timestamp: Scalars['timestamp']['output'];
+  volume_a: Scalars['bigint']['output'];
+  volume_b: Scalars['bigint']['output'];
+};
+
+/** aggregated selection of "pools_volumes" */
+export type Pools_Volumes_Aggregate = {
+  aggregate?: Maybe<Pools_Volumes_Aggregate_Fields>;
+  nodes: Array<Pools_Volumes>;
+};
+
+/** aggregate fields of "pools_volumes" */
+export type Pools_Volumes_Aggregate_Fields = {
+  avg?: Maybe<Pools_Volumes_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Pools_Volumes_Max_Fields>;
+  min?: Maybe<Pools_Volumes_Min_Fields>;
+  stddev?: Maybe<Pools_Volumes_Stddev_Fields>;
+  stddev_pop?: Maybe<Pools_Volumes_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Pools_Volumes_Stddev_Samp_Fields>;
+  sum?: Maybe<Pools_Volumes_Sum_Fields>;
+  var_pop?: Maybe<Pools_Volumes_Var_Pop_Fields>;
+  var_samp?: Maybe<Pools_Volumes_Var_Samp_Fields>;
+  variance?: Maybe<Pools_Volumes_Variance_Fields>;
+};
+
+
+/** aggregate fields of "pools_volumes" */
+export type Pools_Volumes_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Pools_Volumes_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate avg on columns */
+export type Pools_Volumes_Avg_Fields = {
+  fee_a?: Maybe<Scalars['Float']['output']>;
+  fee_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+  volume_a?: Maybe<Scalars['Float']['output']>;
+  volume_b?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Boolean expression to filter rows from the table "pools_volumes". All fields are combined with a logical 'AND'. */
+export type Pools_Volumes_Bool_Exp = {
+  _and?: InputMaybe<Array<Pools_Volumes_Bool_Exp>>;
+  _not?: InputMaybe<Pools_Volumes_Bool_Exp>;
+  _or?: InputMaybe<Array<Pools_Volumes_Bool_Exp>>;
+  fee_a?: InputMaybe<Bigint_Comparison_Exp>;
+  fee_b?: InputMaybe<Bigint_Comparison_Exp>;
+  pool_id?: InputMaybe<Bigint_Comparison_Exp>;
+  timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
+  volume_a?: InputMaybe<Bigint_Comparison_Exp>;
+  volume_b?: InputMaybe<Bigint_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Pools_Volumes_Max_Fields = {
+  fee_a?: Maybe<Scalars['bigint']['output']>;
+  fee_b?: Maybe<Scalars['bigint']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  timestamp?: Maybe<Scalars['timestamp']['output']>;
+  volume_a?: Maybe<Scalars['bigint']['output']>;
+  volume_b?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate min on columns */
+export type Pools_Volumes_Min_Fields = {
+  fee_a?: Maybe<Scalars['bigint']['output']>;
+  fee_b?: Maybe<Scalars['bigint']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  timestamp?: Maybe<Scalars['timestamp']['output']>;
+  volume_a?: Maybe<Scalars['bigint']['output']>;
+  volume_b?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** Ordering options when selecting data from "pools_volumes". */
+export type Pools_Volumes_Order_By = {
+  fee_a?: InputMaybe<Order_By>;
+  fee_b?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
+  timestamp?: InputMaybe<Order_By>;
+  volume_a?: InputMaybe<Order_By>;
+  volume_b?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "pools_volumes" */
+export enum Pools_Volumes_Select_Column {
+  /** column name */
+  FeeA = 'fee_a',
+  /** column name */
+  FeeB = 'fee_b',
+  /** column name */
+  PoolId = 'pool_id',
+  /** column name */
+  Timestamp = 'timestamp',
+  /** column name */
+  VolumeA = 'volume_a',
+  /** column name */
+  VolumeB = 'volume_b'
+}
+
+/** aggregate stddev on columns */
+export type Pools_Volumes_Stddev_Fields = {
+  fee_a?: Maybe<Scalars['Float']['output']>;
+  fee_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+  volume_a?: Maybe<Scalars['Float']['output']>;
+  volume_b?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Pools_Volumes_Stddev_Pop_Fields = {
+  fee_a?: Maybe<Scalars['Float']['output']>;
+  fee_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+  volume_a?: Maybe<Scalars['Float']['output']>;
+  volume_b?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Pools_Volumes_Stddev_Samp_Fields = {
+  fee_a?: Maybe<Scalars['Float']['output']>;
+  fee_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+  volume_a?: Maybe<Scalars['Float']['output']>;
+  volume_b?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Streaming cursor of the table "pools_volumes" */
+export type Pools_Volumes_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Pools_Volumes_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Pools_Volumes_Stream_Cursor_Value_Input = {
+  fee_a?: InputMaybe<Scalars['bigint']['input']>;
+  fee_b?: InputMaybe<Scalars['bigint']['input']>;
+  pool_id?: InputMaybe<Scalars['bigint']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  volume_a?: InputMaybe<Scalars['bigint']['input']>;
+  volume_b?: InputMaybe<Scalars['bigint']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Pools_Volumes_Sum_Fields = {
+  fee_a?: Maybe<Scalars['bigint']['output']>;
+  fee_b?: Maybe<Scalars['bigint']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  volume_a?: Maybe<Scalars['bigint']['output']>;
+  volume_b?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** aggregate var_pop on columns */
+export type Pools_Volumes_Var_Pop_Fields = {
+  fee_a?: Maybe<Scalars['Float']['output']>;
+  fee_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+  volume_a?: Maybe<Scalars['Float']['output']>;
+  volume_b?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate var_samp on columns */
+export type Pools_Volumes_Var_Samp_Fields = {
+  fee_a?: Maybe<Scalars['Float']['output']>;
+  fee_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+  volume_a?: Maybe<Scalars['Float']['output']>;
+  volume_b?: Maybe<Scalars['Float']['output']>;
+};
+
+/** aggregate variance on columns */
+export type Pools_Volumes_Variance_Fields = {
+  fee_a?: Maybe<Scalars['Float']['output']>;
+  fee_b?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+  volume_a?: Maybe<Scalars['Float']['output']>;
+  volume_b?: Maybe<Scalars['Float']['output']>;
+};
+
 /** columns and relationships of "pre_commit" */
 export type Pre_Commit = {
   height: Scalars['bigint']['output'];
@@ -4386,6 +4227,17 @@ export type Pre_Commit = {
 export type Pre_Commit_Aggregate = {
   aggregate?: Maybe<Pre_Commit_Aggregate_Fields>;
   nodes: Array<Pre_Commit>;
+};
+
+export type Pre_Commit_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Pre_Commit_Aggregate_Bool_Exp_Count>;
+};
+
+export type Pre_Commit_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Pre_Commit_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Pre_Commit_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "pre_commit" */
@@ -4554,6 +4406,23 @@ export type Pre_Commit_Stddev_Samp_Order_By = {
   voting_power?: InputMaybe<Order_By>;
 };
 
+/** Streaming cursor of the table "pre_commit" */
+export type Pre_Commit_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Pre_Commit_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Pre_Commit_Stream_Cursor_Value_Input = {
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  proposer_priority?: InputMaybe<Scalars['bigint']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  validator_address?: InputMaybe<Scalars['String']['input']>;
+  voting_power?: InputMaybe<Scalars['bigint']['input']>;
+};
+
 /** aggregate sum on columns */
 export type Pre_Commit_Sum_Fields = {
   height?: Maybe<Scalars['bigint']['output']>;
@@ -4608,385 +4477,6 @@ export type Pre_Commit_Variance_Order_By = {
   height?: InputMaybe<Order_By>;
   proposer_priority?: InputMaybe<Order_By>;
   voting_power?: InputMaybe<Order_By>;
-};
-
-/** columns and relationships of "pre_commits_rewards_view" */
-export type Pre_Commits_Rewards_View = {
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  max_block?: Maybe<Scalars['bigint']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['numeric']['output']>;
-  precommits?: Maybe<Scalars['numeric']['output']>;
-  sum_precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregated selection of "pre_commits_rewards_view" */
-export type Pre_Commits_Rewards_View_Aggregate = {
-  aggregate?: Maybe<Pre_Commits_Rewards_View_Aggregate_Fields>;
-  nodes: Array<Pre_Commits_Rewards_View>;
-};
-
-/** aggregate fields of "pre_commits_rewards_view" */
-export type Pre_Commits_Rewards_View_Aggregate_Fields = {
-  avg?: Maybe<Pre_Commits_Rewards_View_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Pre_Commits_Rewards_View_Max_Fields>;
-  min?: Maybe<Pre_Commits_Rewards_View_Min_Fields>;
-  stddev?: Maybe<Pre_Commits_Rewards_View_Stddev_Fields>;
-  stddev_pop?: Maybe<Pre_Commits_Rewards_View_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Pre_Commits_Rewards_View_Stddev_Samp_Fields>;
-  sum?: Maybe<Pre_Commits_Rewards_View_Sum_Fields>;
-  var_pop?: Maybe<Pre_Commits_Rewards_View_Var_Pop_Fields>;
-  var_samp?: Maybe<Pre_Commits_Rewards_View_Var_Samp_Fields>;
-  variance?: Maybe<Pre_Commits_Rewards_View_Variance_Fields>;
-};
-
-
-/** aggregate fields of "pre_commits_rewards_view" */
-export type Pre_Commits_Rewards_View_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Pre_Commits_Rewards_View_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Pre_Commits_Rewards_View_Avg_Fields = {
-  max_block?: Maybe<Scalars['Float']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
-  precommits?: Maybe<Scalars['Float']['output']>;
-  sum_precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "pre_commits_rewards_view". All fields are combined with a logical 'AND'. */
-export type Pre_Commits_Rewards_View_Bool_Exp = {
-  _and?: InputMaybe<Array<Pre_Commits_Rewards_View_Bool_Exp>>;
-  _not?: InputMaybe<Pre_Commits_Rewards_View_Bool_Exp>;
-  _or?: InputMaybe<Array<Pre_Commits_Rewards_View_Bool_Exp>>;
-  consensus_pubkey?: InputMaybe<String_Comparison_Exp>;
-  max_block?: InputMaybe<Bigint_Comparison_Exp>;
-  pre_commit_rewards?: InputMaybe<Numeric_Comparison_Exp>;
-  precommits?: InputMaybe<Numeric_Comparison_Exp>;
-  sum_precommits?: InputMaybe<Numeric_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Pre_Commits_Rewards_View_Max_Fields = {
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  max_block?: Maybe<Scalars['bigint']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['numeric']['output']>;
-  precommits?: Maybe<Scalars['numeric']['output']>;
-  sum_precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate min on columns */
-export type Pre_Commits_Rewards_View_Min_Fields = {
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  max_block?: Maybe<Scalars['bigint']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['numeric']['output']>;
-  precommits?: Maybe<Scalars['numeric']['output']>;
-  sum_precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** Ordering options when selecting data from "pre_commits_rewards_view". */
-export type Pre_Commits_Rewards_View_Order_By = {
-  consensus_pubkey?: InputMaybe<Order_By>;
-  max_block?: InputMaybe<Order_By>;
-  pre_commit_rewards?: InputMaybe<Order_By>;
-  precommits?: InputMaybe<Order_By>;
-  sum_precommits?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "pre_commits_rewards_view" */
-export enum Pre_Commits_Rewards_View_Select_Column {
-  /** column name */
-  ConsensusPubkey = 'consensus_pubkey',
-  /** column name */
-  MaxBlock = 'max_block',
-  /** column name */
-  PreCommitRewards = 'pre_commit_rewards',
-  /** column name */
-  Precommits = 'precommits',
-  /** column name */
-  SumPrecommits = 'sum_precommits'
-}
-
-/** aggregate stddev on columns */
-export type Pre_Commits_Rewards_View_Stddev_Fields = {
-  max_block?: Maybe<Scalars['Float']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
-  precommits?: Maybe<Scalars['Float']['output']>;
-  sum_precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Pre_Commits_Rewards_View_Stddev_Pop_Fields = {
-  max_block?: Maybe<Scalars['Float']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
-  precommits?: Maybe<Scalars['Float']['output']>;
-  sum_precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Pre_Commits_Rewards_View_Stddev_Samp_Fields = {
-  max_block?: Maybe<Scalars['Float']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
-  precommits?: Maybe<Scalars['Float']['output']>;
-  sum_precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Pre_Commits_Rewards_View_Sum_Fields = {
-  max_block?: Maybe<Scalars['bigint']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['numeric']['output']>;
-  precommits?: Maybe<Scalars['numeric']['output']>;
-  sum_precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Pre_Commits_Rewards_View_Var_Pop_Fields = {
-  max_block?: Maybe<Scalars['Float']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
-  precommits?: Maybe<Scalars['Float']['output']>;
-  sum_precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Pre_Commits_Rewards_View_Var_Samp_Fields = {
-  max_block?: Maybe<Scalars['Float']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
-  precommits?: Maybe<Scalars['Float']['output']>;
-  sum_precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Pre_Commits_Rewards_View_Variance_Fields = {
-  max_block?: Maybe<Scalars['Float']['output']>;
-  pre_commit_rewards?: Maybe<Scalars['Float']['output']>;
-  precommits?: Maybe<Scalars['Float']['output']>;
-  sum_precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "pre_commits_total" */
-export type Pre_Commits_Total = {
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  pre_commits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregated selection of "pre_commits_total" */
-export type Pre_Commits_Total_Aggregate = {
-  aggregate?: Maybe<Pre_Commits_Total_Aggregate_Fields>;
-  nodes: Array<Pre_Commits_Total>;
-};
-
-/** aggregate fields of "pre_commits_total" */
-export type Pre_Commits_Total_Aggregate_Fields = {
-  avg?: Maybe<Pre_Commits_Total_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Pre_Commits_Total_Max_Fields>;
-  min?: Maybe<Pre_Commits_Total_Min_Fields>;
-  stddev?: Maybe<Pre_Commits_Total_Stddev_Fields>;
-  stddev_pop?: Maybe<Pre_Commits_Total_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Pre_Commits_Total_Stddev_Samp_Fields>;
-  sum?: Maybe<Pre_Commits_Total_Sum_Fields>;
-  var_pop?: Maybe<Pre_Commits_Total_Var_Pop_Fields>;
-  var_samp?: Maybe<Pre_Commits_Total_Var_Samp_Fields>;
-  variance?: Maybe<Pre_Commits_Total_Variance_Fields>;
-};
-
-
-/** aggregate fields of "pre_commits_total" */
-export type Pre_Commits_Total_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Pre_Commits_Total_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Pre_Commits_Total_Avg_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "pre_commits_total". All fields are combined with a logical 'AND'. */
-export type Pre_Commits_Total_Bool_Exp = {
-  _and?: InputMaybe<Array<Pre_Commits_Total_Bool_Exp>>;
-  _not?: InputMaybe<Pre_Commits_Total_Bool_Exp>;
-  _or?: InputMaybe<Array<Pre_Commits_Total_Bool_Exp>>;
-  consensus_pubkey?: InputMaybe<String_Comparison_Exp>;
-  pre_commits?: InputMaybe<Numeric_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Pre_Commits_Total_Max_Fields = {
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  pre_commits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate min on columns */
-export type Pre_Commits_Total_Min_Fields = {
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  pre_commits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** Ordering options when selecting data from "pre_commits_total". */
-export type Pre_Commits_Total_Order_By = {
-  consensus_pubkey?: InputMaybe<Order_By>;
-  pre_commits?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "pre_commits_total" */
-export enum Pre_Commits_Total_Select_Column {
-  /** column name */
-  ConsensusPubkey = 'consensus_pubkey',
-  /** column name */
-  PreCommits = 'pre_commits'
-}
-
-/** aggregate stddev on columns */
-export type Pre_Commits_Total_Stddev_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Pre_Commits_Total_Stddev_Pop_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Pre_Commits_Total_Stddev_Samp_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Pre_Commits_Total_Sum_Fields = {
-  pre_commits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Pre_Commits_Total_Var_Pop_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Pre_Commits_Total_Var_Samp_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Pre_Commits_Total_Variance_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "pre_commits_view" */
-export type Pre_Commits_View = {
-  consensus_address?: Maybe<Scalars['String']['output']>;
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregated selection of "pre_commits_view" */
-export type Pre_Commits_View_Aggregate = {
-  aggregate?: Maybe<Pre_Commits_View_Aggregate_Fields>;
-  nodes: Array<Pre_Commits_View>;
-};
-
-/** aggregate fields of "pre_commits_view" */
-export type Pre_Commits_View_Aggregate_Fields = {
-  avg?: Maybe<Pre_Commits_View_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Pre_Commits_View_Max_Fields>;
-  min?: Maybe<Pre_Commits_View_Min_Fields>;
-  stddev?: Maybe<Pre_Commits_View_Stddev_Fields>;
-  stddev_pop?: Maybe<Pre_Commits_View_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Pre_Commits_View_Stddev_Samp_Fields>;
-  sum?: Maybe<Pre_Commits_View_Sum_Fields>;
-  var_pop?: Maybe<Pre_Commits_View_Var_Pop_Fields>;
-  var_samp?: Maybe<Pre_Commits_View_Var_Samp_Fields>;
-  variance?: Maybe<Pre_Commits_View_Variance_Fields>;
-};
-
-
-/** aggregate fields of "pre_commits_view" */
-export type Pre_Commits_View_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Pre_Commits_View_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Pre_Commits_View_Avg_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "pre_commits_view". All fields are combined with a logical 'AND'. */
-export type Pre_Commits_View_Bool_Exp = {
-  _and?: InputMaybe<Array<Pre_Commits_View_Bool_Exp>>;
-  _not?: InputMaybe<Pre_Commits_View_Bool_Exp>;
-  _or?: InputMaybe<Array<Pre_Commits_View_Bool_Exp>>;
-  consensus_address?: InputMaybe<String_Comparison_Exp>;
-  consensus_pubkey?: InputMaybe<String_Comparison_Exp>;
-  precommits?: InputMaybe<Numeric_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Pre_Commits_View_Max_Fields = {
-  consensus_address?: Maybe<Scalars['String']['output']>;
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate min on columns */
-export type Pre_Commits_View_Min_Fields = {
-  consensus_address?: Maybe<Scalars['String']['output']>;
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** Ordering options when selecting data from "pre_commits_view". */
-export type Pre_Commits_View_Order_By = {
-  consensus_address?: InputMaybe<Order_By>;
-  consensus_pubkey?: InputMaybe<Order_By>;
-  precommits?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "pre_commits_view" */
-export enum Pre_Commits_View_Select_Column {
-  /** column name */
-  ConsensusAddress = 'consensus_address',
-  /** column name */
-  ConsensusPubkey = 'consensus_pubkey',
-  /** column name */
-  Precommits = 'precommits'
-}
-
-/** aggregate stddev on columns */
-export type Pre_Commits_View_Stddev_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Pre_Commits_View_Stddev_Pop_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Pre_Commits_View_Stddev_Samp_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Pre_Commits_View_Sum_Fields = {
-  precommits?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Pre_Commits_View_Var_Pop_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Pre_Commits_View_Var_Samp_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Pre_Commits_View_Variance_Fields = {
-  precommits?: Maybe<Scalars['Float']['output']>;
 };
 
 /** columns and relationships of "pruning" */
@@ -5071,6 +4561,19 @@ export type Pruning_Stddev_Samp_Fields = {
   last_pruned_height?: Maybe<Scalars['Float']['output']>;
 };
 
+/** Streaming cursor of the table "pruning" */
+export type Pruning_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Pruning_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Pruning_Stream_Cursor_Value_Input = {
+  last_pruned_height?: InputMaybe<Scalars['bigint']['input']>;
+};
+
 /** aggregate sum on columns */
 export type Pruning_Sum_Fields = {
   last_pruned_height?: Maybe<Scalars['bigint']['output']>;
@@ -5091,138 +4594,7 @@ export type Pruning_Variance_Fields = {
   last_pruned_height?: Maybe<Scalars['Float']['output']>;
 };
 
-/** columns and relationships of "pussy_gift_proofs" */
-export type Pussy_Gift_Proofs = {
-  address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['bigint']['output']>;
-  details?: Maybe<Scalars['String']['output']>;
-  proof?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregated selection of "pussy_gift_proofs" */
-export type Pussy_Gift_Proofs_Aggregate = {
-  aggregate?: Maybe<Pussy_Gift_Proofs_Aggregate_Fields>;
-  nodes: Array<Pussy_Gift_Proofs>;
-};
-
-/** aggregate fields of "pussy_gift_proofs" */
-export type Pussy_Gift_Proofs_Aggregate_Fields = {
-  avg?: Maybe<Pussy_Gift_Proofs_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Pussy_Gift_Proofs_Max_Fields>;
-  min?: Maybe<Pussy_Gift_Proofs_Min_Fields>;
-  stddev?: Maybe<Pussy_Gift_Proofs_Stddev_Fields>;
-  stddev_pop?: Maybe<Pussy_Gift_Proofs_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Pussy_Gift_Proofs_Stddev_Samp_Fields>;
-  sum?: Maybe<Pussy_Gift_Proofs_Sum_Fields>;
-  var_pop?: Maybe<Pussy_Gift_Proofs_Var_Pop_Fields>;
-  var_samp?: Maybe<Pussy_Gift_Proofs_Var_Samp_Fields>;
-  variance?: Maybe<Pussy_Gift_Proofs_Variance_Fields>;
-};
-
-
-/** aggregate fields of "pussy_gift_proofs" */
-export type Pussy_Gift_Proofs_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Pussy_Gift_Proofs_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Pussy_Gift_Proofs_Avg_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "pussy_gift_proofs". All fields are combined with a logical 'AND'. */
-export type Pussy_Gift_Proofs_Bool_Exp = {
-  _and?: InputMaybe<Array<Pussy_Gift_Proofs_Bool_Exp>>;
-  _not?: InputMaybe<Pussy_Gift_Proofs_Bool_Exp>;
-  _or?: InputMaybe<Array<Pussy_Gift_Proofs_Bool_Exp>>;
-  address?: InputMaybe<String_Comparison_Exp>;
-  amount?: InputMaybe<Bigint_Comparison_Exp>;
-  details?: InputMaybe<String_Comparison_Exp>;
-  proof?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Pussy_Gift_Proofs_Max_Fields = {
-  address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['bigint']['output']>;
-  details?: Maybe<Scalars['String']['output']>;
-  proof?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type Pussy_Gift_Proofs_Min_Fields = {
-  address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['bigint']['output']>;
-  details?: Maybe<Scalars['String']['output']>;
-  proof?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "pussy_gift_proofs". */
-export type Pussy_Gift_Proofs_Order_By = {
-  address?: InputMaybe<Order_By>;
-  amount?: InputMaybe<Order_By>;
-  details?: InputMaybe<Order_By>;
-  proof?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "pussy_gift_proofs" */
-export enum Pussy_Gift_Proofs_Select_Column {
-  /** column name */
-  Address = 'address',
-  /** column name */
-  Amount = 'amount',
-  /** column name */
-  Details = 'details',
-  /** column name */
-  Proof = 'proof'
-}
-
-/** aggregate stddev on columns */
-export type Pussy_Gift_Proofs_Stddev_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Pussy_Gift_Proofs_Stddev_Pop_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Pussy_Gift_Proofs_Stddev_Samp_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Pussy_Gift_Proofs_Sum_Fields = {
-  amount?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Pussy_Gift_Proofs_Var_Pop_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Pussy_Gift_Proofs_Var_Samp_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Pussy_Gift_Proofs_Variance_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
-};
-
 export type Query_Root = {
-  /** fetch data from the table: "_transaction" */
-  _transaction: Array<_Transaction>;
-  /** fetch aggregated fields from the table: "_transaction" */
-  _transaction_aggregate: _Transaction_Aggregate;
-  /** fetch data from the table: "_uptime_temp" */
-  _uptime_temp: Array<_Uptime_Temp>;
-  /** fetch aggregated fields from the table: "_uptime_temp" */
-  _uptime_temp_aggregate: _Uptime_Temp_Aggregate;
   /** fetch data from the table: "account" */
   account: Array<Account>;
   /** fetch aggregated fields from the table: "account" */
@@ -5235,6 +4607,30 @@ export type Query_Root = {
   account_balance_by_pk?: Maybe<Account_Balance>;
   /** fetch data from the table: "account" using primary key columns */
   account_by_pk?: Maybe<Account>;
+  /** fetch data from the table: "average_block_time_from_genesis" */
+  average_block_time_from_genesis: Array<Average_Block_Time_From_Genesis>;
+  /** fetch aggregated fields from the table: "average_block_time_from_genesis" */
+  average_block_time_from_genesis_aggregate: Average_Block_Time_From_Genesis_Aggregate;
+  /** fetch data from the table: "average_block_time_from_genesis" using primary key columns */
+  average_block_time_from_genesis_by_pk?: Maybe<Average_Block_Time_From_Genesis>;
+  /** fetch data from the table: "average_block_time_per_day" */
+  average_block_time_per_day: Array<Average_Block_Time_Per_Day>;
+  /** fetch aggregated fields from the table: "average_block_time_per_day" */
+  average_block_time_per_day_aggregate: Average_Block_Time_Per_Day_Aggregate;
+  /** fetch data from the table: "average_block_time_per_day" using primary key columns */
+  average_block_time_per_day_by_pk?: Maybe<Average_Block_Time_Per_Day>;
+  /** fetch data from the table: "average_block_time_per_hour" */
+  average_block_time_per_hour: Array<Average_Block_Time_Per_Hour>;
+  /** fetch aggregated fields from the table: "average_block_time_per_hour" */
+  average_block_time_per_hour_aggregate: Average_Block_Time_Per_Hour_Aggregate;
+  /** fetch data from the table: "average_block_time_per_hour" using primary key columns */
+  average_block_time_per_hour_by_pk?: Maybe<Average_Block_Time_Per_Hour>;
+  /** fetch data from the table: "average_block_time_per_minute" */
+  average_block_time_per_minute: Array<Average_Block_Time_Per_Minute>;
+  /** fetch aggregated fields from the table: "average_block_time_per_minute" */
+  average_block_time_per_minute_aggregate: Average_Block_Time_Per_Minute_Aggregate;
+  /** fetch data from the table: "average_block_time_per_minute" using primary key columns */
+  average_block_time_per_minute_by_pk?: Maybe<Average_Block_Time_Per_Minute>;
   /** fetch data from the table: "block" */
   block: Array<Block>;
   /** fetch aggregated fields from the table: "block" */
@@ -5247,52 +4643,18 @@ export type Query_Root = {
   contracts_aggregate: Contracts_Aggregate;
   /** fetch data from the table: "contracts" using primary key columns */
   contracts_by_pk?: Maybe<Contracts>;
-  /** fetch data from the table: "cyb_cohort" */
-  cyb_cohort: Array<Cyb_Cohort>;
-  /** fetch aggregated fields from the table: "cyb_cohort" */
-  cyb_cohort_aggregate: Cyb_Cohort_Aggregate;
-  /** fetch data from the table: "cyb_new_cohort" */
-  cyb_new_cohort: Array<Cyb_New_Cohort>;
-  /** fetch aggregated fields from the table: "cyb_new_cohort" */
-  cyb_new_cohort_aggregate: Cyb_New_Cohort_Aggregate;
-  /** fetch data from the table: "cyber_gift" */
-  cyber_gift: Array<Cyber_Gift>;
-  /** fetch aggregated fields from the table: "cyber_gift" */
-  cyber_gift_aggregate: Cyber_Gift_Aggregate;
-  /** fetch data from the table: "cyber_gift_proofs" */
-  cyber_gift_proofs: Array<Cyber_Gift_Proofs>;
-  /** fetch aggregated fields from the table: "cyber_gift_proofs" */
-  cyber_gift_proofs_aggregate: Cyber_Gift_Proofs_Aggregate;
-  /** fetch data from the table: "cyberlinks" */
+  /** An array relationship */
   cyberlinks: Array<Cyberlinks>;
   /** An aggregate relationship */
   cyberlinks_aggregate: Cyberlinks_Aggregate;
   /** fetch data from the table: "cyberlinks" using primary key columns */
   cyberlinks_by_pk?: Maybe<Cyberlinks>;
-  /** fetch data from the table: "cyberlinks_stats" */
-  cyberlinks_stats: Array<Cyberlinks_Stats>;
-  /** fetch aggregated fields from the table: "cyberlinks_stats" */
-  cyberlinks_stats_aggregate: Cyberlinks_Stats_Aggregate;
-  /** fetch data from the table: "daily_amount_of_active_neurons" */
-  daily_amount_of_active_neurons: Array<Daily_Amount_Of_Active_Neurons>;
-  /** fetch aggregated fields from the table: "daily_amount_of_active_neurons" */
-  daily_amount_of_active_neurons_aggregate: Daily_Amount_Of_Active_Neurons_Aggregate;
-  /** fetch data from the table: "daily_amount_of_used_gas" */
-  daily_amount_of_used_gas: Array<Daily_Amount_Of_Used_Gas>;
-  /** fetch aggregated fields from the table: "daily_amount_of_used_gas" */
-  daily_amount_of_used_gas_aggregate: Daily_Amount_Of_Used_Gas_Aggregate;
-  /** fetch data from the table: "daily_number_of_transactions" */
-  daily_number_of_transactions: Array<Daily_Number_Of_Transactions>;
-  /** fetch aggregated fields from the table: "daily_number_of_transactions" */
-  daily_number_of_transactions_aggregate: Daily_Number_Of_Transactions_Aggregate;
-  /** fetch data from the table: "follow_stats" */
-  follow_stats: Array<Follow_Stats>;
-  /** fetch aggregated fields from the table: "follow_stats" */
-  follow_stats_aggregate: Follow_Stats_Aggregate;
-  /** fetch data from the table: "genesis_neurons_activation" */
-  genesis_neurons_activation: Array<Genesis_Neurons_Activation>;
-  /** fetch aggregated fields from the table: "genesis_neurons_activation" */
-  genesis_neurons_activation_aggregate: Genesis_Neurons_Activation_Aggregate;
+  /** fetch data from the table: "genesis" */
+  genesis: Array<Genesis>;
+  /** fetch aggregated fields from the table: "genesis" */
+  genesis_aggregate: Genesis_Aggregate;
+  /** fetch data from the table: "genesis" using primary key columns */
+  genesis_by_pk?: Maybe<Genesis>;
   /** An array relationship */
   investmints: Array<Investmints>;
   /** An aggregate relationship */
@@ -5301,62 +4663,62 @@ export type Query_Root = {
   investmints_by_pk?: Maybe<Investmints>;
   /** fetch data from the table: "message" */
   message: Array<Message>;
+  /** fetch data from the table: "message_0" */
+  message_0: Array<Message_0>;
+  /** fetch aggregated fields from the table: "message_0" */
+  message_0_aggregate: Message_0_Aggregate;
   /** fetch aggregated fields from the table: "message" */
   message_aggregate: Message_Aggregate;
+  /** fetch data from the table: "message_type" */
+  message_type: Array<Message_Type>;
+  /** fetch aggregated fields from the table: "message_type" */
+  message_type_aggregate: Message_Type_Aggregate;
   /** execute function "messages_by_address" which returns "message" */
   messages_by_address: Array<Message>;
   /** execute function "messages_by_address" and query aggregates on result of table type "message" */
   messages_by_address_aggregate: Message_Aggregate;
+  /** execute function "messages_by_type" which returns "message" */
+  messages_by_type: Array<Message>;
+  /** execute function "messages_by_type" and query aggregates on result of table type "message" */
+  messages_by_type_aggregate: Message_Aggregate;
   /** fetch data from the table: "modules" */
   modules: Array<Modules>;
   /** fetch aggregated fields from the table: "modules" */
   modules_aggregate: Modules_Aggregate;
   /** fetch data from the table: "modules" using primary key columns */
   modules_by_pk?: Maybe<Modules>;
-  /** fetch data from the table: "neuron_activation_source" */
-  neuron_activation_source: Array<Neuron_Activation_Source>;
-  /** fetch aggregated fields from the table: "neuron_activation_source" */
-  neuron_activation_source_aggregate: Neuron_Activation_Source_Aggregate;
-  /** fetch data from the table: "number_of_new_neurons" */
-  number_of_new_neurons: Array<Number_Of_New_Neurons>;
-  /** fetch aggregated fields from the table: "number_of_new_neurons" */
-  number_of_new_neurons_aggregate: Number_Of_New_Neurons_Aggregate;
-  /** fetch data from the table: "old_precommits" */
-  old_precommits: Array<Old_Precommits>;
-  /** fetch aggregated fields from the table: "old_precommits" */
-  old_precommits_aggregate: Old_Precommits_Aggregate;
-  /** fetch data from the table: "old_precommits" using primary key columns */
-  old_precommits_by_pk?: Maybe<Old_Precommits>;
   /** An array relationship */
   particles: Array<Particles>;
   /** An aggregate relationship */
   particles_aggregate: Particles_Aggregate;
   /** fetch data from the table: "particles" using primary key columns */
   particles_by_pk?: Maybe<Particles>;
+  /** fetch data from the table: "pools" */
+  pools: Array<Pools>;
+  /** fetch aggregated fields from the table: "pools" */
+  pools_aggregate: Pools_Aggregate;
+  /** fetch data from the table: "pools" using primary key columns */
+  pools_by_pk?: Maybe<Pools>;
+  /** fetch data from the table: "pools_liquidity" */
+  pools_liquidity: Array<Pools_Liquidity>;
+  /** fetch aggregated fields from the table: "pools_liquidity" */
+  pools_liquidity_aggregate: Pools_Liquidity_Aggregate;
+  /** fetch data from the table: "pools_rates" */
+  pools_rates: Array<Pools_Rates>;
+  /** fetch aggregated fields from the table: "pools_rates" */
+  pools_rates_aggregate: Pools_Rates_Aggregate;
+  /** fetch data from the table: "pools_volumes" */
+  pools_volumes: Array<Pools_Volumes>;
+  /** fetch aggregated fields from the table: "pools_volumes" */
+  pools_volumes_aggregate: Pools_Volumes_Aggregate;
   /** fetch data from the table: "pre_commit" */
   pre_commit: Array<Pre_Commit>;
   /** fetch aggregated fields from the table: "pre_commit" */
   pre_commit_aggregate: Pre_Commit_Aggregate;
-  /** fetch data from the table: "pre_commits_rewards_view" */
-  pre_commits_rewards_view: Array<Pre_Commits_Rewards_View>;
-  /** fetch aggregated fields from the table: "pre_commits_rewards_view" */
-  pre_commits_rewards_view_aggregate: Pre_Commits_Rewards_View_Aggregate;
-  /** fetch data from the table: "pre_commits_total" */
-  pre_commits_total: Array<Pre_Commits_Total>;
-  /** fetch aggregated fields from the table: "pre_commits_total" */
-  pre_commits_total_aggregate: Pre_Commits_Total_Aggregate;
-  /** fetch data from the table: "pre_commits_view" */
-  pre_commits_view: Array<Pre_Commits_View>;
-  /** fetch aggregated fields from the table: "pre_commits_view" */
-  pre_commits_view_aggregate: Pre_Commits_View_Aggregate;
   /** fetch data from the table: "pruning" */
   pruning: Array<Pruning>;
   /** fetch aggregated fields from the table: "pruning" */
   pruning_aggregate: Pruning_Aggregate;
-  /** fetch data from the table: "pussy_gift_proofs" */
-  pussy_gift_proofs: Array<Pussy_Gift_Proofs>;
-  /** fetch aggregated fields from the table: "pussy_gift_proofs" */
-  pussy_gift_proofs_aggregate: Pussy_Gift_Proofs_Aggregate;
   /** An array relationship */
   routes: Array<Routes>;
   /** An aggregate relationship */
@@ -5369,100 +4731,36 @@ export type Query_Root = {
   supply_aggregate: Supply_Aggregate;
   /** fetch data from the table: "supply" using primary key columns */
   supply_by_pk?: Maybe<Supply>;
-  /** fetch data from the table: "test_gift" */
-  test_gift: Array<Test_Gift>;
-  /** fetch aggregated fields from the table: "test_gift" */
-  test_gift_aggregate: Test_Gift_Aggregate;
-  /** fetch data from the table: "today_top_txs" */
-  today_top_txs: Array<Today_Top_Txs>;
-  /** fetch aggregated fields from the table: "today_top_txs" */
-  today_top_txs_aggregate: Today_Top_Txs_Aggregate;
-  /** fetch data from the table: "top_10_of_active_neurons_week" */
-  top_10_of_active_neurons_week: Array<Top_10_Of_Active_Neurons_Week>;
-  /** fetch aggregated fields from the table: "top_10_of_active_neurons_week" */
-  top_10_of_active_neurons_week_aggregate: Top_10_Of_Active_Neurons_Week_Aggregate;
-  /** fetch data from the table: "top_first_txs" */
-  top_first_txs: Array<Top_First_Txs>;
-  /** fetch aggregated fields from the table: "top_first_txs" */
-  top_first_txs_aggregate: Top_First_Txs_Aggregate;
-  /** fetch data from the table: "top_leaders" */
-  top_leaders: Array<Top_Leaders>;
-  /** fetch data from the table: "top_txs" */
-  top_txs: Array<Top_Txs>;
-  /** fetch aggregated fields from the table: "top_txs" */
-  top_txs_aggregate: Top_Txs_Aggregate;
+  /** An array relationship */
+  swaps: Array<Swaps>;
+  /** An aggregate relationship */
+  swaps_aggregate: Swaps_Aggregate;
+  /** fetch data from the table: "swaps" using primary key columns */
+  swaps_by_pk?: Maybe<Swaps>;
   /** fetch data from the table: "transaction" */
   transaction: Array<Transaction>;
+  /** fetch data from the table: "transaction_0" */
+  transaction_0: Array<Transaction_0>;
+  /** fetch aggregated fields from the table: "transaction_0" */
+  transaction_0_aggregate: Transaction_0_Aggregate;
   /** fetch aggregated fields from the table: "transaction" */
   transaction_aggregate: Transaction_Aggregate;
-  /** fetch data from the table: "transaction" using primary key columns */
-  transaction_by_pk?: Maybe<Transaction>;
-  /** fetch data from the table: "tweets_stats" */
-  tweets_stats: Array<Tweets_Stats>;
-  /** fetch aggregated fields from the table: "tweets_stats" */
-  tweets_stats_aggregate: Tweets_Stats_Aggregate;
-  /** fetch data from the table: "txs_ranked" */
-  txs_ranked: Array<Txs_Ranked>;
-  /** fetch aggregated fields from the table: "txs_ranked" */
-  txs_ranked_aggregate: Txs_Ranked_Aggregate;
-  /** fetch data from the table: "txs_stats" */
-  txs_stats: Array<Txs_Stats>;
-  /** fetch aggregated fields from the table: "txs_stats" */
-  txs_stats_aggregate: Txs_Stats_Aggregate;
-  /** fetch data from the table: "uptime" */
-  uptime: Array<Uptime>;
-  /** fetch aggregated fields from the table: "uptime" */
-  uptime_aggregate: Uptime_Aggregate;
   /** fetch data from the table: "validator" */
   validator: Array<Validator>;
   /** fetch aggregated fields from the table: "validator" */
   validator_aggregate: Validator_Aggregate;
   /** fetch data from the table: "validator" using primary key columns */
   validator_by_pk?: Maybe<Validator>;
-  /** fetch data from the table: "volts_demand" */
-  volts_demand: Array<Volts_Demand>;
-  /** fetch aggregated fields from the table: "volts_demand" */
-  volts_demand_aggregate: Volts_Demand_Aggregate;
-  /** fetch data from the table: "volts_stats" */
-  volts_stats: Array<Volts_Stats>;
-  /** fetch aggregated fields from the table: "volts_stats" */
-  volts_stats_aggregate: Volts_Stats_Aggregate;
-};
-
-
-export type Query_Root_TransactionArgs = {
-  distinct_on?: InputMaybe<Array<_Transaction_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<_Transaction_Order_By>>;
-  where?: InputMaybe<_Transaction_Bool_Exp>;
-};
-
-
-export type Query_Root_Transaction_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<_Transaction_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<_Transaction_Order_By>>;
-  where?: InputMaybe<_Transaction_Bool_Exp>;
-};
-
-
-export type Query_Root_Uptime_TempArgs = {
-  distinct_on?: InputMaybe<Array<_Uptime_Temp_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<_Uptime_Temp_Order_By>>;
-  where?: InputMaybe<_Uptime_Temp_Bool_Exp>;
-};
-
-
-export type Query_Root_Uptime_Temp_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<_Uptime_Temp_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<_Uptime_Temp_Order_By>>;
-  where?: InputMaybe<_Uptime_Temp_Bool_Exp>;
+  /** fetch data from the table: "vesting_account" */
+  vesting_account: Array<Vesting_Account>;
+  /** fetch aggregated fields from the table: "vesting_account" */
+  vesting_account_aggregate: Vesting_Account_Aggregate;
+  /** fetch data from the table: "vesting_account" using primary key columns */
+  vesting_account_by_pk?: Maybe<Vesting_Account>;
+  /** fetch data from the table: "vesting_period" */
+  vesting_period: Array<Vesting_Period>;
+  /** fetch aggregated fields from the table: "vesting_period" */
+  vesting_period_aggregate: Vesting_Period_Aggregate;
 };
 
 
@@ -5512,6 +4810,98 @@ export type Query_RootAccount_By_PkArgs = {
 };
 
 
+export type Query_RootAverage_Block_Time_From_GenesisArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_From_Genesis_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_From_Genesis_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_From_Genesis_Bool_Exp>;
+};
+
+
+export type Query_RootAverage_Block_Time_From_Genesis_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_From_Genesis_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_From_Genesis_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_From_Genesis_Bool_Exp>;
+};
+
+
+export type Query_RootAverage_Block_Time_From_Genesis_By_PkArgs = {
+  one_row_id: Scalars['Boolean']['input'];
+};
+
+
+export type Query_RootAverage_Block_Time_Per_DayArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Day_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Day_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Day_Bool_Exp>;
+};
+
+
+export type Query_RootAverage_Block_Time_Per_Day_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Day_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Day_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Day_Bool_Exp>;
+};
+
+
+export type Query_RootAverage_Block_Time_Per_Day_By_PkArgs = {
+  one_row_id: Scalars['Boolean']['input'];
+};
+
+
+export type Query_RootAverage_Block_Time_Per_HourArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Hour_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Hour_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Hour_Bool_Exp>;
+};
+
+
+export type Query_RootAverage_Block_Time_Per_Hour_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Hour_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Hour_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Hour_Bool_Exp>;
+};
+
+
+export type Query_RootAverage_Block_Time_Per_Hour_By_PkArgs = {
+  one_row_id: Scalars['Boolean']['input'];
+};
+
+
+export type Query_RootAverage_Block_Time_Per_MinuteArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Minute_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Minute_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Minute_Bool_Exp>;
+};
+
+
+export type Query_RootAverage_Block_Time_Per_Minute_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Minute_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Minute_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Minute_Bool_Exp>;
+};
+
+
+export type Query_RootAverage_Block_Time_Per_Minute_By_PkArgs = {
+  one_row_id: Scalars['Boolean']['input'];
+};
+
+
 export type Query_RootBlockArgs = {
   distinct_on?: InputMaybe<Array<Block_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -5558,78 +4948,6 @@ export type Query_RootContracts_By_PkArgs = {
 };
 
 
-export type Query_RootCyb_CohortArgs = {
-  distinct_on?: InputMaybe<Array<Cyb_Cohort_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyb_Cohort_Order_By>>;
-  where?: InputMaybe<Cyb_Cohort_Bool_Exp>;
-};
-
-
-export type Query_RootCyb_Cohort_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyb_Cohort_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyb_Cohort_Order_By>>;
-  where?: InputMaybe<Cyb_Cohort_Bool_Exp>;
-};
-
-
-export type Query_RootCyb_New_CohortArgs = {
-  distinct_on?: InputMaybe<Array<Cyb_New_Cohort_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyb_New_Cohort_Order_By>>;
-  where?: InputMaybe<Cyb_New_Cohort_Bool_Exp>;
-};
-
-
-export type Query_RootCyb_New_Cohort_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyb_New_Cohort_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyb_New_Cohort_Order_By>>;
-  where?: InputMaybe<Cyb_New_Cohort_Bool_Exp>;
-};
-
-
-export type Query_RootCyber_GiftArgs = {
-  distinct_on?: InputMaybe<Array<Cyber_Gift_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyber_Gift_Order_By>>;
-  where?: InputMaybe<Cyber_Gift_Bool_Exp>;
-};
-
-
-export type Query_RootCyber_Gift_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyber_Gift_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyber_Gift_Order_By>>;
-  where?: InputMaybe<Cyber_Gift_Bool_Exp>;
-};
-
-
-export type Query_RootCyber_Gift_ProofsArgs = {
-  distinct_on?: InputMaybe<Array<Cyber_Gift_Proofs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyber_Gift_Proofs_Order_By>>;
-  where?: InputMaybe<Cyber_Gift_Proofs_Bool_Exp>;
-};
-
-
-export type Query_RootCyber_Gift_Proofs_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyber_Gift_Proofs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyber_Gift_Proofs_Order_By>>;
-  where?: InputMaybe<Cyber_Gift_Proofs_Bool_Exp>;
-};
-
-
 export type Query_RootCyberlinksArgs = {
   distinct_on?: InputMaybe<Array<Cyberlinks_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -5653,111 +4971,26 @@ export type Query_RootCyberlinks_By_PkArgs = {
 };
 
 
-export type Query_RootCyberlinks_StatsArgs = {
-  distinct_on?: InputMaybe<Array<Cyberlinks_Stats_Select_Column>>;
+export type Query_RootGenesisArgs = {
+  distinct_on?: InputMaybe<Array<Genesis_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyberlinks_Stats_Order_By>>;
-  where?: InputMaybe<Cyberlinks_Stats_Bool_Exp>;
+  order_by?: InputMaybe<Array<Genesis_Order_By>>;
+  where?: InputMaybe<Genesis_Bool_Exp>;
 };
 
 
-export type Query_RootCyberlinks_Stats_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyberlinks_Stats_Select_Column>>;
+export type Query_RootGenesis_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Genesis_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyberlinks_Stats_Order_By>>;
-  where?: InputMaybe<Cyberlinks_Stats_Bool_Exp>;
+  order_by?: InputMaybe<Array<Genesis_Order_By>>;
+  where?: InputMaybe<Genesis_Bool_Exp>;
 };
 
 
-export type Query_RootDaily_Amount_Of_Active_NeuronsArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Order_By>>;
-  where?: InputMaybe<Daily_Amount_Of_Active_Neurons_Bool_Exp>;
-};
-
-
-export type Query_RootDaily_Amount_Of_Active_Neurons_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Order_By>>;
-  where?: InputMaybe<Daily_Amount_Of_Active_Neurons_Bool_Exp>;
-};
-
-
-export type Query_RootDaily_Amount_Of_Used_GasArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Order_By>>;
-  where?: InputMaybe<Daily_Amount_Of_Used_Gas_Bool_Exp>;
-};
-
-
-export type Query_RootDaily_Amount_Of_Used_Gas_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Order_By>>;
-  where?: InputMaybe<Daily_Amount_Of_Used_Gas_Bool_Exp>;
-};
-
-
-export type Query_RootDaily_Number_Of_TransactionsArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Number_Of_Transactions_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Number_Of_Transactions_Order_By>>;
-  where?: InputMaybe<Daily_Number_Of_Transactions_Bool_Exp>;
-};
-
-
-export type Query_RootDaily_Number_Of_Transactions_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Number_Of_Transactions_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Number_Of_Transactions_Order_By>>;
-  where?: InputMaybe<Daily_Number_Of_Transactions_Bool_Exp>;
-};
-
-
-export type Query_RootFollow_StatsArgs = {
-  distinct_on?: InputMaybe<Array<Follow_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Follow_Stats_Order_By>>;
-  where?: InputMaybe<Follow_Stats_Bool_Exp>;
-};
-
-
-export type Query_RootFollow_Stats_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Follow_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Follow_Stats_Order_By>>;
-  where?: InputMaybe<Follow_Stats_Bool_Exp>;
-};
-
-
-export type Query_RootGenesis_Neurons_ActivationArgs = {
-  distinct_on?: InputMaybe<Array<Genesis_Neurons_Activation_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Genesis_Neurons_Activation_Order_By>>;
-  where?: InputMaybe<Genesis_Neurons_Activation_Bool_Exp>;
-};
-
-
-export type Query_RootGenesis_Neurons_Activation_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Genesis_Neurons_Activation_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Genesis_Neurons_Activation_Order_By>>;
-  where?: InputMaybe<Genesis_Neurons_Activation_Bool_Exp>;
+export type Query_RootGenesis_By_PkArgs = {
+  one_row_id: Scalars['Boolean']['input'];
 };
 
 
@@ -5793,12 +5026,48 @@ export type Query_RootMessageArgs = {
 };
 
 
+export type Query_RootMessage_0Args = {
+  distinct_on?: InputMaybe<Array<Message_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_0_Order_By>>;
+  where?: InputMaybe<Message_0_Bool_Exp>;
+};
+
+
+export type Query_RootMessage_0_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Message_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_0_Order_By>>;
+  where?: InputMaybe<Message_0_Bool_Exp>;
+};
+
+
 export type Query_RootMessage_AggregateArgs = {
   distinct_on?: InputMaybe<Array<Message_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<Message_Order_By>>;
   where?: InputMaybe<Message_Bool_Exp>;
+};
+
+
+export type Query_RootMessage_TypeArgs = {
+  distinct_on?: InputMaybe<Array<Message_Type_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_Type_Order_By>>;
+  where?: InputMaybe<Message_Type_Bool_Exp>;
+};
+
+
+export type Query_RootMessage_Type_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Message_Type_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_Type_Order_By>>;
+  where?: InputMaybe<Message_Type_Bool_Exp>;
 };
 
 
@@ -5814,6 +5083,26 @@ export type Query_RootMessages_By_AddressArgs = {
 
 export type Query_RootMessages_By_Address_AggregateArgs = {
   args: Messages_By_Address_Args;
+  distinct_on?: InputMaybe<Array<Message_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_Order_By>>;
+  where?: InputMaybe<Message_Bool_Exp>;
+};
+
+
+export type Query_RootMessages_By_TypeArgs = {
+  args: Messages_By_Type_Args;
+  distinct_on?: InputMaybe<Array<Message_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_Order_By>>;
+  where?: InputMaybe<Message_Bool_Exp>;
+};
+
+
+export type Query_RootMessages_By_Type_AggregateArgs = {
+  args: Messages_By_Type_Args;
   distinct_on?: InputMaybe<Array<Message_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -5845,65 +5134,6 @@ export type Query_RootModules_By_PkArgs = {
 };
 
 
-export type Query_RootNeuron_Activation_SourceArgs = {
-  distinct_on?: InputMaybe<Array<Neuron_Activation_Source_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Neuron_Activation_Source_Order_By>>;
-  where?: InputMaybe<Neuron_Activation_Source_Bool_Exp>;
-};
-
-
-export type Query_RootNeuron_Activation_Source_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Neuron_Activation_Source_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Neuron_Activation_Source_Order_By>>;
-  where?: InputMaybe<Neuron_Activation_Source_Bool_Exp>;
-};
-
-
-export type Query_RootNumber_Of_New_NeuronsArgs = {
-  distinct_on?: InputMaybe<Array<Number_Of_New_Neurons_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Number_Of_New_Neurons_Order_By>>;
-  where?: InputMaybe<Number_Of_New_Neurons_Bool_Exp>;
-};
-
-
-export type Query_RootNumber_Of_New_Neurons_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Number_Of_New_Neurons_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Number_Of_New_Neurons_Order_By>>;
-  where?: InputMaybe<Number_Of_New_Neurons_Bool_Exp>;
-};
-
-
-export type Query_RootOld_PrecommitsArgs = {
-  distinct_on?: InputMaybe<Array<Old_Precommits_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Old_Precommits_Order_By>>;
-  where?: InputMaybe<Old_Precommits_Bool_Exp>;
-};
-
-
-export type Query_RootOld_Precommits_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Old_Precommits_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Old_Precommits_Order_By>>;
-  where?: InputMaybe<Old_Precommits_Bool_Exp>;
-};
-
-
-export type Query_RootOld_Precommits_By_PkArgs = {
-  consensus_address: Scalars['String']['input'];
-};
-
-
 export type Query_RootParticlesArgs = {
   distinct_on?: InputMaybe<Array<Particles_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -5927,6 +5157,83 @@ export type Query_RootParticles_By_PkArgs = {
 };
 
 
+export type Query_RootPoolsArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Order_By>>;
+  where?: InputMaybe<Pools_Bool_Exp>;
+};
+
+
+export type Query_RootPools_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Order_By>>;
+  where?: InputMaybe<Pools_Bool_Exp>;
+};
+
+
+export type Query_RootPools_By_PkArgs = {
+  pool_id: Scalars['bigint']['input'];
+};
+
+
+export type Query_RootPools_LiquidityArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Liquidity_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Liquidity_Order_By>>;
+  where?: InputMaybe<Pools_Liquidity_Bool_Exp>;
+};
+
+
+export type Query_RootPools_Liquidity_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Liquidity_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Liquidity_Order_By>>;
+  where?: InputMaybe<Pools_Liquidity_Bool_Exp>;
+};
+
+
+export type Query_RootPools_RatesArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Rates_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Rates_Order_By>>;
+  where?: InputMaybe<Pools_Rates_Bool_Exp>;
+};
+
+
+export type Query_RootPools_Rates_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Rates_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Rates_Order_By>>;
+  where?: InputMaybe<Pools_Rates_Bool_Exp>;
+};
+
+
+export type Query_RootPools_VolumesArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Volumes_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Volumes_Order_By>>;
+  where?: InputMaybe<Pools_Volumes_Bool_Exp>;
+};
+
+
+export type Query_RootPools_Volumes_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Volumes_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Volumes_Order_By>>;
+  where?: InputMaybe<Pools_Volumes_Bool_Exp>;
+};
+
+
 export type Query_RootPre_CommitArgs = {
   distinct_on?: InputMaybe<Array<Pre_Commit_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -5945,60 +5252,6 @@ export type Query_RootPre_Commit_AggregateArgs = {
 };
 
 
-export type Query_RootPre_Commits_Rewards_ViewArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_Rewards_View_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_Rewards_View_Order_By>>;
-  where?: InputMaybe<Pre_Commits_Rewards_View_Bool_Exp>;
-};
-
-
-export type Query_RootPre_Commits_Rewards_View_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_Rewards_View_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_Rewards_View_Order_By>>;
-  where?: InputMaybe<Pre_Commits_Rewards_View_Bool_Exp>;
-};
-
-
-export type Query_RootPre_Commits_TotalArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_Total_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_Total_Order_By>>;
-  where?: InputMaybe<Pre_Commits_Total_Bool_Exp>;
-};
-
-
-export type Query_RootPre_Commits_Total_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_Total_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_Total_Order_By>>;
-  where?: InputMaybe<Pre_Commits_Total_Bool_Exp>;
-};
-
-
-export type Query_RootPre_Commits_ViewArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_View_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_View_Order_By>>;
-  where?: InputMaybe<Pre_Commits_View_Bool_Exp>;
-};
-
-
-export type Query_RootPre_Commits_View_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_View_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_View_Order_By>>;
-  where?: InputMaybe<Pre_Commits_View_Bool_Exp>;
-};
-
-
 export type Query_RootPruningArgs = {
   distinct_on?: InputMaybe<Array<Pruning_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -6014,24 +5267,6 @@ export type Query_RootPruning_AggregateArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<Pruning_Order_By>>;
   where?: InputMaybe<Pruning_Bool_Exp>;
-};
-
-
-export type Query_RootPussy_Gift_ProofsArgs = {
-  distinct_on?: InputMaybe<Array<Pussy_Gift_Proofs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pussy_Gift_Proofs_Order_By>>;
-  where?: InputMaybe<Pussy_Gift_Proofs_Bool_Exp>;
-};
-
-
-export type Query_RootPussy_Gift_Proofs_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Pussy_Gift_Proofs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pussy_Gift_Proofs_Order_By>>;
-  where?: InputMaybe<Pussy_Gift_Proofs_Bool_Exp>;
 };
 
 
@@ -6081,102 +5316,26 @@ export type Query_RootSupply_By_PkArgs = {
 };
 
 
-export type Query_RootTest_GiftArgs = {
-  distinct_on?: InputMaybe<Array<Test_Gift_Select_Column>>;
+export type Query_RootSwapsArgs = {
+  distinct_on?: InputMaybe<Array<Swaps_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Test_Gift_Order_By>>;
-  where?: InputMaybe<Test_Gift_Bool_Exp>;
+  order_by?: InputMaybe<Array<Swaps_Order_By>>;
+  where?: InputMaybe<Swaps_Bool_Exp>;
 };
 
 
-export type Query_RootTest_Gift_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Test_Gift_Select_Column>>;
+export type Query_RootSwaps_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Swaps_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Test_Gift_Order_By>>;
-  where?: InputMaybe<Test_Gift_Bool_Exp>;
+  order_by?: InputMaybe<Array<Swaps_Order_By>>;
+  where?: InputMaybe<Swaps_Bool_Exp>;
 };
 
 
-export type Query_RootToday_Top_TxsArgs = {
-  distinct_on?: InputMaybe<Array<Today_Top_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Today_Top_Txs_Order_By>>;
-  where?: InputMaybe<Today_Top_Txs_Bool_Exp>;
-};
-
-
-export type Query_RootToday_Top_Txs_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Today_Top_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Today_Top_Txs_Order_By>>;
-  where?: InputMaybe<Today_Top_Txs_Bool_Exp>;
-};
-
-
-export type Query_RootTop_10_Of_Active_Neurons_WeekArgs = {
-  distinct_on?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Order_By>>;
-  where?: InputMaybe<Top_10_Of_Active_Neurons_Week_Bool_Exp>;
-};
-
-
-export type Query_RootTop_10_Of_Active_Neurons_Week_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Order_By>>;
-  where?: InputMaybe<Top_10_Of_Active_Neurons_Week_Bool_Exp>;
-};
-
-
-export type Query_RootTop_First_TxsArgs = {
-  distinct_on?: InputMaybe<Array<Top_First_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_First_Txs_Order_By>>;
-  where?: InputMaybe<Top_First_Txs_Bool_Exp>;
-};
-
-
-export type Query_RootTop_First_Txs_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Top_First_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_First_Txs_Order_By>>;
-  where?: InputMaybe<Top_First_Txs_Bool_Exp>;
-};
-
-
-export type Query_RootTop_LeadersArgs = {
-  distinct_on?: InputMaybe<Array<Top_Leaders_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_Leaders_Order_By>>;
-  where?: InputMaybe<Top_Leaders_Bool_Exp>;
-};
-
-
-export type Query_RootTop_TxsArgs = {
-  distinct_on?: InputMaybe<Array<Top_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_Txs_Order_By>>;
-  where?: InputMaybe<Top_Txs_Bool_Exp>;
-};
-
-
-export type Query_RootTop_Txs_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Top_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_Txs_Order_By>>;
-  where?: InputMaybe<Top_Txs_Bool_Exp>;
+export type Query_RootSwaps_By_PkArgs = {
+  pool_id: Scalars['bigint']['input'];
 };
 
 
@@ -6189,89 +5348,30 @@ export type Query_RootTransactionArgs = {
 };
 
 
+export type Query_RootTransaction_0Args = {
+  distinct_on?: InputMaybe<Array<Transaction_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Transaction_0_Order_By>>;
+  where?: InputMaybe<Transaction_0_Bool_Exp>;
+};
+
+
+export type Query_RootTransaction_0_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Transaction_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Transaction_0_Order_By>>;
+  where?: InputMaybe<Transaction_0_Bool_Exp>;
+};
+
+
 export type Query_RootTransaction_AggregateArgs = {
   distinct_on?: InputMaybe<Array<Transaction_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<Transaction_Order_By>>;
   where?: InputMaybe<Transaction_Bool_Exp>;
-};
-
-
-export type Query_RootTransaction_By_PkArgs = {
-  hash: Scalars['String']['input'];
-};
-
-
-export type Query_RootTweets_StatsArgs = {
-  distinct_on?: InputMaybe<Array<Tweets_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Tweets_Stats_Order_By>>;
-  where?: InputMaybe<Tweets_Stats_Bool_Exp>;
-};
-
-
-export type Query_RootTweets_Stats_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Tweets_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Tweets_Stats_Order_By>>;
-  where?: InputMaybe<Tweets_Stats_Bool_Exp>;
-};
-
-
-export type Query_RootTxs_RankedArgs = {
-  distinct_on?: InputMaybe<Array<Txs_Ranked_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Txs_Ranked_Order_By>>;
-  where?: InputMaybe<Txs_Ranked_Bool_Exp>;
-};
-
-
-export type Query_RootTxs_Ranked_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Txs_Ranked_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Txs_Ranked_Order_By>>;
-  where?: InputMaybe<Txs_Ranked_Bool_Exp>;
-};
-
-
-export type Query_RootTxs_StatsArgs = {
-  distinct_on?: InputMaybe<Array<Txs_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Txs_Stats_Order_By>>;
-  where?: InputMaybe<Txs_Stats_Bool_Exp>;
-};
-
-
-export type Query_RootTxs_Stats_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Txs_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Txs_Stats_Order_By>>;
-  where?: InputMaybe<Txs_Stats_Bool_Exp>;
-};
-
-
-export type Query_RootUptimeArgs = {
-  distinct_on?: InputMaybe<Array<Uptime_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Uptime_Order_By>>;
-  where?: InputMaybe<Uptime_Bool_Exp>;
-};
-
-
-export type Query_RootUptime_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Uptime_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Uptime_Order_By>>;
-  where?: InputMaybe<Uptime_Bool_Exp>;
 };
 
 
@@ -6298,39 +5398,44 @@ export type Query_RootValidator_By_PkArgs = {
 };
 
 
-export type Query_RootVolts_DemandArgs = {
-  distinct_on?: InputMaybe<Array<Volts_Demand_Select_Column>>;
+export type Query_RootVesting_AccountArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Account_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Volts_Demand_Order_By>>;
-  where?: InputMaybe<Volts_Demand_Bool_Exp>;
+  order_by?: InputMaybe<Array<Vesting_Account_Order_By>>;
+  where?: InputMaybe<Vesting_Account_Bool_Exp>;
 };
 
 
-export type Query_RootVolts_Demand_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Volts_Demand_Select_Column>>;
+export type Query_RootVesting_Account_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Account_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Volts_Demand_Order_By>>;
-  where?: InputMaybe<Volts_Demand_Bool_Exp>;
+  order_by?: InputMaybe<Array<Vesting_Account_Order_By>>;
+  where?: InputMaybe<Vesting_Account_Bool_Exp>;
 };
 
 
-export type Query_RootVolts_StatsArgs = {
-  distinct_on?: InputMaybe<Array<Volts_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Volts_Stats_Order_By>>;
-  where?: InputMaybe<Volts_Stats_Bool_Exp>;
+export type Query_RootVesting_Account_By_PkArgs = {
+  id: Scalars['Int']['input'];
 };
 
 
-export type Query_RootVolts_Stats_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Volts_Stats_Select_Column>>;
+export type Query_RootVesting_PeriodArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Period_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Volts_Stats_Order_By>>;
-  where?: InputMaybe<Volts_Stats_Bool_Exp>;
+  order_by?: InputMaybe<Array<Vesting_Period_Order_By>>;
+  where?: InputMaybe<Vesting_Period_Bool_Exp>;
+};
+
+
+export type Query_RootVesting_Period_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Period_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vesting_Period_Order_By>>;
+  where?: InputMaybe<Vesting_Period_Bool_Exp>;
 };
 
 /** columns and relationships of "routes" */
@@ -6347,16 +5452,25 @@ export type Routes = {
   id: Scalars['Int']['output'];
   source: Scalars['String']['output'];
   timestamp: Scalars['timestamp']['output'];
-  /** An object relationship */
-  transaction: Transaction;
   transaction_hash: Scalars['String']['output'];
-  value: Scalars['_coin']['output'];
+  value: Array<Scalars['coin']['output']>;
 };
 
 /** aggregated selection of "routes" */
 export type Routes_Aggregate = {
   aggregate?: Maybe<Routes_Aggregate_Fields>;
   nodes: Array<Routes>;
+};
+
+export type Routes_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Routes_Aggregate_Bool_Exp_Count>;
+};
+
+export type Routes_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Routes_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Routes_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "routes" */
@@ -6422,9 +5536,8 @@ export type Routes_Bool_Exp = {
   id?: InputMaybe<Int_Comparison_Exp>;
   source?: InputMaybe<String_Comparison_Exp>;
   timestamp?: InputMaybe<Timestamp_Comparison_Exp>;
-  transaction?: InputMaybe<Transaction_Bool_Exp>;
   transaction_hash?: InputMaybe<String_Comparison_Exp>;
-  value?: InputMaybe<_Coin_Comparison_Exp>;
+  value?: InputMaybe<Coin_Array_Comparison_Exp>;
 };
 
 /** aggregate max on columns */
@@ -6436,6 +5549,7 @@ export type Routes_Max_Fields = {
   source?: Maybe<Scalars['String']['output']>;
   timestamp?: Maybe<Scalars['timestamp']['output']>;
   transaction_hash?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Array<Scalars['coin']['output']>>;
 };
 
 /** order by max() on columns of table "routes" */
@@ -6447,6 +5561,7 @@ export type Routes_Max_Order_By = {
   source?: InputMaybe<Order_By>;
   timestamp?: InputMaybe<Order_By>;
   transaction_hash?: InputMaybe<Order_By>;
+  value?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
@@ -6458,6 +5573,7 @@ export type Routes_Min_Fields = {
   source?: Maybe<Scalars['String']['output']>;
   timestamp?: Maybe<Scalars['timestamp']['output']>;
   transaction_hash?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Array<Scalars['coin']['output']>>;
 };
 
 /** order by min() on columns of table "routes" */
@@ -6469,6 +5585,7 @@ export type Routes_Min_Order_By = {
   source?: InputMaybe<Order_By>;
   timestamp?: InputMaybe<Order_By>;
   transaction_hash?: InputMaybe<Order_By>;
+  value?: InputMaybe<Order_By>;
 };
 
 /** Ordering options when selecting data from "routes". */
@@ -6482,7 +5599,6 @@ export type Routes_Order_By = {
   id?: InputMaybe<Order_By>;
   source?: InputMaybe<Order_By>;
   timestamp?: InputMaybe<Order_By>;
-  transaction?: InputMaybe<Transaction_Order_By>;
   transaction_hash?: InputMaybe<Order_By>;
   value?: InputMaybe<Order_By>;
 };
@@ -6543,6 +5659,26 @@ export type Routes_Stddev_Samp_Order_By = {
   id?: InputMaybe<Order_By>;
 };
 
+/** Streaming cursor of the table "routes" */
+export type Routes_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Routes_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Routes_Stream_Cursor_Value_Input = {
+  alias?: InputMaybe<Scalars['String']['input']>;
+  destination?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  source?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['timestamp']['input']>;
+  transaction_hash?: InputMaybe<Scalars['String']['input']>;
+  value?: InputMaybe<Array<Scalars['coin']['input']>>;
+};
+
 /** aggregate sum on columns */
 export type Routes_Sum_Fields = {
   height?: Maybe<Scalars['bigint']['output']>;
@@ -6592,14 +5728,6 @@ export type Routes_Variance_Order_By = {
 };
 
 export type Subscription_Root = {
-  /** fetch data from the table: "_transaction" */
-  _transaction: Array<_Transaction>;
-  /** fetch aggregated fields from the table: "_transaction" */
-  _transaction_aggregate: _Transaction_Aggregate;
-  /** fetch data from the table: "_uptime_temp" */
-  _uptime_temp: Array<_Uptime_Temp>;
-  /** fetch aggregated fields from the table: "_uptime_temp" */
-  _uptime_temp_aggregate: _Uptime_Temp_Aggregate;
   /** fetch data from the table: "account" */
   account: Array<Account>;
   /** fetch aggregated fields from the table: "account" */
@@ -6610,236 +5738,222 @@ export type Subscription_Root = {
   account_balance_aggregate: Account_Balance_Aggregate;
   /** fetch data from the table: "account_balance" using primary key columns */
   account_balance_by_pk?: Maybe<Account_Balance>;
+  /** fetch data from the table in a streaming manner: "account_balance" */
+  account_balance_stream: Array<Account_Balance>;
   /** fetch data from the table: "account" using primary key columns */
   account_by_pk?: Maybe<Account>;
+  /** fetch data from the table in a streaming manner: "account" */
+  account_stream: Array<Account>;
+  /** fetch data from the table: "average_block_time_from_genesis" */
+  average_block_time_from_genesis: Array<Average_Block_Time_From_Genesis>;
+  /** fetch aggregated fields from the table: "average_block_time_from_genesis" */
+  average_block_time_from_genesis_aggregate: Average_Block_Time_From_Genesis_Aggregate;
+  /** fetch data from the table: "average_block_time_from_genesis" using primary key columns */
+  average_block_time_from_genesis_by_pk?: Maybe<Average_Block_Time_From_Genesis>;
+  /** fetch data from the table in a streaming manner: "average_block_time_from_genesis" */
+  average_block_time_from_genesis_stream: Array<Average_Block_Time_From_Genesis>;
+  /** fetch data from the table: "average_block_time_per_day" */
+  average_block_time_per_day: Array<Average_Block_Time_Per_Day>;
+  /** fetch aggregated fields from the table: "average_block_time_per_day" */
+  average_block_time_per_day_aggregate: Average_Block_Time_Per_Day_Aggregate;
+  /** fetch data from the table: "average_block_time_per_day" using primary key columns */
+  average_block_time_per_day_by_pk?: Maybe<Average_Block_Time_Per_Day>;
+  /** fetch data from the table in a streaming manner: "average_block_time_per_day" */
+  average_block_time_per_day_stream: Array<Average_Block_Time_Per_Day>;
+  /** fetch data from the table: "average_block_time_per_hour" */
+  average_block_time_per_hour: Array<Average_Block_Time_Per_Hour>;
+  /** fetch aggregated fields from the table: "average_block_time_per_hour" */
+  average_block_time_per_hour_aggregate: Average_Block_Time_Per_Hour_Aggregate;
+  /** fetch data from the table: "average_block_time_per_hour" using primary key columns */
+  average_block_time_per_hour_by_pk?: Maybe<Average_Block_Time_Per_Hour>;
+  /** fetch data from the table in a streaming manner: "average_block_time_per_hour" */
+  average_block_time_per_hour_stream: Array<Average_Block_Time_Per_Hour>;
+  /** fetch data from the table: "average_block_time_per_minute" */
+  average_block_time_per_minute: Array<Average_Block_Time_Per_Minute>;
+  /** fetch aggregated fields from the table: "average_block_time_per_minute" */
+  average_block_time_per_minute_aggregate: Average_Block_Time_Per_Minute_Aggregate;
+  /** fetch data from the table: "average_block_time_per_minute" using primary key columns */
+  average_block_time_per_minute_by_pk?: Maybe<Average_Block_Time_Per_Minute>;
+  /** fetch data from the table in a streaming manner: "average_block_time_per_minute" */
+  average_block_time_per_minute_stream: Array<Average_Block_Time_Per_Minute>;
   /** fetch data from the table: "block" */
   block: Array<Block>;
   /** fetch aggregated fields from the table: "block" */
   block_aggregate: Block_Aggregate;
   /** fetch data from the table: "block" using primary key columns */
   block_by_pk?: Maybe<Block>;
+  /** fetch data from the table in a streaming manner: "block" */
+  block_stream: Array<Block>;
   /** fetch data from the table: "contracts" */
   contracts: Array<Contracts>;
   /** fetch aggregated fields from the table: "contracts" */
   contracts_aggregate: Contracts_Aggregate;
   /** fetch data from the table: "contracts" using primary key columns */
   contracts_by_pk?: Maybe<Contracts>;
-  /** fetch data from the table: "cyb_cohort" */
-  cyb_cohort: Array<Cyb_Cohort>;
-  /** fetch aggregated fields from the table: "cyb_cohort" */
-  cyb_cohort_aggregate: Cyb_Cohort_Aggregate;
-  /** fetch data from the table: "cyb_new_cohort" */
-  cyb_new_cohort: Array<Cyb_New_Cohort>;
-  /** fetch aggregated fields from the table: "cyb_new_cohort" */
-  cyb_new_cohort_aggregate: Cyb_New_Cohort_Aggregate;
-  /** fetch data from the table: "cyber_gift" */
-  cyber_gift: Array<Cyber_Gift>;
-  /** fetch aggregated fields from the table: "cyber_gift" */
-  cyber_gift_aggregate: Cyber_Gift_Aggregate;
-  /** fetch data from the table: "cyber_gift_proofs" */
-  cyber_gift_proofs: Array<Cyber_Gift_Proofs>;
-  /** fetch aggregated fields from the table: "cyber_gift_proofs" */
-  cyber_gift_proofs_aggregate: Cyber_Gift_Proofs_Aggregate;
-  /** fetch data from the table: "cyberlinks" */
+  /** fetch data from the table in a streaming manner: "contracts" */
+  contracts_stream: Array<Contracts>;
+  /** An array relationship */
   cyberlinks: Array<Cyberlinks>;
   /** An aggregate relationship */
   cyberlinks_aggregate: Cyberlinks_Aggregate;
   /** fetch data from the table: "cyberlinks" using primary key columns */
   cyberlinks_by_pk?: Maybe<Cyberlinks>;
-  /** fetch data from the table: "cyberlinks_stats" */
-  cyberlinks_stats: Array<Cyberlinks_Stats>;
-  /** fetch aggregated fields from the table: "cyberlinks_stats" */
-  cyberlinks_stats_aggregate: Cyberlinks_Stats_Aggregate;
-  /** fetch data from the table: "daily_amount_of_active_neurons" */
-  daily_amount_of_active_neurons: Array<Daily_Amount_Of_Active_Neurons>;
-  /** fetch aggregated fields from the table: "daily_amount_of_active_neurons" */
-  daily_amount_of_active_neurons_aggregate: Daily_Amount_Of_Active_Neurons_Aggregate;
-  /** fetch data from the table: "daily_amount_of_used_gas" */
-  daily_amount_of_used_gas: Array<Daily_Amount_Of_Used_Gas>;
-  /** fetch aggregated fields from the table: "daily_amount_of_used_gas" */
-  daily_amount_of_used_gas_aggregate: Daily_Amount_Of_Used_Gas_Aggregate;
-  /** fetch data from the table: "daily_number_of_transactions" */
-  daily_number_of_transactions: Array<Daily_Number_Of_Transactions>;
-  /** fetch aggregated fields from the table: "daily_number_of_transactions" */
-  daily_number_of_transactions_aggregate: Daily_Number_Of_Transactions_Aggregate;
-  /** fetch data from the table: "follow_stats" */
-  follow_stats: Array<Follow_Stats>;
-  /** fetch aggregated fields from the table: "follow_stats" */
-  follow_stats_aggregate: Follow_Stats_Aggregate;
-  /** fetch data from the table: "genesis_neurons_activation" */
-  genesis_neurons_activation: Array<Genesis_Neurons_Activation>;
-  /** fetch aggregated fields from the table: "genesis_neurons_activation" */
-  genesis_neurons_activation_aggregate: Genesis_Neurons_Activation_Aggregate;
+  /** fetch data from the table in a streaming manner: "cyberlinks" */
+  cyberlinks_stream: Array<Cyberlinks>;
+  /** fetch data from the table: "genesis" */
+  genesis: Array<Genesis>;
+  /** fetch aggregated fields from the table: "genesis" */
+  genesis_aggregate: Genesis_Aggregate;
+  /** fetch data from the table: "genesis" using primary key columns */
+  genesis_by_pk?: Maybe<Genesis>;
+  /** fetch data from the table in a streaming manner: "genesis" */
+  genesis_stream: Array<Genesis>;
   /** An array relationship */
   investmints: Array<Investmints>;
   /** An aggregate relationship */
   investmints_aggregate: Investmints_Aggregate;
   /** fetch data from the table: "investmints" using primary key columns */
   investmints_by_pk?: Maybe<Investmints>;
+  /** fetch data from the table in a streaming manner: "investmints" */
+  investmints_stream: Array<Investmints>;
   /** fetch data from the table: "message" */
   message: Array<Message>;
+  /** fetch data from the table: "message_0" */
+  message_0: Array<Message_0>;
+  /** fetch aggregated fields from the table: "message_0" */
+  message_0_aggregate: Message_0_Aggregate;
+  /** fetch data from the table in a streaming manner: "message_0" */
+  message_0_stream: Array<Message_0>;
   /** fetch aggregated fields from the table: "message" */
   message_aggregate: Message_Aggregate;
+  /** fetch data from the table in a streaming manner: "message" */
+  message_stream: Array<Message>;
+  /** fetch data from the table: "message_type" */
+  message_type: Array<Message_Type>;
+  /** fetch aggregated fields from the table: "message_type" */
+  message_type_aggregate: Message_Type_Aggregate;
+  /** fetch data from the table in a streaming manner: "message_type" */
+  message_type_stream: Array<Message_Type>;
   /** execute function "messages_by_address" which returns "message" */
   messages_by_address: Array<Message>;
   /** execute function "messages_by_address" and query aggregates on result of table type "message" */
   messages_by_address_aggregate: Message_Aggregate;
+  /** execute function "messages_by_type" which returns "message" */
+  messages_by_type: Array<Message>;
+  /** execute function "messages_by_type" and query aggregates on result of table type "message" */
+  messages_by_type_aggregate: Message_Aggregate;
   /** fetch data from the table: "modules" */
   modules: Array<Modules>;
   /** fetch aggregated fields from the table: "modules" */
   modules_aggregate: Modules_Aggregate;
   /** fetch data from the table: "modules" using primary key columns */
   modules_by_pk?: Maybe<Modules>;
-  /** fetch data from the table: "neuron_activation_source" */
-  neuron_activation_source: Array<Neuron_Activation_Source>;
-  /** fetch aggregated fields from the table: "neuron_activation_source" */
-  neuron_activation_source_aggregate: Neuron_Activation_Source_Aggregate;
-  /** fetch data from the table: "number_of_new_neurons" */
-  number_of_new_neurons: Array<Number_Of_New_Neurons>;
-  /** fetch aggregated fields from the table: "number_of_new_neurons" */
-  number_of_new_neurons_aggregate: Number_Of_New_Neurons_Aggregate;
-  /** fetch data from the table: "old_precommits" */
-  old_precommits: Array<Old_Precommits>;
-  /** fetch aggregated fields from the table: "old_precommits" */
-  old_precommits_aggregate: Old_Precommits_Aggregate;
-  /** fetch data from the table: "old_precommits" using primary key columns */
-  old_precommits_by_pk?: Maybe<Old_Precommits>;
+  /** fetch data from the table in a streaming manner: "modules" */
+  modules_stream: Array<Modules>;
   /** An array relationship */
   particles: Array<Particles>;
   /** An aggregate relationship */
   particles_aggregate: Particles_Aggregate;
   /** fetch data from the table: "particles" using primary key columns */
   particles_by_pk?: Maybe<Particles>;
+  /** fetch data from the table in a streaming manner: "particles" */
+  particles_stream: Array<Particles>;
+  /** fetch data from the table: "pools" */
+  pools: Array<Pools>;
+  /** fetch aggregated fields from the table: "pools" */
+  pools_aggregate: Pools_Aggregate;
+  /** fetch data from the table: "pools" using primary key columns */
+  pools_by_pk?: Maybe<Pools>;
+  /** fetch data from the table: "pools_liquidity" */
+  pools_liquidity: Array<Pools_Liquidity>;
+  /** fetch aggregated fields from the table: "pools_liquidity" */
+  pools_liquidity_aggregate: Pools_Liquidity_Aggregate;
+  /** fetch data from the table in a streaming manner: "pools_liquidity" */
+  pools_liquidity_stream: Array<Pools_Liquidity>;
+  /** fetch data from the table: "pools_rates" */
+  pools_rates: Array<Pools_Rates>;
+  /** fetch aggregated fields from the table: "pools_rates" */
+  pools_rates_aggregate: Pools_Rates_Aggregate;
+  /** fetch data from the table in a streaming manner: "pools_rates" */
+  pools_rates_stream: Array<Pools_Rates>;
+  /** fetch data from the table in a streaming manner: "pools" */
+  pools_stream: Array<Pools>;
+  /** fetch data from the table: "pools_volumes" */
+  pools_volumes: Array<Pools_Volumes>;
+  /** fetch aggregated fields from the table: "pools_volumes" */
+  pools_volumes_aggregate: Pools_Volumes_Aggregate;
+  /** fetch data from the table in a streaming manner: "pools_volumes" */
+  pools_volumes_stream: Array<Pools_Volumes>;
   /** fetch data from the table: "pre_commit" */
   pre_commit: Array<Pre_Commit>;
   /** fetch aggregated fields from the table: "pre_commit" */
   pre_commit_aggregate: Pre_Commit_Aggregate;
-  /** fetch data from the table: "pre_commits_rewards_view" */
-  pre_commits_rewards_view: Array<Pre_Commits_Rewards_View>;
-  /** fetch aggregated fields from the table: "pre_commits_rewards_view" */
-  pre_commits_rewards_view_aggregate: Pre_Commits_Rewards_View_Aggregate;
-  /** fetch data from the table: "pre_commits_total" */
-  pre_commits_total: Array<Pre_Commits_Total>;
-  /** fetch aggregated fields from the table: "pre_commits_total" */
-  pre_commits_total_aggregate: Pre_Commits_Total_Aggregate;
-  /** fetch data from the table: "pre_commits_view" */
-  pre_commits_view: Array<Pre_Commits_View>;
-  /** fetch aggregated fields from the table: "pre_commits_view" */
-  pre_commits_view_aggregate: Pre_Commits_View_Aggregate;
+  /** fetch data from the table in a streaming manner: "pre_commit" */
+  pre_commit_stream: Array<Pre_Commit>;
   /** fetch data from the table: "pruning" */
   pruning: Array<Pruning>;
   /** fetch aggregated fields from the table: "pruning" */
   pruning_aggregate: Pruning_Aggregate;
-  /** fetch data from the table: "pussy_gift_proofs" */
-  pussy_gift_proofs: Array<Pussy_Gift_Proofs>;
-  /** fetch aggregated fields from the table: "pussy_gift_proofs" */
-  pussy_gift_proofs_aggregate: Pussy_Gift_Proofs_Aggregate;
+  /** fetch data from the table in a streaming manner: "pruning" */
+  pruning_stream: Array<Pruning>;
   /** An array relationship */
   routes: Array<Routes>;
   /** An aggregate relationship */
   routes_aggregate: Routes_Aggregate;
   /** fetch data from the table: "routes" using primary key columns */
   routes_by_pk?: Maybe<Routes>;
+  /** fetch data from the table in a streaming manner: "routes" */
+  routes_stream: Array<Routes>;
   /** fetch data from the table: "supply" */
   supply: Array<Supply>;
   /** fetch aggregated fields from the table: "supply" */
   supply_aggregate: Supply_Aggregate;
   /** fetch data from the table: "supply" using primary key columns */
   supply_by_pk?: Maybe<Supply>;
-  /** fetch data from the table: "test_gift" */
-  test_gift: Array<Test_Gift>;
-  /** fetch aggregated fields from the table: "test_gift" */
-  test_gift_aggregate: Test_Gift_Aggregate;
-  /** fetch data from the table: "today_top_txs" */
-  today_top_txs: Array<Today_Top_Txs>;
-  /** fetch aggregated fields from the table: "today_top_txs" */
-  today_top_txs_aggregate: Today_Top_Txs_Aggregate;
-  /** fetch data from the table: "top_10_of_active_neurons_week" */
-  top_10_of_active_neurons_week: Array<Top_10_Of_Active_Neurons_Week>;
-  /** fetch aggregated fields from the table: "top_10_of_active_neurons_week" */
-  top_10_of_active_neurons_week_aggregate: Top_10_Of_Active_Neurons_Week_Aggregate;
-  /** fetch data from the table: "top_first_txs" */
-  top_first_txs: Array<Top_First_Txs>;
-  /** fetch aggregated fields from the table: "top_first_txs" */
-  top_first_txs_aggregate: Top_First_Txs_Aggregate;
-  /** fetch data from the table: "top_leaders" */
-  top_leaders: Array<Top_Leaders>;
-  /** fetch data from the table: "top_txs" */
-  top_txs: Array<Top_Txs>;
-  /** fetch aggregated fields from the table: "top_txs" */
-  top_txs_aggregate: Top_Txs_Aggregate;
+  /** fetch data from the table in a streaming manner: "supply" */
+  supply_stream: Array<Supply>;
+  /** An array relationship */
+  swaps: Array<Swaps>;
+  /** An aggregate relationship */
+  swaps_aggregate: Swaps_Aggregate;
+  /** fetch data from the table: "swaps" using primary key columns */
+  swaps_by_pk?: Maybe<Swaps>;
+  /** fetch data from the table in a streaming manner: "swaps" */
+  swaps_stream: Array<Swaps>;
   /** fetch data from the table: "transaction" */
   transaction: Array<Transaction>;
+  /** fetch data from the table: "transaction_0" */
+  transaction_0: Array<Transaction_0>;
+  /** fetch aggregated fields from the table: "transaction_0" */
+  transaction_0_aggregate: Transaction_0_Aggregate;
+  /** fetch data from the table in a streaming manner: "transaction_0" */
+  transaction_0_stream: Array<Transaction_0>;
   /** fetch aggregated fields from the table: "transaction" */
   transaction_aggregate: Transaction_Aggregate;
-  /** fetch data from the table: "transaction" using primary key columns */
-  transaction_by_pk?: Maybe<Transaction>;
-  /** fetch data from the table: "tweets_stats" */
-  tweets_stats: Array<Tweets_Stats>;
-  /** fetch aggregated fields from the table: "tweets_stats" */
-  tweets_stats_aggregate: Tweets_Stats_Aggregate;
-  /** fetch data from the table: "txs_ranked" */
-  txs_ranked: Array<Txs_Ranked>;
-  /** fetch aggregated fields from the table: "txs_ranked" */
-  txs_ranked_aggregate: Txs_Ranked_Aggregate;
-  /** fetch data from the table: "txs_stats" */
-  txs_stats: Array<Txs_Stats>;
-  /** fetch aggregated fields from the table: "txs_stats" */
-  txs_stats_aggregate: Txs_Stats_Aggregate;
-  /** fetch data from the table: "uptime" */
-  uptime: Array<Uptime>;
-  /** fetch aggregated fields from the table: "uptime" */
-  uptime_aggregate: Uptime_Aggregate;
+  /** fetch data from the table in a streaming manner: "transaction" */
+  transaction_stream: Array<Transaction>;
   /** fetch data from the table: "validator" */
   validator: Array<Validator>;
   /** fetch aggregated fields from the table: "validator" */
   validator_aggregate: Validator_Aggregate;
   /** fetch data from the table: "validator" using primary key columns */
   validator_by_pk?: Maybe<Validator>;
-  /** fetch data from the table: "volts_demand" */
-  volts_demand: Array<Volts_Demand>;
-  /** fetch aggregated fields from the table: "volts_demand" */
-  volts_demand_aggregate: Volts_Demand_Aggregate;
-  /** fetch data from the table: "volts_stats" */
-  volts_stats: Array<Volts_Stats>;
-  /** fetch aggregated fields from the table: "volts_stats" */
-  volts_stats_aggregate: Volts_Stats_Aggregate;
-};
-
-
-export type Subscription_Root_TransactionArgs = {
-  distinct_on?: InputMaybe<Array<_Transaction_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<_Transaction_Order_By>>;
-  where?: InputMaybe<_Transaction_Bool_Exp>;
-};
-
-
-export type Subscription_Root_Transaction_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<_Transaction_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<_Transaction_Order_By>>;
-  where?: InputMaybe<_Transaction_Bool_Exp>;
-};
-
-
-export type Subscription_Root_Uptime_TempArgs = {
-  distinct_on?: InputMaybe<Array<_Uptime_Temp_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<_Uptime_Temp_Order_By>>;
-  where?: InputMaybe<_Uptime_Temp_Bool_Exp>;
-};
-
-
-export type Subscription_Root_Uptime_Temp_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<_Uptime_Temp_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<_Uptime_Temp_Order_By>>;
-  where?: InputMaybe<_Uptime_Temp_Bool_Exp>;
+  /** fetch data from the table in a streaming manner: "validator" */
+  validator_stream: Array<Validator>;
+  /** fetch data from the table: "vesting_account" */
+  vesting_account: Array<Vesting_Account>;
+  /** fetch aggregated fields from the table: "vesting_account" */
+  vesting_account_aggregate: Vesting_Account_Aggregate;
+  /** fetch data from the table: "vesting_account" using primary key columns */
+  vesting_account_by_pk?: Maybe<Vesting_Account>;
+  /** fetch data from the table in a streaming manner: "vesting_account" */
+  vesting_account_stream: Array<Vesting_Account>;
+  /** fetch data from the table: "vesting_period" */
+  vesting_period: Array<Vesting_Period>;
+  /** fetch aggregated fields from the table: "vesting_period" */
+  vesting_period_aggregate: Vesting_Period_Aggregate;
+  /** fetch data from the table in a streaming manner: "vesting_period" */
+  vesting_period_stream: Array<Vesting_Period>;
 };
 
 
@@ -6884,8 +5998,142 @@ export type Subscription_RootAccount_Balance_By_PkArgs = {
 };
 
 
+export type Subscription_RootAccount_Balance_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Account_Balance_Stream_Cursor_Input>>;
+  where?: InputMaybe<Account_Balance_Bool_Exp>;
+};
+
+
 export type Subscription_RootAccount_By_PkArgs = {
   address: Scalars['String']['input'];
+};
+
+
+export type Subscription_RootAccount_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Account_Stream_Cursor_Input>>;
+  where?: InputMaybe<Account_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_From_GenesisArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_From_Genesis_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_From_Genesis_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_From_Genesis_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_From_Genesis_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_From_Genesis_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_From_Genesis_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_From_Genesis_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_From_Genesis_By_PkArgs = {
+  one_row_id: Scalars['Boolean']['input'];
+};
+
+
+export type Subscription_RootAverage_Block_Time_From_Genesis_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Average_Block_Time_From_Genesis_Stream_Cursor_Input>>;
+  where?: InputMaybe<Average_Block_Time_From_Genesis_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_DayArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Day_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Day_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Day_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_Day_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Day_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Day_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Day_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_Day_By_PkArgs = {
+  one_row_id: Scalars['Boolean']['input'];
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_Day_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Average_Block_Time_Per_Day_Stream_Cursor_Input>>;
+  where?: InputMaybe<Average_Block_Time_Per_Day_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_HourArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Hour_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Hour_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Hour_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_Hour_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Hour_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Hour_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Hour_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_Hour_By_PkArgs = {
+  one_row_id: Scalars['Boolean']['input'];
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_Hour_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Average_Block_Time_Per_Hour_Stream_Cursor_Input>>;
+  where?: InputMaybe<Average_Block_Time_Per_Hour_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_MinuteArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Minute_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Minute_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Minute_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_Minute_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Average_Block_Time_Per_Minute_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Average_Block_Time_Per_Minute_Order_By>>;
+  where?: InputMaybe<Average_Block_Time_Per_Minute_Bool_Exp>;
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_Minute_By_PkArgs = {
+  one_row_id: Scalars['Boolean']['input'];
+};
+
+
+export type Subscription_RootAverage_Block_Time_Per_Minute_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Average_Block_Time_Per_Minute_Stream_Cursor_Input>>;
+  where?: InputMaybe<Average_Block_Time_Per_Minute_Bool_Exp>;
 };
 
 
@@ -6912,6 +6160,13 @@ export type Subscription_RootBlock_By_PkArgs = {
 };
 
 
+export type Subscription_RootBlock_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Block_Stream_Cursor_Input>>;
+  where?: InputMaybe<Block_Bool_Exp>;
+};
+
+
 export type Subscription_RootContractsArgs = {
   distinct_on?: InputMaybe<Array<Contracts_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -6935,75 +6190,10 @@ export type Subscription_RootContracts_By_PkArgs = {
 };
 
 
-export type Subscription_RootCyb_CohortArgs = {
-  distinct_on?: InputMaybe<Array<Cyb_Cohort_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyb_Cohort_Order_By>>;
-  where?: InputMaybe<Cyb_Cohort_Bool_Exp>;
-};
-
-
-export type Subscription_RootCyb_Cohort_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyb_Cohort_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyb_Cohort_Order_By>>;
-  where?: InputMaybe<Cyb_Cohort_Bool_Exp>;
-};
-
-
-export type Subscription_RootCyb_New_CohortArgs = {
-  distinct_on?: InputMaybe<Array<Cyb_New_Cohort_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyb_New_Cohort_Order_By>>;
-  where?: InputMaybe<Cyb_New_Cohort_Bool_Exp>;
-};
-
-
-export type Subscription_RootCyb_New_Cohort_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyb_New_Cohort_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyb_New_Cohort_Order_By>>;
-  where?: InputMaybe<Cyb_New_Cohort_Bool_Exp>;
-};
-
-
-export type Subscription_RootCyber_GiftArgs = {
-  distinct_on?: InputMaybe<Array<Cyber_Gift_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyber_Gift_Order_By>>;
-  where?: InputMaybe<Cyber_Gift_Bool_Exp>;
-};
-
-
-export type Subscription_RootCyber_Gift_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyber_Gift_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyber_Gift_Order_By>>;
-  where?: InputMaybe<Cyber_Gift_Bool_Exp>;
-};
-
-
-export type Subscription_RootCyber_Gift_ProofsArgs = {
-  distinct_on?: InputMaybe<Array<Cyber_Gift_Proofs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyber_Gift_Proofs_Order_By>>;
-  where?: InputMaybe<Cyber_Gift_Proofs_Bool_Exp>;
-};
-
-
-export type Subscription_RootCyber_Gift_Proofs_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyber_Gift_Proofs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyber_Gift_Proofs_Order_By>>;
-  where?: InputMaybe<Cyber_Gift_Proofs_Bool_Exp>;
+export type Subscription_RootContracts_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Contracts_Stream_Cursor_Input>>;
+  where?: InputMaybe<Contracts_Bool_Exp>;
 };
 
 
@@ -7030,111 +6220,40 @@ export type Subscription_RootCyberlinks_By_PkArgs = {
 };
 
 
-export type Subscription_RootCyberlinks_StatsArgs = {
-  distinct_on?: InputMaybe<Array<Cyberlinks_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyberlinks_Stats_Order_By>>;
-  where?: InputMaybe<Cyberlinks_Stats_Bool_Exp>;
+export type Subscription_RootCyberlinks_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Cyberlinks_Stream_Cursor_Input>>;
+  where?: InputMaybe<Cyberlinks_Bool_Exp>;
 };
 
 
-export type Subscription_RootCyberlinks_Stats_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyberlinks_Stats_Select_Column>>;
+export type Subscription_RootGenesisArgs = {
+  distinct_on?: InputMaybe<Array<Genesis_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyberlinks_Stats_Order_By>>;
-  where?: InputMaybe<Cyberlinks_Stats_Bool_Exp>;
+  order_by?: InputMaybe<Array<Genesis_Order_By>>;
+  where?: InputMaybe<Genesis_Bool_Exp>;
 };
 
 
-export type Subscription_RootDaily_Amount_Of_Active_NeuronsArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Select_Column>>;
+export type Subscription_RootGenesis_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Genesis_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Order_By>>;
-  where?: InputMaybe<Daily_Amount_Of_Active_Neurons_Bool_Exp>;
+  order_by?: InputMaybe<Array<Genesis_Order_By>>;
+  where?: InputMaybe<Genesis_Bool_Exp>;
 };
 
 
-export type Subscription_RootDaily_Amount_Of_Active_Neurons_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Amount_Of_Active_Neurons_Order_By>>;
-  where?: InputMaybe<Daily_Amount_Of_Active_Neurons_Bool_Exp>;
+export type Subscription_RootGenesis_By_PkArgs = {
+  one_row_id: Scalars['Boolean']['input'];
 };
 
 
-export type Subscription_RootDaily_Amount_Of_Used_GasArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Order_By>>;
-  where?: InputMaybe<Daily_Amount_Of_Used_Gas_Bool_Exp>;
-};
-
-
-export type Subscription_RootDaily_Amount_Of_Used_Gas_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Amount_Of_Used_Gas_Order_By>>;
-  where?: InputMaybe<Daily_Amount_Of_Used_Gas_Bool_Exp>;
-};
-
-
-export type Subscription_RootDaily_Number_Of_TransactionsArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Number_Of_Transactions_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Number_Of_Transactions_Order_By>>;
-  where?: InputMaybe<Daily_Number_Of_Transactions_Bool_Exp>;
-};
-
-
-export type Subscription_RootDaily_Number_Of_Transactions_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Daily_Number_Of_Transactions_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Daily_Number_Of_Transactions_Order_By>>;
-  where?: InputMaybe<Daily_Number_Of_Transactions_Bool_Exp>;
-};
-
-
-export type Subscription_RootFollow_StatsArgs = {
-  distinct_on?: InputMaybe<Array<Follow_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Follow_Stats_Order_By>>;
-  where?: InputMaybe<Follow_Stats_Bool_Exp>;
-};
-
-
-export type Subscription_RootFollow_Stats_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Follow_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Follow_Stats_Order_By>>;
-  where?: InputMaybe<Follow_Stats_Bool_Exp>;
-};
-
-
-export type Subscription_RootGenesis_Neurons_ActivationArgs = {
-  distinct_on?: InputMaybe<Array<Genesis_Neurons_Activation_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Genesis_Neurons_Activation_Order_By>>;
-  where?: InputMaybe<Genesis_Neurons_Activation_Bool_Exp>;
-};
-
-
-export type Subscription_RootGenesis_Neurons_Activation_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Genesis_Neurons_Activation_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Genesis_Neurons_Activation_Order_By>>;
-  where?: InputMaybe<Genesis_Neurons_Activation_Bool_Exp>;
+export type Subscription_RootGenesis_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Genesis_Stream_Cursor_Input>>;
+  where?: InputMaybe<Genesis_Bool_Exp>;
 };
 
 
@@ -7161,6 +6280,13 @@ export type Subscription_RootInvestmints_By_PkArgs = {
 };
 
 
+export type Subscription_RootInvestmints_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Investmints_Stream_Cursor_Input>>;
+  where?: InputMaybe<Investmints_Bool_Exp>;
+};
+
+
 export type Subscription_RootMessageArgs = {
   distinct_on?: InputMaybe<Array<Message_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -7170,12 +6296,69 @@ export type Subscription_RootMessageArgs = {
 };
 
 
+export type Subscription_RootMessage_0Args = {
+  distinct_on?: InputMaybe<Array<Message_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_0_Order_By>>;
+  where?: InputMaybe<Message_0_Bool_Exp>;
+};
+
+
+export type Subscription_RootMessage_0_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Message_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_0_Order_By>>;
+  where?: InputMaybe<Message_0_Bool_Exp>;
+};
+
+
+export type Subscription_RootMessage_0_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Message_0_Stream_Cursor_Input>>;
+  where?: InputMaybe<Message_0_Bool_Exp>;
+};
+
+
 export type Subscription_RootMessage_AggregateArgs = {
   distinct_on?: InputMaybe<Array<Message_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<Message_Order_By>>;
   where?: InputMaybe<Message_Bool_Exp>;
+};
+
+
+export type Subscription_RootMessage_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Message_Stream_Cursor_Input>>;
+  where?: InputMaybe<Message_Bool_Exp>;
+};
+
+
+export type Subscription_RootMessage_TypeArgs = {
+  distinct_on?: InputMaybe<Array<Message_Type_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_Type_Order_By>>;
+  where?: InputMaybe<Message_Type_Bool_Exp>;
+};
+
+
+export type Subscription_RootMessage_Type_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Message_Type_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_Type_Order_By>>;
+  where?: InputMaybe<Message_Type_Bool_Exp>;
+};
+
+
+export type Subscription_RootMessage_Type_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Message_Type_Stream_Cursor_Input>>;
+  where?: InputMaybe<Message_Type_Bool_Exp>;
 };
 
 
@@ -7191,6 +6374,26 @@ export type Subscription_RootMessages_By_AddressArgs = {
 
 export type Subscription_RootMessages_By_Address_AggregateArgs = {
   args: Messages_By_Address_Args;
+  distinct_on?: InputMaybe<Array<Message_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_Order_By>>;
+  where?: InputMaybe<Message_Bool_Exp>;
+};
+
+
+export type Subscription_RootMessages_By_TypeArgs = {
+  args: Messages_By_Type_Args;
+  distinct_on?: InputMaybe<Array<Message_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_Order_By>>;
+  where?: InputMaybe<Message_Bool_Exp>;
+};
+
+
+export type Subscription_RootMessages_By_Type_AggregateArgs = {
+  args: Messages_By_Type_Args;
   distinct_on?: InputMaybe<Array<Message_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -7222,62 +6425,10 @@ export type Subscription_RootModules_By_PkArgs = {
 };
 
 
-export type Subscription_RootNeuron_Activation_SourceArgs = {
-  distinct_on?: InputMaybe<Array<Neuron_Activation_Source_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Neuron_Activation_Source_Order_By>>;
-  where?: InputMaybe<Neuron_Activation_Source_Bool_Exp>;
-};
-
-
-export type Subscription_RootNeuron_Activation_Source_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Neuron_Activation_Source_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Neuron_Activation_Source_Order_By>>;
-  where?: InputMaybe<Neuron_Activation_Source_Bool_Exp>;
-};
-
-
-export type Subscription_RootNumber_Of_New_NeuronsArgs = {
-  distinct_on?: InputMaybe<Array<Number_Of_New_Neurons_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Number_Of_New_Neurons_Order_By>>;
-  where?: InputMaybe<Number_Of_New_Neurons_Bool_Exp>;
-};
-
-
-export type Subscription_RootNumber_Of_New_Neurons_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Number_Of_New_Neurons_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Number_Of_New_Neurons_Order_By>>;
-  where?: InputMaybe<Number_Of_New_Neurons_Bool_Exp>;
-};
-
-
-export type Subscription_RootOld_PrecommitsArgs = {
-  distinct_on?: InputMaybe<Array<Old_Precommits_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Old_Precommits_Order_By>>;
-  where?: InputMaybe<Old_Precommits_Bool_Exp>;
-};
-
-
-export type Subscription_RootOld_Precommits_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Old_Precommits_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Old_Precommits_Order_By>>;
-  where?: InputMaybe<Old_Precommits_Bool_Exp>;
-};
-
-
-export type Subscription_RootOld_Precommits_By_PkArgs = {
-  consensus_address: Scalars['String']['input'];
+export type Subscription_RootModules_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Modules_Stream_Cursor_Input>>;
+  where?: InputMaybe<Modules_Bool_Exp>;
 };
 
 
@@ -7304,6 +6455,118 @@ export type Subscription_RootParticles_By_PkArgs = {
 };
 
 
+export type Subscription_RootParticles_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Particles_Stream_Cursor_Input>>;
+  where?: InputMaybe<Particles_Bool_Exp>;
+};
+
+
+export type Subscription_RootPoolsArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Order_By>>;
+  where?: InputMaybe<Pools_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Order_By>>;
+  where?: InputMaybe<Pools_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_By_PkArgs = {
+  pool_id: Scalars['bigint']['input'];
+};
+
+
+export type Subscription_RootPools_LiquidityArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Liquidity_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Liquidity_Order_By>>;
+  where?: InputMaybe<Pools_Liquidity_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_Liquidity_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Liquidity_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Liquidity_Order_By>>;
+  where?: InputMaybe<Pools_Liquidity_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_Liquidity_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Pools_Liquidity_Stream_Cursor_Input>>;
+  where?: InputMaybe<Pools_Liquidity_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_RatesArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Rates_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Rates_Order_By>>;
+  where?: InputMaybe<Pools_Rates_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_Rates_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Rates_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Rates_Order_By>>;
+  where?: InputMaybe<Pools_Rates_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_Rates_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Pools_Rates_Stream_Cursor_Input>>;
+  where?: InputMaybe<Pools_Rates_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Pools_Stream_Cursor_Input>>;
+  where?: InputMaybe<Pools_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_VolumesArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Volumes_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Volumes_Order_By>>;
+  where?: InputMaybe<Pools_Volumes_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_Volumes_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Pools_Volumes_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Pools_Volumes_Order_By>>;
+  where?: InputMaybe<Pools_Volumes_Bool_Exp>;
+};
+
+
+export type Subscription_RootPools_Volumes_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Pools_Volumes_Stream_Cursor_Input>>;
+  where?: InputMaybe<Pools_Volumes_Bool_Exp>;
+};
+
+
 export type Subscription_RootPre_CommitArgs = {
   distinct_on?: InputMaybe<Array<Pre_Commit_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -7322,57 +6585,10 @@ export type Subscription_RootPre_Commit_AggregateArgs = {
 };
 
 
-export type Subscription_RootPre_Commits_Rewards_ViewArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_Rewards_View_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_Rewards_View_Order_By>>;
-  where?: InputMaybe<Pre_Commits_Rewards_View_Bool_Exp>;
-};
-
-
-export type Subscription_RootPre_Commits_Rewards_View_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_Rewards_View_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_Rewards_View_Order_By>>;
-  where?: InputMaybe<Pre_Commits_Rewards_View_Bool_Exp>;
-};
-
-
-export type Subscription_RootPre_Commits_TotalArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_Total_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_Total_Order_By>>;
-  where?: InputMaybe<Pre_Commits_Total_Bool_Exp>;
-};
-
-
-export type Subscription_RootPre_Commits_Total_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_Total_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_Total_Order_By>>;
-  where?: InputMaybe<Pre_Commits_Total_Bool_Exp>;
-};
-
-
-export type Subscription_RootPre_Commits_ViewArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_View_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_View_Order_By>>;
-  where?: InputMaybe<Pre_Commits_View_Bool_Exp>;
-};
-
-
-export type Subscription_RootPre_Commits_View_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Pre_Commits_View_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pre_Commits_View_Order_By>>;
-  where?: InputMaybe<Pre_Commits_View_Bool_Exp>;
+export type Subscription_RootPre_Commit_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Pre_Commit_Stream_Cursor_Input>>;
+  where?: InputMaybe<Pre_Commit_Bool_Exp>;
 };
 
 
@@ -7394,21 +6610,10 @@ export type Subscription_RootPruning_AggregateArgs = {
 };
 
 
-export type Subscription_RootPussy_Gift_ProofsArgs = {
-  distinct_on?: InputMaybe<Array<Pussy_Gift_Proofs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pussy_Gift_Proofs_Order_By>>;
-  where?: InputMaybe<Pussy_Gift_Proofs_Bool_Exp>;
-};
-
-
-export type Subscription_RootPussy_Gift_Proofs_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Pussy_Gift_Proofs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Pussy_Gift_Proofs_Order_By>>;
-  where?: InputMaybe<Pussy_Gift_Proofs_Bool_Exp>;
+export type Subscription_RootPruning_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Pruning_Stream_Cursor_Input>>;
+  where?: InputMaybe<Pruning_Bool_Exp>;
 };
 
 
@@ -7435,6 +6640,13 @@ export type Subscription_RootRoutes_By_PkArgs = {
 };
 
 
+export type Subscription_RootRoutes_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Routes_Stream_Cursor_Input>>;
+  where?: InputMaybe<Routes_Bool_Exp>;
+};
+
+
 export type Subscription_RootSupplyArgs = {
   distinct_on?: InputMaybe<Array<Supply_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -7458,102 +6670,40 @@ export type Subscription_RootSupply_By_PkArgs = {
 };
 
 
-export type Subscription_RootTest_GiftArgs = {
-  distinct_on?: InputMaybe<Array<Test_Gift_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Test_Gift_Order_By>>;
-  where?: InputMaybe<Test_Gift_Bool_Exp>;
+export type Subscription_RootSupply_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Supply_Stream_Cursor_Input>>;
+  where?: InputMaybe<Supply_Bool_Exp>;
 };
 
 
-export type Subscription_RootTest_Gift_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Test_Gift_Select_Column>>;
+export type Subscription_RootSwapsArgs = {
+  distinct_on?: InputMaybe<Array<Swaps_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Test_Gift_Order_By>>;
-  where?: InputMaybe<Test_Gift_Bool_Exp>;
+  order_by?: InputMaybe<Array<Swaps_Order_By>>;
+  where?: InputMaybe<Swaps_Bool_Exp>;
 };
 
 
-export type Subscription_RootToday_Top_TxsArgs = {
-  distinct_on?: InputMaybe<Array<Today_Top_Txs_Select_Column>>;
+export type Subscription_RootSwaps_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Swaps_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Today_Top_Txs_Order_By>>;
-  where?: InputMaybe<Today_Top_Txs_Bool_Exp>;
+  order_by?: InputMaybe<Array<Swaps_Order_By>>;
+  where?: InputMaybe<Swaps_Bool_Exp>;
 };
 
 
-export type Subscription_RootToday_Top_Txs_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Today_Top_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Today_Top_Txs_Order_By>>;
-  where?: InputMaybe<Today_Top_Txs_Bool_Exp>;
+export type Subscription_RootSwaps_By_PkArgs = {
+  pool_id: Scalars['bigint']['input'];
 };
 
 
-export type Subscription_RootTop_10_Of_Active_Neurons_WeekArgs = {
-  distinct_on?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Order_By>>;
-  where?: InputMaybe<Top_10_Of_Active_Neurons_Week_Bool_Exp>;
-};
-
-
-export type Subscription_RootTop_10_Of_Active_Neurons_Week_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Order_By>>;
-  where?: InputMaybe<Top_10_Of_Active_Neurons_Week_Bool_Exp>;
-};
-
-
-export type Subscription_RootTop_First_TxsArgs = {
-  distinct_on?: InputMaybe<Array<Top_First_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_First_Txs_Order_By>>;
-  where?: InputMaybe<Top_First_Txs_Bool_Exp>;
-};
-
-
-export type Subscription_RootTop_First_Txs_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Top_First_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_First_Txs_Order_By>>;
-  where?: InputMaybe<Top_First_Txs_Bool_Exp>;
-};
-
-
-export type Subscription_RootTop_LeadersArgs = {
-  distinct_on?: InputMaybe<Array<Top_Leaders_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_Leaders_Order_By>>;
-  where?: InputMaybe<Top_Leaders_Bool_Exp>;
-};
-
-
-export type Subscription_RootTop_TxsArgs = {
-  distinct_on?: InputMaybe<Array<Top_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_Txs_Order_By>>;
-  where?: InputMaybe<Top_Txs_Bool_Exp>;
-};
-
-
-export type Subscription_RootTop_Txs_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Top_Txs_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Top_Txs_Order_By>>;
-  where?: InputMaybe<Top_Txs_Bool_Exp>;
+export type Subscription_RootSwaps_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Swaps_Stream_Cursor_Input>>;
+  where?: InputMaybe<Swaps_Bool_Exp>;
 };
 
 
@@ -7566,6 +6716,31 @@ export type Subscription_RootTransactionArgs = {
 };
 
 
+export type Subscription_RootTransaction_0Args = {
+  distinct_on?: InputMaybe<Array<Transaction_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Transaction_0_Order_By>>;
+  where?: InputMaybe<Transaction_0_Bool_Exp>;
+};
+
+
+export type Subscription_RootTransaction_0_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Transaction_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Transaction_0_Order_By>>;
+  where?: InputMaybe<Transaction_0_Bool_Exp>;
+};
+
+
+export type Subscription_RootTransaction_0_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Transaction_0_Stream_Cursor_Input>>;
+  where?: InputMaybe<Transaction_0_Bool_Exp>;
+};
+
+
 export type Subscription_RootTransaction_AggregateArgs = {
   distinct_on?: InputMaybe<Array<Transaction_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -7575,80 +6750,10 @@ export type Subscription_RootTransaction_AggregateArgs = {
 };
 
 
-export type Subscription_RootTransaction_By_PkArgs = {
-  hash: Scalars['String']['input'];
-};
-
-
-export type Subscription_RootTweets_StatsArgs = {
-  distinct_on?: InputMaybe<Array<Tweets_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Tweets_Stats_Order_By>>;
-  where?: InputMaybe<Tweets_Stats_Bool_Exp>;
-};
-
-
-export type Subscription_RootTweets_Stats_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Tweets_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Tweets_Stats_Order_By>>;
-  where?: InputMaybe<Tweets_Stats_Bool_Exp>;
-};
-
-
-export type Subscription_RootTxs_RankedArgs = {
-  distinct_on?: InputMaybe<Array<Txs_Ranked_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Txs_Ranked_Order_By>>;
-  where?: InputMaybe<Txs_Ranked_Bool_Exp>;
-};
-
-
-export type Subscription_RootTxs_Ranked_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Txs_Ranked_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Txs_Ranked_Order_By>>;
-  where?: InputMaybe<Txs_Ranked_Bool_Exp>;
-};
-
-
-export type Subscription_RootTxs_StatsArgs = {
-  distinct_on?: InputMaybe<Array<Txs_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Txs_Stats_Order_By>>;
-  where?: InputMaybe<Txs_Stats_Bool_Exp>;
-};
-
-
-export type Subscription_RootTxs_Stats_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Txs_Stats_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Txs_Stats_Order_By>>;
-  where?: InputMaybe<Txs_Stats_Bool_Exp>;
-};
-
-
-export type Subscription_RootUptimeArgs = {
-  distinct_on?: InputMaybe<Array<Uptime_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Uptime_Order_By>>;
-  where?: InputMaybe<Uptime_Bool_Exp>;
-};
-
-
-export type Subscription_RootUptime_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Uptime_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Uptime_Order_By>>;
-  where?: InputMaybe<Uptime_Bool_Exp>;
+export type Subscription_RootTransaction_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Transaction_Stream_Cursor_Input>>;
+  where?: InputMaybe<Transaction_Bool_Exp>;
 };
 
 
@@ -7675,44 +6780,70 @@ export type Subscription_RootValidator_By_PkArgs = {
 };
 
 
-export type Subscription_RootVolts_DemandArgs = {
-  distinct_on?: InputMaybe<Array<Volts_Demand_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Volts_Demand_Order_By>>;
-  where?: InputMaybe<Volts_Demand_Bool_Exp>;
+export type Subscription_RootValidator_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Validator_Stream_Cursor_Input>>;
+  where?: InputMaybe<Validator_Bool_Exp>;
 };
 
 
-export type Subscription_RootVolts_Demand_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Volts_Demand_Select_Column>>;
+export type Subscription_RootVesting_AccountArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Account_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Volts_Demand_Order_By>>;
-  where?: InputMaybe<Volts_Demand_Bool_Exp>;
+  order_by?: InputMaybe<Array<Vesting_Account_Order_By>>;
+  where?: InputMaybe<Vesting_Account_Bool_Exp>;
 };
 
 
-export type Subscription_RootVolts_StatsArgs = {
-  distinct_on?: InputMaybe<Array<Volts_Stats_Select_Column>>;
+export type Subscription_RootVesting_Account_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Account_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Volts_Stats_Order_By>>;
-  where?: InputMaybe<Volts_Stats_Bool_Exp>;
+  order_by?: InputMaybe<Array<Vesting_Account_Order_By>>;
+  where?: InputMaybe<Vesting_Account_Bool_Exp>;
 };
 
 
-export type Subscription_RootVolts_Stats_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Volts_Stats_Select_Column>>;
+export type Subscription_RootVesting_Account_By_PkArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type Subscription_RootVesting_Account_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Vesting_Account_Stream_Cursor_Input>>;
+  where?: InputMaybe<Vesting_Account_Bool_Exp>;
+};
+
+
+export type Subscription_RootVesting_PeriodArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Period_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Volts_Stats_Order_By>>;
-  where?: InputMaybe<Volts_Stats_Bool_Exp>;
+  order_by?: InputMaybe<Array<Vesting_Period_Order_By>>;
+  where?: InputMaybe<Vesting_Period_Bool_Exp>;
+};
+
+
+export type Subscription_RootVesting_Period_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Period_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vesting_Period_Order_By>>;
+  where?: InputMaybe<Vesting_Period_Bool_Exp>;
+};
+
+
+export type Subscription_RootVesting_Period_StreamArgs = {
+  batch_size: Scalars['Int']['input'];
+  cursor: Array<InputMaybe<Vesting_Period_Stream_Cursor_Input>>;
+  where?: InputMaybe<Vesting_Period_Bool_Exp>;
 };
 
 /** columns and relationships of "supply" */
 export type Supply = {
-  coins: Scalars['_coin']['output'];
+  coins: Array<Scalars['coin']['output']>;
   height: Scalars['bigint']['output'];
   one_row_id: Scalars['Boolean']['output'];
 };
@@ -7755,18 +6886,20 @@ export type Supply_Bool_Exp = {
   _and?: InputMaybe<Array<Supply_Bool_Exp>>;
   _not?: InputMaybe<Supply_Bool_Exp>;
   _or?: InputMaybe<Array<Supply_Bool_Exp>>;
-  coins?: InputMaybe<_Coin_Comparison_Exp>;
+  coins?: InputMaybe<Coin_Array_Comparison_Exp>;
   height?: InputMaybe<Bigint_Comparison_Exp>;
   one_row_id?: InputMaybe<Boolean_Comparison_Exp>;
 };
 
 /** aggregate max on columns */
 export type Supply_Max_Fields = {
+  coins?: Maybe<Array<Scalars['coin']['output']>>;
   height?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** aggregate min on columns */
 export type Supply_Min_Fields = {
+  coins?: Maybe<Array<Scalars['coin']['output']>>;
   height?: Maybe<Scalars['bigint']['output']>;
 };
 
@@ -7802,6 +6935,21 @@ export type Supply_Stddev_Samp_Fields = {
   height?: Maybe<Scalars['Float']['output']>;
 };
 
+/** Streaming cursor of the table "supply" */
+export type Supply_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Supply_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Supply_Stream_Cursor_Value_Input = {
+  coins?: InputMaybe<Array<Scalars['coin']['input']>>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  one_row_id?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 /** aggregate sum on columns */
 export type Supply_Sum_Fields = {
   height?: Maybe<Scalars['bigint']['output']>;
@@ -7822,131 +6970,285 @@ export type Supply_Variance_Fields = {
   height?: Maybe<Scalars['Float']['output']>;
 };
 
-/** columns and relationships of "test_gift" */
-export type Test_Gift = {
-  address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['bigint']['output']>;
-  details?: Maybe<Scalars['json']['output']>;
-  proof?: Maybe<Scalars['String']['output']>;
+/** columns and relationships of "swaps" */
+export type Swaps = {
+  address: Scalars['String']['output'];
+  /** An object relationship */
+  block: Block;
+  exchanged_demand_coin: Scalars['coin_scalar']['output'];
+  exchanged_demand_coin_fee: Scalars['coin_scalar']['output'];
+  exchanged_offer_coin: Scalars['coin_scalar']['output'];
+  exchanged_offer_coin_fee: Scalars['coin_scalar']['output'];
+  height: Scalars['bigint']['output'];
+  pool_id: Scalars['bigint']['output'];
+  swap_price: Scalars['String']['output'];
 };
 
-
-/** columns and relationships of "test_gift" */
-export type Test_GiftDetailsArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
+/** aggregated selection of "swaps" */
+export type Swaps_Aggregate = {
+  aggregate?: Maybe<Swaps_Aggregate_Fields>;
+  nodes: Array<Swaps>;
 };
 
-/** aggregated selection of "test_gift" */
-export type Test_Gift_Aggregate = {
-  aggregate?: Maybe<Test_Gift_Aggregate_Fields>;
-  nodes: Array<Test_Gift>;
+export type Swaps_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Swaps_Aggregate_Bool_Exp_Count>;
 };
 
-/** aggregate fields of "test_gift" */
-export type Test_Gift_Aggregate_Fields = {
-  avg?: Maybe<Test_Gift_Avg_Fields>;
+export type Swaps_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Swaps_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Swaps_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "swaps" */
+export type Swaps_Aggregate_Fields = {
+  avg?: Maybe<Swaps_Avg_Fields>;
   count: Scalars['Int']['output'];
-  max?: Maybe<Test_Gift_Max_Fields>;
-  min?: Maybe<Test_Gift_Min_Fields>;
-  stddev?: Maybe<Test_Gift_Stddev_Fields>;
-  stddev_pop?: Maybe<Test_Gift_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Test_Gift_Stddev_Samp_Fields>;
-  sum?: Maybe<Test_Gift_Sum_Fields>;
-  var_pop?: Maybe<Test_Gift_Var_Pop_Fields>;
-  var_samp?: Maybe<Test_Gift_Var_Samp_Fields>;
-  variance?: Maybe<Test_Gift_Variance_Fields>;
+  max?: Maybe<Swaps_Max_Fields>;
+  min?: Maybe<Swaps_Min_Fields>;
+  stddev?: Maybe<Swaps_Stddev_Fields>;
+  stddev_pop?: Maybe<Swaps_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Swaps_Stddev_Samp_Fields>;
+  sum?: Maybe<Swaps_Sum_Fields>;
+  var_pop?: Maybe<Swaps_Var_Pop_Fields>;
+  var_samp?: Maybe<Swaps_Var_Samp_Fields>;
+  variance?: Maybe<Swaps_Variance_Fields>;
 };
 
 
-/** aggregate fields of "test_gift" */
-export type Test_Gift_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Test_Gift_Select_Column>>;
+/** aggregate fields of "swaps" */
+export type Swaps_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Swaps_Select_Column>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** aggregate avg on columns */
-export type Test_Gift_Avg_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
+/** order by aggregate values of table "swaps" */
+export type Swaps_Aggregate_Order_By = {
+  avg?: InputMaybe<Swaps_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Swaps_Max_Order_By>;
+  min?: InputMaybe<Swaps_Min_Order_By>;
+  stddev?: InputMaybe<Swaps_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Swaps_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Swaps_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Swaps_Sum_Order_By>;
+  var_pop?: InputMaybe<Swaps_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Swaps_Var_Samp_Order_By>;
+  variance?: InputMaybe<Swaps_Variance_Order_By>;
 };
 
-/** Boolean expression to filter rows from the table "test_gift". All fields are combined with a logical 'AND'. */
-export type Test_Gift_Bool_Exp = {
-  _and?: InputMaybe<Array<Test_Gift_Bool_Exp>>;
-  _not?: InputMaybe<Test_Gift_Bool_Exp>;
-  _or?: InputMaybe<Array<Test_Gift_Bool_Exp>>;
+/** aggregate avg on columns */
+export type Swaps_Avg_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "swaps" */
+export type Swaps_Avg_Order_By = {
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "swaps". All fields are combined with a logical 'AND'. */
+export type Swaps_Bool_Exp = {
+  _and?: InputMaybe<Array<Swaps_Bool_Exp>>;
+  _not?: InputMaybe<Swaps_Bool_Exp>;
+  _or?: InputMaybe<Array<Swaps_Bool_Exp>>;
   address?: InputMaybe<String_Comparison_Exp>;
-  amount?: InputMaybe<Bigint_Comparison_Exp>;
-  details?: InputMaybe<Json_Comparison_Exp>;
-  proof?: InputMaybe<String_Comparison_Exp>;
+  block?: InputMaybe<Block_Bool_Exp>;
+  exchanged_demand_coin?: InputMaybe<Coin_Scalar_Comparison_Exp>;
+  exchanged_demand_coin_fee?: InputMaybe<Coin_Scalar_Comparison_Exp>;
+  exchanged_offer_coin?: InputMaybe<Coin_Scalar_Comparison_Exp>;
+  exchanged_offer_coin_fee?: InputMaybe<Coin_Scalar_Comparison_Exp>;
+  height?: InputMaybe<Bigint_Comparison_Exp>;
+  pool_id?: InputMaybe<Bigint_Comparison_Exp>;
+  swap_price?: InputMaybe<String_Comparison_Exp>;
 };
 
 /** aggregate max on columns */
-export type Test_Gift_Max_Fields = {
+export type Swaps_Max_Fields = {
   address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['bigint']['output']>;
-  proof?: Maybe<Scalars['String']['output']>;
+  exchanged_demand_coin?: Maybe<Scalars['coin_scalar']['output']>;
+  exchanged_demand_coin_fee?: Maybe<Scalars['coin_scalar']['output']>;
+  exchanged_offer_coin?: Maybe<Scalars['coin_scalar']['output']>;
+  exchanged_offer_coin_fee?: Maybe<Scalars['coin_scalar']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  swap_price?: Maybe<Scalars['String']['output']>;
+};
+
+/** order by max() on columns of table "swaps" */
+export type Swaps_Max_Order_By = {
+  address?: InputMaybe<Order_By>;
+  exchanged_demand_coin?: InputMaybe<Order_By>;
+  exchanged_demand_coin_fee?: InputMaybe<Order_By>;
+  exchanged_offer_coin?: InputMaybe<Order_By>;
+  exchanged_offer_coin_fee?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
+  swap_price?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
-export type Test_Gift_Min_Fields = {
+export type Swaps_Min_Fields = {
   address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['bigint']['output']>;
-  proof?: Maybe<Scalars['String']['output']>;
+  exchanged_demand_coin?: Maybe<Scalars['coin_scalar']['output']>;
+  exchanged_demand_coin_fee?: Maybe<Scalars['coin_scalar']['output']>;
+  exchanged_offer_coin?: Maybe<Scalars['coin_scalar']['output']>;
+  exchanged_offer_coin_fee?: Maybe<Scalars['coin_scalar']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+  swap_price?: Maybe<Scalars['String']['output']>;
 };
 
-/** Ordering options when selecting data from "test_gift". */
-export type Test_Gift_Order_By = {
+/** order by min() on columns of table "swaps" */
+export type Swaps_Min_Order_By = {
   address?: InputMaybe<Order_By>;
-  amount?: InputMaybe<Order_By>;
-  details?: InputMaybe<Order_By>;
-  proof?: InputMaybe<Order_By>;
+  exchanged_demand_coin?: InputMaybe<Order_By>;
+  exchanged_demand_coin_fee?: InputMaybe<Order_By>;
+  exchanged_offer_coin?: InputMaybe<Order_By>;
+  exchanged_offer_coin_fee?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
+  swap_price?: InputMaybe<Order_By>;
 };
 
-/** select columns of table "test_gift" */
-export enum Test_Gift_Select_Column {
+/** Ordering options when selecting data from "swaps". */
+export type Swaps_Order_By = {
+  address?: InputMaybe<Order_By>;
+  block?: InputMaybe<Block_Order_By>;
+  exchanged_demand_coin?: InputMaybe<Order_By>;
+  exchanged_demand_coin_fee?: InputMaybe<Order_By>;
+  exchanged_offer_coin?: InputMaybe<Order_By>;
+  exchanged_offer_coin_fee?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
+  swap_price?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "swaps" */
+export enum Swaps_Select_Column {
   /** column name */
   Address = 'address',
   /** column name */
-  Amount = 'amount',
+  ExchangedDemandCoin = 'exchanged_demand_coin',
   /** column name */
-  Details = 'details',
+  ExchangedDemandCoinFee = 'exchanged_demand_coin_fee',
   /** column name */
-  Proof = 'proof'
+  ExchangedOfferCoin = 'exchanged_offer_coin',
+  /** column name */
+  ExchangedOfferCoinFee = 'exchanged_offer_coin_fee',
+  /** column name */
+  Height = 'height',
+  /** column name */
+  PoolId = 'pool_id',
+  /** column name */
+  SwapPrice = 'swap_price'
 }
 
 /** aggregate stddev on columns */
-export type Test_Gift_Stddev_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
+export type Swaps_Stddev_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "swaps" */
+export type Swaps_Stddev_Order_By = {
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_pop on columns */
-export type Test_Gift_Stddev_Pop_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
+export type Swaps_Stddev_Pop_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_pop() on columns of table "swaps" */
+export type Swaps_Stddev_Pop_Order_By = {
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
-export type Test_Gift_Stddev_Samp_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
+export type Swaps_Stddev_Samp_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_samp() on columns of table "swaps" */
+export type Swaps_Stddev_Samp_Order_By = {
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "swaps" */
+export type Swaps_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Swaps_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Swaps_Stream_Cursor_Value_Input = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  exchanged_demand_coin?: InputMaybe<Scalars['coin_scalar']['input']>;
+  exchanged_demand_coin_fee?: InputMaybe<Scalars['coin_scalar']['input']>;
+  exchanged_offer_coin?: InputMaybe<Scalars['coin_scalar']['input']>;
+  exchanged_offer_coin_fee?: InputMaybe<Scalars['coin_scalar']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  pool_id?: InputMaybe<Scalars['bigint']['input']>;
+  swap_price?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** aggregate sum on columns */
-export type Test_Gift_Sum_Fields = {
-  amount?: Maybe<Scalars['bigint']['output']>;
+export type Swaps_Sum_Fields = {
+  height?: Maybe<Scalars['bigint']['output']>;
+  pool_id?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by sum() on columns of table "swaps" */
+export type Swaps_Sum_Order_By = {
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_pop on columns */
-export type Test_Gift_Var_Pop_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
+export type Swaps_Var_Pop_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_pop() on columns of table "swaps" */
+export type Swaps_Var_Pop_Order_By = {
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_samp on columns */
-export type Test_Gift_Var_Samp_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
+export type Swaps_Var_Samp_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_samp() on columns of table "swaps" */
+export type Swaps_Var_Samp_Order_By = {
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate variance on columns */
-export type Test_Gift_Variance_Fields = {
-  amount?: Maybe<Scalars['Float']['output']>;
+export type Swaps_Variance_Fields = {
+  height?: Maybe<Scalars['Float']['output']>;
+  pool_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "swaps" */
+export type Swaps_Variance_Order_By = {
+  height?: InputMaybe<Order_By>;
+  pool_id?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to compare columns of type "timestamp". All fields are combined with logical 'AND'. */
@@ -7962,527 +7264,31 @@ export type Timestamp_Comparison_Exp = {
   _nin?: InputMaybe<Array<Scalars['timestamp']['input']>>;
 };
 
-/** columns and relationships of "today_top_txs" */
-export type Today_Top_Txs = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregated selection of "today_top_txs" */
-export type Today_Top_Txs_Aggregate = {
-  aggregate?: Maybe<Today_Top_Txs_Aggregate_Fields>;
-  nodes: Array<Today_Top_Txs>;
-};
-
-/** aggregate fields of "today_top_txs" */
-export type Today_Top_Txs_Aggregate_Fields = {
-  avg?: Maybe<Today_Top_Txs_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Today_Top_Txs_Max_Fields>;
-  min?: Maybe<Today_Top_Txs_Min_Fields>;
-  stddev?: Maybe<Today_Top_Txs_Stddev_Fields>;
-  stddev_pop?: Maybe<Today_Top_Txs_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Today_Top_Txs_Stddev_Samp_Fields>;
-  sum?: Maybe<Today_Top_Txs_Sum_Fields>;
-  var_pop?: Maybe<Today_Top_Txs_Var_Pop_Fields>;
-  var_samp?: Maybe<Today_Top_Txs_Var_Samp_Fields>;
-  variance?: Maybe<Today_Top_Txs_Variance_Fields>;
-};
-
-
-/** aggregate fields of "today_top_txs" */
-export type Today_Top_Txs_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Today_Top_Txs_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Today_Top_Txs_Avg_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "today_top_txs". All fields are combined with a logical 'AND'. */
-export type Today_Top_Txs_Bool_Exp = {
-  _and?: InputMaybe<Array<Today_Top_Txs_Bool_Exp>>;
-  _not?: InputMaybe<Today_Top_Txs_Bool_Exp>;
-  _or?: InputMaybe<Array<Today_Top_Txs_Bool_Exp>>;
-  count?: InputMaybe<Bigint_Comparison_Exp>;
-  type?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Today_Top_Txs_Max_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type Today_Top_Txs_Min_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "today_top_txs". */
-export type Today_Top_Txs_Order_By = {
-  count?: InputMaybe<Order_By>;
-  type?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "today_top_txs" */
-export enum Today_Top_Txs_Select_Column {
-  /** column name */
-  Count = 'count',
-  /** column name */
-  Type = 'type'
-}
-
-/** aggregate stddev on columns */
-export type Today_Top_Txs_Stddev_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Today_Top_Txs_Stddev_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Today_Top_Txs_Stddev_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Today_Top_Txs_Sum_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Today_Top_Txs_Var_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Today_Top_Txs_Var_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Today_Top_Txs_Variance_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "top_10_of_active_neurons_week" */
-export type Top_10_Of_Active_Neurons_Week = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  pubkey?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregated selection of "top_10_of_active_neurons_week" */
-export type Top_10_Of_Active_Neurons_Week_Aggregate = {
-  aggregate?: Maybe<Top_10_Of_Active_Neurons_Week_Aggregate_Fields>;
-  nodes: Array<Top_10_Of_Active_Neurons_Week>;
-};
-
-/** aggregate fields of "top_10_of_active_neurons_week" */
-export type Top_10_Of_Active_Neurons_Week_Aggregate_Fields = {
-  avg?: Maybe<Top_10_Of_Active_Neurons_Week_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Top_10_Of_Active_Neurons_Week_Max_Fields>;
-  min?: Maybe<Top_10_Of_Active_Neurons_Week_Min_Fields>;
-  stddev?: Maybe<Top_10_Of_Active_Neurons_Week_Stddev_Fields>;
-  stddev_pop?: Maybe<Top_10_Of_Active_Neurons_Week_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Top_10_Of_Active_Neurons_Week_Stddev_Samp_Fields>;
-  sum?: Maybe<Top_10_Of_Active_Neurons_Week_Sum_Fields>;
-  var_pop?: Maybe<Top_10_Of_Active_Neurons_Week_Var_Pop_Fields>;
-  var_samp?: Maybe<Top_10_Of_Active_Neurons_Week_Var_Samp_Fields>;
-  variance?: Maybe<Top_10_Of_Active_Neurons_Week_Variance_Fields>;
-};
-
-
-/** aggregate fields of "top_10_of_active_neurons_week" */
-export type Top_10_Of_Active_Neurons_Week_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Top_10_Of_Active_Neurons_Week_Avg_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "top_10_of_active_neurons_week". All fields are combined with a logical 'AND'. */
-export type Top_10_Of_Active_Neurons_Week_Bool_Exp = {
-  _and?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Bool_Exp>>;
-  _not?: InputMaybe<Top_10_Of_Active_Neurons_Week_Bool_Exp>;
-  _or?: InputMaybe<Array<Top_10_Of_Active_Neurons_Week_Bool_Exp>>;
-  count?: InputMaybe<Bigint_Comparison_Exp>;
-  pubkey?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Top_10_Of_Active_Neurons_Week_Max_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  pubkey?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type Top_10_Of_Active_Neurons_Week_Min_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  pubkey?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "top_10_of_active_neurons_week". */
-export type Top_10_Of_Active_Neurons_Week_Order_By = {
-  count?: InputMaybe<Order_By>;
-  pubkey?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "top_10_of_active_neurons_week" */
-export enum Top_10_Of_Active_Neurons_Week_Select_Column {
-  /** column name */
-  Count = 'count',
-  /** column name */
-  Pubkey = 'pubkey'
-}
-
-/** aggregate stddev on columns */
-export type Top_10_Of_Active_Neurons_Week_Stddev_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Top_10_Of_Active_Neurons_Week_Stddev_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Top_10_Of_Active_Neurons_Week_Stddev_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Top_10_Of_Active_Neurons_Week_Sum_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Top_10_Of_Active_Neurons_Week_Var_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Top_10_Of_Active_Neurons_Week_Var_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Top_10_Of_Active_Neurons_Week_Variance_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "top_first_txs" */
-export type Top_First_Txs = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregated selection of "top_first_txs" */
-export type Top_First_Txs_Aggregate = {
-  aggregate?: Maybe<Top_First_Txs_Aggregate_Fields>;
-  nodes: Array<Top_First_Txs>;
-};
-
-/** aggregate fields of "top_first_txs" */
-export type Top_First_Txs_Aggregate_Fields = {
-  avg?: Maybe<Top_First_Txs_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Top_First_Txs_Max_Fields>;
-  min?: Maybe<Top_First_Txs_Min_Fields>;
-  stddev?: Maybe<Top_First_Txs_Stddev_Fields>;
-  stddev_pop?: Maybe<Top_First_Txs_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Top_First_Txs_Stddev_Samp_Fields>;
-  sum?: Maybe<Top_First_Txs_Sum_Fields>;
-  var_pop?: Maybe<Top_First_Txs_Var_Pop_Fields>;
-  var_samp?: Maybe<Top_First_Txs_Var_Samp_Fields>;
-  variance?: Maybe<Top_First_Txs_Variance_Fields>;
-};
-
-
-/** aggregate fields of "top_first_txs" */
-export type Top_First_Txs_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Top_First_Txs_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Top_First_Txs_Avg_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "top_first_txs". All fields are combined with a logical 'AND'. */
-export type Top_First_Txs_Bool_Exp = {
-  _and?: InputMaybe<Array<Top_First_Txs_Bool_Exp>>;
-  _not?: InputMaybe<Top_First_Txs_Bool_Exp>;
-  _or?: InputMaybe<Array<Top_First_Txs_Bool_Exp>>;
-  count?: InputMaybe<Bigint_Comparison_Exp>;
-  type?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Top_First_Txs_Max_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type Top_First_Txs_Min_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "top_first_txs". */
-export type Top_First_Txs_Order_By = {
-  count?: InputMaybe<Order_By>;
-  type?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "top_first_txs" */
-export enum Top_First_Txs_Select_Column {
-  /** column name */
-  Count = 'count',
-  /** column name */
-  Type = 'type'
-}
-
-/** aggregate stddev on columns */
-export type Top_First_Txs_Stddev_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Top_First_Txs_Stddev_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Top_First_Txs_Stddev_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Top_First_Txs_Sum_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Top_First_Txs_Var_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Top_First_Txs_Var_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Top_First_Txs_Variance_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "top_leaders" */
-export type Top_Leaders = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  neuron?: Maybe<Scalars['String']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "top_leaders". All fields are combined with a logical 'AND'. */
-export type Top_Leaders_Bool_Exp = {
-  _and?: InputMaybe<Array<Top_Leaders_Bool_Exp>>;
-  _not?: InputMaybe<Top_Leaders_Bool_Exp>;
-  _or?: InputMaybe<Array<Top_Leaders_Bool_Exp>>;
-  count?: InputMaybe<Bigint_Comparison_Exp>;
-  neuron?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** Ordering options when selecting data from "top_leaders". */
-export type Top_Leaders_Order_By = {
-  count?: InputMaybe<Order_By>;
-  neuron?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "top_leaders" */
-export enum Top_Leaders_Select_Column {
-  /** column name */
-  Count = 'count',
-  /** column name */
-  Neuron = 'neuron'
-}
-
-/** columns and relationships of "top_txs" */
-export type Top_Txs = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregated selection of "top_txs" */
-export type Top_Txs_Aggregate = {
-  aggregate?: Maybe<Top_Txs_Aggregate_Fields>;
-  nodes: Array<Top_Txs>;
-};
-
-/** aggregate fields of "top_txs" */
-export type Top_Txs_Aggregate_Fields = {
-  avg?: Maybe<Top_Txs_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Top_Txs_Max_Fields>;
-  min?: Maybe<Top_Txs_Min_Fields>;
-  stddev?: Maybe<Top_Txs_Stddev_Fields>;
-  stddev_pop?: Maybe<Top_Txs_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Top_Txs_Stddev_Samp_Fields>;
-  sum?: Maybe<Top_Txs_Sum_Fields>;
-  var_pop?: Maybe<Top_Txs_Var_Pop_Fields>;
-  var_samp?: Maybe<Top_Txs_Var_Samp_Fields>;
-  variance?: Maybe<Top_Txs_Variance_Fields>;
-};
-
-
-/** aggregate fields of "top_txs" */
-export type Top_Txs_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Top_Txs_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Top_Txs_Avg_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "top_txs". All fields are combined with a logical 'AND'. */
-export type Top_Txs_Bool_Exp = {
-  _and?: InputMaybe<Array<Top_Txs_Bool_Exp>>;
-  _not?: InputMaybe<Top_Txs_Bool_Exp>;
-  _or?: InputMaybe<Array<Top_Txs_Bool_Exp>>;
-  count?: InputMaybe<Bigint_Comparison_Exp>;
-  type?: InputMaybe<String_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Top_Txs_Max_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** aggregate min on columns */
-export type Top_Txs_Min_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-/** Ordering options when selecting data from "top_txs". */
-export type Top_Txs_Order_By = {
-  count?: InputMaybe<Order_By>;
-  type?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "top_txs" */
-export enum Top_Txs_Select_Column {
-  /** column name */
-  Count = 'count',
-  /** column name */
-  Type = 'type'
-}
-
-/** aggregate stddev on columns */
-export type Top_Txs_Stddev_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Top_Txs_Stddev_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Top_Txs_Stddev_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Top_Txs_Sum_Fields = {
-  count?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Top_Txs_Var_Pop_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Top_Txs_Var_Samp_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Top_Txs_Variance_Fields = {
-  count?: Maybe<Scalars['Float']['output']>;
-};
-
 /** columns and relationships of "transaction" */
 export type Transaction = {
   /** An object relationship */
   block: Block;
-  /** fetch data from the table: "cyberlinks" */
-  cyberlinks: Array<Cyberlinks>;
-  /** An aggregate relationship */
-  cyberlinks_aggregate: Cyberlinks_Aggregate;
   fee: Scalars['jsonb']['output'];
   gas_used?: Maybe<Scalars['bigint']['output']>;
   gas_wanted?: Maybe<Scalars['bigint']['output']>;
   hash: Scalars['String']['output'];
   height: Scalars['bigint']['output'];
-  /** An array relationship */
-  investmints: Array<Investmints>;
-  /** An aggregate relationship */
-  investmints_aggregate: Investmints_Aggregate;
   logs?: Maybe<Scalars['jsonb']['output']>;
   memo?: Maybe<Scalars['String']['output']>;
+  /** An array relationship */
+  message_0s: Array<Message_0>;
+  /** An aggregate relationship */
+  message_0s_aggregate: Message_0_Aggregate;
   messages: Scalars['jsonb']['output'];
   /** An array relationship */
-  messagesByTransactionHash: Array<Message>;
+  messagesByPartitionIdTransactionHash: Array<Message>;
   /** An aggregate relationship */
-  messagesByTransactionHash_aggregate: Message_Aggregate;
-  /** An array relationship */
-  particles: Array<Particles>;
-  /** An aggregate relationship */
-  particles_aggregate: Particles_Aggregate;
+  messagesByPartitionIdTransactionHash_aggregate: Message_Aggregate;
+  partition_id: Scalars['bigint']['output'];
   raw_log?: Maybe<Scalars['String']['output']>;
-  /** An array relationship */
-  routes: Array<Routes>;
-  /** An aggregate relationship */
-  routes_aggregate: Routes_Aggregate;
-  signatures: Scalars['_text']['output'];
+  signatures: Array<Scalars['String']['output']>;
   signer_infos: Scalars['jsonb']['output'];
   success: Scalars['Boolean']['output'];
-};
-
-
-/** columns and relationships of "transaction" */
-export type TransactionCyberlinksArgs = {
-  distinct_on?: InputMaybe<Array<Cyberlinks_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyberlinks_Order_By>>;
-  where?: InputMaybe<Cyberlinks_Bool_Exp>;
-};
-
-
-/** columns and relationships of "transaction" */
-export type TransactionCyberlinks_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Cyberlinks_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Cyberlinks_Order_By>>;
-  where?: InputMaybe<Cyberlinks_Bool_Exp>;
 };
 
 
@@ -8493,28 +7299,28 @@ export type TransactionFeeArgs = {
 
 
 /** columns and relationships of "transaction" */
-export type TransactionInvestmintsArgs = {
-  distinct_on?: InputMaybe<Array<Investmints_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Investmints_Order_By>>;
-  where?: InputMaybe<Investmints_Bool_Exp>;
-};
-
-
-/** columns and relationships of "transaction" */
-export type TransactionInvestmints_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Investmints_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Investmints_Order_By>>;
-  where?: InputMaybe<Investmints_Bool_Exp>;
-};
-
-
-/** columns and relationships of "transaction" */
 export type TransactionLogsArgs = {
   path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** columns and relationships of "transaction" */
+export type TransactionMessage_0sArgs = {
+  distinct_on?: InputMaybe<Array<Message_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_0_Order_By>>;
+  where?: InputMaybe<Message_0_Bool_Exp>;
+};
+
+
+/** columns and relationships of "transaction" */
+export type TransactionMessage_0s_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Message_0_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_0_Order_By>>;
+  where?: InputMaybe<Message_0_Bool_Exp>;
 };
 
 
@@ -8525,7 +7331,7 @@ export type TransactionMessagesArgs = {
 
 
 /** columns and relationships of "transaction" */
-export type TransactionMessagesByTransactionHashArgs = {
+export type TransactionMessagesByPartitionIdTransactionHashArgs = {
   distinct_on?: InputMaybe<Array<Message_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -8535,52 +7341,12 @@ export type TransactionMessagesByTransactionHashArgs = {
 
 
 /** columns and relationships of "transaction" */
-export type TransactionMessagesByTransactionHash_AggregateArgs = {
+export type TransactionMessagesByPartitionIdTransactionHash_AggregateArgs = {
   distinct_on?: InputMaybe<Array<Message_Select_Column>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   order_by?: InputMaybe<Array<Message_Order_By>>;
   where?: InputMaybe<Message_Bool_Exp>;
-};
-
-
-/** columns and relationships of "transaction" */
-export type TransactionParticlesArgs = {
-  distinct_on?: InputMaybe<Array<Particles_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Particles_Order_By>>;
-  where?: InputMaybe<Particles_Bool_Exp>;
-};
-
-
-/** columns and relationships of "transaction" */
-export type TransactionParticles_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Particles_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Particles_Order_By>>;
-  where?: InputMaybe<Particles_Bool_Exp>;
-};
-
-
-/** columns and relationships of "transaction" */
-export type TransactionRoutesArgs = {
-  distinct_on?: InputMaybe<Array<Routes_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Routes_Order_By>>;
-  where?: InputMaybe<Routes_Bool_Exp>;
-};
-
-
-/** columns and relationships of "transaction" */
-export type TransactionRoutes_AggregateArgs = {
-  distinct_on?: InputMaybe<Array<Routes_Select_Column>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  order_by?: InputMaybe<Array<Routes_Order_By>>;
-  where?: InputMaybe<Routes_Bool_Exp>;
 };
 
 
@@ -8589,10 +7355,459 @@ export type TransactionSigner_InfosArgs = {
   path?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** columns and relationships of "transaction_0" */
+export type Transaction_0 = {
+  /** An object relationship */
+  block: Block;
+  fee: Scalars['jsonb']['output'];
+  gas_used?: Maybe<Scalars['bigint']['output']>;
+  gas_wanted?: Maybe<Scalars['bigint']['output']>;
+  hash: Scalars['String']['output'];
+  height: Scalars['bigint']['output'];
+  logs?: Maybe<Scalars['jsonb']['output']>;
+  memo?: Maybe<Scalars['String']['output']>;
+  messages: Scalars['jsonb']['output'];
+  /** An array relationship */
+  messagesByPartitionIdTransactionHash: Array<Message>;
+  /** An aggregate relationship */
+  messagesByPartitionIdTransactionHash_aggregate: Message_Aggregate;
+  partition_id: Scalars['bigint']['output'];
+  raw_log?: Maybe<Scalars['String']['output']>;
+  signatures: Array<Scalars['String']['output']>;
+  signer_infos: Scalars['jsonb']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+
+/** columns and relationships of "transaction_0" */
+export type Transaction_0FeeArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** columns and relationships of "transaction_0" */
+export type Transaction_0LogsArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** columns and relationships of "transaction_0" */
+export type Transaction_0MessagesArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** columns and relationships of "transaction_0" */
+export type Transaction_0MessagesByPartitionIdTransactionHashArgs = {
+  distinct_on?: InputMaybe<Array<Message_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_Order_By>>;
+  where?: InputMaybe<Message_Bool_Exp>;
+};
+
+
+/** columns and relationships of "transaction_0" */
+export type Transaction_0MessagesByPartitionIdTransactionHash_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Message_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Message_Order_By>>;
+  where?: InputMaybe<Message_Bool_Exp>;
+};
+
+
+/** columns and relationships of "transaction_0" */
+export type Transaction_0Signer_InfosArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** aggregated selection of "transaction_0" */
+export type Transaction_0_Aggregate = {
+  aggregate?: Maybe<Transaction_0_Aggregate_Fields>;
+  nodes: Array<Transaction_0>;
+};
+
+export type Transaction_0_Aggregate_Bool_Exp = {
+  bool_and?: InputMaybe<Transaction_0_Aggregate_Bool_Exp_Bool_And>;
+  bool_or?: InputMaybe<Transaction_0_Aggregate_Bool_Exp_Bool_Or>;
+  count?: InputMaybe<Transaction_0_Aggregate_Bool_Exp_Count>;
+};
+
+export type Transaction_0_Aggregate_Bool_Exp_Bool_And = {
+  arguments: Transaction_0_Select_Column_Transaction_0_Aggregate_Bool_Exp_Bool_And_Arguments_Columns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Transaction_0_Bool_Exp>;
+  predicate: Boolean_Comparison_Exp;
+};
+
+export type Transaction_0_Aggregate_Bool_Exp_Bool_Or = {
+  arguments: Transaction_0_Select_Column_Transaction_0_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Transaction_0_Bool_Exp>;
+  predicate: Boolean_Comparison_Exp;
+};
+
+export type Transaction_0_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Transaction_0_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Transaction_0_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "transaction_0" */
+export type Transaction_0_Aggregate_Fields = {
+  avg?: Maybe<Transaction_0_Avg_Fields>;
+  count: Scalars['Int']['output'];
+  max?: Maybe<Transaction_0_Max_Fields>;
+  min?: Maybe<Transaction_0_Min_Fields>;
+  stddev?: Maybe<Transaction_0_Stddev_Fields>;
+  stddev_pop?: Maybe<Transaction_0_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Transaction_0_Stddev_Samp_Fields>;
+  sum?: Maybe<Transaction_0_Sum_Fields>;
+  var_pop?: Maybe<Transaction_0_Var_Pop_Fields>;
+  var_samp?: Maybe<Transaction_0_Var_Samp_Fields>;
+  variance?: Maybe<Transaction_0_Variance_Fields>;
+};
+
+
+/** aggregate fields of "transaction_0" */
+export type Transaction_0_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Transaction_0_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** order by aggregate values of table "transaction_0" */
+export type Transaction_0_Aggregate_Order_By = {
+  avg?: InputMaybe<Transaction_0_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Transaction_0_Max_Order_By>;
+  min?: InputMaybe<Transaction_0_Min_Order_By>;
+  stddev?: InputMaybe<Transaction_0_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Transaction_0_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Transaction_0_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Transaction_0_Sum_Order_By>;
+  var_pop?: InputMaybe<Transaction_0_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Transaction_0_Var_Samp_Order_By>;
+  variance?: InputMaybe<Transaction_0_Variance_Order_By>;
+};
+
+/** aggregate avg on columns */
+export type Transaction_0_Avg_Fields = {
+  gas_used?: Maybe<Scalars['Float']['output']>;
+  gas_wanted?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "transaction_0" */
+export type Transaction_0_Avg_Order_By = {
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "transaction_0". All fields are combined with a logical 'AND'. */
+export type Transaction_0_Bool_Exp = {
+  _and?: InputMaybe<Array<Transaction_0_Bool_Exp>>;
+  _not?: InputMaybe<Transaction_0_Bool_Exp>;
+  _or?: InputMaybe<Array<Transaction_0_Bool_Exp>>;
+  block?: InputMaybe<Block_Bool_Exp>;
+  fee?: InputMaybe<Jsonb_Comparison_Exp>;
+  gas_used?: InputMaybe<Bigint_Comparison_Exp>;
+  gas_wanted?: InputMaybe<Bigint_Comparison_Exp>;
+  hash?: InputMaybe<String_Comparison_Exp>;
+  height?: InputMaybe<Bigint_Comparison_Exp>;
+  logs?: InputMaybe<Jsonb_Comparison_Exp>;
+  memo?: InputMaybe<String_Comparison_Exp>;
+  messages?: InputMaybe<Jsonb_Comparison_Exp>;
+  messagesByPartitionIdTransactionHash?: InputMaybe<Message_Bool_Exp>;
+  messagesByPartitionIdTransactionHash_aggregate?: InputMaybe<Message_Aggregate_Bool_Exp>;
+  partition_id?: InputMaybe<Bigint_Comparison_Exp>;
+  raw_log?: InputMaybe<String_Comparison_Exp>;
+  signatures?: InputMaybe<String_Array_Comparison_Exp>;
+  signer_infos?: InputMaybe<Jsonb_Comparison_Exp>;
+  success?: InputMaybe<Boolean_Comparison_Exp>;
+};
+
+/** aggregate max on columns */
+export type Transaction_0_Max_Fields = {
+  gas_used?: Maybe<Scalars['bigint']['output']>;
+  gas_wanted?: Maybe<Scalars['bigint']['output']>;
+  hash?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+  memo?: Maybe<Scalars['String']['output']>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
+  raw_log?: Maybe<Scalars['String']['output']>;
+  signatures?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+/** order by max() on columns of table "transaction_0" */
+export type Transaction_0_Max_Order_By = {
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  hash?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  memo?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+  raw_log?: InputMaybe<Order_By>;
+  signatures?: InputMaybe<Order_By>;
+};
+
+/** aggregate min on columns */
+export type Transaction_0_Min_Fields = {
+  gas_used?: Maybe<Scalars['bigint']['output']>;
+  gas_wanted?: Maybe<Scalars['bigint']['output']>;
+  hash?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+  memo?: Maybe<Scalars['String']['output']>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
+  raw_log?: Maybe<Scalars['String']['output']>;
+  signatures?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+/** order by min() on columns of table "transaction_0" */
+export type Transaction_0_Min_Order_By = {
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  hash?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  memo?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+  raw_log?: InputMaybe<Order_By>;
+  signatures?: InputMaybe<Order_By>;
+};
+
+/** Ordering options when selecting data from "transaction_0". */
+export type Transaction_0_Order_By = {
+  block?: InputMaybe<Block_Order_By>;
+  fee?: InputMaybe<Order_By>;
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  hash?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  logs?: InputMaybe<Order_By>;
+  memo?: InputMaybe<Order_By>;
+  messages?: InputMaybe<Order_By>;
+  messagesByPartitionIdTransactionHash_aggregate?: InputMaybe<Message_Aggregate_Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+  raw_log?: InputMaybe<Order_By>;
+  signatures?: InputMaybe<Order_By>;
+  signer_infos?: InputMaybe<Order_By>;
+  success?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "transaction_0" */
+export enum Transaction_0_Select_Column {
+  /** column name */
+  Fee = 'fee',
+  /** column name */
+  GasUsed = 'gas_used',
+  /** column name */
+  GasWanted = 'gas_wanted',
+  /** column name */
+  Hash = 'hash',
+  /** column name */
+  Height = 'height',
+  /** column name */
+  Logs = 'logs',
+  /** column name */
+  Memo = 'memo',
+  /** column name */
+  Messages = 'messages',
+  /** column name */
+  PartitionId = 'partition_id',
+  /** column name */
+  RawLog = 'raw_log',
+  /** column name */
+  Signatures = 'signatures',
+  /** column name */
+  SignerInfos = 'signer_infos',
+  /** column name */
+  Success = 'success'
+}
+
+/** select "transaction_0_aggregate_bool_exp_bool_and_arguments_columns" columns of table "transaction_0" */
+export enum Transaction_0_Select_Column_Transaction_0_Aggregate_Bool_Exp_Bool_And_Arguments_Columns {
+  /** column name */
+  Success = 'success'
+}
+
+/** select "transaction_0_aggregate_bool_exp_bool_or_arguments_columns" columns of table "transaction_0" */
+export enum Transaction_0_Select_Column_Transaction_0_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns {
+  /** column name */
+  Success = 'success'
+}
+
+/** aggregate stddev on columns */
+export type Transaction_0_Stddev_Fields = {
+  gas_used?: Maybe<Scalars['Float']['output']>;
+  gas_wanted?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "transaction_0" */
+export type Transaction_0_Stddev_Order_By = {
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Transaction_0_Stddev_Pop_Fields = {
+  gas_used?: Maybe<Scalars['Float']['output']>;
+  gas_wanted?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_pop() on columns of table "transaction_0" */
+export type Transaction_0_Stddev_Pop_Order_By = {
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Transaction_0_Stddev_Samp_Fields = {
+  gas_used?: Maybe<Scalars['Float']['output']>;
+  gas_wanted?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_samp() on columns of table "transaction_0" */
+export type Transaction_0_Stddev_Samp_Order_By = {
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "transaction_0" */
+export type Transaction_0_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Transaction_0_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Transaction_0_Stream_Cursor_Value_Input = {
+  fee?: InputMaybe<Scalars['jsonb']['input']>;
+  gas_used?: InputMaybe<Scalars['bigint']['input']>;
+  gas_wanted?: InputMaybe<Scalars['bigint']['input']>;
+  hash?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  logs?: InputMaybe<Scalars['jsonb']['input']>;
+  memo?: InputMaybe<Scalars['String']['input']>;
+  messages?: InputMaybe<Scalars['jsonb']['input']>;
+  partition_id?: InputMaybe<Scalars['bigint']['input']>;
+  raw_log?: InputMaybe<Scalars['String']['input']>;
+  signatures?: InputMaybe<Array<Scalars['String']['input']>>;
+  signer_infos?: InputMaybe<Scalars['jsonb']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** aggregate sum on columns */
+export type Transaction_0_Sum_Fields = {
+  gas_used?: Maybe<Scalars['bigint']['output']>;
+  gas_wanted?: Maybe<Scalars['bigint']['output']>;
+  height?: Maybe<Scalars['bigint']['output']>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by sum() on columns of table "transaction_0" */
+export type Transaction_0_Sum_Order_By = {
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_pop on columns */
+export type Transaction_0_Var_Pop_Fields = {
+  gas_used?: Maybe<Scalars['Float']['output']>;
+  gas_wanted?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_pop() on columns of table "transaction_0" */
+export type Transaction_0_Var_Pop_Order_By = {
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_samp on columns */
+export type Transaction_0_Var_Samp_Fields = {
+  gas_used?: Maybe<Scalars['Float']['output']>;
+  gas_wanted?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_samp() on columns of table "transaction_0" */
+export type Transaction_0_Var_Samp_Order_By = {
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** aggregate variance on columns */
+export type Transaction_0_Variance_Fields = {
+  gas_used?: Maybe<Scalars['Float']['output']>;
+  gas_wanted?: Maybe<Scalars['Float']['output']>;
+  height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "transaction_0" */
+export type Transaction_0_Variance_Order_By = {
+  gas_used?: InputMaybe<Order_By>;
+  gas_wanted?: InputMaybe<Order_By>;
+  height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
 /** aggregated selection of "transaction" */
 export type Transaction_Aggregate = {
   aggregate?: Maybe<Transaction_Aggregate_Fields>;
   nodes: Array<Transaction>;
+};
+
+export type Transaction_Aggregate_Bool_Exp = {
+  bool_and?: InputMaybe<Transaction_Aggregate_Bool_Exp_Bool_And>;
+  bool_or?: InputMaybe<Transaction_Aggregate_Bool_Exp_Bool_Or>;
+  count?: InputMaybe<Transaction_Aggregate_Bool_Exp_Count>;
+};
+
+export type Transaction_Aggregate_Bool_Exp_Bool_And = {
+  arguments: Transaction_Select_Column_Transaction_Aggregate_Bool_Exp_Bool_And_Arguments_Columns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Transaction_Bool_Exp>;
+  predicate: Boolean_Comparison_Exp;
+};
+
+export type Transaction_Aggregate_Bool_Exp_Bool_Or = {
+  arguments: Transaction_Select_Column_Transaction_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Transaction_Bool_Exp>;
+  predicate: Boolean_Comparison_Exp;
+};
+
+export type Transaction_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Transaction_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Transaction_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
 };
 
 /** aggregate fields of "transaction" */
@@ -8637,6 +7852,7 @@ export type Transaction_Avg_Fields = {
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by avg() on columns of table "transaction" */
@@ -8644,6 +7860,7 @@ export type Transaction_Avg_Order_By = {
   gas_used?: InputMaybe<Order_By>;
   gas_wanted?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "transaction". All fields are combined with a logical 'AND'. */
@@ -8652,21 +7869,21 @@ export type Transaction_Bool_Exp = {
   _not?: InputMaybe<Transaction_Bool_Exp>;
   _or?: InputMaybe<Array<Transaction_Bool_Exp>>;
   block?: InputMaybe<Block_Bool_Exp>;
-  cyberlinks?: InputMaybe<Cyberlinks_Bool_Exp>;
   fee?: InputMaybe<Jsonb_Comparison_Exp>;
   gas_used?: InputMaybe<Bigint_Comparison_Exp>;
   gas_wanted?: InputMaybe<Bigint_Comparison_Exp>;
   hash?: InputMaybe<String_Comparison_Exp>;
   height?: InputMaybe<Bigint_Comparison_Exp>;
-  investmints?: InputMaybe<Investmints_Bool_Exp>;
   logs?: InputMaybe<Jsonb_Comparison_Exp>;
   memo?: InputMaybe<String_Comparison_Exp>;
+  message_0s?: InputMaybe<Message_0_Bool_Exp>;
+  message_0s_aggregate?: InputMaybe<Message_0_Aggregate_Bool_Exp>;
   messages?: InputMaybe<Jsonb_Comparison_Exp>;
-  messagesByTransactionHash?: InputMaybe<Message_Bool_Exp>;
-  particles?: InputMaybe<Particles_Bool_Exp>;
+  messagesByPartitionIdTransactionHash?: InputMaybe<Message_Bool_Exp>;
+  messagesByPartitionIdTransactionHash_aggregate?: InputMaybe<Message_Aggregate_Bool_Exp>;
+  partition_id?: InputMaybe<Bigint_Comparison_Exp>;
   raw_log?: InputMaybe<String_Comparison_Exp>;
-  routes?: InputMaybe<Routes_Bool_Exp>;
-  signatures?: InputMaybe<_Text_Comparison_Exp>;
+  signatures?: InputMaybe<String_Array_Comparison_Exp>;
   signer_infos?: InputMaybe<Jsonb_Comparison_Exp>;
   success?: InputMaybe<Boolean_Comparison_Exp>;
 };
@@ -8678,7 +7895,9 @@ export type Transaction_Max_Fields = {
   hash?: Maybe<Scalars['String']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
   memo?: Maybe<Scalars['String']['output']>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
   raw_log?: Maybe<Scalars['String']['output']>;
+  signatures?: Maybe<Array<Scalars['String']['output']>>;
 };
 
 /** order by max() on columns of table "transaction" */
@@ -8688,7 +7907,9 @@ export type Transaction_Max_Order_By = {
   hash?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
   memo?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
   raw_log?: InputMaybe<Order_By>;
+  signatures?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
@@ -8698,7 +7919,9 @@ export type Transaction_Min_Fields = {
   hash?: Maybe<Scalars['String']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
   memo?: Maybe<Scalars['String']['output']>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
   raw_log?: Maybe<Scalars['String']['output']>;
+  signatures?: Maybe<Array<Scalars['String']['output']>>;
 };
 
 /** order by min() on columns of table "transaction" */
@@ -8708,26 +7931,26 @@ export type Transaction_Min_Order_By = {
   hash?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
   memo?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
   raw_log?: InputMaybe<Order_By>;
+  signatures?: InputMaybe<Order_By>;
 };
 
 /** Ordering options when selecting data from "transaction". */
 export type Transaction_Order_By = {
   block?: InputMaybe<Block_Order_By>;
-  cyberlinks_aggregate?: InputMaybe<Cyberlinks_Aggregate_Order_By>;
   fee?: InputMaybe<Order_By>;
   gas_used?: InputMaybe<Order_By>;
   gas_wanted?: InputMaybe<Order_By>;
   hash?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
-  investmints_aggregate?: InputMaybe<Investmints_Aggregate_Order_By>;
   logs?: InputMaybe<Order_By>;
   memo?: InputMaybe<Order_By>;
+  message_0s_aggregate?: InputMaybe<Message_0_Aggregate_Order_By>;
   messages?: InputMaybe<Order_By>;
-  messagesByTransactionHash_aggregate?: InputMaybe<Message_Aggregate_Order_By>;
-  particles_aggregate?: InputMaybe<Particles_Aggregate_Order_By>;
+  messagesByPartitionIdTransactionHash_aggregate?: InputMaybe<Message_Aggregate_Order_By>;
+  partition_id?: InputMaybe<Order_By>;
   raw_log?: InputMaybe<Order_By>;
-  routes_aggregate?: InputMaybe<Routes_Aggregate_Order_By>;
   signatures?: InputMaybe<Order_By>;
   signer_infos?: InputMaybe<Order_By>;
   success?: InputMaybe<Order_By>;
@@ -8752,6 +7975,8 @@ export enum Transaction_Select_Column {
   /** column name */
   Messages = 'messages',
   /** column name */
+  PartitionId = 'partition_id',
+  /** column name */
   RawLog = 'raw_log',
   /** column name */
   Signatures = 'signatures',
@@ -8761,11 +7986,24 @@ export enum Transaction_Select_Column {
   Success = 'success'
 }
 
+/** select "transaction_aggregate_bool_exp_bool_and_arguments_columns" columns of table "transaction" */
+export enum Transaction_Select_Column_Transaction_Aggregate_Bool_Exp_Bool_And_Arguments_Columns {
+  /** column name */
+  Success = 'success'
+}
+
+/** select "transaction_aggregate_bool_exp_bool_or_arguments_columns" columns of table "transaction" */
+export enum Transaction_Select_Column_Transaction_Aggregate_Bool_Exp_Bool_Or_Arguments_Columns {
+  /** column name */
+  Success = 'success'
+}
+
 /** aggregate stddev on columns */
 export type Transaction_Stddev_Fields = {
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddev() on columns of table "transaction" */
@@ -8773,6 +8011,7 @@ export type Transaction_Stddev_Order_By = {
   gas_used?: InputMaybe<Order_By>;
   gas_wanted?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_pop on columns */
@@ -8780,6 +8019,7 @@ export type Transaction_Stddev_Pop_Fields = {
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddev_pop() on columns of table "transaction" */
@@ -8787,6 +8027,7 @@ export type Transaction_Stddev_Pop_Order_By = {
   gas_used?: InputMaybe<Order_By>;
   gas_wanted?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
@@ -8794,6 +8035,7 @@ export type Transaction_Stddev_Samp_Fields = {
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by stddev_samp() on columns of table "transaction" */
@@ -8801,6 +8043,32 @@ export type Transaction_Stddev_Samp_Order_By = {
   gas_used?: InputMaybe<Order_By>;
   gas_wanted?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "transaction" */
+export type Transaction_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Transaction_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Transaction_Stream_Cursor_Value_Input = {
+  fee?: InputMaybe<Scalars['jsonb']['input']>;
+  gas_used?: InputMaybe<Scalars['bigint']['input']>;
+  gas_wanted?: InputMaybe<Scalars['bigint']['input']>;
+  hash?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['bigint']['input']>;
+  logs?: InputMaybe<Scalars['jsonb']['input']>;
+  memo?: InputMaybe<Scalars['String']['input']>;
+  messages?: InputMaybe<Scalars['jsonb']['input']>;
+  partition_id?: InputMaybe<Scalars['bigint']['input']>;
+  raw_log?: InputMaybe<Scalars['String']['input']>;
+  signatures?: InputMaybe<Array<Scalars['String']['input']>>;
+  signer_infos?: InputMaybe<Scalars['jsonb']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** aggregate sum on columns */
@@ -8808,6 +8076,7 @@ export type Transaction_Sum_Fields = {
   gas_used?: Maybe<Scalars['bigint']['output']>;
   gas_wanted?: Maybe<Scalars['bigint']['output']>;
   height?: Maybe<Scalars['bigint']['output']>;
+  partition_id?: Maybe<Scalars['bigint']['output']>;
 };
 
 /** order by sum() on columns of table "transaction" */
@@ -8815,6 +8084,7 @@ export type Transaction_Sum_Order_By = {
   gas_used?: InputMaybe<Order_By>;
   gas_wanted?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_pop on columns */
@@ -8822,6 +8092,7 @@ export type Transaction_Var_Pop_Fields = {
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by var_pop() on columns of table "transaction" */
@@ -8829,6 +8100,7 @@ export type Transaction_Var_Pop_Order_By = {
   gas_used?: InputMaybe<Order_By>;
   gas_wanted?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_samp on columns */
@@ -8836,6 +8108,7 @@ export type Transaction_Var_Samp_Fields = {
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by var_samp() on columns of table "transaction" */
@@ -8843,6 +8116,7 @@ export type Transaction_Var_Samp_Order_By = {
   gas_used?: InputMaybe<Order_By>;
   gas_wanted?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate variance on columns */
@@ -8850,6 +8124,7 @@ export type Transaction_Variance_Fields = {
   gas_used?: Maybe<Scalars['Float']['output']>;
   gas_wanted?: Maybe<Scalars['Float']['output']>;
   height?: Maybe<Scalars['Float']['output']>;
+  partition_id?: Maybe<Scalars['Float']['output']>;
 };
 
 /** order by variance() on columns of table "transaction" */
@@ -8857,541 +8132,7 @@ export type Transaction_Variance_Order_By = {
   gas_used?: InputMaybe<Order_By>;
   gas_wanted?: InputMaybe<Order_By>;
   height?: InputMaybe<Order_By>;
-};
-
-/** columns and relationships of "tweets_stats" */
-export type Tweets_Stats = {
-  date?: Maybe<Scalars['date']['output']>;
-  tweets?: Maybe<Scalars['numeric']['output']>;
-  tweets_per_day?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregated selection of "tweets_stats" */
-export type Tweets_Stats_Aggregate = {
-  aggregate?: Maybe<Tweets_Stats_Aggregate_Fields>;
-  nodes: Array<Tweets_Stats>;
-};
-
-/** aggregate fields of "tweets_stats" */
-export type Tweets_Stats_Aggregate_Fields = {
-  avg?: Maybe<Tweets_Stats_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Tweets_Stats_Max_Fields>;
-  min?: Maybe<Tweets_Stats_Min_Fields>;
-  stddev?: Maybe<Tweets_Stats_Stddev_Fields>;
-  stddev_pop?: Maybe<Tweets_Stats_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Tweets_Stats_Stddev_Samp_Fields>;
-  sum?: Maybe<Tweets_Stats_Sum_Fields>;
-  var_pop?: Maybe<Tweets_Stats_Var_Pop_Fields>;
-  var_samp?: Maybe<Tweets_Stats_Var_Samp_Fields>;
-  variance?: Maybe<Tweets_Stats_Variance_Fields>;
-};
-
-
-/** aggregate fields of "tweets_stats" */
-export type Tweets_Stats_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Tweets_Stats_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Tweets_Stats_Avg_Fields = {
-  tweets?: Maybe<Scalars['Float']['output']>;
-  tweets_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "tweets_stats". All fields are combined with a logical 'AND'. */
-export type Tweets_Stats_Bool_Exp = {
-  _and?: InputMaybe<Array<Tweets_Stats_Bool_Exp>>;
-  _not?: InputMaybe<Tweets_Stats_Bool_Exp>;
-  _or?: InputMaybe<Array<Tweets_Stats_Bool_Exp>>;
-  date?: InputMaybe<Date_Comparison_Exp>;
-  tweets?: InputMaybe<Numeric_Comparison_Exp>;
-  tweets_per_day?: InputMaybe<Bigint_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Tweets_Stats_Max_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  tweets?: Maybe<Scalars['numeric']['output']>;
-  tweets_per_day?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate min on columns */
-export type Tweets_Stats_Min_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  tweets?: Maybe<Scalars['numeric']['output']>;
-  tweets_per_day?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** Ordering options when selecting data from "tweets_stats". */
-export type Tweets_Stats_Order_By = {
-  date?: InputMaybe<Order_By>;
-  tweets?: InputMaybe<Order_By>;
-  tweets_per_day?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "tweets_stats" */
-export enum Tweets_Stats_Select_Column {
-  /** column name */
-  Date = 'date',
-  /** column name */
-  Tweets = 'tweets',
-  /** column name */
-  TweetsPerDay = 'tweets_per_day'
-}
-
-/** aggregate stddev on columns */
-export type Tweets_Stats_Stddev_Fields = {
-  tweets?: Maybe<Scalars['Float']['output']>;
-  tweets_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Tweets_Stats_Stddev_Pop_Fields = {
-  tweets?: Maybe<Scalars['Float']['output']>;
-  tweets_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Tweets_Stats_Stddev_Samp_Fields = {
-  tweets?: Maybe<Scalars['Float']['output']>;
-  tweets_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Tweets_Stats_Sum_Fields = {
-  tweets?: Maybe<Scalars['numeric']['output']>;
-  tweets_per_day?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Tweets_Stats_Var_Pop_Fields = {
-  tweets?: Maybe<Scalars['Float']['output']>;
-  tweets_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Tweets_Stats_Var_Samp_Fields = {
-  tweets?: Maybe<Scalars['Float']['output']>;
-  tweets_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Tweets_Stats_Variance_Fields = {
-  tweets?: Maybe<Scalars['Float']['output']>;
-  tweets_per_day?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "txs_ranked" */
-export type Txs_Ranked = {
-  height?: Maybe<Scalars['bigint']['output']>;
-  neuron?: Maybe<Scalars['String']['output']>;
-  rank?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** aggregated selection of "txs_ranked" */
-export type Txs_Ranked_Aggregate = {
-  aggregate?: Maybe<Txs_Ranked_Aggregate_Fields>;
-  nodes: Array<Txs_Ranked>;
-};
-
-/** aggregate fields of "txs_ranked" */
-export type Txs_Ranked_Aggregate_Fields = {
-  avg?: Maybe<Txs_Ranked_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Txs_Ranked_Max_Fields>;
-  min?: Maybe<Txs_Ranked_Min_Fields>;
-  stddev?: Maybe<Txs_Ranked_Stddev_Fields>;
-  stddev_pop?: Maybe<Txs_Ranked_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Txs_Ranked_Stddev_Samp_Fields>;
-  sum?: Maybe<Txs_Ranked_Sum_Fields>;
-  var_pop?: Maybe<Txs_Ranked_Var_Pop_Fields>;
-  var_samp?: Maybe<Txs_Ranked_Var_Samp_Fields>;
-  variance?: Maybe<Txs_Ranked_Variance_Fields>;
-};
-
-
-/** aggregate fields of "txs_ranked" */
-export type Txs_Ranked_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Txs_Ranked_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Txs_Ranked_Avg_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "txs_ranked". All fields are combined with a logical 'AND'. */
-export type Txs_Ranked_Bool_Exp = {
-  _and?: InputMaybe<Array<Txs_Ranked_Bool_Exp>>;
-  _not?: InputMaybe<Txs_Ranked_Bool_Exp>;
-  _or?: InputMaybe<Array<Txs_Ranked_Bool_Exp>>;
-  height?: InputMaybe<Bigint_Comparison_Exp>;
-  neuron?: InputMaybe<String_Comparison_Exp>;
-  rank?: InputMaybe<Bigint_Comparison_Exp>;
-  type?: InputMaybe<String_Comparison_Exp>;
-  week?: InputMaybe<Date_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Txs_Ranked_Max_Fields = {
-  height?: Maybe<Scalars['bigint']['output']>;
-  neuron?: Maybe<Scalars['String']['output']>;
-  rank?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** aggregate min on columns */
-export type Txs_Ranked_Min_Fields = {
-  height?: Maybe<Scalars['bigint']['output']>;
-  neuron?: Maybe<Scalars['String']['output']>;
-  rank?: Maybe<Scalars['bigint']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-  week?: Maybe<Scalars['date']['output']>;
-};
-
-/** Ordering options when selecting data from "txs_ranked". */
-export type Txs_Ranked_Order_By = {
-  height?: InputMaybe<Order_By>;
-  neuron?: InputMaybe<Order_By>;
-  rank?: InputMaybe<Order_By>;
-  type?: InputMaybe<Order_By>;
-  week?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "txs_ranked" */
-export enum Txs_Ranked_Select_Column {
-  /** column name */
-  Height = 'height',
-  /** column name */
-  Neuron = 'neuron',
-  /** column name */
-  Rank = 'rank',
-  /** column name */
-  Type = 'type',
-  /** column name */
-  Week = 'week'
-}
-
-/** aggregate stddev on columns */
-export type Txs_Ranked_Stddev_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Txs_Ranked_Stddev_Pop_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Txs_Ranked_Stddev_Samp_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Txs_Ranked_Sum_Fields = {
-  height?: Maybe<Scalars['bigint']['output']>;
-  rank?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Txs_Ranked_Var_Pop_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Txs_Ranked_Var_Samp_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Txs_Ranked_Variance_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "txs_stats" */
-export type Txs_Stats = {
-  date?: Maybe<Scalars['date']['output']>;
-  height?: Maybe<Scalars['bigint']['output']>;
-  msg_type?: Maybe<Scalars['String']['output']>;
-  pubkey?: Maybe<Scalars['jsonb']['output']>;
-  rank?: Maybe<Scalars['bigint']['output']>;
-};
-
-
-/** columns and relationships of "txs_stats" */
-export type Txs_StatsPubkeyArgs = {
-  path?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** aggregated selection of "txs_stats" */
-export type Txs_Stats_Aggregate = {
-  aggregate?: Maybe<Txs_Stats_Aggregate_Fields>;
-  nodes: Array<Txs_Stats>;
-};
-
-/** aggregate fields of "txs_stats" */
-export type Txs_Stats_Aggregate_Fields = {
-  avg?: Maybe<Txs_Stats_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Txs_Stats_Max_Fields>;
-  min?: Maybe<Txs_Stats_Min_Fields>;
-  stddev?: Maybe<Txs_Stats_Stddev_Fields>;
-  stddev_pop?: Maybe<Txs_Stats_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Txs_Stats_Stddev_Samp_Fields>;
-  sum?: Maybe<Txs_Stats_Sum_Fields>;
-  var_pop?: Maybe<Txs_Stats_Var_Pop_Fields>;
-  var_samp?: Maybe<Txs_Stats_Var_Samp_Fields>;
-  variance?: Maybe<Txs_Stats_Variance_Fields>;
-};
-
-
-/** aggregate fields of "txs_stats" */
-export type Txs_Stats_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Txs_Stats_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Txs_Stats_Avg_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "txs_stats". All fields are combined with a logical 'AND'. */
-export type Txs_Stats_Bool_Exp = {
-  _and?: InputMaybe<Array<Txs_Stats_Bool_Exp>>;
-  _not?: InputMaybe<Txs_Stats_Bool_Exp>;
-  _or?: InputMaybe<Array<Txs_Stats_Bool_Exp>>;
-  date?: InputMaybe<Date_Comparison_Exp>;
-  height?: InputMaybe<Bigint_Comparison_Exp>;
-  msg_type?: InputMaybe<String_Comparison_Exp>;
-  pubkey?: InputMaybe<Jsonb_Comparison_Exp>;
-  rank?: InputMaybe<Bigint_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Txs_Stats_Max_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  height?: Maybe<Scalars['bigint']['output']>;
-  msg_type?: Maybe<Scalars['String']['output']>;
-  rank?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate min on columns */
-export type Txs_Stats_Min_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  height?: Maybe<Scalars['bigint']['output']>;
-  msg_type?: Maybe<Scalars['String']['output']>;
-  rank?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** Ordering options when selecting data from "txs_stats". */
-export type Txs_Stats_Order_By = {
-  date?: InputMaybe<Order_By>;
-  height?: InputMaybe<Order_By>;
-  msg_type?: InputMaybe<Order_By>;
-  pubkey?: InputMaybe<Order_By>;
-  rank?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "txs_stats" */
-export enum Txs_Stats_Select_Column {
-  /** column name */
-  Date = 'date',
-  /** column name */
-  Height = 'height',
-  /** column name */
-  MsgType = 'msg_type',
-  /** column name */
-  Pubkey = 'pubkey',
-  /** column name */
-  Rank = 'rank'
-}
-
-/** aggregate stddev on columns */
-export type Txs_Stats_Stddev_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Txs_Stats_Stddev_Pop_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Txs_Stats_Stddev_Samp_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Txs_Stats_Sum_Fields = {
-  height?: Maybe<Scalars['bigint']['output']>;
-  rank?: Maybe<Scalars['bigint']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Txs_Stats_Var_Pop_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Txs_Stats_Var_Samp_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Txs_Stats_Variance_Fields = {
-  height?: Maybe<Scalars['Float']['output']>;
-  rank?: Maybe<Scalars['Float']['output']>;
-};
-
-/** columns and relationships of "uptime" */
-export type Uptime = {
-  consensus_address?: Maybe<Scalars['String']['output']>;
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  pre_commits?: Maybe<Scalars['bigint']['output']>;
-  uptime?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregated selection of "uptime" */
-export type Uptime_Aggregate = {
-  aggregate?: Maybe<Uptime_Aggregate_Fields>;
-  nodes: Array<Uptime>;
-};
-
-/** aggregate fields of "uptime" */
-export type Uptime_Aggregate_Fields = {
-  avg?: Maybe<Uptime_Avg_Fields>;
-  count: Scalars['Int']['output'];
-  max?: Maybe<Uptime_Max_Fields>;
-  min?: Maybe<Uptime_Min_Fields>;
-  stddev?: Maybe<Uptime_Stddev_Fields>;
-  stddev_pop?: Maybe<Uptime_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Uptime_Stddev_Samp_Fields>;
-  sum?: Maybe<Uptime_Sum_Fields>;
-  var_pop?: Maybe<Uptime_Var_Pop_Fields>;
-  var_samp?: Maybe<Uptime_Var_Samp_Fields>;
-  variance?: Maybe<Uptime_Variance_Fields>;
-};
-
-
-/** aggregate fields of "uptime" */
-export type Uptime_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Uptime_Select_Column>>;
-  distinct?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/** aggregate avg on columns */
-export type Uptime_Avg_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-  uptime?: Maybe<Scalars['Float']['output']>;
-};
-
-/** Boolean expression to filter rows from the table "uptime". All fields are combined with a logical 'AND'. */
-export type Uptime_Bool_Exp = {
-  _and?: InputMaybe<Array<Uptime_Bool_Exp>>;
-  _not?: InputMaybe<Uptime_Bool_Exp>;
-  _or?: InputMaybe<Array<Uptime_Bool_Exp>>;
-  consensus_address?: InputMaybe<String_Comparison_Exp>;
-  consensus_pubkey?: InputMaybe<String_Comparison_Exp>;
-  pre_commits?: InputMaybe<Bigint_Comparison_Exp>;
-  uptime?: InputMaybe<Numeric_Comparison_Exp>;
-};
-
-/** aggregate max on columns */
-export type Uptime_Max_Fields = {
-  consensus_address?: Maybe<Scalars['String']['output']>;
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  pre_commits?: Maybe<Scalars['bigint']['output']>;
-  uptime?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate min on columns */
-export type Uptime_Min_Fields = {
-  consensus_address?: Maybe<Scalars['String']['output']>;
-  consensus_pubkey?: Maybe<Scalars['String']['output']>;
-  pre_commits?: Maybe<Scalars['bigint']['output']>;
-  uptime?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** Ordering options when selecting data from "uptime". */
-export type Uptime_Order_By = {
-  consensus_address?: InputMaybe<Order_By>;
-  consensus_pubkey?: InputMaybe<Order_By>;
-  pre_commits?: InputMaybe<Order_By>;
-  uptime?: InputMaybe<Order_By>;
-};
-
-/** select columns of table "uptime" */
-export enum Uptime_Select_Column {
-  /** column name */
-  ConsensusAddress = 'consensus_address',
-  /** column name */
-  ConsensusPubkey = 'consensus_pubkey',
-  /** column name */
-  PreCommits = 'pre_commits',
-  /** column name */
-  Uptime = 'uptime'
-}
-
-/** aggregate stddev on columns */
-export type Uptime_Stddev_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-  uptime?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_pop on columns */
-export type Uptime_Stddev_Pop_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-  uptime?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate stddev_samp on columns */
-export type Uptime_Stddev_Samp_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-  uptime?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate sum on columns */
-export type Uptime_Sum_Fields = {
-  pre_commits?: Maybe<Scalars['bigint']['output']>;
-  uptime?: Maybe<Scalars['numeric']['output']>;
-};
-
-/** aggregate var_pop on columns */
-export type Uptime_Var_Pop_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-  uptime?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate var_samp on columns */
-export type Uptime_Var_Samp_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-  uptime?: Maybe<Scalars['Float']['output']>;
-};
-
-/** aggregate variance on columns */
-export type Uptime_Variance_Fields = {
-  pre_commits?: Maybe<Scalars['Float']['output']>;
-  uptime?: Maybe<Scalars['Float']['output']>;
+  partition_id?: InputMaybe<Order_By>;
 };
 
 /** columns and relationships of "validator" */
@@ -9474,9 +8215,11 @@ export type Validator_Bool_Exp = {
   _not?: InputMaybe<Validator_Bool_Exp>;
   _or?: InputMaybe<Array<Validator_Bool_Exp>>;
   blocks?: InputMaybe<Block_Bool_Exp>;
+  blocks_aggregate?: InputMaybe<Block_Aggregate_Bool_Exp>;
   consensus_address?: InputMaybe<String_Comparison_Exp>;
   consensus_pubkey?: InputMaybe<String_Comparison_Exp>;
   pre_commits?: InputMaybe<Pre_Commit_Bool_Exp>;
+  pre_commits_aggregate?: InputMaybe<Pre_Commit_Aggregate_Bool_Exp>;
 };
 
 /** aggregate max on columns */
@@ -9507,252 +8250,547 @@ export enum Validator_Select_Column {
   ConsensusPubkey = 'consensus_pubkey'
 }
 
-/** columns and relationships of "volts_demand" */
-export type Volts_Demand = {
-  cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-  volts?: Maybe<Scalars['float8']['output']>;
+/** Streaming cursor of the table "validator" */
+export type Validator_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Validator_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
 };
 
-/** aggregated selection of "volts_demand" */
-export type Volts_Demand_Aggregate = {
-  aggregate?: Maybe<Volts_Demand_Aggregate_Fields>;
-  nodes: Array<Volts_Demand>;
+/** Initial value of the column from where the streaming should start */
+export type Validator_Stream_Cursor_Value_Input = {
+  consensus_address?: InputMaybe<Scalars['String']['input']>;
+  consensus_pubkey?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** aggregate fields of "volts_demand" */
-export type Volts_Demand_Aggregate_Fields = {
-  avg?: Maybe<Volts_Demand_Avg_Fields>;
+/** columns and relationships of "vesting_account" */
+export type Vesting_Account = {
+  /** An object relationship */
+  account: Account;
+  address: Scalars['String']['output'];
+  end_time: Scalars['timestamp']['output'];
+  id: Scalars['Int']['output'];
+  original_vesting: Array<Scalars['coin']['output']>;
+  start_time?: Maybe<Scalars['timestamp']['output']>;
+  type: Scalars['String']['output'];
+  /** An array relationship */
+  vesting_periods: Array<Vesting_Period>;
+  /** An aggregate relationship */
+  vesting_periods_aggregate: Vesting_Period_Aggregate;
+};
+
+
+/** columns and relationships of "vesting_account" */
+export type Vesting_AccountVesting_PeriodsArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Period_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vesting_Period_Order_By>>;
+  where?: InputMaybe<Vesting_Period_Bool_Exp>;
+};
+
+
+/** columns and relationships of "vesting_account" */
+export type Vesting_AccountVesting_Periods_AggregateArgs = {
+  distinct_on?: InputMaybe<Array<Vesting_Period_Select_Column>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  order_by?: InputMaybe<Array<Vesting_Period_Order_By>>;
+  where?: InputMaybe<Vesting_Period_Bool_Exp>;
+};
+
+/** aggregated selection of "vesting_account" */
+export type Vesting_Account_Aggregate = {
+  aggregate?: Maybe<Vesting_Account_Aggregate_Fields>;
+  nodes: Array<Vesting_Account>;
+};
+
+export type Vesting_Account_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Vesting_Account_Aggregate_Bool_Exp_Count>;
+};
+
+export type Vesting_Account_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Vesting_Account_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Vesting_Account_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "vesting_account" */
+export type Vesting_Account_Aggregate_Fields = {
+  avg?: Maybe<Vesting_Account_Avg_Fields>;
   count: Scalars['Int']['output'];
-  max?: Maybe<Volts_Demand_Max_Fields>;
-  min?: Maybe<Volts_Demand_Min_Fields>;
-  stddev?: Maybe<Volts_Demand_Stddev_Fields>;
-  stddev_pop?: Maybe<Volts_Demand_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Volts_Demand_Stddev_Samp_Fields>;
-  sum?: Maybe<Volts_Demand_Sum_Fields>;
-  var_pop?: Maybe<Volts_Demand_Var_Pop_Fields>;
-  var_samp?: Maybe<Volts_Demand_Var_Samp_Fields>;
-  variance?: Maybe<Volts_Demand_Variance_Fields>;
+  max?: Maybe<Vesting_Account_Max_Fields>;
+  min?: Maybe<Vesting_Account_Min_Fields>;
+  stddev?: Maybe<Vesting_Account_Stddev_Fields>;
+  stddev_pop?: Maybe<Vesting_Account_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Vesting_Account_Stddev_Samp_Fields>;
+  sum?: Maybe<Vesting_Account_Sum_Fields>;
+  var_pop?: Maybe<Vesting_Account_Var_Pop_Fields>;
+  var_samp?: Maybe<Vesting_Account_Var_Samp_Fields>;
+  variance?: Maybe<Vesting_Account_Variance_Fields>;
 };
 
 
-/** aggregate fields of "volts_demand" */
-export type Volts_Demand_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Volts_Demand_Select_Column>>;
+/** aggregate fields of "vesting_account" */
+export type Vesting_Account_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Vesting_Account_Select_Column>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** aggregate avg on columns */
-export type Volts_Demand_Avg_Fields = {
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-  volts?: Maybe<Scalars['Float']['output']>;
+/** order by aggregate values of table "vesting_account" */
+export type Vesting_Account_Aggregate_Order_By = {
+  avg?: InputMaybe<Vesting_Account_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Vesting_Account_Max_Order_By>;
+  min?: InputMaybe<Vesting_Account_Min_Order_By>;
+  stddev?: InputMaybe<Vesting_Account_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Vesting_Account_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Vesting_Account_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Vesting_Account_Sum_Order_By>;
+  var_pop?: InputMaybe<Vesting_Account_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Vesting_Account_Var_Samp_Order_By>;
+  variance?: InputMaybe<Vesting_Account_Variance_Order_By>;
 };
 
-/** Boolean expression to filter rows from the table "volts_demand". All fields are combined with a logical 'AND'. */
-export type Volts_Demand_Bool_Exp = {
-  _and?: InputMaybe<Array<Volts_Demand_Bool_Exp>>;
-  _not?: InputMaybe<Volts_Demand_Bool_Exp>;
-  _or?: InputMaybe<Array<Volts_Demand_Bool_Exp>>;
-  cyberlinks_per_day?: InputMaybe<Bigint_Comparison_Exp>;
-  date?: InputMaybe<Date_Comparison_Exp>;
-  volts?: InputMaybe<Float8_Comparison_Exp>;
+/** aggregate avg on columns */
+export type Vesting_Account_Avg_Fields = {
+  id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "vesting_account" */
+export type Vesting_Account_Avg_Order_By = {
+  id?: InputMaybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "vesting_account". All fields are combined with a logical 'AND'. */
+export type Vesting_Account_Bool_Exp = {
+  _and?: InputMaybe<Array<Vesting_Account_Bool_Exp>>;
+  _not?: InputMaybe<Vesting_Account_Bool_Exp>;
+  _or?: InputMaybe<Array<Vesting_Account_Bool_Exp>>;
+  account?: InputMaybe<Account_Bool_Exp>;
+  address?: InputMaybe<String_Comparison_Exp>;
+  end_time?: InputMaybe<Timestamp_Comparison_Exp>;
+  id?: InputMaybe<Int_Comparison_Exp>;
+  original_vesting?: InputMaybe<Coin_Array_Comparison_Exp>;
+  start_time?: InputMaybe<Timestamp_Comparison_Exp>;
+  type?: InputMaybe<String_Comparison_Exp>;
+  vesting_periods?: InputMaybe<Vesting_Period_Bool_Exp>;
+  vesting_periods_aggregate?: InputMaybe<Vesting_Period_Aggregate_Bool_Exp>;
 };
 
 /** aggregate max on columns */
-export type Volts_Demand_Max_Fields = {
-  cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-  volts?: Maybe<Scalars['float8']['output']>;
+export type Vesting_Account_Max_Fields = {
+  address?: Maybe<Scalars['String']['output']>;
+  end_time?: Maybe<Scalars['timestamp']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  original_vesting?: Maybe<Array<Scalars['coin']['output']>>;
+  start_time?: Maybe<Scalars['timestamp']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+};
+
+/** order by max() on columns of table "vesting_account" */
+export type Vesting_Account_Max_Order_By = {
+  address?: InputMaybe<Order_By>;
+  end_time?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  original_vesting?: InputMaybe<Order_By>;
+  start_time?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
-export type Volts_Demand_Min_Fields = {
-  cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
-  date?: Maybe<Scalars['date']['output']>;
-  volts?: Maybe<Scalars['float8']['output']>;
+export type Vesting_Account_Min_Fields = {
+  address?: Maybe<Scalars['String']['output']>;
+  end_time?: Maybe<Scalars['timestamp']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  original_vesting?: Maybe<Array<Scalars['coin']['output']>>;
+  start_time?: Maybe<Scalars['timestamp']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
 };
 
-/** Ordering options when selecting data from "volts_demand". */
-export type Volts_Demand_Order_By = {
-  cyberlinks_per_day?: InputMaybe<Order_By>;
-  date?: InputMaybe<Order_By>;
-  volts?: InputMaybe<Order_By>;
+/** order by min() on columns of table "vesting_account" */
+export type Vesting_Account_Min_Order_By = {
+  address?: InputMaybe<Order_By>;
+  end_time?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  original_vesting?: InputMaybe<Order_By>;
+  start_time?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
 };
 
-/** select columns of table "volts_demand" */
-export enum Volts_Demand_Select_Column {
+/** Ordering options when selecting data from "vesting_account". */
+export type Vesting_Account_Order_By = {
+  account?: InputMaybe<Account_Order_By>;
+  address?: InputMaybe<Order_By>;
+  end_time?: InputMaybe<Order_By>;
+  id?: InputMaybe<Order_By>;
+  original_vesting?: InputMaybe<Order_By>;
+  start_time?: InputMaybe<Order_By>;
+  type?: InputMaybe<Order_By>;
+  vesting_periods_aggregate?: InputMaybe<Vesting_Period_Aggregate_Order_By>;
+};
+
+/** select columns of table "vesting_account" */
+export enum Vesting_Account_Select_Column {
   /** column name */
-  CyberlinksPerDay = 'cyberlinks_per_day',
+  Address = 'address',
   /** column name */
-  Date = 'date',
+  EndTime = 'end_time',
   /** column name */
-  Volts = 'volts'
+  Id = 'id',
+  /** column name */
+  OriginalVesting = 'original_vesting',
+  /** column name */
+  StartTime = 'start_time',
+  /** column name */
+  Type = 'type'
 }
 
 /** aggregate stddev on columns */
-export type Volts_Demand_Stddev_Fields = {
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-  volts?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Account_Stddev_Fields = {
+  id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "vesting_account" */
+export type Vesting_Account_Stddev_Order_By = {
+  id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_pop on columns */
-export type Volts_Demand_Stddev_Pop_Fields = {
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-  volts?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Account_Stddev_Pop_Fields = {
+  id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_pop() on columns of table "vesting_account" */
+export type Vesting_Account_Stddev_Pop_Order_By = {
+  id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
-export type Volts_Demand_Stddev_Samp_Fields = {
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-  volts?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Account_Stddev_Samp_Fields = {
+  id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_samp() on columns of table "vesting_account" */
+export type Vesting_Account_Stddev_Samp_Order_By = {
+  id?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "vesting_account" */
+export type Vesting_Account_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Vesting_Account_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Vesting_Account_Stream_Cursor_Value_Input = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  end_time?: InputMaybe<Scalars['timestamp']['input']>;
+  id?: InputMaybe<Scalars['Int']['input']>;
+  original_vesting?: InputMaybe<Array<Scalars['coin']['input']>>;
+  start_time?: InputMaybe<Scalars['timestamp']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** aggregate sum on columns */
-export type Volts_Demand_Sum_Fields = {
-  cyberlinks_per_day?: Maybe<Scalars['bigint']['output']>;
-  volts?: Maybe<Scalars['float8']['output']>;
+export type Vesting_Account_Sum_Fields = {
+  id?: Maybe<Scalars['Int']['output']>;
+};
+
+/** order by sum() on columns of table "vesting_account" */
+export type Vesting_Account_Sum_Order_By = {
+  id?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_pop on columns */
-export type Volts_Demand_Var_Pop_Fields = {
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-  volts?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Account_Var_Pop_Fields = {
+  id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_pop() on columns of table "vesting_account" */
+export type Vesting_Account_Var_Pop_Order_By = {
+  id?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_samp on columns */
-export type Volts_Demand_Var_Samp_Fields = {
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-  volts?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Account_Var_Samp_Fields = {
+  id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_samp() on columns of table "vesting_account" */
+export type Vesting_Account_Var_Samp_Order_By = {
+  id?: InputMaybe<Order_By>;
 };
 
 /** aggregate variance on columns */
-export type Volts_Demand_Variance_Fields = {
-  cyberlinks_per_day?: Maybe<Scalars['Float']['output']>;
-  volts?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Account_Variance_Fields = {
+  id?: Maybe<Scalars['Float']['output']>;
 };
 
-/** columns and relationships of "volts_stats" */
-export type Volts_Stats = {
-  date?: Maybe<Scalars['date']['output']>;
-  volts?: Maybe<Scalars['float8']['output']>;
-  volts_per_day?: Maybe<Scalars['float8']['output']>;
+/** order by variance() on columns of table "vesting_account" */
+export type Vesting_Account_Variance_Order_By = {
+  id?: InputMaybe<Order_By>;
 };
 
-/** aggregated selection of "volts_stats" */
-export type Volts_Stats_Aggregate = {
-  aggregate?: Maybe<Volts_Stats_Aggregate_Fields>;
-  nodes: Array<Volts_Stats>;
+/** columns and relationships of "vesting_period" */
+export type Vesting_Period = {
+  amount: Array<Scalars['coin']['output']>;
+  length: Scalars['bigint']['output'];
+  period_order: Scalars['bigint']['output'];
+  /** An object relationship */
+  vesting_account: Vesting_Account;
+  vesting_account_id: Scalars['bigint']['output'];
 };
 
-/** aggregate fields of "volts_stats" */
-export type Volts_Stats_Aggregate_Fields = {
-  avg?: Maybe<Volts_Stats_Avg_Fields>;
+/** aggregated selection of "vesting_period" */
+export type Vesting_Period_Aggregate = {
+  aggregate?: Maybe<Vesting_Period_Aggregate_Fields>;
+  nodes: Array<Vesting_Period>;
+};
+
+export type Vesting_Period_Aggregate_Bool_Exp = {
+  count?: InputMaybe<Vesting_Period_Aggregate_Bool_Exp_Count>;
+};
+
+export type Vesting_Period_Aggregate_Bool_Exp_Count = {
+  arguments?: InputMaybe<Array<Vesting_Period_Select_Column>>;
+  distinct?: InputMaybe<Scalars['Boolean']['input']>;
+  filter?: InputMaybe<Vesting_Period_Bool_Exp>;
+  predicate: Int_Comparison_Exp;
+};
+
+/** aggregate fields of "vesting_period" */
+export type Vesting_Period_Aggregate_Fields = {
+  avg?: Maybe<Vesting_Period_Avg_Fields>;
   count: Scalars['Int']['output'];
-  max?: Maybe<Volts_Stats_Max_Fields>;
-  min?: Maybe<Volts_Stats_Min_Fields>;
-  stddev?: Maybe<Volts_Stats_Stddev_Fields>;
-  stddev_pop?: Maybe<Volts_Stats_Stddev_Pop_Fields>;
-  stddev_samp?: Maybe<Volts_Stats_Stddev_Samp_Fields>;
-  sum?: Maybe<Volts_Stats_Sum_Fields>;
-  var_pop?: Maybe<Volts_Stats_Var_Pop_Fields>;
-  var_samp?: Maybe<Volts_Stats_Var_Samp_Fields>;
-  variance?: Maybe<Volts_Stats_Variance_Fields>;
+  max?: Maybe<Vesting_Period_Max_Fields>;
+  min?: Maybe<Vesting_Period_Min_Fields>;
+  stddev?: Maybe<Vesting_Period_Stddev_Fields>;
+  stddev_pop?: Maybe<Vesting_Period_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Vesting_Period_Stddev_Samp_Fields>;
+  sum?: Maybe<Vesting_Period_Sum_Fields>;
+  var_pop?: Maybe<Vesting_Period_Var_Pop_Fields>;
+  var_samp?: Maybe<Vesting_Period_Var_Samp_Fields>;
+  variance?: Maybe<Vesting_Period_Variance_Fields>;
 };
 
 
-/** aggregate fields of "volts_stats" */
-export type Volts_Stats_Aggregate_FieldsCountArgs = {
-  columns?: InputMaybe<Array<Volts_Stats_Select_Column>>;
+/** aggregate fields of "vesting_period" */
+export type Vesting_Period_Aggregate_FieldsCountArgs = {
+  columns?: InputMaybe<Array<Vesting_Period_Select_Column>>;
   distinct?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-/** aggregate avg on columns */
-export type Volts_Stats_Avg_Fields = {
-  volts?: Maybe<Scalars['Float']['output']>;
-  volts_per_day?: Maybe<Scalars['Float']['output']>;
+/** order by aggregate values of table "vesting_period" */
+export type Vesting_Period_Aggregate_Order_By = {
+  avg?: InputMaybe<Vesting_Period_Avg_Order_By>;
+  count?: InputMaybe<Order_By>;
+  max?: InputMaybe<Vesting_Period_Max_Order_By>;
+  min?: InputMaybe<Vesting_Period_Min_Order_By>;
+  stddev?: InputMaybe<Vesting_Period_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Vesting_Period_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Vesting_Period_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Vesting_Period_Sum_Order_By>;
+  var_pop?: InputMaybe<Vesting_Period_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Vesting_Period_Var_Samp_Order_By>;
+  variance?: InputMaybe<Vesting_Period_Variance_Order_By>;
 };
 
-/** Boolean expression to filter rows from the table "volts_stats". All fields are combined with a logical 'AND'. */
-export type Volts_Stats_Bool_Exp = {
-  _and?: InputMaybe<Array<Volts_Stats_Bool_Exp>>;
-  _not?: InputMaybe<Volts_Stats_Bool_Exp>;
-  _or?: InputMaybe<Array<Volts_Stats_Bool_Exp>>;
-  date?: InputMaybe<Date_Comparison_Exp>;
-  volts?: InputMaybe<Float8_Comparison_Exp>;
-  volts_per_day?: InputMaybe<Float8_Comparison_Exp>;
+/** aggregate avg on columns */
+export type Vesting_Period_Avg_Fields = {
+  length?: Maybe<Scalars['Float']['output']>;
+  period_order?: Maybe<Scalars['Float']['output']>;
+  vesting_account_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by avg() on columns of table "vesting_period" */
+export type Vesting_Period_Avg_Order_By = {
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
+};
+
+/** Boolean expression to filter rows from the table "vesting_period". All fields are combined with a logical 'AND'. */
+export type Vesting_Period_Bool_Exp = {
+  _and?: InputMaybe<Array<Vesting_Period_Bool_Exp>>;
+  _not?: InputMaybe<Vesting_Period_Bool_Exp>;
+  _or?: InputMaybe<Array<Vesting_Period_Bool_Exp>>;
+  amount?: InputMaybe<Coin_Array_Comparison_Exp>;
+  length?: InputMaybe<Bigint_Comparison_Exp>;
+  period_order?: InputMaybe<Bigint_Comparison_Exp>;
+  vesting_account?: InputMaybe<Vesting_Account_Bool_Exp>;
+  vesting_account_id?: InputMaybe<Bigint_Comparison_Exp>;
 };
 
 /** aggregate max on columns */
-export type Volts_Stats_Max_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  volts?: Maybe<Scalars['float8']['output']>;
-  volts_per_day?: Maybe<Scalars['float8']['output']>;
+export type Vesting_Period_Max_Fields = {
+  amount?: Maybe<Array<Scalars['coin']['output']>>;
+  length?: Maybe<Scalars['bigint']['output']>;
+  period_order?: Maybe<Scalars['bigint']['output']>;
+  vesting_account_id?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by max() on columns of table "vesting_period" */
+export type Vesting_Period_Max_Order_By = {
+  amount?: InputMaybe<Order_By>;
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate min on columns */
-export type Volts_Stats_Min_Fields = {
-  date?: Maybe<Scalars['date']['output']>;
-  volts?: Maybe<Scalars['float8']['output']>;
-  volts_per_day?: Maybe<Scalars['float8']['output']>;
+export type Vesting_Period_Min_Fields = {
+  amount?: Maybe<Array<Scalars['coin']['output']>>;
+  length?: Maybe<Scalars['bigint']['output']>;
+  period_order?: Maybe<Scalars['bigint']['output']>;
+  vesting_account_id?: Maybe<Scalars['bigint']['output']>;
 };
 
-/** Ordering options when selecting data from "volts_stats". */
-export type Volts_Stats_Order_By = {
-  date?: InputMaybe<Order_By>;
-  volts?: InputMaybe<Order_By>;
-  volts_per_day?: InputMaybe<Order_By>;
+/** order by min() on columns of table "vesting_period" */
+export type Vesting_Period_Min_Order_By = {
+  amount?: InputMaybe<Order_By>;
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
 };
 
-/** select columns of table "volts_stats" */
-export enum Volts_Stats_Select_Column {
+/** Ordering options when selecting data from "vesting_period". */
+export type Vesting_Period_Order_By = {
+  amount?: InputMaybe<Order_By>;
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account?: InputMaybe<Vesting_Account_Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
+};
+
+/** select columns of table "vesting_period" */
+export enum Vesting_Period_Select_Column {
   /** column name */
-  Date = 'date',
+  Amount = 'amount',
   /** column name */
-  Volts = 'volts',
+  Length = 'length',
   /** column name */
-  VoltsPerDay = 'volts_per_day'
+  PeriodOrder = 'period_order',
+  /** column name */
+  VestingAccountId = 'vesting_account_id'
 }
 
 /** aggregate stddev on columns */
-export type Volts_Stats_Stddev_Fields = {
-  volts?: Maybe<Scalars['Float']['output']>;
-  volts_per_day?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Period_Stddev_Fields = {
+  length?: Maybe<Scalars['Float']['output']>;
+  period_order?: Maybe<Scalars['Float']['output']>;
+  vesting_account_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev() on columns of table "vesting_period" */
+export type Vesting_Period_Stddev_Order_By = {
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_pop on columns */
-export type Volts_Stats_Stddev_Pop_Fields = {
-  volts?: Maybe<Scalars['Float']['output']>;
-  volts_per_day?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Period_Stddev_Pop_Fields = {
+  length?: Maybe<Scalars['Float']['output']>;
+  period_order?: Maybe<Scalars['Float']['output']>;
+  vesting_account_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_pop() on columns of table "vesting_period" */
+export type Vesting_Period_Stddev_Pop_Order_By = {
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate stddev_samp on columns */
-export type Volts_Stats_Stddev_Samp_Fields = {
-  volts?: Maybe<Scalars['Float']['output']>;
-  volts_per_day?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Period_Stddev_Samp_Fields = {
+  length?: Maybe<Scalars['Float']['output']>;
+  period_order?: Maybe<Scalars['Float']['output']>;
+  vesting_account_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by stddev_samp() on columns of table "vesting_period" */
+export type Vesting_Period_Stddev_Samp_Order_By = {
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
+};
+
+/** Streaming cursor of the table "vesting_period" */
+export type Vesting_Period_Stream_Cursor_Input = {
+  /** Stream column input with initial value */
+  initial_value: Vesting_Period_Stream_Cursor_Value_Input;
+  /** cursor ordering */
+  ordering?: InputMaybe<Cursor_Ordering>;
+};
+
+/** Initial value of the column from where the streaming should start */
+export type Vesting_Period_Stream_Cursor_Value_Input = {
+  amount?: InputMaybe<Array<Scalars['coin']['input']>>;
+  length?: InputMaybe<Scalars['bigint']['input']>;
+  period_order?: InputMaybe<Scalars['bigint']['input']>;
+  vesting_account_id?: InputMaybe<Scalars['bigint']['input']>;
 };
 
 /** aggregate sum on columns */
-export type Volts_Stats_Sum_Fields = {
-  volts?: Maybe<Scalars['float8']['output']>;
-  volts_per_day?: Maybe<Scalars['float8']['output']>;
+export type Vesting_Period_Sum_Fields = {
+  length?: Maybe<Scalars['bigint']['output']>;
+  period_order?: Maybe<Scalars['bigint']['output']>;
+  vesting_account_id?: Maybe<Scalars['bigint']['output']>;
+};
+
+/** order by sum() on columns of table "vesting_period" */
+export type Vesting_Period_Sum_Order_By = {
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_pop on columns */
-export type Volts_Stats_Var_Pop_Fields = {
-  volts?: Maybe<Scalars['Float']['output']>;
-  volts_per_day?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Period_Var_Pop_Fields = {
+  length?: Maybe<Scalars['Float']['output']>;
+  period_order?: Maybe<Scalars['Float']['output']>;
+  vesting_account_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_pop() on columns of table "vesting_period" */
+export type Vesting_Period_Var_Pop_Order_By = {
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate var_samp on columns */
-export type Volts_Stats_Var_Samp_Fields = {
-  volts?: Maybe<Scalars['Float']['output']>;
-  volts_per_day?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Period_Var_Samp_Fields = {
+  length?: Maybe<Scalars['Float']['output']>;
+  period_order?: Maybe<Scalars['Float']['output']>;
+  vesting_account_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by var_samp() on columns of table "vesting_period" */
+export type Vesting_Period_Var_Samp_Order_By = {
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
 };
 
 /** aggregate variance on columns */
-export type Volts_Stats_Variance_Fields = {
-  volts?: Maybe<Scalars['Float']['output']>;
-  volts_per_day?: Maybe<Scalars['Float']['output']>;
+export type Vesting_Period_Variance_Fields = {
+  length?: Maybe<Scalars['Float']['output']>;
+  period_order?: Maybe<Scalars['Float']['output']>;
+  vesting_account_id?: Maybe<Scalars['Float']['output']>;
+};
+
+/** order by variance() on columns of table "vesting_period" */
+export type Vesting_Period_Variance_Order_By = {
+  length?: InputMaybe<Order_By>;
+  period_order?: InputMaybe<Order_By>;
+  vesting_account_id?: InputMaybe<Order_By>;
 };
 
 export type TransactionsSubscriptionVariables = Exact<{ [key: string]: never; }>;
@@ -9838,7 +8876,7 @@ export type MessagesByAddressSenseQueryVariables = Exact<{
 }>;
 
 
-export type MessagesByAddressSenseQuery = { messages_by_address: Array<{ transaction_hash: string, index: any, value: any, type: string, transaction: { success: boolean, memo?: string | null, block: { timestamp: any, height: any } } }> };
+export type MessagesByAddressSenseQuery = { messages_by_address: Array<{ transaction_hash: string, index: any, value: any, type: string, transaction?: { success: boolean, memo?: string | null, block: { timestamp: any, height: any } } | null }> };
 
 export type MessagesByAddressSenseWsSubscriptionVariables = Exact<{
   address?: InputMaybe<Scalars['_text']['input']>;
@@ -9850,7 +8888,7 @@ export type MessagesByAddressSenseWsSubscriptionVariables = Exact<{
 }>;
 
 
-export type MessagesByAddressSenseWsSubscription = { messages_by_address: Array<{ transaction_hash: string, index: any, value: any, type: string, transaction: { success: boolean, memo?: string | null, block: { timestamp: any, height: any } } }> };
+export type MessagesByAddressSenseWsSubscription = { messages_by_address: Array<{ transaction_hash: string, index: any, value: any, type: string, transaction?: { success: boolean, memo?: string | null, block: { timestamp: any, height: any } } | null }> };
 
 export type ParticlesQueryVariables = Exact<{
   neuron?: InputMaybe<Scalars['String']['input']>;
@@ -9873,13 +8911,6 @@ export type TransactionCountQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type TransactionCountQuery = { transaction_aggregate: { aggregate?: { count: number } | null } };
 
-export type UptimeByAddressQueryVariables = Exact<{
-  address?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type UptimeByAddressQuery = { uptime: Array<{ uptime?: any | null }> };
-
 export type WasmDashboardPageQueryVariables = Exact<{
   offset?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -9896,7 +8927,7 @@ export type MessagesByAddressQueryVariables = Exact<{
 }>;
 
 
-export type MessagesByAddressQuery = { messages_by_address: Array<{ transaction_hash: string, value: any, type: string, transaction: { success: boolean, height: any, logs?: any | null, memo?: string | null, block: { timestamp: any } } }> };
+export type MessagesByAddressQuery = { messages_by_address: Array<{ transaction_hash: string, value: any, type: string, transaction?: { success: boolean, height: any, logs?: any | null, memo?: string | null, block: { timestamp: any } } | null }> };
 
 
 export const TransactionsDocument = gql`
@@ -10574,46 +9605,6 @@ export type TransactionCountQueryHookResult = ReturnType<typeof useTransactionCo
 export type TransactionCountLazyQueryHookResult = ReturnType<typeof useTransactionCountLazyQuery>;
 export type TransactionCountSuspenseQueryHookResult = ReturnType<typeof useTransactionCountSuspenseQuery>;
 export type TransactionCountQueryResult = Apollo.QueryResult<TransactionCountQuery, TransactionCountQueryVariables>;
-export const UptimeByAddressDocument = gql`
-    query uptimeByAddress($address: String) {
-  uptime(where: {consensus_address: {_eq: $address}}) {
-    uptime
-  }
-}
-    `;
-
-/**
- * __useUptimeByAddressQuery__
- *
- * To run a query within a React component, call `useUptimeByAddressQuery` and pass it any options that fit your needs.
- * When your component renders, `useUptimeByAddressQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useUptimeByAddressQuery({
- *   variables: {
- *      address: // value for 'address'
- *   },
- * });
- */
-export function useUptimeByAddressQuery(baseOptions?: Apollo.QueryHookOptions<UptimeByAddressQuery, UptimeByAddressQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<UptimeByAddressQuery, UptimeByAddressQueryVariables>(UptimeByAddressDocument, options);
-      }
-export function useUptimeByAddressLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UptimeByAddressQuery, UptimeByAddressQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<UptimeByAddressQuery, UptimeByAddressQueryVariables>(UptimeByAddressDocument, options);
-        }
-export function useUptimeByAddressSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<UptimeByAddressQuery, UptimeByAddressQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<UptimeByAddressQuery, UptimeByAddressQueryVariables>(UptimeByAddressDocument, options);
-        }
-export type UptimeByAddressQueryHookResult = ReturnType<typeof useUptimeByAddressQuery>;
-export type UptimeByAddressLazyQueryHookResult = ReturnType<typeof useUptimeByAddressLazyQuery>;
-export type UptimeByAddressSuspenseQueryHookResult = ReturnType<typeof useUptimeByAddressSuspenseQuery>;
-export type UptimeByAddressQueryResult = Apollo.QueryResult<UptimeByAddressQuery, UptimeByAddressQueryVariables>;
 export const WasmDashboardPageDocument = gql`
     query wasmDashboardPage($offset: Int, $limit: Int) {
   contracts(limit: $limit, offset: $offset, order_by: {tx: desc}) {

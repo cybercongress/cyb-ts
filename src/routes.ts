@@ -6,9 +6,17 @@ export const routes = {
   temple: {
     path: '/temple',
   },
-  senateProposal: {
-    path: '/senate/:proposalId/*',
-    getLink: (proposalId: number) => `/senate/${proposalId}`,
+  senate: {
+    path: '/senate',
+    routes: {
+      new: {
+        path: '/senate/new',
+      },
+      proposal: {
+        path: '/senate/:proposalId/*',
+        getLink: (proposalId: number) => `/senate/${proposalId}`,
+      },
+    },
   },
   sphere: {
     path: '/sphere',
@@ -131,5 +139,9 @@ export const routes = {
   },
   settings: {
     path: '/settings',
+  },
+  studio: {
+    path: '/studio',
+    getLink: (hash: string) => `/studio/${hash}`,
   },
 };

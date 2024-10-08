@@ -3,6 +3,7 @@ import { Coin } from '@cosmjs/launchpad';
 import { Uint53 } from '@cosmjs/math';
 import { CyberClient } from '@cybercongress/cyber-js';
 import { QueryLiquidityPoolResponse } from '@cybercongress/cyber-js/build/codec/tendermint/liquidity/v1beta1/query';
+import { MsgSwapWithinBatch } from '@cybercongress/cyber-ts/cyber/liquidity/v1beta1/tx';
 import BigNumber from 'bignumber.js';
 import { QueryValidatorsResponse } from 'cosmjs-types/cosmos/staking/v1beta1/query';
 import Long from 'long';
@@ -292,7 +293,7 @@ class Soft3MessageFactory {
     );
 
     return {
-      typeUrl: '/tendermint.liquidity.v1beta1.MsgSwapWithinBatch',
+      typeUrl: MsgSwapWithinBatch.typeUrl,
       value: {
         swapRequesterAddress: this.senderAddress,
         poolId,

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import styles from './styles.module.scss';
 import { Pane, Text, TableEv as Table } from '@cybercongress/gravity';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import Tooltip from 'src/components/tooltip/tooltip';
+import styles from './styles.module.scss';
 import {
   Account,
   Dots,
@@ -12,7 +13,6 @@ import {
 } from '../../components';
 import { getTableVoters, reduceTxsVoters } from '../../utils/governance';
 import { timeSince, trimString } from '../../utils/utils';
-import Tooltip from 'src/components/tooltip/tooltip';
 
 const LIMIT = 50;
 
@@ -70,7 +70,7 @@ function ProposalsIdDetailTableVoters({ updateFunc, ...props }) {
     const response = await getTableVoters(proposalId, page, LIMIT);
 
     if (response) {
-      const { pagination, tx_responses: txs } = response;
+      const { pagination, txResponses: txs } = response;
       const { total } = pagination;
       tempAllPage = Math.ceil(total / LIMIT);
       firstItem = reduceTxsVoters(txs);
@@ -89,7 +89,7 @@ function ProposalsIdDetailTableVoters({ updateFunc, ...props }) {
     // 20 more records in 1.5 secs
     const response = await getTableVoters(proposalId, page, LIMIT);
     if (response) {
-      const { tx_responses: txs } = response;
+      const { txResponses: txs } = response;
 
       nextItem = reduceTxsVoters(txs);
     }

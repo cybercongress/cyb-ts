@@ -62,9 +62,11 @@ export default function IconsNumber({ value, type, isVertical }: Props) {
     return el;
   });
 
+  const numberStyle = type === 'hydrogen' ? styles.hydrogenPlaceholder : '';
+
   return (
     <span className={styles.wrapper}>
-      {number}
+      <span className={numberStyle}>{number}</span>
       <Tooltip
         tooltip={
           <span className={styles.tooltipWrapper}>
