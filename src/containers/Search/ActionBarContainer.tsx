@@ -361,6 +361,7 @@ class ActionBarContainer extends Component<Props, any> {
           keys={addressLocalStor !== null ? addressLocalStor.keys : false}
           onClickBtn={this.onClickInit}
           contentHash={file?.name || contentHash}
+          searchHash={this.props.keywordHash}
           onChangeInputContentHash={this.onChangeInput}
           inputOpenFileRef={this.inputOpenFileRef}
           showOpenFileDlg={this.showOpenFileDlg}

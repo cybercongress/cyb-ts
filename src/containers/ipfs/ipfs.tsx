@@ -14,7 +14,6 @@ import ContentIpfsCid from './components/ContentIpfsCid';
 import styles from './IPFS.module.scss';
 import SearchResults from '../Search/SearchResults';
 import AdviserMeta from './components/AdviserMeta/AdviserMeta';
-import SoulCompanion from './components/SoulCompanion/SoulCompanion';
 
 function Ipfs() {
   const { query = '' } = useParams();
@@ -96,9 +95,9 @@ function Ipfs() {
           />
         )}
 
-        {details && (
+        {/* {details && (
           <SoulCompanion cid={cid} details={details} skip={mutated} />
-        )}
+        )} */}
       </div>
       <SearchResults />
     </MainContainer>
