@@ -9,8 +9,6 @@ const BootloaderPlugin = require('./src/components/loader/webpack-loader');
 
 require('dotenv').config();
 
-console.log('netlify', process.env.NETLIFY);
-
 if (process.env.IPFS_DEPLOY) {
   // eslint-disable-next-line no-console
   console.log('*** IPFS Version ***');
@@ -64,19 +62,6 @@ const config = {
     },
   },
   plugins: [
-    ...(process.env.NETLIFY
-      ? [
-          new webpack.NormalModuleReplacementPlugin(
-            /react-force-graph/,
-            (resource) => {
-              resource.request = 'src/../netlify/mocks/ReactForceGraph';
-            }
-          ),
-          // new webpack.NormalModuleReplacementPlugin(/\/GraphNew/, (resource) => {
-          //   resource.request = 'src/../netlify/mocks/Graph';
-          // }),
-        ]
-      : []),
     new WorkerUrlPlugin(),
     new NodePolyfillPlugin(),
     new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {

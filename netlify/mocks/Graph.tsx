@@ -1,9 +1,8 @@
 import React from 'react';
 
 console.log(React.version);
-console.log('3');
 
-function GraphNewMock(): JSX.Element {
+export function GraphMock() {
   return (
     <div
       style={{
@@ -13,9 +12,12 @@ function GraphNewMock(): JSX.Element {
         top: '50%',
       }}
     >
-      2d graph is disabled for netlify builds
+      graph is disabled for netlify builds
     </div>
   );
 }
 
-export default GraphNewMock;
+const Graph = GraphMock;
+
+// eslint-disable-next-line import/no-unused-modules
+export default Graph;

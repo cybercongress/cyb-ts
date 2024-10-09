@@ -4,7 +4,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 // const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-// const webpack = require('webpack');
+const webpack = require('webpack');
 const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
@@ -45,6 +45,19 @@ module.exports = merge(commonConfig, {
     ],
   },
   plugins: [
+    ...(process.env.NETLIFY
+      ? [
+          new webpack.NormalModuleReplacementPlugin(
+            /react-force-graph/,
+            (resource) => {
+              resource.request = 'src/../netlify/mocks/ReactForceGraph';
+            }
+          ),
+          // new webpack.NormalModuleReplacementPlugin(/\/GraphNew/, (resource) => {
+          //   resource.request = 'src/../netlify/mocks/Graph';
+          // }),
+        ]
+      : []),
     // disabled to speed up builds
     // new BundleAnalyzerPlugin({
     //   analyzerMode: 'static',
