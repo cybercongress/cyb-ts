@@ -77,12 +77,6 @@ const config = {
           throw new Error(`Not found ${mod}`);
       }
     }),
-    new webpack.NormalModuleReplacementPlugin(/\/GraphNew/, (resource) => {
-      resource.request = resource.request.replace(
-        /w\/GraphNew/,
-        'w/GraphNew.mock'
-      );
-    }),
     new CleanWebpackPlugin(),
     new BootloaderPlugin(HTMLWebpackPlugin, {
       script: './src/components/loader/loader.js',
