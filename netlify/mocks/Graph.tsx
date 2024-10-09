@@ -1,6 +1,7 @@
 import React from 'react';
 
 console.log(React.version);
+console.log('1');
 
 function GraphNewMock(): JSX.Element {
   return (
