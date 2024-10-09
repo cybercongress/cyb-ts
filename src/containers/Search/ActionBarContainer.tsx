@@ -12,8 +12,6 @@ import {
   ButtonImgText,
 } from '../../components';
 
-import { getTxs } from '../../utils/search/utils';
-
 import { LEDGER } from '../../utils/config';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { trimString } from '../../utils/utils';
@@ -22,6 +20,7 @@ import { DefaultAccount } from 'src/types/defaultAccount';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
 import { sendCyberlink } from 'src/services/neuron/neuronApi';
+import { getTxs } from 'src/services/transactions/lcd';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');

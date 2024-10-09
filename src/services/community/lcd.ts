@@ -35,6 +35,7 @@ export const getFollowsAsCid = async (
   );
 };
 
+// use src/services/transactions/lcd.tsx
 export const getFollowers = async (
   address: NeuronAddress,
   signal?: AbortSignal

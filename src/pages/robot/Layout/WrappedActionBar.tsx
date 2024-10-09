@@ -2,11 +2,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ActionBarContainer from 'src/pages/robot/_refactor/account/actionBar';
 
-import { chekFollow as checkFollow } from 'src/utils/search/utils';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 
 import { ActionBar } from 'src/components';
 import { useAppSelector } from 'src/redux/hooks';
+import { checkFollow } from 'src/services/transactions/lcd';
 import { useRobotContext } from '../robot.context';
 
 function WrappedActionBar() {

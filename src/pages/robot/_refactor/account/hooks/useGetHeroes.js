@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
-import { getDelegatorDelegations } from 'src/utils/search/utils';
+
+import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
 import { coinDecimals } from '../../../../../utils/utils';
 
 function useGetHeroes(address, updateAddress) {
@@ -77,7 +78,9 @@ function useGetHeroes(address, updateAddress) {
   };
 
   useEffect(() => {
-    if (!address) return;
+    if (!address) {
+      return;
+    }
 
     getStaking();
   }, [address, updateAddress]);
