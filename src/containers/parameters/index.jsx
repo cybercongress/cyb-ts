@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pane } from '@cybercongress/gravity';
 import { useParams } from 'react-router-dom';
 import { useAdviser } from 'src/features/adviser/context';
-import { getParamNetwork } from '../../utils/search/utils';
+
 import { Loading, MainContainer, Tabs } from '../../components';
 import {
   BandwidthParam,
@@ -18,6 +18,7 @@ import {
   GridParam,
   DmnParam,
 } from './tabs';
+import getParamNetwork from './getParams';
 
 const paramsTabs = {
   staking: { text: 'Staking', to: '/network/bostrom/parameters/staking' },

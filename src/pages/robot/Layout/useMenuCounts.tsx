@@ -8,17 +8,35 @@ import { useGetBalanceBostrom } from 'src/containers/sigma/hooks';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { RootState } from 'src/redux/store';
 
-import {
-  getCyberlinksTotal,
-  getFollowers,
-  getTweet,
-} from 'src/utils/search/utils';
 import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { convertResources, reduceBalances } from 'src/utils/utils';
 import { useGetKarma } from 'src/containers/application/Karma/useGetKarma';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectUnreadCounts } from 'src/features/sense/redux/sense.redux';
 import { useRobotContext } from '../robot.context';
+import {
+  getTweet,
+  getFollowers,
+  getTransactions,
+} from 'src/services/transactions/lcd';
+
+// remove
+async function getCyberlinksTotal(address: string) {
+  try {
+    const response = await getTransactions({
+      events: [
+        { key: 'message.action', value: '/cyber.graph.v1beta1.MsgCyberlink' },
+        { key: 'cyberlink.neuron', value: address },
+      ],
+      pagination: { limit: 5, offset: 0 },
+    });
+
+    return response?.pagination?.total;
+  } catch (error) {
+    console.log(error);
+    return undefined;
+  }
+}
 
 function useMenuCounts(address: string | null) {
   const [tweetsCount, setTweetsCount] = useState();

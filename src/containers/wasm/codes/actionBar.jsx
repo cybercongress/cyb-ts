@@ -7,7 +7,8 @@ import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { MEMO_KEPLR } from 'src/constants/config';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
-import { getTxs } from '../../../utils/search/utils';
+
+import { getTxs } from 'src/services/transactions/lcd';
 import {
   ActionBarContentText,
   Dots,
