@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
-import { AppDispatch } from 'src/redux/store';
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 
@@ -22,18 +21,19 @@ import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.
 import { PreviousPageProvider } from 'src/contexts/previousPage';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import NewVersionChecker from 'src/components/NewVersionChecker/NewVersionChecker';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 import styles from './styles.scss';
+import { setFocus } from './Header/Commander/commander.redux';
 
 export const PORTAL_ID = 'portal';
 
 initCyblog();
 
 function App() {
-  const dispatch: AppDispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-
   const address = useCurrentAddress();
 
   // const { community, communityLoaded } = useGetCommunity(address || null, {
@@ -43,18 +43,6 @@ function App() {
   const location = useLocation();
   const adviserContext = useAdviser();
   useSenseManager();
-
-  useAdviserTexts({
-    defaultText: useMemo(
-      () => (
-        <>
-          app is having some issues after network upgrade <br />
-          check updates in social groups
-        </>
-      ),
-      []
-    ),
-  });
 
   const { ipfsError } = useBackend();
 
@@ -126,8 +114,18 @@ function App() {
   //   }
   // };
 
+  // initial focus on commander
+  useEffect(() => {
+    const isGraphPages = window.location.pathname.includes('/brain');
+
+    if (!isGraphPages) {
+      dispatch(setFocus(true));
+    }
+  }, [dispatch]);
+
   return (
     <PreviousPageProvider>
+      <NewVersionChecker />
       <MainLayout>
         <>
           {/* not move portal order */}

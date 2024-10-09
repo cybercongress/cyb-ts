@@ -30,6 +30,7 @@ function useDelegationFunc(...[delegatorAddress, validatorAddress]: Params) {
   };
 }
 
+// TODO: add skip somewhere
 function useDelegation(validatorAddress: string) {
   const address = useAppSelector(selectCurrentAddress);
 

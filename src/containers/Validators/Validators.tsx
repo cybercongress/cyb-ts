@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useDevice } from 'src/contexts/device';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
-import { getDelegatorDelegations } from 'src/utils/search/utils';
+
 import {
   BondStatus,
   Validator,
@@ -12,6 +12,7 @@ import {
 import { DenomArr, MainContainer, Loading } from 'src/components';
 import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import useStakingParams from 'src/features/staking/useStakingParams';
+
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import ActionBarContainer from './ActionBarContainer';
 import { TableHeroes, TableItem, InfoBalance } from './components';
@@ -19,6 +20,7 @@ import getHeroes from './getHeroesHook';
 import { useGetBalance } from '../../pages/robot/_refactor/account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import styles from './Validators.module.scss';
+import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
 
 function Validators({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();

@@ -194,13 +194,3 @@ function OracleLanding() {
 }
 
 export default OracleLanding;
-
-export function BrainBtn() {
-  return (
-    <Link
-      to={routes.brain.path}
-      className={styles.enlargeBtn}
-      title="open full graph"
-    />
-  );
-}

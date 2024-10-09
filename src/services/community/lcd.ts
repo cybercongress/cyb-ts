@@ -35,6 +35,7 @@ export const getFollowsAsCid = async (
   );
 };
 
+// use src/services/transactions/lcd.tsx
 export const getFollowers = async (
   address: NeuronAddress,
   signal?: AbortSignal
@@ -64,10 +65,5 @@ export const getFollowers = async (
     return [];
   }
 
-  debugger;
-  // check
-
-  return response.txResponses.map(
-    (item) => item?.tx?.body.messages[0].value.neuron
-  );
+  return response.txResponses.map((item) => item?.tx?.body.messages[0].neuron);
 };

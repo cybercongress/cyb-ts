@@ -10,8 +10,9 @@ import { AccountValue } from 'src/types/defaultAccount';
 import { useBackend } from 'src/contexts/backend/backend';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { getTxs } from 'src/services/transactions/lcd';
 import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
-import { getTxs } from '../../../../utils/search/utils';
+
 import { LEDGER } from '../../../../utils/config';
 import {
   TransactionSubmitted,

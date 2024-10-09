@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unused-modules */
-import { getFromLink, getToLink } from 'src/utils/search/utils';
+
+import { getFromLink, getToLink } from '../transactions/lcd';
 import runeDeps from './runeDeps';
 import { openAICompletion } from './services/llmRequests/openai';
 

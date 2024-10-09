@@ -5,7 +5,8 @@ import {
   BASE_DENOM,
   DENOM_LIQUID,
 } from 'src/constants/config';
-import { getDelegatorDelegations } from 'src/utils/search/utils';
+
+import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
 import { coinDecimals, fromBech32 } from '../../../../../utils/utils';
 import useGetSlots from '../../../../../containers/mint/useGetSlots';
 

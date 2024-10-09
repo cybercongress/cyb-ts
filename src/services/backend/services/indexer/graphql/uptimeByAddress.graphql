@@ -1,6 +1,5 @@
-
-  # query uptimeByAddress($address: String) {
-  #   uptime(where: { consensus_address: { _eq: $address } }) {
-  #     uptime
-  #   }
-  # }
+query uptimeByAddress($address: String) {
+  uptime(where: { consensus_address: { _eq: $address } }) {
+    uptime
+  }
+}

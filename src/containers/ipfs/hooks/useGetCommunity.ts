@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getToLink, getFromLink } from '../../../utils/search/utils';
+import { getFromLink, getToLink } from 'src/services/transactions/lcd';
 
 const reduceParticleArr = (data) => {
   return data.reduce((acc, item) => {
