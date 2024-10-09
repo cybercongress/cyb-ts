@@ -62,6 +62,15 @@ const config = {
     },
   },
   plugins: [
+    new webpack.NormalModuleReplacementPlugin(/\/GraphNew/, (resource) => {
+      resource.request = 'src/../netlify/mocks/Graph';
+    }),
+    new webpack.NormalModuleReplacementPlugin(
+      /react-force-graph/,
+      (resource) => {
+        resource.request = 'src/../netlify/mocks/ReactForceGraph';
+      }
+    ),
     new WorkerUrlPlugin(),
     new NodePolyfillPlugin(),
     new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
@@ -121,8 +130,7 @@ const config = {
       {
         test: /\.[jt]sx?$/,
         exclude: /node_modules/,
-        include: /src/,
-        // include: [/src/, /node_modules\/typeit-react/],
+        include: [/src/, /netlify\/mocks/],
         use: {
           loader: 'esbuild-loader',
           options: {

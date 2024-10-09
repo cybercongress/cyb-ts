@@ -4,6 +4,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 // const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+// const webpack = require('webpack');
 const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
