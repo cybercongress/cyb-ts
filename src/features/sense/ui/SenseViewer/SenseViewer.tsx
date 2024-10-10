@@ -11,7 +11,9 @@ import { useRobotContext } from 'src/pages/robot/robot.context';
 import Messages from './Messages/Messages';
 import { AdviserProps } from '../Sense';
 import styles from './SenseViewer.module.scss';
-import SenseViewerHeader from './SenseViewerHeader/SenseViewerHeader';
+import SenseViewerHeader, {
+  LLMHeader,
+} from './SenseViewerHeader/SenseViewerHeader';
 
 type Props = {
   selected: string | undefined;
@@ -50,11 +52,15 @@ function SenseViewer({ adviser, selected, isLLMFilter }: Props) {
   }, [error, adviser]);
 
   const llmThreads = useAppSelector((state) => state.sense.llm.threads);
-  const currentThreadId = useAppSelector((state) => state.sense.llm.currentThreadId);
+  const currentThreadId = useAppSelector(
+    (state) => state.sense.llm.currentThreadId
+  );
 
   let llmMessages: LLMMessage[] = [];
   if (isLLMFilter && currentThreadId) {
-    const currentThread = llmThreads.find((thread) => thread.id === currentThreadId);
+    const currentThread = llmThreads.find(
+      (thread) => thread.id === currentThreadId
+    );
     if (currentThread) {
       llmMessages = currentThread.messages;
     }
@@ -68,6 +74,10 @@ function SenseViewer({ adviser, selected, isLLMFilter }: Props) {
 
   if (selected && !isOwner && !isLLMFilter) {
     title = undefined;
+  }
+
+  if (isLLMFilter) {
+    title = <DisplayTitle title={<LLMHeader />} />;
   }
 
   return (

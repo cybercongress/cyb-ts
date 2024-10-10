@@ -1,20 +1,19 @@
-import styles from './Message.module.scss';
-import { LLMMessage } from 'src/features/sense/redux/sense.redux'; // Import LLMMessage
+import { LLMMessage } from 'src/features/sense/redux/sense.redux';
+import Message from './Message';
 
-interface MessageProps {
+interface Props {
   message: LLMMessage;
 }
 
-function MessageComponent({ message }: MessageProps) {
+function MessageComponent({ message }: Props) {
   const isUser = message.sender === 'user';
 
   return (
-    <div className={isUser ? styles.userMessage : styles.llmMessage}>
-      <div className={styles.text}>{message.text}</div>
-      <div className={styles.timestamp}>
-        {new Date(message.timestamp).toLocaleTimeString()}
-      </div>
-    </div>
+    <Message
+      myMessage={isUser}
+      date={message.timestamp}
+      content={message.text}
+    />
   );
 }
 

@@ -5,13 +5,18 @@ import Display from 'src/components/containerGradient/Display/Display';
 import Loader2 from 'src/components/ui/Loader2';
 import cx from 'classnames';
 import { isParticle } from 'src/features/particle/utils';
+import {
+  selectLLMThread,
+  createLLMThread,
+} from 'src/features/sense/redux/sense.redux';
+import { v4 as uuidv4 } from 'uuid';
+import { Button } from 'src/components';
 import styles from './SenseList.module.scss';
 import SenseListFilters from './SenseListFilters/SenseListFilters';
 import { Filters } from '../types';
 import { AdviserProps } from '../Sense';
 import SenseListItemContainer from './SenseListItem/SenseListItem.container';
-import { selectLLMThread, createLLMThread } from 'src/features/sense/redux/sense.redux';
-import { v4 as uuidv4 } from 'uuid';
+import SenseListItem from './SenseListItem/SenseListItem';
 
 type Props = {
   select: (id: string) => void;
@@ -20,7 +25,7 @@ type Props = {
 } & AdviserProps;
 
 function SenseList({ select, selected, setFilter }: Props) {
-  const [filter, updateFilter] = useState(Filters.All);
+  const [filter, updateFilter] = useState(Filters.LLM);
   const dispatch = useAppDispatch();
   const llmThreads = useAppSelector((state) => state.sense.llm.threads);
 
@@ -31,7 +36,7 @@ function SenseList({ select, selected, setFilter }: Props) {
   if (filter !== Filters.All) {
     items = items.filter((item) => {
       if (filter === Filters.LLM) {
-        return llmThreads.some(thread => thread.id === item);
+        return llmThreads.some((thread) => thread.id === item);
       }
       const particle = isParticle(item);
       return (
@@ -44,6 +49,8 @@ function SenseList({ select, selected, setFilter }: Props) {
   if (filter === Filters.LLM) {
     items = llmThreads.map((thread) => thread.id);
   }
+
+  console.log(items);
 
   function getFilterText(filter: Filters) {
     switch (filter) {
@@ -82,35 +89,51 @@ function SenseList({ select, selected, setFilter }: Props) {
               }
             }}
           />
-          {filter === Filters.LLM && (
-            <button onClick={handleNewThread} className={styles.newThreadButton}>
-              New Thread
-            </button>
-          )}
         </div>
 
         {filter === Filters.LLM ? (
           <ul>
-            {llmThreads.map((thread) => (
-              <li
-                key={thread.id}
-                className={cx(styles.item, {
-                  [styles.selected]: selected === thread.id,
-                })}
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    select(thread.id);
-                    dispatch(selectLLMThread({ id: thread.id }));
-                  }}
+            {[...llmThreads]
+              .sort((a, b) => {
+                const aThread = llmThreads.find((thread) => thread.id === a.id);
+                const bThread = llmThreads.find((thread) => thread.id === b.id);
+                return bThread?.dateUpdated - aThread?.dateUpdated;
+              })
+              .map((thread) => (
+                <li
+                  key={thread.id}
+                  className={cx(styles.item, {
+                    [styles.selected]: selected === thread.id,
+                  })}
                 >
-                  <div className={styles.llmChatItem}>
-                    <span>{thread.title || `Conversation ${thread.id}`}</span>
-                  </div>
-                </button>
-              </li>
-            ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      select(thread.id);
+                      dispatch(selectLLMThread({ id: thread.id }));
+                    }}
+                  >
+                    <SenseListItem
+                      date={thread.dateUpdated}
+                      title={thread.title}
+                      isLLM
+                      content={(() => {
+                        const th = llmThreads.find(
+                          (item) => item.id === thread.id
+                        );
+                        const l = th?.messages.length;
+
+                        return th?.messages[l - 1]?.text || 'No messages';
+                      })()}
+                    />
+                  </button>
+                </li>
+              ))}
+
+            <br />
+            {filter === Filters.LLM && (
+              <Button onClick={handleNewThread}>New Thread</Button>
+            )}
           </ul>
         ) : senseList.isLoading && !(items.length > 0) ? (
           <div className={styles.center}>

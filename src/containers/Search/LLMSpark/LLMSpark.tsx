@@ -20,7 +20,7 @@ const provider = createOpenRouter({
   ['a' + 'piK' + 'ey']: `sk-or-v1-${atob(testVar)}`,
 });
 
-const modelName = isDevEnv()
+export const modelName = isDevEnv()
   ? 'meta-llama/llama-3-8b-instruct:free'
   : 'openai/gpt-4o-mini';
 
@@ -61,7 +61,7 @@ export function useIsLLMPageParam() {
   return isLLM;
 }
 
-export function LLMAvatar() {
+export function LLMAvatar({ onlyImg }) {
   return (
     <div
       style={{
@@ -70,7 +70,7 @@ export function LLMAvatar() {
       }}
     >
       <img
-        src="https://robohash.org/llama"
+        src={`https://robohash.org/${modelName}`}
         style={{
           width: '20px',
           height: '20px',
@@ -78,7 +78,7 @@ export function LLMAvatar() {
           marginRight: '5px',
         }}
       />
-      {model.modelId}
+      {!onlyImg && model.modelId}
     </div>
   );
 }

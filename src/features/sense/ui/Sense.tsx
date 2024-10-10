@@ -12,11 +12,6 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import { convertTimestampToString } from 'src/utils/date';
 import { useRobotContext } from 'src/pages/robot/robot.context';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  selectLLMThread,
-  createLLMThread,
-} from 'src/features/sense/redux/sense.redux';
 import styles from './Sense.module.scss';
 import ActionBarLLM from './ActionBar/ActionBarLLM';
 import ActionBar from './ActionBar/ActionBar';
@@ -37,9 +32,7 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
 
   const navigate = useNavigate();
 
-  const [selected, setSelected] = useState<string | undefined>(
-    urlSenseId
-  );
+  const [selected, setSelected] = useState<string | undefined>(urlSenseId);
 
   // **Removed null from the type**
   // update state asap
@@ -55,8 +48,16 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   const [error, setError] = useState<string>();
   const [adviserText, setAdviserText] = useState('');
 
-  const [isLLMFilter, setIsLLMFilter] = useState(false);
-  const currentThreadId = useAppSelector((state) => state.sense.llm.currentThreadId);
+  const [isLLMFilter, setIsLLMFilter] = useState(true);
+  const currentThreadId = useAppSelector((state) => {
+    const { llm } = state.sense;
+    console.log(llm);
+    return llm.currentThreadId;
+  });
+
+  // if (isLLMFilter && !currentThreadId && selected) {
+  //   setSelected(null);
+  // }
 
   useEffect(() => {
     if (!selected || !senseApi) {
@@ -129,15 +130,17 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
     // );
   }
 
-  useEffect(() => {
-    if (isLLMFilter && !currentThreadId) {
-      // Create a new thread when LLM filter is selected and no thread is active
-      const newThreadId = uuidv4();
-      dispatch(createLLMThread({ id: newThreadId }));
-      dispatch(selectLLMThread({ id: newThreadId }));
-      setSelected(newThreadId);
-    }
-  }, [isLLMFilter, currentThreadId, dispatch]);
+  // useEffect(() => {
+  //   if (isLLMFilter && !currentThreadId) {
+  //     // Create a new thread when LLM filter is selected and no thread is active
+  //     const newThreadId = uuidv4();
+  //     dispatch(createLLMThread({ id: newThreadId }));
+  //     dispatch(selectLLMThread({ id: newThreadId }));
+  //     setSelected(newThreadId);
+  //   }
+  // }, [isLLMFilter, currentThreadId, dispatch]);
+
+  console.log(selected);
 
   return (
     <>
@@ -169,10 +172,12 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
         />
       </div>
 
-      {isLLMFilter ? (
+      {isLLMFilter && currentThreadId ? (
         <ActionBarLLM />
       ) : (
-        <ActionBar id={selected} adviser={adviserProps} update={update} />
+        selected && (
+          <ActionBar id={selected} adviser={adviserProps} update={update} />
+        )
       )}
     </>
   );

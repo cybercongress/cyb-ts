@@ -8,16 +8,20 @@ import {
 } from 'src/features/sense/redux/sense.redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './ActionBar.module.scss';
-import { llmRequest } from "../../../../containers/Search/LLMSpark/LLMSpark";
+import { llmRequest } from '../../../../containers/Search/LLMSpark/LLMSpark';
 import VoiceInteraction from '../VoiceInteraction/VoiceInteraction';
 
 function ActionBarLLM() {
   const [text, setText] = useState('');
-  const currentThreadId = useAppSelector((state) => state.sense.llm.currentThreadId);
+  const currentThreadId = useAppSelector(
+    (state) => state.sense.llm.currentThreadId
+  );
   const dispatch = useAppDispatch();
 
   const sendMessage = async () => {
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      return;
+    }
 
     let threadId = currentThreadId;
     if (!threadId) {
@@ -55,17 +59,21 @@ function ActionBarLLM() {
         sender: 'llm',
         timestamp: Date.now(),
       };
-      dispatch(replaceLastLLMMessageInThread({ threadId, message: llmMessage }));
+      dispatch(
+        replaceLastLLMMessageInThread({ threadId, message: llmMessage })
+      );
     } catch (error) {
       // Handle error: Remove the "waiting..." message
-      dispatch(replaceLastLLMMessageInThread({
-        threadId,
-        message: {
-          text: 'Error: Failed to get response.',
-          sender: 'llm',
-          timestamp: Date.now(),
-        },
-      }));
+      dispatch(
+        replaceLastLLMMessageInThread({
+          threadId,
+          message: {
+            text: 'Error: Failed to get response.',
+            sender: 'llm',
+            timestamp: Date.now(),
+          },
+        })
+      );
       console.error('LLM request failed:', error);
     }
   };
@@ -78,9 +86,7 @@ function ActionBarLLM() {
         onChange={(e) => setText(e.target.value)}
         className={styles.input}
       />
-      <Button onClick={sendMessage}>
-        Send
-      </Button>
+      <Button onClick={sendMessage}>Send</Button>
       <VoiceInteraction />
     </ActionBar>
   );
