@@ -279,6 +279,7 @@ function Send() {
             <Col>
               <InputNumberDecimalScale
                 value={tokenAmount}
+                availableAmount={tokenABalance}
                 onValueChange={(value) => setTokenAmount(value)}
                 title="choose amount to send"
                 validAmount={validInputAmountToken}

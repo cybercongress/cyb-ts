@@ -86,6 +86,7 @@ function TableDataTxs({ data, loading, accountUser }: Props) {
       columns={Object.values(ColumnsTable).map((item) => ({
         header: item,
         accessorKey: item,
+        enableSorting: ![ColumnsTable.action, ColumnsTable.tx].includes(item),
         cell: (info) => info.getValue(),
       }))}
     />
