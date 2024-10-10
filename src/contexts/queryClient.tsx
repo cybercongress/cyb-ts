@@ -6,12 +6,19 @@ import { RPC_URL } from 'src/constants/config';
 
 const QueryClientContext = React.createContext<Option<CyberClient>>(undefined);
 
+/**
+ * @deprecated use queryCyberClient
+ */
 export function useQueryClient() {
   return useContext(QueryClientContext);
 }
 
 function QueryClientProvider({ children }: { children: React.ReactNode }) {
-  const { data, error, isFetching } = useQuery({
+  const {
+    data: client,
+    error,
+    isFetching,
+  } = useQuery({
     queryKey: ['cyberClient', 'connect'],
     queryFn: async () => {
       return CyberClient.connect(RPC_URL);
@@ -27,7 +34,7 @@ function QueryClientProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <QueryClientContext.Provider value={data}>
+    <QueryClientContext.Provider value={client}>
       {children}
     </QueryClientContext.Provider>
   );

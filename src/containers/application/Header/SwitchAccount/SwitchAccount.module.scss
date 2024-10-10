@@ -30,10 +30,11 @@
 .containerSwichAccount {
   display: grid;
   font-size: 14px;
-  grid-template-columns: 1fr 105px;
+  grid-template-columns: 1fr 100px;
   gap: 25px;
   align-items: center;
-  height: 95px;
+  justify-content: center;
+  height: 90px;
 
   @media (max-width: 540px) {
     grid-template-columns: 1fr 60px;
@@ -45,7 +46,7 @@
     color: var(--primary-color);
   }
 
-  &+& {
+  & + & {
     margin-top: -30px;
   }
 
@@ -68,6 +69,7 @@
 }
 
 .content {
+  display: flex;
   justify-content: center;
 }
 

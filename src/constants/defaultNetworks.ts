@@ -17,6 +17,25 @@ const defaultNetworks: NetworksList = {
     BECH32_PREFIX: 'bostrom',
     MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
   },
+  // localbostrom: {
+  //   CHAIN_ID: 'localbostrom',
+  //   BASE_DENOM: 'boot',
+  //   DENOM_LIQUID: 'hydrogen',
+  //   RPC_URL: 'https://rpc.bostrom.cybernode.ai',
+  //   LCD_URL: 'https://lcd.bostrom.cybernode.ai',
+  //   WEBSOCKET_URL: 'wss://rpc.bostrom.cybernode.ai/websocket',
+  //   INDEX_HTTPS: 'https://index.bostrom.cybernode.ai/v1/graphql',
+  //   INDEX_WEBSOCKET: 'wss://index.bostrom.cybernode.ai/v1/graphql',
+  //   BECH32_PREFIX: 'bostrom',
+  //   MEMO_KEPLR: '[bostrom] cyb.ai, using keplr',
+  // },
+  //    RPC_URL=https://rpc.bostrom.moon.cybernode.ai
+  //  LCD_URL=https://lcd.bostrom.moon.cybernode.ai
+  //  WEBSOCKET_URL=wss://rpc.bostrom.moon.cybernode.ai/websocket
+  //  INDEX_HTTPS=https://index.bostrom.moon.cybernode.ai/v1/graphql
+  //  INDEX_WEBSOCKET = wss://index.bostrom.moon.cybernode.ai/v1/graphql
+  //  CHAIN_ID = localbostrom
+
   'space-pussy': {
     CHAIN_ID: Networks.SPACE_PUSSY,
     BASE_DENOM: 'pussy',

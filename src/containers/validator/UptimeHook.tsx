@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { Dots } from '../../components';
 import { consensusPubkey } from '../../utils/utils';
 
-function useUptime({ consensusPub }: { consensusPub: string }) {
+function Uptime({ consensusPub }: { consensusPub: string }) {
   const { loading, data, error } = useUptimeByAddressQuery({
     variables: {
       address: `${consensusPubkey(consensusPub)}`,
@@ -25,4 +25,4 @@ function useUptime({ consensusPub }: { consensusPub: string }) {
     .toString()} %`;
 }
 
-export default useUptime;
+export default Uptime;

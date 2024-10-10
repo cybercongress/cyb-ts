@@ -136,20 +136,6 @@ $mobile-breakpoint: 1279px;
   justify-content: center;
 }
 
-.enlargeBtn {
-  z-index: 1;
-  width: 22px;
-  height: 22px;
-  background-image: url('images/enlarge.svg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  font-size: 0;
-
-  &:hover {
-    opacity: 0.8;
-  }
-}
-
 .graphWrapper {
   position: fixed;
   left: 0;

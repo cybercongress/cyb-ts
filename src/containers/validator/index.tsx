@@ -1,18 +1,21 @@
 import React from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import { connect } from 'react-redux';
 import withRouter from 'src/components/helpers/withRouter';
 
 import withDevice from 'src/components/helpers/withDevice';
-import ValidatorInfo from './validatorInfo';
+import Loader2 from 'src/components/ui/Loader2';
+import axios from 'axios';
+import { LCD_URL } from 'src/constants/config';
 import {
-  getValidatorsInfo,
-  stakingPool,
-  selfDelegationShares,
-  getDelegators,
-} from '../../utils/search/utils';
-import { fromBech32, trimString } from '../../utils/utils';
-import { Loading, Copy, Tabs, MainContainer } from '../../components';
+  QueryPoolResponseAmino,
+  QueryValidatorDelegationsResponseAmino,
+  QueryValidatorResponseAmino,
+} from '@cybercongress/cyber-ts/cosmos/staking/v1beta1/query';
+import ValidatorInfo from './validatorInfo';
+
+import { fromBech32 } from '../../utils/utils';
+import { Tabs, MainContainer } from '../../components';
 import Delegated from './delegated';
 import Fans from './fans';
 import NotFound from '../application/notFound';
@@ -20,7 +23,6 @@ import ActionBarContainer from '../Validators/ActionBarContainer';
 import Leadership from './leadership';
 import Rumors from './rumors';
 import { MusicalAddress } from '../portal/components';
-import Loader2 from 'src/components/ui/Loader2';
 
 const mapTabs = [
   { key: 'fans', to: 'fans' },
@@ -28,6 +30,63 @@ const mapTabs = [
   { key: 'rumors', to: 'rumors' },
   { key: 'leadership', to: 'leadership' },
 ];
+
+// use hooks
+const stakingPool = async () => {
+  try {
+    const response = await axios<QueryPoolResponseAmino>({
+      method: 'get',
+      url: `${LCD_URL}/cosmos/staking/v1beta1/pool`,
+    });
+
+    return response.data.pool;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
+};
+
+const getValidatorsInfoFunc = async (address) => {
+  try {
+    const response = await axios<QueryValidatorResponseAmino>({
+      method: 'get',
+      url: `${LCD_URL}/cosmos/staking/v1beta1/validators/${address}`,
+    });
+
+    return response.data.validator;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+// maybe logic not correct
+const selfDelegationShares = async (delegatorAddress, operatorAddress) => {
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `${LCD_URL}/cosmos/staking/v1beta1/delegators/${delegatorAddress}/validators/${operatorAddress}`,
+    });
+
+    return response.data.validator.tokens;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
+};
+
+const getDelegatorsFunc = async (validatorAddr) => {
+  try {
+    const response = await axios<QueryValidatorDelegationsResponseAmino>({
+      method: 'get',
+      url: `${LCD_URL}/cosmos/staking/v1beta1/validators/${validatorAddr}/delegations`,
+    });
+    return response.data.delegation_responses;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
 
 class ValidatorsDetails extends React.PureComponent {
   constructor(props) {
@@ -139,9 +198,9 @@ class ValidatorsDetails extends React.PureComponent {
     } = this.props;
 
     const resultStakingPool = await this.getSupply();
-    const result = await getValidatorsInfo(address);
+    const result = await getValidatorsInfoFunc(address);
 
-    if (result === null) {
+    if (!result) {
       return this.setState({ error: true, loader: false });
     }
 
@@ -180,12 +239,13 @@ class ValidatorsDetails extends React.PureComponent {
     const { address } = params;
     const { validatorInfo, addressPocket, unStake } = this.state;
 
-    let fans = [];
+    const fans = [];
 
-    const data = await getDelegators(address);
+    const data = await getDelegatorsFunc(address);
 
-    if (data !== null) {
-      fans = data.result;
+    // debugger;
+
+    if (data) {
       // TODO: refactor
       Object.keys(fans).forEach((key) => {
         if (unStake === false) {
@@ -240,7 +300,7 @@ class ValidatorsDetails extends React.PureComponent {
     }
 
     if (error) {
-      return <NotFound />;
+      return <NotFound text={error?.message} />;
     }
 
     return (

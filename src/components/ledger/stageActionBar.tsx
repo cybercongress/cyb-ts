@@ -5,6 +5,7 @@ import { BondStatus } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { useBackend } from 'src/contexts/backend/backend';
 import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
 import { KEY_TYPE } from 'src/pages/Keys/types';
+import { routes } from 'src/routes';
 import { ContainetLedger } from './container';
 import { Dots } from '../ui/Dots';
 import Account from '../account/account';
@@ -95,6 +96,7 @@ export function StartStageSearchActionBar({
   onChangeInput,
   onClickClear,
   file,
+  searchHash,
   textBtn = 'Cyberlink',
   placeholder = 'add keywords, hash or file',
   keys = 'ledger',
@@ -102,20 +104,7 @@ export function StartStageSearchActionBar({
   const { isIpfsInitialized } = useBackend();
   return (
     // use NodeIsLoadingButton component
-    <ActionBar
-      button={{
-        disabled: !isIpfsInitialized || !contentHash.length,
-        onClick: onClickBtn,
-        text: !isIpfsInitialized ? (
-          <>
-            Node is loading&nbsp;
-            <Dots />
-          </>
-        ) : (
-          textBtn
-        ),
-      }}
-    >
+    <ActionBar>
       <Pane
         display="flex"
         flexDirection="column"
@@ -150,6 +139,24 @@ export function StartStageSearchActionBar({
           />
         </Pane>
       </Pane>
+
+      <Button
+        disabled={!isIpfsInitialized || !contentHash.length}
+        onClick={onClickBtn}
+      >
+        {!isIpfsInitialized ? (
+          <>
+            Node is loading&nbsp;
+            <Dots />
+          </>
+        ) : (
+          textBtn
+        )}
+      </Button>
+
+      <Button link={`${routes.studio.path}?cid=${searchHash}`}>
+        edit in studio
+      </Button>
     </ActionBar>
   );
 }
@@ -190,7 +197,8 @@ function InputAutoSize({
       value={value}
       id="myInput"
       maxValue={maxValue}
-      onkeypress={changefontsize()}
+      // no such event handler
+      // onkeypress={changefontsize()}
       autoFocus={autoFocus}
       onValueChange={onChangeInputAmount}
       placeholder={placeholder}

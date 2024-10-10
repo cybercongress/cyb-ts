@@ -12,8 +12,6 @@ import {
   ButtonImgText,
 } from '../../components';
 
-import { getTxs } from '../../utils/search/utils';
-
 import { LEDGER } from '../../utils/config';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 import { trimString } from '../../utils/utils';
@@ -22,6 +20,7 @@ import { DefaultAccount } from 'src/types/defaultAccount';
 import { BackgroundWorker } from 'src/services/backend/workers/background/worker';
 import { SenseApi } from 'src/contexts/backend/services/senseApi';
 import { sendCyberlink } from 'src/services/neuron/neuronApi';
+import { getTxs } from 'src/services/transactions/lcd';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');
@@ -215,8 +214,10 @@ class ActionBarContainer extends Component<Props, any> {
     const { update } = this.props;
     if (this.state.txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const data = await getTxs(this.state.txHash);
-      if (data !== null) {
+      const res = await getTxs(this.state.txHash);
+
+      if (res) {
+        const data = res.tx_response;
         if (data.logs) {
           this.setState({
             stage: STAGE_CONFIRMED,
@@ -360,6 +361,7 @@ class ActionBarContainer extends Component<Props, any> {
           keys={addressLocalStor !== null ? addressLocalStor.keys : false}
           onClickBtn={this.onClickInit}
           contentHash={file?.name || contentHash}
+          searchHash={this.props.keywordHash}
           onChangeInputContentHash={this.onChangeInput}
           inputOpenFileRef={this.inputOpenFileRef}
           showOpenFileDlg={this.showOpenFileDlg}

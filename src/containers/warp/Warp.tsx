@@ -16,6 +16,8 @@ import usePoolListInterval from 'src/hooks/usePoolListInterval';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { RootState } from 'src/redux/store';
 import useGetBalances from 'src/hooks/getBalances';
+import { useAdviser } from 'src/features/adviser/context';
+import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import { reduceBalances, getDisplayAmountReverce } from '../../utils/utils';
 import TabList from './components/tabList';
@@ -30,8 +32,6 @@ import {
   getMyTokenBalanceNumber,
   calculateCounterPairAmount,
 } from './utils';
-import { useAdviser } from 'src/features/adviser/context';
-import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 
 const tokenADefaultValue = BASE_DENOM;
 const tokenBDefaultValue = DENOM_LIQUID;
@@ -44,8 +44,9 @@ function Warp() {
   const { tab = 'add-liquidity' } = useParams<{ tab: TypeTab }>();
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const [update, setUpdate] = useState(0);
-  const { liquidBalances: accountBalances, refresh } =
-    useGetBalances(addressActive);
+  const { liquidBalances: accountBalances, refresh } = useGetBalances(
+    addressActive?.bech32
+  );
   const { totalSupplyProofList: totalSupply } = useGetTotalSupply();
   const poolsData = usePoolListInterval({ refetchInterval: 50000 });
 

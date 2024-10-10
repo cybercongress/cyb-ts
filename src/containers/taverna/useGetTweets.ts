@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import useQueueIpfsContent from 'src/hooks/useQueueIpfsContent';
 import { Option } from 'src/types';
-import { getFollows, getTweet } from '../../utils/search/utils';
+
 import { PATTERN_CYBER } from 'src/constants/patterns';
-import { fromBech32 } from '../../utils/utils';
 import { CYBER_CONGRESS_ADDRESS } from 'src/constants/app';
 import { BECH32_PREFIX } from 'src/constants/config';
+import { getFollows, getTweet } from 'src/services/transactions/lcd';
+import { fromBech32 } from '../../utils/utils';
 
 interface Tweet {
   status: string;

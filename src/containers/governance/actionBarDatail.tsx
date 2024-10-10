@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 import { NumericFormat } from 'react-number-format';
 import { ActionBar, Pane } from '@cybercongress/gravity';
 import { coins } from '@cosmjs/launchpad';
-import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import {
   VoteOption,
@@ -15,6 +14,7 @@ import {
   MEMO_KEPLR,
 } from 'src/constants/config';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import { getTxs } from 'src/services/transactions/lcd';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -29,7 +29,6 @@ import {
   Select,
 } from '../../components';
 
-import { getTxs } from '../../utils/search/utils';
 // import styles from './ActionBarDetail.module.scss';
 
 import { LEDGER } from '../../utils/config';
@@ -52,7 +51,6 @@ type Props = {
 };
 
 function ActionBarDetail({ proposals, id, update }: Props) {
-  const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);
@@ -65,15 +63,11 @@ function ActionBarDetail({ proposals, id, update }: Props) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      if (queryClient && txHash !== null) {
+      if (txHash !== null) {
         setStage(STAGE_CONFIRMING);
-        const response = await getTxs(txHash);
-        console.log('response :>> ', response);
-
-        const responseGetTx = await queryClient.getTx(txHash);
-        console.log('responseGetTx :>> ', responseGetTx);
-
-        if (response && response !== null) {
+        const res = await getTxs(txHash);
+        if (res) {
+          const response = res.tx_response;
           if (response.logs) {
             setStage(STAGE_CONFIRMED);
             setTxHeight(response.height);
@@ -94,7 +88,7 @@ function ActionBarDetail({ proposals, id, update }: Props) {
     };
     confirmTx();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryClient, txHash]);
+  }, [txHash]);
 
   const clearState = () => {
     setStage(STAGE_INIT);

@@ -1,4 +1,3 @@
-// import gql from 'graphql-tag';
 import { useEffect, useMemo, useState } from 'react';
 import { useBackend } from 'src/contexts/backend/backend';
 import {

@@ -1,9 +1,9 @@
 import { Pane } from '@cybercongress/gravity';
+import Display from 'src/components/containerGradient/Display/Display';
 import { Card } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import KeybaseAvatar from './keybaseAvatar';
 import UptimeHook from './UptimeHook';
-import Display from 'src/components/containerGradient/Display/Display';
 import { StatusTooltip } from '../Validators/components';
 
 // function Row({ value, title, marginBottom }) {
@@ -85,7 +85,7 @@ function ValidatorInfo({ data }) {
       <Display>
         <Card
           title="Uptime"
-          value={<UptimeHook consensusPub={data.consensus_pubkey.value} />}
+          value={<UptimeHook consensusPub={data.consensus_pubkey.key} />}
           stylesContainer={{
             width: '100%',
             maxWidth: 'unset',
