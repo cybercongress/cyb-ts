@@ -1,12 +1,10 @@
 @mixin gradient($opacityStart: 0.2, $opacityEnd: 0) {
-  border-radius: 2px 2px 0px 0px;
-
+  border-radius: 2px 2px 0 0;
   background-image: linear-gradient(
     90deg,
-    rgba(var(--color-r), var(--color-g), var(--color-b), $opacityStart) 0%,
-    rgba(var(--color-r), var(--color-g), var(--color-b), $opacityEnd) 100%
+    rgb(var(--color-r) var(--color-g) var(--color-b) / $opacityStart) 0%,
+    rgb(var(--color-r) var(--color-g) var(--color-b) / $opacityEnd) 100%
   );
-
   filter: blur(14px);
 }
 
@@ -30,7 +28,7 @@
         justify-content: flex-end;
       }
 
-      &:before {
+      &::before {
         transform: rotate(180deg);
       }
     }
@@ -74,6 +72,7 @@
     position: absolute;
     top: 0;
     left: 0;
+
     @include gradient(0.2, 0.2);
 
     pointer-events: none;
@@ -86,19 +85,19 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
-
   font-size: 14px;
   min-height: 50px;
   min-width: 100px;
-
   color: white !important;
   position: relative;
   gap: 10px 0;
   cursor: pointer;
 
-  &:before {
+  &::before {
     content: ' ';
+
     @include gradient(0.2, 0);
+
     z-index: -1;
     width: 100%;
     top: 0;
