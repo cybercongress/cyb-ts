@@ -1,11 +1,10 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 
 import { getPassport } from 'src/features/passport/passports.redux';
-import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
@@ -14,7 +13,6 @@ import { useBackend } from 'src/contexts/backend/backend';
 import { useAppDispatch } from 'src/redux/hooks';
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
 
-// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { initCyblog } from 'src/utils/logging/bootstrap';
 
 import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
@@ -33,7 +31,6 @@ initCyblog();
 
 function App() {
   const dispatch = useAppDispatch();
-  const queryClient = useQueryClient();
   const address = useCurrentAddress();
 
   // const { community, communityLoaded } = useGetCommunity(address || null, {
@@ -51,17 +48,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!address || !queryClient) {
+    if (!address) {
       return;
     }
 
     dispatch(
       getPassport({
         address,
-        queryClient,
       })
     );
-  }, [address, queryClient, dispatch]);
+  }, [address, dispatch]);
 
   // reset
   // useEffect(() => {
@@ -69,6 +65,10 @@ function App() {
   //     dispatch(setCommunity(community));
   //   }
   // }, [communityLoaded, community, dispatch]);
+
+  useAdviserTexts({
+    defaultText: 'indexer is in sync now, some data may be not fully available',
+  });
 
   useEffect(() => {
     // tabs
@@ -135,13 +135,7 @@ function App() {
             <div id={PORTAL_ID} className={styles.portal} />
           )}
 
-          {![
-            /* routes.home.path, */
-            /* routes.teleport.path, */
-            // cybernetRoutes.verse.path,
-          ].some((path) => {
-            return matchPath(path, location.pathname);
-          }) && <AdviserContainer />}
+          <AdviserContainer />
 
           <Outlet />
         </>
