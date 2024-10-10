@@ -19,6 +19,7 @@ import { RootState } from 'src/redux/store';
 // Add this import for generating unique thread IDs
 import { SenseItemId } from '../types/sense';
 import { isParticle } from '../../particle/utils';
+import { isWorker } from 'src/constants/config';
 
 // similar to blockchain/tx/message type
 export type SenseItem = {
@@ -85,9 +86,9 @@ const initialState: SliceState = {
   },
   llm: {
     // Change from messages array to threads array
-    threads: JSON.parse(
-      localStorage.getItem('llmThreads') || '[]'
-    ) as LLMThread[],
+    threads: !isWorker()
+      ? (JSON.parse(localStorage.getItem('llmThreads') || '[]') as LLMThread[])
+      : [],
     currentThreadId: null, // Keep track of the currently selected thread
   },
 };

@@ -63,8 +63,6 @@ function SenseListItem({
 
   const withAmount = Boolean(amountData?.amount?.length);
 
-  console.log(isLLM);
-
   const avatarContent = (
     <>
       {!isParticle && !isLLM ? (

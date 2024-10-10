@@ -50,8 +50,6 @@ function SenseList({ select, selected, setFilter }: Props) {
     items = llmThreads.map((thread) => thread.id);
   }
 
-  console.log(items);
-
   function getFilterText(filter: Filters) {
     switch (filter) {
       case Filters.Neuron:
