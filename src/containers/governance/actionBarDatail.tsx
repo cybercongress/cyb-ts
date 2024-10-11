@@ -14,6 +14,7 @@ import {
   MEMO_KEPLR,
 } from 'src/constants/config';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import { getTxs } from 'src/services/transactions/lcd';
 import {
   TransactionSubmitted,
   Confirmed,
@@ -28,7 +29,6 @@ import {
   Select,
 } from '../../components';
 
-import { getTxs } from '../../utils/search/utils';
 // import styles from './ActionBarDetail.module.scss';
 
 import { LEDGER } from '../../utils/config';
@@ -51,7 +51,6 @@ type Props = {
 };
 
 function ActionBarDetail({ proposals, id, update }: Props) {
-  const queryClient = useQueryClient();
   const { signer, signingClient } = useSigningClient();
   const [stage, setStage] = useState(STAGE_INIT);
   const [txHash, setTxHash] = useState(null);

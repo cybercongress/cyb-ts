@@ -42,8 +42,8 @@ import {
 } from './containers/wasm';
 
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
+import Warp from './containers/warp/Warp';
 import WarpDashboardPools from './containers/warp/WarpDashboardPools';
-import Brain from './pages/Brain/Brain';
 import Keys from './pages/Keys/Keys';
 import OracleLanding from './pages/oracle/landing/OracleLanding';
 import Learn from './pages/oracle/Learn/Learn';
@@ -54,12 +54,14 @@ import Teleport from './pages/teleport/Teleport';
 import { routes } from './routes';
 // import Cybernet from './features/cybernet/ui/Cybernet';
 
+// import Cybernet from './features/cybernet/ui/Cybernet';
 import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
 import Map from './pages/Portal/Map/Map';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Settings from './pages/Settings/Settings';
 import Sign from './pages/Sign/Sign';
+import BrainRoutes from './routing/Brain';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -105,11 +107,6 @@ function ValidatorsRedirect() {
 function RedirectToRobot() {
   const params = useParams();
   return <Navigate to={`/neuron/${params.address}`} replace />;
-}
-
-function RedirectToRobotBrain() {
-  const params = useParams();
-  return <Navigate to={`/neuron/${params.agent}/brain`} replace />;
 }
 
 function AppRouter() {
@@ -163,11 +160,7 @@ function AppRouter() {
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
 
-          {['/graph', '/brain'].map((path) => (
-            <Route key={path} path={path} element={<Brain />} />
-          ))}
-
-          <Route path="/pgraph/:agent" element={<RedirectToRobotBrain />} />
+          {BrainRoutes()}
 
           <Route path="network/bostrom">
             <Route path="tx" element={<Txs />} />
@@ -196,18 +189,7 @@ function AppRouter() {
           <Route path="/teleport/*" element={<Teleport />} />
 
           <Route path="/warp" element={<WarpDashboardPools />} />
-          <Route
-            path="/warp/:tab"
-            element={
-              <div
-                style={{
-                  textAlign: 'center',
-                }}
-              >
-                warp actions temporary disabled due to upgrade issues
-              </div>
-            }
-          />
+          <Route path="/warp/:tab" element={<Warp />} />
           <Route path="/genesis" element={<Movie />} />
           <Route path="/citizenship" element={<PortalCitizenship />} />
           <Route path="/gift" element={<PortalGift />} />

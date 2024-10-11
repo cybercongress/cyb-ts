@@ -3,6 +3,8 @@ import { Loading } from 'src/components';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { Stars } from 'src/containers/portal/components';
+import ErrorBoundary from 'src/components/ErrorBoundary/ErrorBoundary';
+import { useEffect } from 'react';
 import useCyberlinks from './useCyberlinks';
 import { PORTAL_ID } from '../../../containers/application/App';
 import GraphNew from '../GraphNew/GraphNew';
@@ -46,8 +48,6 @@ function CyberlinksGraphContainer({
 
   const Comp = type === Types['2d'] ? GraphNew : CyberlinksGraph;
 
-  // const { isFullscreen } = useFullscreen();
-
   const content = loading ? (
     <div
       style={{
@@ -73,12 +73,14 @@ function CyberlinksGraphContainer({
     <>
       {!minVersion && <Stars />}
 
-      <Comp
-        data={data || fetchData}
-        size={size}
-        minVersion={minVersion}
-        currentAddress={currentAddress}
-      />
+      <ErrorBoundary fallback={<GraphRenderFallbackError />}>
+        <Comp
+          data={data || fetchData}
+          size={size}
+          minVersion={minVersion}
+          currentAddress={currentAddress}
+        />
+      </ErrorBoundary>
     </>
   );
 
@@ -88,3 +90,10 @@ function CyberlinksGraphContainer({
 }
 
 export default CyberlinksGraphContainer;
+
+function GraphRenderFallbackError() {
+  useEffect(() => {
+    alert('Graph render error');
+  }, []);
+  return <div>Graph render error</div>;
+}

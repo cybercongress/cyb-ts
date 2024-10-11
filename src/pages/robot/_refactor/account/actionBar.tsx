@@ -10,7 +10,10 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { routes } from 'src/routes';
 import { sendCyberlink } from 'src/services/neuron/neuronApi';
+import { getTxs } from 'src/services/transactions/lcd';
 import { AccountValue } from 'src/types/defaultAccount';
+import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
+
 import {
   ActionBar as ActionBarComp,
   ActionBarContentText,
@@ -22,9 +25,7 @@ import {
   TransactionError,
   TransactionSubmitted,
 } from '../../../../components';
-import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
 import { LEDGER } from '../../../../utils/config';
-import { getTxs } from '../../../../utils/search/utils';
 
 const {
   STAGE_INIT,

@@ -36,7 +36,6 @@ import WebsocketsProvider from './websockets/context';
 import HubProvider from './contexts/hub';
 import AdviserProvider from './features/adviser/context';
 
-import NewVersionChecker from './components/NewVersionChecker/NewVersionChecker';
 import { localStorageKeys } from './constants/localStorageKeys';
 import CyberClientProvider from './contexts/queryCyberClient';
 import ScriptingProvider from './contexts/scripting/scripting';
@@ -79,7 +78,6 @@ function Providers({ children }: { children: React.ReactNode }) {
                             <ScriptingProvider>
                               <DeviceProvider>
                                 <AdviserProvider>
-                                  <NewVersionChecker />
                                   <ErrorBoundary>{children}</ErrorBoundary>
                                 </AdviserProvider>
                               </DeviceProvider>

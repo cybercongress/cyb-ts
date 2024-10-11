@@ -1,27 +1,28 @@
-import LocalizedStrings from 'react-localization';
-import { Link } from 'react-router-dom';
+import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
 import { Pane, Text } from '@cybercongress/gravity';
 import { BondStatus } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
+import LocalizedStrings from 'react-localization';
+import { Link } from 'react-router-dom';
+import { BASE_DENOM, CHAIN_ID } from 'src/constants/config';
 import { useBackend } from 'src/contexts/backend/backend';
-import { CHAIN_ID, BASE_DENOM } from 'src/constants/config';
-import { KEY_TYPE } from 'src/pages/Keys/types';
 import { ConnectMethod } from 'src/pages/Keys/ActionBar/types';
-import { OfflineSigner } from '@cybercongress/cyber-js/build/signingcyberclient';
+import { KEY_TYPE } from 'src/pages/Keys/types';
+import { routes } from 'src/routes';
 import { Option } from 'src/types';
-import { ContainetLedger } from './container';
-import { Dots } from '../ui/Dots';
+import { formatNumber, selectNetworkImg, trimString } from '../../utils/utils';
 import Account from '../account/account';
 import { LinkWindow } from '../link/link';
-import { formatNumber, trimString, selectNetworkImg } from '../../utils/utils';
+import { Dots } from '../ui/Dots';
+import { ContainetLedger } from './container';
 
 import { i18n } from '../../i18n/en';
 
-import Button from '../btnGrd';
-import { InputNumber, Input } from '../Input';
 import ActionBar from '../actionBar';
-import ButtonIcon from '../buttons/ButtonIcon';
-import { Color } from '../LinearGradientContainer/LinearGradientContainer';
+import Button from '../btnGrd';
 import AddFileButton from '../buttons/AddFile/AddFile';
+import ButtonIcon from '../buttons/ButtonIcon';
+import { Input, InputNumber } from '../Input';
+import { Color } from '../LinearGradientContainer/LinearGradientContainer';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgWallet = require('../../image/wallet-outline.svg');
@@ -99,6 +100,7 @@ export function StartStageSearchActionBar({
   onChangeInput,
   onClickClear,
   file,
+  searchHash,
   textBtn = 'Cyberlink',
   placeholder = 'add keywords, hash or file',
   keys = 'ledger',
@@ -106,20 +108,7 @@ export function StartStageSearchActionBar({
   const { isIpfsInitialized } = useBackend();
   return (
     // use NodeIsLoadingButton component
-    <ActionBar
-      button={{
-        disabled: !isIpfsInitialized || !contentHash.length,
-        onClick: onClickBtn,
-        text: !isIpfsInitialized ? (
-          <>
-            Node is loading&nbsp;
-            <Dots />
-          </>
-        ) : (
-          textBtn
-        ),
-      }}
-    >
+    <ActionBar>
       <Pane
         display="flex"
         flexDirection="column"
@@ -154,6 +143,24 @@ export function StartStageSearchActionBar({
           />
         </Pane>
       </Pane>
+
+      <Button
+        disabled={!isIpfsInitialized || !contentHash.length}
+        onClick={onClickBtn}
+      >
+        {!isIpfsInitialized ? (
+          <>
+            Node is loading&nbsp;
+            <Dots />
+          </>
+        ) : (
+          textBtn
+        )}
+      </Button>
+
+      <Button link={`${routes.studio.path}?cid=${searchHash}`}>
+        edit in studio
+      </Button>
     </ActionBar>
   );
 }

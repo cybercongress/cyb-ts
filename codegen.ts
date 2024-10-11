@@ -4,9 +4,7 @@ import { CodegenConfig } from '@graphql-codegen/cli';
 // require('dotenv').config();
 // TODO: need to use config variables somehow
 
-const schemaUrl = 'https://index.bostrom.moon.cybernode.ai/v1/graphql'; // process.env.NEXT_PUBLIC_GRAPHQL_HOST;
-
-console.log('url', schemaUrl);
+const schemaUrl = 'https://index.bostrom.cybernode.ai/v1/graphql'; // process.env.NEXT_PUBLIC_GRAPHQL_HOST;
 
 const config: CodegenConfig = {
   overwrite: true,

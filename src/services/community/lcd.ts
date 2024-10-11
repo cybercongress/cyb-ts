@@ -1,7 +1,7 @@
-import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CID_FOLLOW } from 'src/constants/app';
-import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { getTransactions } from 'src/services/transactions/lcd';
+import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 
 export const getFollowsAsCid = async (
   address: NeuronAddress,
@@ -35,6 +35,7 @@ export const getFollowsAsCid = async (
   );
 };
 
+// use src/services/transactions/lcd.tsx
 export const getFollowers = async (
   address: NeuronAddress,
   signal?: AbortSignal

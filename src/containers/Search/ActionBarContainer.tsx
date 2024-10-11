@@ -30,9 +30,9 @@ import {
 import { useAppDispatch } from 'src/redux/hooks';
 import type { RootState } from 'src/redux/store';
 import { sendCyberlink } from 'src/services/neuron/neuronApi';
-import { getTxsWithRetry } from 'src/utils/search/utils';
 import { trimString } from 'src/utils/utils';
 import { ActionBarStates } from './constants';
+import { getTxsWithRetry } from 'src/utils/get-txs-with-retry';
 
 const imgKeplr = require('../../image/keplr-icon.svg');
 const imgLedger = require('../../image/ledger.svg');

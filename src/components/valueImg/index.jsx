@@ -1,3 +1,4 @@
+import { checkIsEmoji } from 'src/utils/emoji';
 import { trimString } from '../../utils/utils';
 import styles from './ValueImg.module.scss';
 
@@ -142,8 +143,7 @@ function ValueImg({
     img = ibc;
   }
 
-  // maybe check different
-  const emojiIcon = img.length < 3;
+  const emojiIcon = checkIsEmoji(img);
 
   return (
     <div
