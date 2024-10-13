@@ -4,46 +4,37 @@ import {
   SigningCyberClient,
   SigningCyberClientOptions,
 } from '@cybercongress/cyber-js';
-import {
-  resetSignerState,
-  setFee,
-  setMessages,
-  shareSignerPromise,
-} from 'src/redux/features/signer';
 import store from 'src/redux/store';
-import { setActionBarStage } from 'src/redux/features/action-bar';
-import { ActionBarStates } from 'src/containers/Search/constants';
-import { getNavigate } from './shareNavigation';
+import { signerModalHandler } from 'src/services/signer/signer-modal-handler';
 
-// eslint-disable-next-line import/no-unused-modules, import/prefer-default-export
+// eslint-disable-next-line import/prefer-default-export
 export class CybSignerClient extends SigningCyberClient {
   signAndBroadcast(
     ...args: Parameters<SigningCyberClient['signAndBroadcast']>
   ) {
     return new Promise((resolve, reject) => {
       const [, messages, fee] = args;
-      store.dispatch(setFee(fee));
-      store.dispatch(setMessages([...messages]));
 
       const { confirmation } = store.getState().signer;
       if (confirmation) {
-        store.dispatch(shareSignerPromise({ resolve, reject }));
-        getNavigate()?.('/sign');
+        signerModalHandler.setSignRequestData('fee', fee as any);
+        signerModalHandler.setSignRequestData('messages', [...messages]);
+        signerModalHandler.setSignRequestData('resolve', resolve);
+        signerModalHandler.setSignRequestData('reject', reject);
+
+        signerModalHandler.openModal();
       } else {
         resolve({});
       }
     }).then(() => {
       const [signerAddress, messages, fee] = args;
-      const { memo } = store.getState().signer;
+      const { memo } = signerModalHandler.getData();
 
       return super
         .signAndBroadcast(signerAddress, messages, fee, memo ?? '')
-        .then((result) => {
-          store.dispatch(setActionBarStage(ActionBarStates.STAGE_CONFIRMED));
-          return result;
-        })
         .finally(() => {
-          store.dispatch(resetSignerState());
+          signerModalHandler.closeModal();
+          signerModalHandler.resetSignRequestData();
         });
     });
   }

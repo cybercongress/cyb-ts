@@ -1,5 +1,5 @@
 import { ChangeEventHandler, useCallback, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import {
   ActionBar,
   Button,
@@ -8,13 +8,12 @@ import {
   Input,
   MainContainer,
 } from 'src/components';
-import { resetSignerState, updateMemo } from 'src/redux/features/signer';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 
 import ReactJson from 'react-json-view';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { CybSignerClient } from 'src/utils/CybSignerClient';
 import { StdFee } from '@cosmjs/launchpad';
+import { signerModalHandler } from 'src/services/signer/signer-modal-handler';
 import * as styles from './Sign.style';
 
 const parseFee = (fee: string | null): number | StdFee | 'auto' => {
@@ -33,12 +32,8 @@ const parseFee = (fee: string | null): number | StdFee | 'auto' => {
 
 export default function Sign() {
   const { signingClient } = useSigningClient();
-  const navigate = useNavigate();
   const [params] = useSearchParams();
-  const dispatch = useAppDispatch();
-  const { resolve, reject, fee, memo, messages } = useAppSelector(
-    (state) => state.signer
-  );
+  const { resolve, reject, fee, memo, messages } = signerModalHandler.getData();
 
   console.log({ params: params.get('q') });
   // "bostrom14r6j7h4n2hmuam8tj224mw8g3earax5t35lypt"
@@ -66,9 +61,9 @@ export default function Sign() {
 
   const onMemoChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     (event) => {
-      dispatch(updateMemo(event.target.value));
+      signerModalHandler.setSignRequestData('memo', event.target.value);
     },
-    [dispatch]
+    []
   );
 
   const onAdd = useCallback(() => {
@@ -76,18 +71,18 @@ export default function Sign() {
       return;
     }
 
-    navigate(-1);
     resolve({});
-  }, [navigate, resolve]);
+  }, [resolve]);
 
   const onDiscard = useCallback(() => {
     if (!reject) {
       return;
     }
-    navigate(-1);
-    dispatch(resetSignerState());
+
+    signerModalHandler.closeModal();
+    signerModalHandler.resetSignRequestData();
     reject(new Error('User rejected transaction'));
-  }, [dispatch, navigate, reject]);
+  }, [reject]);
 
   return (
     <>
@@ -109,7 +104,7 @@ export default function Sign() {
           <div>
             <h3>Memo (optional)</h3>
             <Input
-              value={memo}
+              value={memo ?? ''}
               onChange={onMemoChange}
               disabled={!resolve && !reject}
             />

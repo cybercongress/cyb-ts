@@ -1,11 +1,5 @@
-import { useEffect } from 'react';
-import {
-  Link,
-  Outlet,
-  matchPath,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
 import MainLayout from 'src/layouts/Main';
 import { initPocket } from 'src/redux/features/pocket';
@@ -29,6 +23,10 @@ import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import SignerModal, {
+  SignerModalRef,
+} from 'src/components/signer-modal/signer-modal';
+import { signerModalHandler } from 'src/services/signer/signer-modal-handler';
 import { setFocus } from './Header/Commander/commander.redux';
 import styles from './styles.scss';
 
@@ -40,20 +38,23 @@ function App() {
   const dispatch = useAppDispatch();
   const address = useCurrentAddress();
 
-  // const { community, communityLoaded } = useGetCommunity(address || null, {
-  //   main: true,
-  // });
+  const signerModalRef = useRef<SignerModalRef>(null);
 
   const location = useLocation();
   const adviserContext = useAdviser();
   useSenseManager();
 
   const { ipfsError } = useBackend();
-  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(initPocket());
   }, []);
+
+  useEffect(() => {
+    if (signerModalRef?.current) {
+      signerModalHandler.setSignerModalRef(signerModalRef.current);
+    }
+  }, [signerModalRef]);
 
   useEffect(() => {
     if (!address) {
@@ -148,6 +149,7 @@ function App() {
           <Outlet />
         </>
       </MainLayout>
+      <SignerModal ref={signerModalRef} />
     </PreviousPageProvider>
   );
 }

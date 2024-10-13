@@ -31,7 +31,7 @@ const playAudioClick = () => {
 //   audioBtnHoverObg.currentTime = 0;
 // };
 
-export interface Props extends HTMLButtonElement {
+export interface Props extends Partial<HTMLButtonElement> {
   disabled: boolean;
   text?: string | JSX.Element;
   img?: $TsFixMe;
