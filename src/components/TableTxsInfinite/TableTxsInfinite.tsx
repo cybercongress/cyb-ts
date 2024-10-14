@@ -25,7 +25,7 @@ function TableTxsInfinite({
   const { data, loading, error } = response;
 
   return (
-    <Display noPaddingX>
+    <Display noPadding>
       <InfiniteScroll
         dataLength={(data?.messages_by_address || []).length}
         next={fetchMoreData}

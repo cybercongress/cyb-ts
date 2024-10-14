@@ -16,6 +16,7 @@ type Props = {
   validAmountMessage?: boolean;
   validAmountMessageText?: string;
   autoFocus?: boolean;
+  availableAmount?: number;
   onValueChange: $TsFixMeFunc;
 };
 
@@ -26,6 +27,7 @@ function InputNumberDecimalScale({
   onValueChange,
   title,
   validAmountMessage,
+  availableAmount,
   validAmountMessageText,
   ...props
 }: Props) {
@@ -55,8 +57,9 @@ function InputNumberDecimalScale({
 
   return (
     <InputNumber
+      maxValue={availableAmount}
       value={value}
-      onValueChange={onValueChange}
+      onChange={onValueChange}
       title={title}
       color={validAmount || value.length === 0 ? Color.Red : Color.Green}
       fixedDecimalScale={fixed}
