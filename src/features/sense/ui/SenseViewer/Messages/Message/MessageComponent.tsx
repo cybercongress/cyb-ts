@@ -1,4 +1,5 @@
 import { LLMMessage } from 'src/features/sense/redux/sense.redux';
+import { LLMAvatar } from 'src/containers/Search/LLMSpark/LLMSpark';
 import Message from './Message';
 
 interface Props {
@@ -13,6 +14,9 @@ function MessageComponent({ message }: Props) {
       myMessage={isUser}
       date={message.timestamp}
       content={message.text}
+      // from="llm"
+      // fromLog
+      avatar={!isUser && <LLMAvatar onlyImg />}
     />
   );
 }

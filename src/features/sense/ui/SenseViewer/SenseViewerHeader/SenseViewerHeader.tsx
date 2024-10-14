@@ -82,7 +82,12 @@ export function LLMHeader({ selectedId }: { selectedId?: string }) {
   const dispatch = useAppDispatch();
 
   return (
-    <header className={styles.header}>
+    <header
+      className={styles.header}
+      style={{
+        flexDirection: 'row',
+      }}
+    >
       <LLMAvatar />
 
       {id && (

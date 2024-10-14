@@ -89,6 +89,10 @@ function SenseList({ select, selected, setFilter }: Props) {
           />
         </div>
 
+        {filter === Filters.LLM && (
+          <Button onClick={handleNewThread}>New Thread</Button>
+        )}
+
         {filter === Filters.LLM ? (
           <ul>
             {[...llmThreads]
@@ -127,11 +131,6 @@ function SenseList({ select, selected, setFilter }: Props) {
                   </button>
                 </li>
               ))}
-
-            <br />
-            {filter === Filters.LLM && (
-              <Button onClick={handleNewThread}>New Thread</Button>
-            )}
           </ul>
         ) : senseList.isLoading && !(items.length > 0) ? (
           <div className={styles.center}>

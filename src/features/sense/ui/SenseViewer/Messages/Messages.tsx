@@ -1,6 +1,5 @@
 import dateFormat from 'dateformat';
-import { SenseItem } from 'src/features/sense/redux/sense.redux';
-import { LLMMessage } from 'src/features/sense/redux/sense.redux';
+import { SenseItem, LLMMessage } from 'src/features/sense/redux/sense.redux';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import MessageContainer from './Message/Message.container';
@@ -46,6 +45,8 @@ function Messages({ messages, currentChatId }: Props) {
       [...messages].reverse().reduce<{
         [date: string]: SenseItem[] | LLMMessage[];
       }>((acc, senseItem) => {
+        console.log(senseItem.timestamp);
+
         const date = dateFormat(senseItem.timestamp, 'yyyy-mm-dd');
 
         if (!acc[date]) {
@@ -79,8 +80,21 @@ function Messages({ messages, currentChatId }: Props) {
             hasMore={false}
             next={() => {}}
           >
-            {(messages as LLMMessage[]).map((message, index) => (
+            {/* {messagesByDateAll.map((message, index) => (
               <MessageComponent key={index} message={message} />
+            ))} */}
+
+            {messagesByDate.map(([date, messages]) => (
+              <Fragment key={date}>
+                {messages.map((senseItem) => (
+                  <MessageComponent
+                    key={senseItem.timestamp}
+                    message={senseItem}
+                    // currentChatId={currentChatId}
+                  />
+                ))}
+                <DateTitle date={new Date(date)} />
+              </Fragment>
             ))}
           </InfiniteScroll>
         ) : (
