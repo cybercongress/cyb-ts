@@ -1,0 +1,123 @@
+.buyContainer {
+  display: grid;
+  grid-template-columns: repeat(5, 200px);
+  justify-content: center;
+  padding: 1rem;
+}
+
+.labelsColumn {
+  padding: 75px 10px 50px;
+  z-index: 1;
+}
+
+.planContent {
+  display: flex;
+  flex-direction: column;
+}
+
+%flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+%row-common {
+  @extend %flex-center;
+  height: 45px;
+  width: 100%;
+  text-align: center;
+  padding: 7px 0;
+}
+
+.row, .uploads, .symbols, .influence, .price, .included, .excluded, .fuel, .energy {
+  @extend %row-common;
+}
+
+.labelGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.label, .subLabel {
+  text-align: center;
+}
+
+.label {
+  font-size: 16px;
+  color: var(--grayscale-primary);
+}
+
+.subLabel {
+  font-size: 14px;
+  color: var(--grayscale-disabled);
+}
+
+.included {
+  color: var(--green-light);
+  
+  .checkmark {
+    width: 31px;
+    height: 31px;
+    fill: var(--green-light);
+  }
+}
+
+.excluded {
+  color: var(--red);
+}
+
+.symbols, .fuel, .energy, .influence, .uploads, .planName {
+  font-size: 20px;
+}
+
+.price {
+  font-size: 30px;
+}
+
+.symbolsDigit {
+  color: var(--grayscale-primary);
+  margin-right: 2px;
+}
+
+.symbolsText {
+  color: var(--grayscale-disabled);
+}
+
+.fuelIcon, .energyIcon {
+  margin-left: 3px;
+}
+
+.white { color: var(--grayscale-primary); }
+.green { color: var(--primary-color); }
+.blue { color: var(--blue-light); }
+.purple { color: var(--pink); }
+.gray { color: var(--grayscale-disabled); }
+
+.displayWrapper {
+  position: relative;
+}
+
+.planTitleWrapper {
+  @extend %flex-center;
+  }
+
+.planIcon {
+  width: 65px;
+  height: 65px;
+  object-fit: contain;
+}
+
+.planButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+
