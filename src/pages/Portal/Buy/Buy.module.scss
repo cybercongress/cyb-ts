@@ -6,13 +6,29 @@
 }
 
 .labelsColumn {
-  padding: 75px 10px 50px;
+  padding: 65px 10px 0px 30px;
   z-index: 1;
 }
 
 .planContent {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  padding: 10px 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &.active {
+    background-color: rgb(54, 214, 174, 0.1);
+  }
+}
+
+.planWrapper {
+  &:hover {
+    .planContent:not(.active) {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
 }
 
 %flex-center {
@@ -29,7 +45,14 @@
   padding: 7px 0;
 }
 
-.row, .uploads, .symbols, .influence, .price, .included, .excluded, .fuel, .energy {
+.row,
+.uploads,
+.symbols,
+.influence,
+.price,
+.excluded,
+.fuel,
+.energy {
   @extend %row-common;
 }
 
@@ -40,7 +63,8 @@
   width: 100%;
 }
 
-.label, .subLabel {
+.label,
+.subLabel {
   text-align: center;
 }
 
@@ -54,26 +78,28 @@
   color: var(--grayscale-disabled);
 }
 
-.included {
-  color: var(--green-light);
-  
-  .checkmark {
-    width: 31px;
-    height: 31px;
-    fill: var(--green-light);
-  }
+.checkmark {
+  width: 31px;
+  height: 31px;
+  fill: var(--green-light);
 }
 
 .excluded {
   color: var(--red);
 }
 
-.symbols, .fuel, .energy, .influence, .uploads, .planName {
+.symbols,
+.fuel,
+.energy,
+.influence,
+.uploads,
+.planName {
   font-size: 20px;
 }
 
 .price {
   font-size: 30px;
+  margin-top: 10px;
 }
 
 .symbolsDigit {
@@ -85,15 +111,26 @@
   color: var(--grayscale-disabled);
 }
 
-.fuelIcon, .energyIcon {
+.fuelIcon,
+.energyIcon {
   margin-left: 3px;
 }
 
-.white { color: var(--grayscale-primary); }
-.green { color: var(--primary-color); }
-.blue { color: var(--blue-light); }
-.purple { color: var(--pink); }
-.gray { color: var(--grayscale-disabled); }
+.white {
+  color: var(--grayscale-primary);
+}
+.green {
+  color: var(--primary-color);
+}
+.blue {
+  color: var(--blue-light);
+}
+.purple {
+  color: var(--pink);
+}
+.gray {
+  color: var(--grayscale-disabled);
+}
 
 .displayWrapper {
   position: relative;
@@ -101,23 +138,10 @@
 
 .planTitleWrapper {
   @extend %flex-center;
-  }
+}
 
 .planIcon {
   width: 65px;
   height: 65px;
-  object-fit: contain;
+  object-fit: fill;
 }
-
-.planButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-
-  &:focus {
-    outline: none;
-  }
-}
-
-

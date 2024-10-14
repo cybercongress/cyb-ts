@@ -14,13 +14,10 @@ import { Stars } from 'src/containers/portal/components';
 import { ActionBar, Button } from 'src/components';
 import PlanDisplay from './PlanDisplay';
 
-
 function Buy() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [hoveredPlan, setHoveredPlan] = useState<string | null>(null);
 
-  
-  const renderFeatureContent = (feature: typeof features[0]) => {
+  const renderFeatureContent = (feature: (typeof features)[0]) => {
     if (feature.label === '3 free to use aips') {
       return (
         <div className={styles.icons}>
@@ -64,28 +61,31 @@ function Buy() {
           </div>
         </div>
         {plans.map((plan, index) => (
-          <PlanDisplay
+          <div
             key={plan.name}
-            plan={plan}
-            index={index}
-            isSelected={selectedPlan === plan.name}
-            isHovered={hoveredPlan === plan.name}
-            onSelect={() => setSelectedPlan(plan.name)}
-            onHover={() => setHoveredPlan(plan.name)}
-            onLeave={() => setHoveredPlan(null)}
-          />
-
+            onClick={() => setSelectedPlan(plan.name)}
+            className={styles.planWrapper}
+          >
+            <PlanDisplay
+              plan={plan}
+              index={index}
+              isSelected={selectedPlan === plan.name}
+            />
+          </div>
         ))}
       </div>
       {selectedPlan && (
         <ActionBar>
-          <Button onClick={() => console.log(`Selected plan: ${selectedPlan}`)} className={styles.actionBarBtn}>
+          <Button
+            onClick={() => console.log(`Selected plan: ${selectedPlan}`)}
+            className={styles.actionBarBtn}
+          >
             Buy {selectedPlan} Plan
           </Button>
         </ActionBar>
       )}
     </>
   );
-};
+}
 
 export default Buy;
