@@ -60,6 +60,7 @@ import Settings from './pages/Settings/Settings';
 import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
 import Energy from './pages/Energy/Energy';
+import Buy from './pages/Portal/Buy/Buy';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -192,6 +193,7 @@ function AppRouter() {
           <Route path="/release" element={<Release />} />
           <Route path="/portal" element={<MainPartal />} />
           <Route path="/portal/map" element={<Map />} />
+          <Route path="/buy" element={<Buy />} />
 
           {/* wasm */}
           <Route path="/libs" element={<Codes />} />
