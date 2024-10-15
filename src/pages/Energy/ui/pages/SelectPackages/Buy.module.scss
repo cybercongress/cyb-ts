@@ -21,6 +21,9 @@
 }
 
 .planWrapper {
+  background: transparent;
+  outline: none;
+
   &:hover {
     .displayWrapper:not(.active) {
       background-color: var(--hover-bg-color, rgba(255, 255, 255, 0.1));

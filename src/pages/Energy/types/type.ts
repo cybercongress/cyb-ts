@@ -1,8 +1,9 @@
-import { Colors } from '../../../components/containerGradient/types';
-import ghostIcon from './images/ghost.png';
-import smartIcon from './images/smart.png';
-import prodigyIcon from './images/prodigy.png';
-import geniusIcon from './images/genius.png';
+import { Colors } from 'src/components/containerGradient/types';
+import ghostIcon from '../ui/pages/SelectPackages/images/ghost.png';
+import smartIcon from '../ui/pages/SelectPackages/images/smart.png';
+import prodigyIcon from '../ui/pages/SelectPackages/images/prodigy.png';
+import geniusIcon from '../ui/pages/SelectPackages/images/genius.png';
+import { EnergyPackages } from '../constants';
 
 export interface Feature {
   label: string;
@@ -50,7 +51,7 @@ export const plans: Plan[] = [
   {
     name: 'smart',
     color: Colors.GREEN,
-    price: '10$',
+    price: EnergyPackages[0],
     icon: smartIcon,
     features: [true, true, true, true, true, true, true, true, false],
     symbols: ' 5 ',
@@ -62,7 +63,7 @@ export const plans: Plan[] = [
   {
     name: 'prodigy',
     color: Colors.BLUE,
-    price: '100$',
+    price: EnergyPackages[1],
     icon: prodigyIcon,
     features: [true, true, true, true, true, true, true, true, true],
     symbols: ' 4 ',
@@ -74,7 +75,7 @@ export const plans: Plan[] = [
   {
     name: 'genius',
     color: Colors.PURPLE,
-    price: '1000$',
+    price: EnergyPackages[2],
     icon: geniusIcon,
     features: [true, true, true, true, true, true, true, true, true],
     symbols: ' 3 ',

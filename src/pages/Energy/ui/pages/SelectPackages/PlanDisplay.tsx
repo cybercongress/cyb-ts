@@ -1,9 +1,9 @@
 import styles from './Buy.module.scss';
-import Display from '../../../components/containerGradient/Display/Display';
 import checkmark from './images/checkmark.svg';
-import { features, plans } from './type';
+import { features, plans } from '../../../types/type';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
+import { Display } from 'src/components';
 
 interface PlanDisplayProps {
   plan: (typeof plans)[0];
@@ -122,6 +122,7 @@ function PlanDisplay({ plan, index, isSelected }: PlanDisplayProps) {
                 }`}
               >
                 {plan.price}
+                {plan.price === 'free' ? '' : '$'}
               </div>
             </div>
           </div>
