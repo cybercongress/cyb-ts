@@ -1,5 +1,7 @@
 import { Asset as OsmosisAsset } from '@chain-registry/types';
 import { CoinDenom, Exponent } from '@osmonauts/math/types';
+import { Coin } from '@cosmjs/stargate';
+import BigNumber from 'bignumber.js';
 import { Osmosis } from './assets';
 
 export const getOsmoAssetByDenom = (
@@ -32,6 +34,16 @@ export const getExponentByDenom = (denom: CoinDenom): Exponent => {
   return unit?.exponent || 0;
 };
 
+export function newShiftedMinus(token: Coin) {
+  const { amount, denom } = token;
+  const convertAmount = new BigNumber(amount)
+    .shiftedBy(-getExponentByDenom(denom))
+    .dp(4, BigNumber.ROUND_CEIL)
+    .toNumber();
+
+  return { amount: convertAmount, denom };
+}
+
 export function paginate(limit = 100n, offset = 0n) {
   return {
     limit,
@@ -43,3 +55,6 @@ export function paginate(limit = 100n, offset = 0n) {
 }
 
 export const isEmptyArray = (arr: any[]) => arr.length === 0;
+
+export const linkTxOsmosis = (tx: string) =>
+  `https://www.mintscan.io/osmosis/tx/${tx}`;

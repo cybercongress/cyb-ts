@@ -5,7 +5,7 @@ import { MainContainer } from 'src/components';
 
 function Layout() {
   return (
-    <MainContainer>
+    <MainContainer width="72%">
       <div>
         <Helmet>
           <title>energy | cyb</title>

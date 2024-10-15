@@ -5,9 +5,15 @@ import {
 } from 'src/features/ibc-history/HistoriesItem';
 import { useIbcHistory } from 'src/features/ibc-history/historyContext';
 import useGetStatus from 'src/features/ibc-history/useGetStatus';
-import { setIbcResult } from 'src/pages/Energy/redux/energy.redux';
+import {
+  setIbcResult,
+  setStatusOrder,
+} from 'src/pages/Energy/redux/energy.redux';
+import { StatusOrder } from 'src/pages/Energy/redux/utils';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { Option } from 'src/types';
+import cx from 'classnames';
+import styles from './StatusIbc.module.scss';
 
 function StatusIbc() {
   const dispatch = useAppDispatch();
@@ -45,14 +51,21 @@ function StatusIbc() {
       dispatch(
         setIbcResult({ ibcHash: ibcResult.ibcHash, status: statusTrace })
       );
+
+      if (statusTrace === StatusTx.COMPLETE) {
+        dispatch(setStatusOrder(StatusOrder.FINISH_IBC));
+      }
     }
   }, [dispatch, JSON.stringify(ibcResult), statusTrace]);
 
-  if (ibcResult && ibcResult.status === StatusTx.COMPLETE) {
-    return <span>{StatusTx.COMPLETE}</span>;
-  }
+  const status =
+    ibcResult && ibcResult.status === StatusTx.COMPLETE
+      ? StatusTx.COMPLETE
+      : statusTrace;
 
-  return <span>{statusTrace}</span>;
+  return (
+    <span className={cx(styles.statusColor, styles[status])}>{status}</span>
+  );
 }
 
 export default StatusIbc;

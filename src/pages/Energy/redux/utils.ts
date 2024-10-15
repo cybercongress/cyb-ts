@@ -3,4 +3,5 @@ export enum StatusOrder {
   SWAP = 'swap',
   SEND_IBC = 'send_ibc',
   STATUS_IBC = 'status_ibc',
+  FINISH_IBC = 'finish_ibc',
 }

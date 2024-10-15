@@ -1,0 +1,17 @@
+.itemHeader {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 40px;
+
+  .title {
+    font-size: 20px;
+  }
+
+  .content {
+    font-size: 14px;
+    color: #A0A0A0;
+    text-align: center;
+    height: 60px;
+  }
+}

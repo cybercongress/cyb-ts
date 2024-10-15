@@ -1,19 +1,23 @@
 import { useEnergy } from 'src/pages/Energy/context/Energy.context';
-import {
-  getOsmoAssetByDenom,
-  symbolToOsmoDenom,
-} from 'src/pages/Energy/utils/utils';
+import { symbolToOsmoDenom } from 'src/pages/Energy/utils/utils';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { useEffect, useMemo } from 'react';
 import { StatusOrder } from 'src/pages/Energy/redux/utils';
 import { setStatusOrder } from 'src/pages/Energy/redux/energy.redux';
+import { DenomArr, Select } from 'src/components';
+import defaultNetworks from 'src/constants/defaultNetworks';
 import ActionBarContainer from './ActionBar';
-import StatusIbc from './components/StatusIbc/StatusIbc';
+import Progress from './components/Progress/Progress';
+import Header from './components/Header/Header';
+import SwapResult from './components/SwapResult/SwapResult';
+import BalancesInfo from './components/BalancesInfo/BalancesInfo';
+import styles from './BuyPackages.module.scss';
 
 function BuyPackages() {
-  const { balances, energyPackageSwapRoutes } = useEnergy();
-  const { selectPlan, tokenSell, ibcResult, swapResult, statusOrder } =
-    useAppSelector((state) => state.energy);
+  const { balances } = useEnergy();
+  const { selectPlan, tokenSell, ibcResult, statusOrder } = useAppSelector(
+    (state) => state.energy
+  );
   const dispatch = useAppDispatch();
 
   const balancesTokenSell = useMemo(() => {
@@ -35,7 +39,9 @@ function BuyPackages() {
       parseFloat(balancesTokenSell.amount) >
         parseFloat(selectPlan.tokenIn.amount)
     ) {
-      dispatch(setStatusOrder(StatusOrder.SWAP));
+      setTimeout(() => {
+        dispatch(setStatusOrder(StatusOrder.SWAP));
+      }, 1000);
     }
   }, [balancesTokenSell, dispatch, selectPlan, statusOrder]);
 
@@ -43,27 +49,48 @@ function BuyPackages() {
 
   console.log('energyPackagesByDenom', selectPlan);
 
-  const selectPackage = energyPackageSwapRoutes?.find(
-    (item) => item.keyPackage === selectPlan?.keyPackage
-  );
-
   console.log('ibcResult', ibcResult);
 
   return (
     <>
       <div>
-        <div>statusOrder: {statusOrder}</div>
+        <Header />
 
-        <br />
+        <Progress status={statusOrder} />
 
-        <div>keyPackage: {selectPlan?.keyPackage}$</div>
-        <div>tokenSell: {tokenSell}</div>
-        <div>tokenIn: {JSON.stringify(selectPlan?.tokenIn)}</div>
+        <div className={styles.containerContentInfo}>
+          <BalancesInfo balancesTokenSell={balancesTokenSell} />
+          <SwapResult />
+          <Select
+            valueSelect="bostrom"
+            currentValue="bostrom"
+            disabled
+            width="160px"
+            options={[
+              {
+                value: 'bostrom',
+                text: <span>bostrom</span>,
+                img: (
+                  <DenomArr
+                    denomValue={defaultNetworks.bostrom.CHAIN_ID}
+                    onlyImg
+                    type="network"
+                    tooltipStatusImg={false}
+                  />
+                ),
+              },
+            ]}
+            title="send to"
+          />
+        </div>
+
+        {/* <div>tokenSell: {tokenSell}</div>
+        <div>tokenIn: {JSON.stringify(selectPlan?.tokenIn)}</div> */}
 
         {/* <div>{JSON.stringify(balancesTokenSell)}</div> */}
 
-        <br />
-        {selectPackage && !swapResult && (
+        {/* <br /> */}
+        {/* {selectPackage && !swapResult && (
           <div key={selectPackage.keyPackage}>
             <div>
               {selectPackage.tokenIn.amount} {selectPackage.tokenIn.denom}
@@ -82,9 +109,9 @@ function BuyPackages() {
               })}
             </div>
           </div>
-        )}
+        )} */}
 
-        <div>
+        {/* <div>
           {swapResult?.tokens.map((item) => {
             return (
               <div key={item.denom}>
@@ -95,15 +122,7 @@ function BuyPackages() {
               </div>
             );
           })}
-        </div>
-
-        <br />
-
-        {ibcResult && (
-          <>
-            StatusIbc: <StatusIbc />
-          </>
-        )}
+        </div> */}
       </div>
       <ActionBarContainer />
     </>

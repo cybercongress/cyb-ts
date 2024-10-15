@@ -211,9 +211,11 @@ function ActionBarContainer() {
         />
       )}
 
-      {statusOrder === StatusOrder.STATUS_IBC && (
+      {(statusOrder === StatusOrder.STATUS_IBC ||
+        statusOrder === StatusOrder.FINISH_IBC) && (
         <Button
-          disabled={ibcResult && ibcResult.status !== StatusTx.COMPLETE}
+          pending={statusOrder === StatusOrder.STATUS_IBC}
+          pendingText="sending to bostrom"
           text="fuck google"
           onClick={() => dispatch(resetEnergy())}
         />
