@@ -3,6 +3,7 @@ import Display from '../../../components/containerGradient/Display/Display';
 import checkmark from './images/checkmark.svg';
 import { features, plans } from './type';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 
 interface PlanDisplayProps {
   plan: (typeof plans)[0];
@@ -81,7 +82,9 @@ function PlanDisplay({ plan, index, isSelected }: PlanDisplayProps) {
 
   return (
     <div
-      className={styles.displayWrapper}
+      className={`${styles.displayWrapper} ${isSelected ? styles.active : ''} ${
+        styles[plan.color]
+      }`}
       style={{ left: `${-2 * (index + 1)}px` }}
     >
       <Display
@@ -105,24 +108,24 @@ function PlanDisplay({ plan, index, isSelected }: PlanDisplayProps) {
         noPaddingY
         noPaddingX
       >
-        <div
-          className={`${styles.planContent} ${isSelected ? styles.active : ''}`}
-        >
-          {features.map((_, index) => (
-            <div key={index} className={styles.row}>
-              {renderPlanFeature(index)}
-            </div>
-          ))}
-          <div className={styles.row}>
-            <div
-              className={`${styles.price} ${
-                plan.price === 'free' ? styles.gray : styles[plan.color]
-              }`}
-            >
-              {plan.price}
+        <AdviserHoverWrapper adviserContent={'test'}>
+          <div className={styles.planContent}>
+            {features.map((_, index) => (
+              <div key={index} className={styles.row}>
+                {renderPlanFeature(index)}
+              </div>
+            ))}
+            <div className={styles.row}>
+              <div
+                className={`${styles.price} ${
+                  plan.price === 'free' ? styles.gray : styles[plan.color]
+                }`}
+              >
+                {plan.price}
+              </div>
             </div>
           </div>
-        </div>
+        </AdviserHoverWrapper>
       </Display>
     </div>
   );

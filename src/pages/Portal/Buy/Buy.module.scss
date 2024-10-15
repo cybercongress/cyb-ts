@@ -13,20 +13,17 @@
 .planContent {
   display: flex;
   flex-direction: column;
+  min-width: 195px;
   width: 100%;
-  padding: 10px 5px;
+  padding: 10px 0px;
   cursor: pointer;
   transition: all 0.3s ease;
-
-  &.active {
-    background-color: rgb(54, 214, 174, 0.1);
-  }
 }
 
 .planWrapper {
   &:hover {
-    .planContent:not(.active) {
-      background-color: rgba(255, 255, 255, 0.1);
+    .displayWrapper:not(.active) {
+      background-color: var(--hover-bg-color, rgba(255, 255, 255, 0.1));
     }
   }
 }
@@ -95,6 +92,7 @@
 .uploads,
 .planName {
   font-size: 20px;
+  color: var(--grayscale-primary);
 }
 
 .price {
@@ -118,22 +116,37 @@
 
 .white {
   color: var(--grayscale-primary);
+  --hover-bg-color: rgba(255, 255, 255, 0.1);
+  --active-bg-color: rgba(255, 255, 255, 0.2);
 }
 .green {
   color: var(--primary-color);
+  --hover-bg-color: rgba(54, 214, 174, 0.1);
+  --active-bg-color: rgba(54, 214, 174, 0.2);
 }
 .blue {
   color: var(--blue-light);
+  --hover-bg-color: rgba(0, 122, 255, 0.1);
+  --active-bg-color: rgba(0, 122, 255, 0.2);
 }
 .purple {
   color: var(--pink);
+  --hover-bg-color: rgba(175, 82, 222, 0.1);
+  --active-bg-color: rgba(175, 82, 222, 0.2);
 }
 .gray {
   color: var(--grayscale-disabled);
+  --hover-bg-color: rgba(128, 128, 128, 0.1);
+  --active-bg-color: rgba(128, 128, 128, 0.2);
 }
 
 .displayWrapper {
   position: relative;
+  transition: all 0.3s ease;
+
+  &.active {
+    background-color: var(--active-bg-color, rgba(54, 214, 174, 0.1));
+  }
 }
 
 .planTitleWrapper {
