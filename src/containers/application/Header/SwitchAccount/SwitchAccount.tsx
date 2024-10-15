@@ -196,6 +196,7 @@ function SwitchAccount() {
               ? routes.robotPassport.getLink(passport.extension.nickname)
               : routes.robot.path
           }
+          className={styles.content}
           // onClick={() => setControlledVisible(!controlledVisible)}
         >
           <div

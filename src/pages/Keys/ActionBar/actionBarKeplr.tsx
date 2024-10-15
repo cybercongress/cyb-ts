@@ -12,8 +12,9 @@ import {
 } from 'src/components';
 import { LEDGER } from 'src/utils/config';
 import { PATTERN_CYBER } from 'src/constants/patterns';
-import { getTxs } from 'src/utils/search/utils';
+
 import { DEFAULT_GAS_LIMITS, BASE_DENOM } from 'src/constants/config';
+import { getTxs } from 'src/services/transactions/lcd';
 
 const { STAGE_ERROR, STAGE_SUBMITTED, STAGE_CONFIRMING, STAGE_CONFIRMED } =
   LEDGER;
@@ -66,12 +67,11 @@ function ActionBarKeplr({ updateAddress, updateBalance, onClickBack }) {
 
   useEffect(() => {
     const confirmTx = async () => {
-      console.log('txHash :>> ', txHash);
       if (txHash && txHash !== null) {
         setStage(STAGE_CONFIRMING);
-        const response = await getTxs(txHash);
-        console.log('response :>> ', response);
-        if (response && response !== null) {
+        const res = await getTxs(txHash);
+        if (res) {
+          const response = res.tx_response;
           if (response.logs) {
             setStage(STAGE_CONFIRMED);
             setTxHeight(response.height);

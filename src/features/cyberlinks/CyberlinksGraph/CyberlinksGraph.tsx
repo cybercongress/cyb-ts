@@ -204,7 +204,7 @@ function CyberlinksGraph({ data, size, minVersion }: Props) {
         // linkDirectionalArrowLength={10}
         // linkDirectionalArrowColor={() => 'rgba(9,255,13,1)'}
 
-        onNodeClick={handleNodeRightClick}
+        onNodeClick={!minVersion ? handleNodeRightClick : undefined}
         onNodeRightClick={handleNodeClick}
         onLinkClick={handleLinkRightClick}
         onLinkRightClick={handleLinkClick}

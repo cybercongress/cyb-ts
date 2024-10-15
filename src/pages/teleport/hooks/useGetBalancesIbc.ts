@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react';
 import { Sha256 } from '@cosmjs/crypto';
 import { useIbcDenom } from 'src/contexts/ibcDenom';
 import { SigningStargateClient } from '@cosmjs/stargate';
+import { CHAIN_ID } from 'src/constants/config';
 import networkList from '../../../utils/networkListIbc';
 import useSubscribersBlokIbc from './useSubscribersBlokIbc';
-import { CHAIN_ID } from 'src/constants/config';
 
+// src/utils have same
 const sha256 = (data) => {
   return new Uint8Array(new Sha256().update(data).digest());
 };

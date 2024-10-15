@@ -1,43 +1,42 @@
 import { useEffect } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
-import { AppDispatch } from 'src/redux/store';
 import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
 
 import { getPassport } from 'src/features/passport/passports.redux';
-import { useQueryClient } from 'src/contexts/queryClient';
 import { useAdviser } from 'src/features/adviser/context';
 import { routes } from 'src/routes';
 import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useBackend } from 'src/contexts/backend/backend';
 
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useAppDispatch } from 'src/redux/hooks';
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
 
-// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 import { initCyblog } from 'src/utils/logging/bootstrap';
 
 import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
 import { PreviousPageProvider } from 'src/contexts/previousPage';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import NewVersionChecker from 'src/components/NewVersionChecker/NewVersionChecker';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 import styles from './styles.scss';
+import { setFocus } from './Header/Commander/commander.redux';
 
 export const PORTAL_ID = 'portal';
 
 initCyblog();
 
 function App() {
-  const dispatch: AppDispatch = useAppDispatch();
-  const { defaultAccount } = useAppSelector((state) => state.pocket);
-  const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+  const address = useCurrentAddress();
 
-  const address = defaultAccount.account?.cyber?.bech32;
-  // cyblog.info('TEST!!!!');
   // const { community, communityLoaded } = useGetCommunity(address || null, {
   //   main: true,
   // });
+
   const location = useLocation();
   const adviserContext = useAdviser();
   useSenseManager();
@@ -49,31 +48,36 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!address || !queryClient) {
+    if (!address) {
       return;
     }
+
     dispatch(
       getPassport({
         address,
-        queryClient,
       })
     );
-  }, [address, queryClient, dispatch]);
+  }, [address, dispatch]);
 
   // reset
-
   // useEffect(() => {
   //   if (communityLoaded) {
   //     dispatch(setCommunity(community));
   //   }
   // }, [communityLoaded, community, dispatch]);
 
+  useAdviserTexts({
+    defaultText: 'indexer is in sync now, some data may be not fully available',
+  });
+
   useEffect(() => {
     // tabs
     if (
-      [cybernetRoutes.verse.path, routes.senateProposal.path].some((path) => {
-        return matchPath(path, location.pathname);
-      })
+      [cybernetRoutes.verse.path, routes.senate.routes.proposal.path].some(
+        (path) => {
+          return matchPath(path, location.pathname);
+        }
+      )
     ) {
       return;
     }
@@ -110,8 +114,18 @@ function App() {
   //   }
   // };
 
+  // initial focus on commander
+  useEffect(() => {
+    const isGraphPages = window.location.pathname.includes('/brain');
+
+    if (!isGraphPages) {
+      dispatch(setFocus(true));
+    }
+  }, [dispatch]);
+
   return (
     <PreviousPageProvider>
+      <NewVersionChecker />
       <MainLayout>
         <>
           {/* not move portal order */}
@@ -121,13 +135,7 @@ function App() {
             <div id={PORTAL_ID} className={styles.portal} />
           )}
 
-          {![
-            /* routes.home.path, */
-            /* routes.teleport.path, */
-            // cybernetRoutes.verse.path,
-          ].some((path) => {
-            return matchPath(path, location.pathname);
-          }) && <AdviserContainer />}
+          <AdviserContainer />
 
           <Outlet />
         </>

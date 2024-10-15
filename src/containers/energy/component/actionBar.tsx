@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Tab } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { PATTERN_CYBER, PATTERN_CYBER_CONTRACT } from 'src/constants/patterns';
 import { DEFAULT_GAS_LIMITS } from 'src/constants/config';
+import { getTxs } from 'src/services/transactions/lcd';
 import {
   Dots,
   ActionBarContentText,
@@ -12,13 +13,11 @@ import {
   Confirmed,
   TransactionError,
   Account,
-  ButtonIcon,
   Button,
   ActionBar as ActionBarCenter,
   Input,
 } from '../../../components';
 import { LEDGER } from '../../../utils/config';
-import { getTxs } from '../../../utils/search/utils';
 import { ValueImg } from '../ui';
 import { routes } from '../../../routes';
 
@@ -72,9 +71,9 @@ function ActionBar({ selected, updateFnc, addressActive, selectedRoute }) {
     const confirmTx = async () => {
       if (txHash !== null) {
         setStage(STAGE_CONFIRMING);
-        const response = await getTxs(txHash);
-        console.log('response :>> ', response);
-        if (response && response !== null) {
+        const res = await getTxs(txHash);
+        if (res) {
+          const response = res.tx_response;
           if (response.logs) {
             setStage(STAGE_CONFIRMED);
             setTxHeight(response.height);

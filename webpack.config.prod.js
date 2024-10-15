@@ -1,8 +1,10 @@
 const { merge } = require('webpack-merge');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const CompressionWebpackPlugin = require('compression-webpack-plugin');
+// const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const webpack = require('webpack');
 const commonConfig = require('./webpack.config.common');
 
 module.exports = merge(commonConfig, {
@@ -25,16 +27,13 @@ module.exports = merge(commonConfig, {
     minimizer: [
       new CssMinimizerPlugin(),
       new TerserPlugin({
-        // Use multi-process parallel running to improve the build speed
-        // Default number of concurrent runs: os.cpus().length - 1
         parallel: true,
-        // Enable file caching
         cache: true,
         sourceMap: true,
       }),
       // ...(!process.env.IPFS_DEPLOY
       //   ? [
-      //       new CompressionWebpackPlugin({
+      // new CompressionWebpackPlugin({
       //         filename: '[path][base].gz',
       //         algorithm: 'gzip',
       //         test: /\.js$|\.css$|\.html$|\.eot?.+$|\.ttf?.+$|\.woff?.+$|\.svg+$|\.wasm?.+$/,
@@ -46,6 +45,24 @@ module.exports = merge(commonConfig, {
     ],
   },
   plugins: [
+    ...(process.env.NETLIFY
+      ? [
+          new webpack.NormalModuleReplacementPlugin(
+            /react-force-graph/,
+            (resource) => {
+              resource.request = 'src/../netlify/mocks/ReactForceGraph';
+            }
+          ),
+          // new webpack.NormalModuleReplacementPlugin(/\/GraphNew/, (resource) => {
+          //   resource.request = 'src/../netlify/mocks/Graph';
+          // }),
+        ]
+      : []),
+    // disabled to speed up builds
+    // new BundleAnalyzerPlugin({
+    //   analyzerMode: 'static',
+    //   openAnalyzer: false,
+    // }),
     new WorkboxPlugin.InjectManifest({
       swSrc: 'src/services/service-worker/service-worker.ts',
       swDest: 'service-worker.js',

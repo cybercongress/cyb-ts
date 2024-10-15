@@ -10,8 +10,9 @@ import { AccountValue } from 'src/types/defaultAccount';
 import { useBackend } from 'src/contexts/backend/backend';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { getTxs } from 'src/services/transactions/lcd';
 import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
-import { getTxs } from '../../../../utils/search/utils';
+
 import { LEDGER } from '../../../../utils/config';
 import {
   TransactionSubmitted,
@@ -197,8 +198,9 @@ class ActionBarContainer extends Component<Props> {
     const { txHash } = this.state;
     if (txHash !== null) {
       this.setState({ stage: STAGE_CONFIRMING });
-      const data = await getTxs(txHash);
-      if (data !== null) {
+      const res = await getTxs(txHash);
+      if (res) {
+        const data = res.tx_response;
         if (data.logs) {
           this.setState({
             stage: STAGE_CONFIRMED,

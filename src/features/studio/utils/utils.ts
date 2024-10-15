@@ -1,5 +1,5 @@
-import { getTransactions } from 'src/utils/search/utils';
 import { CyberLinkSimple } from 'src/types/base';
+import { getTransactions } from 'src/services/transactions/lcd';
 import { KeywordsItem } from '../studio.context';
 
 export const checkLoopLinks = async (links: CyberLinkSimple[]) => {
@@ -17,7 +17,7 @@ export const checkLoopLinks = async (links: CyberLinkSimple[]) => {
       pagination: { limit: 1, offset: 0 },
     });
 
-    if (!response.data?.txs.length) {
+    if (!response?.txs.length) {
       uniqueLinks.push(item);
     } else {
       loopLink.push(item);

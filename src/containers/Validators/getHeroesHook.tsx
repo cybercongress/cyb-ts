@@ -1,9 +1,10 @@
+import { Validator } from 'cosmjs-types/cosmos/staking/v1beta1/staking';
 import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 
 function useGetHeroes() {
   const queryClient = useQueryClient();
-  const [validators, setValidators] = useState([]);
+  const [validators, setValidators] = useState<Validator[]>([]);
   const [loadingValidators, setLoadingValidators] = useState(true);
   const [countHeroes, setCountHeroes] = useState({
     active: 0,
@@ -18,7 +19,7 @@ function useGetHeroes() {
         const responseActive = await queryClient.validators(
           'BOND_STATUS_BONDED'
         );
-        console.log(`responseActive`, responseActive);
+
         if (
           responseActive.validators &&
           Object.keys(responseActive.validators).length > 0

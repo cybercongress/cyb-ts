@@ -10,9 +10,9 @@ export const fetchInitialEmbeddings = async (
   saveSyncQueue: (syncItems: Partial<DbEntity>[]) => Promise<void>
 ) => {
   console.log(' [initial]fetch initial particles...');
-  const relevancePaticles = await getRelevance(0, 400);
+  const relevanceParticles = await getRelevance(0, 400);
 
-  const items = relevancePaticles.result.map(
+  const items = relevanceParticles.result.map(
     ({ particle }: { particle: ParticleCid }) => ({
       id: particle,
       data: '',

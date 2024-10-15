@@ -6,7 +6,9 @@ import Button from 'src/components/btnGrd';
 import AddFileButton from 'src/components/buttons/AddFile/AddFile';
 import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
 import { MEMO_KEPLR } from 'src/constants/config';
-import { getTxs } from '../../../utils/search/utils';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
+
+import { getTxs } from 'src/services/transactions/lcd';
 import {
   ActionBarContentText,
   Dots,
@@ -25,7 +27,7 @@ const {
   STAGE_SUBMITTED,
 } = LEDGER;
 
-function ActionBar({ updateFnc, addressActive }) {
+function ActionBar({ updateFnc }) {
   const { signer, signingClient } = useSigningClient();
   const inputOpenFileRef = useRef();
   const [wasm, setWasm] = useState(null);
@@ -34,13 +36,20 @@ function ActionBar({ updateFnc, addressActive }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [txHeight, setTxHeight] = useState(null);
 
+  const currentAddress = useCurrentAddress();
+
+  // refactor
+  const addressActive = {
+    bech32: currentAddress,
+  };
+
   useEffect(() => {
     const confirmTx = async () => {
       if (txHash !== null) {
         setStage(STAGE_CONFIRMING);
-        const response = await getTxs(txHash);
-        console.log('response :>> ', response);
-        if (response && response !== null) {
+        const res = await getTxs(txHash);
+        if (res) {
+          const response = res.tx_response;
           if (response.logs) {
             setStage(STAGE_CONFIRMED);
             setTxHeight(response.height);

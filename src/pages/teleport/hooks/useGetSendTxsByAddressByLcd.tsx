@@ -1,18 +1,42 @@
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import { getSendBySenderRecipient } from 'src/utils/search/utils';
+
 import { Nullable, Option } from 'src/types';
 import { AccountValue } from 'src/types/defaultAccount';
 import { useCallback, useEffect, useState } from 'react';
 import { TxsResponse } from '@cosmjs/launchpad';
 import { PATTERN_CYBER } from 'src/constants/patterns';
+import { getTransactions } from 'src/services/transactions/lcd';
+import { OrderBy } from '@cybercongress/cyber-ts/cosmos/tx/v1beta1/service';
 
 const limit = 5;
+
+// use hook from cyber-ts
+const getSendBySenderRecipient = async (address, offset = 0, limit = 5) => {
+  try {
+    const { recipient, sender } = address;
+
+    const response = await getTransactions({
+      events: [
+        { key: 'message.action', value: '/cosmos.bank.v1beta1.MsgSend' },
+        { key: 'transfer.sender', value: sender },
+        { key: 'transfer.recipient', value: recipient },
+      ],
+      pagination: { limit, offset },
+      orderBy: OrderBy.ORDER_BY_DESC,
+    });
+
+    return response;
+  } catch (e) {
+    console.log(e);
+    return undefined;
+  }
+};
 
 const concatResponse = (arr: undefined | InfiniteData<{ data: any }>) => {
   return (
     arr?.pages?.reduce((acc, page) => {
-      return acc.concat(page.data.tx_responses);
+      return acc.concat(page.data.txResponses);
     }, []) || []
   );
 };
@@ -35,7 +59,7 @@ function useGetSendBySenderRecipient(
       const response = await getSendBySenderRecipient(address, offset, limit);
 
       if (callBack && offset === 0 && response) {
-        callBack(response.pagination.total);
+        callBack(response.pagination?.total);
       }
 
       return {
@@ -50,12 +74,9 @@ function useGetSendBySenderRecipient(
         Boolean(addressRecipient) &&
         Boolean(addressRecipient?.match(PATTERN_CYBER)),
       getNextPageParam: (lastPage) => {
-        const {
-          page,
-          data: {
-            pagination: { total },
-          },
-        } = lastPage;
+        const { page, data } = lastPage;
+
+        const total = data?.pagination?.total || 0;
 
         if (!total || (page + 1) * limit >= total) {
           return undefined;
