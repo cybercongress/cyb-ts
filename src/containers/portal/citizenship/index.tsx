@@ -8,6 +8,7 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { useDevice } from 'src/contexts/device';
 import { Nullable } from 'src/types';
+import PassportMoonCitizenship from 'src/containers/portal/PasportMoonCitizenship';
 
 import { useAdviser } from 'src/features/adviser/context';
 import { useBackend } from 'src/contexts/backend/backend';
@@ -616,10 +617,10 @@ function GetCitizenship({ defaultAccount }) {
     <>
       <MainContainer>
         <Stars />
-
-        {(step === STEP_INIT || !mobile) && (
+        {(step === STEP_INIT || !mobile) && <PassportMoonCitizenship />}
+        {/*   {(step === STEP_INIT || !mobile) && (
           <MoonAnimation stepCurrent={step} />
-        )}
+        )} */}
 
         {step !== STEP_INIT && step !== STEP_CHECK_GIFT && (
           <Carousel

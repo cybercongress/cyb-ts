@@ -23,10 +23,10 @@ const playAudioClick = () => {
   audioBtnObg.play();
 };
 
-const STAGE_LOADING = 0;
+/* const STAGE_LOADING = 0;
 const STAGE_INIT = 1;
 const STAGE_PROVE = 2;
-const STAGE_RELEASE = 3;
+const STAGE_RELEASE = 3; */
 
 const getActiveAddress = (address) => {
   const { account } = address;
@@ -48,41 +48,41 @@ const scaleInitValue = 0.9;
 
 function MainPartal({ defaultAccount }) {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [stagePortal, setStagePortal] = useState(STAGE_LOADING);
+  // const queryClient = useQueryClient();
+  // const [stagePortal, setStagePortal] = useState(STAGE_INIT);
   const [scale, setScale] = useState(scaleInitValue);
 
-  useEffect(() => {
-    const getPasport = async () => {
-      if (stagePortal === STAGE_LOADING) {
-        setStagePortal(STAGE_LOADING);
-        if (queryClient) {
-          const addressActive = getActiveAddress(defaultAccount);
-          if (addressActive !== null) {
-            const responseActivePassport = await activePassport(
-              queryClient,
-              addressActive.bech32
-            );
-            if (responseActivePassport !== null) {
-              const { addresses } = responseActivePassport.extension;
-              if (addresses !== null) {
-                setStagePortal(STAGE_RELEASE);
+  /* useEffect(() => {
+      const getPasport = async () => {
+        if (stagePortal === STAGE_LOADING) {
+          setStagePortal(STAGE_LOADING);
+          if (queryClient) {
+            const addressActive = getActiveAddress(defaultAccount);
+            if (addressActive !== null) {
+              const responseActivePassport = await activePassport(
+                queryClient,
+                addressActive.bech32
+              );
+              if (responseActivePassport !== null) {
+                const { addresses } = responseActivePassport.extension;
+                if (addresses !== null) {
+                  setStagePortal(STAGE_RELEASE);
+                } else {
+                  setStagePortal(STAGE_PROVE);
+                }
               } else {
-                setStagePortal(STAGE_PROVE);
+                setStagePortal(STAGE_INIT);
               }
             } else {
               setStagePortal(STAGE_INIT);
             }
           } else {
-            setStagePortal(STAGE_INIT);
+            setStagePortal(STAGE_LOADING);
           }
-        } else {
-          setStagePortal(STAGE_LOADING);
         }
-      }
-    };
-    getPasport();
-  }, [queryClient, defaultAccount, stagePortal]);
+      };
+      getPasport();
+    }, [queryClient, defaultAccount, stagePortal]); */
 
   const { setAdviser } = useAdviser();
 
@@ -111,7 +111,7 @@ function MainPartal({ defaultAccount }) {
     playAudioClick();
   };
 
-  if (stagePortal === STAGE_LOADING) {
+  /* if (stagePortal === STAGE_LOADING) {
     return (
       <div
         style={{
@@ -123,51 +123,50 @@ function MainPartal({ defaultAccount }) {
         <Dots />
       </div>
     );
-  }
+  } */
 
-  if (stagePortal === STAGE_INIT) {
-    return (
-      <MainContainer>
-        <Stars />
+  //if (stagePortal === STAGE_INIT) {
+  return (
+    <MainContainer>
+      <Stars />
 
-        <div
-          style={{
-            position: 'fixed',
-            zIndex: '3',
-            left: '50%',
-            marginRight: '-50%',
-            transform: `translate(-50%, 40px) scale(${scale})`,
-            transition: 'all 2.7s cubic-bezier(0.67, 0.01, 0.37, 1.01) 0s',
-          }}
+      <div
+        style={{
+          position: 'fixed',
+          zIndex: '3',
+          left: '50%',
+          marginRight: '-50%',
+          transform: `translate(-50%, 40px) scale(${scale})`,
+          transition: 'all 2.7s cubic-bezier(0.67, 0.01, 0.37, 1.01) 0s',
+        }}
+      >
+        <img style={{ width: '100%' }} src={spacePussy} alt="spacePussy" />
+        <button
+          type="button"
+          onClick={() => onClickSpacePussy()}
+          className={styles.buttonSpacePussy}
         >
-          <img style={{ width: '100%' }} src={spacePussy} alt="spacePussy" />
-          <button
-            type="button"
-            onClick={() => onClickSpacePussy()}
-            className={styles.buttonSpacePussy}
-          >
-            <div className={styles.textSpacePussy}>cyberverse</div>
-            {/* <img
+          <div className={styles.textSpacePussy}>cyberverse</div>
+          {/* <img
               className={styles.arrowSpacePussy}
               src={rocketSpacePussy}
               alt="arrowSpacePussy"
             /> */}
-            <RocketSpacePussy />
-          </button>
-        </div>
-      </MainContainer>
-    );
-  }
+          <RocketSpacePussy />
+        </button>
+      </div>
+    </MainContainer>
+  );
+  /*}
+       if (stagePortal === STAGE_PROVE) {
+      return <PortalGift />;
+    }
 
-  if (stagePortal === STAGE_PROVE) {
-    return <PortalGift />;
-  }
+    if (stagePortal === STAGE_RELEASE) {
+      return <Release />;
+    } 
 
-  if (stagePortal === STAGE_RELEASE) {
-    return <Release />;
-  }
-
-  return null;
+  return null; */
 }
 
 const mapStateToProps = (store) => {
