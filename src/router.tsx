@@ -60,6 +60,7 @@ import Settings from './pages/Settings/Settings';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
 import StudioWrapper from './features/studio/StudioWrapper';
+import Energy from './pages/Energy/Energy';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -224,6 +225,8 @@ function AppRouter() {
           <Route path="/cyberver/*" element={<Cybernet />} />
 
           <Route path="/keys" element={<Keys />} />
+
+          <Route path="/energy/*" element={<Energy />} />
 
           <Route path="/settings/*" element={<Settings />} />
 

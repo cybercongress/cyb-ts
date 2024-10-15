@@ -1,0 +1,225 @@
+import { Coin, coin } from '@cosmjs/stargate';
+import { DeliverTxResponse, ibc } from 'osmojs';
+import { useState } from 'react';
+import { ActionBar, Button } from 'src/components';
+import { useEnergy } from 'src/pages/Energy/context/Energy.context';
+import { useOsmosisSign } from 'src/pages/Energy/context/OsmosisSignerProvider';
+import useTx from 'src/pages/Energy/hooks/useTx';
+import { newSwapMessage } from 'src/pages/Energy/utils/swap';
+import { fromBech32 } from 'src/utils/utils';
+import defaultNetworks from 'src/constants/defaultNetworks';
+import { useHub } from 'src/contexts/hub';
+import { CHAIN_ID_OSMO } from 'src/pages/Energy/constants';
+import BigNumber from 'bignumber.js';
+import { useIbcHistory } from 'src/features/ibc-history/historyContext';
+import { getNowUtcNumber } from 'src/utils/date';
+import {
+  resetEnergy,
+  setIbcResult,
+  setStatusOrder,
+  setSwapResult,
+} from 'src/pages/Energy/redux/energy.redux';
+import { StatusOrder } from 'src/pages/Energy/redux/utils';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { StatusTx } from 'src/features/ibc-history/HistoriesItem';
+import { getOsmoAssetByDenom } from 'src/pages/Energy/utils/utils';
+
+const coinFunc = (amount: string, denom: string): Coin => {
+  return { denom, amount: new BigNumber(amount).toString(10) };
+};
+
+function newTokenSwapped(res: DeliverTxResponse) {
+  const tokenSwapped = res.events.find((item) => item.type === 'token_swapped');
+
+  const tokensOut = tokenSwapped?.attributes.find(
+    (item) => item.key === 'tokens_out'
+  );
+
+  if (!tokensOut) {
+    return undefined;
+  }
+
+  const value = tokensOut.value.split('ibc/');
+
+  return coin(value[0], `ibc/${value[1]}`);
+}
+
+function ActionBarContainer() {
+  const { refetch, energyPackageSwapRoutes } = useEnergy();
+  const { address, signingClient } = useOsmosisSign();
+  const { pingTxsIbc } = useIbcHistory();
+  const { channels } = useHub();
+  const dispatch = useAppDispatch();
+  const { swapResult, selectPlan, statusOrder, ibcResult } = useAppSelector(
+    (state) => state.energy
+  );
+
+  const findChannels = channels && channels[CHAIN_ID_OSMO];
+
+  const selectPackage = energyPackageSwapRoutes?.find(
+    (item) => item.keyPackage === selectPlan?.keyPackage
+  );
+
+  const { tx } = useTx();
+
+  const [isSwapping, setIsSwapping] = useState(false);
+  const [isIbcSending, setIsIbcSending] = useState(false);
+
+  const onIbcTxs = async () => {
+    if (!address || !signingClient || !findChannels) {
+      return;
+    }
+
+    if (!swapResult) {
+      return;
+    }
+
+    setIsIbcSending(true);
+
+    const { transfer } =
+      ibc.applications.transfer.v1.MessageComposer.withTypeUrl;
+
+    const stamp = Date.now();
+    const timeoutInNanos = (stamp + 1.2e6) * 1e6;
+    const counterpartyAccount = fromBech32(
+      address,
+      defaultNetworks.bostrom.BECH32_PREFIX
+    );
+
+    const ibcMsg = swapResult.tokens.map((item) => {
+      return transfer({
+        sourcePort: 'transfer',
+        sourceChannel: findChannels.destination_channel_id,
+        sender: address,
+        token: item,
+        receiver: counterpartyAccount,
+        timeoutTimestamp: BigInt(timeoutInNanos),
+        timeoutHeight: undefined,
+        memo: '',
+      });
+    });
+
+    console.log('ibcMsg', ibcMsg);
+
+    const res = await tx([...ibcMsg]);
+
+    setIsIbcSending(false);
+
+    console.log('res', res);
+
+    if (res.error) {
+      console.log('{res.errorMsg}', res.errorMsg);
+    } else if (res.isSuccess) {
+      // ibcMsg.forEach((item) => {
+      const { denom, amount } = swapResult.tokens[0];
+      const { transactionHash } = res.response;
+      const tokenSelect = getOsmoAssetByDenom(denom);
+      const aliases = tokenSelect?.denom_units[0].aliases;
+      const transferData = {
+        txHash: transactionHash,
+        address: counterpartyAccount,
+        sourceChainId: findChannels.destination_chain_id,
+        destChainId: findChannels.source_chain_id,
+        sender: address,
+        recipient: counterpartyAccount,
+        createdAt: getNowUtcNumber(),
+        amount: coinFunc(amount, aliases ? aliases[0] : denom),
+      };
+
+      pingTxsIbc(signingClient, transferData);
+
+      dispatch(
+        setIbcResult({ ibcHash: transactionHash, status: StatusTx.PENDING })
+      );
+
+      dispatch(setStatusOrder(StatusOrder.STATUS_IBC));
+      // });
+
+      console.log('IBC Send successful');
+
+      refetch();
+    }
+  };
+
+  const onBuyPackage = async () => {
+    if (!address || !signingClient) {
+      console.error('stargateClient undefined or address undefined.');
+      return;
+    }
+
+    if (!selectPackage) {
+      console.log('energyPackageSwapRoutes undefined');
+      return;
+    }
+    console.log('address', address);
+
+    setIsSwapping(true);
+
+    const msgIn = newSwapMessage(selectPackage.swapInfo, address);
+    console.log('msgIn', msgIn);
+
+    const res = await tx([...msgIn]);
+    setIsSwapping(false);
+
+    console.log('res', res);
+
+    if (res.error) {
+      console.log('{res.errorMsg}', res.errorMsg);
+    } else if (res.isSuccess) {
+      console.log('Swap successful');
+      if (res.response) {
+        const tokenSwapped = newTokenSwapped(res.response);
+        console.log('tokenSwapped', tokenSwapped);
+
+        if (!tokenSwapped) {
+          return;
+        }
+        dispatch(
+          setSwapResult({
+            swapTx: res.response.transactionHash,
+            tokens: [tokenSwapped],
+          })
+        );
+        dispatch(setStatusOrder(StatusOrder.SEND_IBC));
+      }
+      refetch();
+    }
+  };
+
+  console.log('ibcResult', ibcResult);
+
+  return (
+    <ActionBar>
+      {(statusOrder === StatusOrder.SELECT_PACK ||
+        statusOrder === StatusOrder.SWAP) && (
+        <Button text="change pack" onClick={() => dispatch(resetEnergy())} />
+      )}
+      {statusOrder === StatusOrder.SWAP && (
+        <Button
+          disabled={Boolean(swapResult?.tokens.length)}
+          text="buy"
+          onClick={onBuyPackage}
+          pending={isSwapping}
+        />
+      )}
+      {statusOrder === StatusOrder.SEND_IBC && (
+        <Button
+          disabled={!swapResult?.tokens.length}
+          text="send to bostrom"
+          onClick={onIbcTxs}
+          pending={isIbcSending}
+        />
+      )}
+
+      {statusOrder === StatusOrder.STATUS_IBC && (
+        <Button
+          disabled={ibcResult && ibcResult.status !== StatusTx.COMPLETE}
+          text="fuck google"
+          onClick={() => dispatch(resetEnergy())}
+        />
+      )}
+    </ActionBar>
+  );
+}
+
+export default ActionBarContainer;
