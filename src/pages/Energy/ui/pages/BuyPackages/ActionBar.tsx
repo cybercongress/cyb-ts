@@ -1,13 +1,11 @@
 import { Coin, coin } from '@cosmjs/stargate';
-import { DeliverTxResponse, ibc } from 'osmojs';
+import { DeliverTxResponse } from 'osmojs';
 import { useState } from 'react';
 import { ActionBar, Button } from 'src/components';
 import { useEnergy } from 'src/pages/Energy/context/Energy.context';
 import { useOsmosisSign } from 'src/pages/Energy/context/OsmosisSignerProvider';
 import useTx from 'src/pages/Energy/hooks/useTx';
 import { newSwapMessage } from 'src/pages/Energy/utils/swap';
-import { fromBech32 } from 'src/utils/utils';
-import defaultNetworks from 'src/constants/defaultNetworks';
 import { useHub } from 'src/contexts/hub';
 import { CHAIN_ID_OSMO } from 'src/pages/Energy/constants';
 import BigNumber from 'bignumber.js';
@@ -77,7 +75,6 @@ function ActionBarContainer() {
 
     setIsIbcSending(true);
 
-
     const ibcMsg = newIbcMessage(swapResult.tokens, findChannels, address);
 
     console.log('ibcMsg', ibcMsg);
@@ -98,7 +95,7 @@ function ActionBarContainer() {
       const aliases = tokenSelect?.denom_units[0].aliases;
       const transferData = {
         txHash: transactionHash,
-        address,
+        address: ibcMsg[0].value.receiver,
         sourceChainId: findChannels.destination_chain_id,
         destChainId: findChannels.source_chain_id,
         sender: address,
