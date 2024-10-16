@@ -176,6 +176,7 @@ function ActionBarContainer() {
         <Button
           disabled={Boolean(swapResult?.tokens.length)}
           text="buy"
+          pendingText="broadcastiong swap"
           onClick={onBuyPackage}
           pending={isSwapping}
         />
