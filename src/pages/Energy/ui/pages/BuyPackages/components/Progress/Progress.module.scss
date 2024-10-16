@@ -1,6 +1,6 @@
 $sizePill: 10px;
 $heightContainer: 20px;
-$lineHeight: 3px;
+$lineHeight: 2px;
 $dark: #A0A0A0;
 
 @mixin line-gradient() {
@@ -46,7 +46,7 @@ $dark: #A0A0A0;
 .progressContainer {
   display: flex;
   position: relative;
-  width: 80%;
+  width: 70%;
   margin: 0 auto;
   height: $heightContainer;
   justify-content: space-between;

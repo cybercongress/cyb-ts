@@ -23,6 +23,7 @@ import { StatusOrder } from 'src/pages/Energy/redux/utils';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { StatusTx } from 'src/features/ibc-history/HistoriesItem';
 import { getOsmoAssetByDenom } from 'src/pages/Energy/utils/utils';
+import newIbcMessage from 'src/pages/Energy/utils/tranferIbc';
 
 const coinFunc = (amount: string, denom: string): Coin => {
   return { denom, amount: new BigNumber(amount).toString(10) };
@@ -76,28 +77,8 @@ function ActionBarContainer() {
 
     setIsIbcSending(true);
 
-    const { transfer } =
-      ibc.applications.transfer.v1.MessageComposer.withTypeUrl;
 
-    const stamp = Date.now();
-    const timeoutInNanos = (stamp + 1.2e6) * 1e6;
-    const counterpartyAccount = fromBech32(
-      address,
-      defaultNetworks.bostrom.BECH32_PREFIX
-    );
-
-    const ibcMsg = swapResult.tokens.map((item) => {
-      return transfer({
-        sourcePort: 'transfer',
-        sourceChannel: findChannels.destination_channel_id,
-        sender: address,
-        token: item,
-        receiver: counterpartyAccount,
-        timeoutTimestamp: BigInt(timeoutInNanos),
-        timeoutHeight: undefined,
-        memo: '',
-      });
-    });
+    const ibcMsg = newIbcMessage(swapResult.tokens, findChannels, address);
 
     console.log('ibcMsg', ibcMsg);
 
@@ -117,11 +98,11 @@ function ActionBarContainer() {
       const aliases = tokenSelect?.denom_units[0].aliases;
       const transferData = {
         txHash: transactionHash,
-        address: counterpartyAccount,
+        address,
         sourceChainId: findChannels.destination_chain_id,
         destChainId: findChannels.source_chain_id,
         sender: address,
-        recipient: counterpartyAccount,
+        recipient: ibcMsg[0].value.receiver,
         createdAt: getNowUtcNumber(),
         amount: coinFunc(amount, aliases ? aliases[0] : denom),
       };

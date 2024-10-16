@@ -36,9 +36,9 @@ function PlanDisplay({ plan, index, isSelected }: PlanDisplayProps) {
       3: () => (
         <div className={styles.symbols}>
           <span className={styles.symbolsText}>
-            {'>'}
+            {'> '}
             <span className={styles.symbolsDigit}>{plan.symbols}</span>
-            {'symbols'}
+            {' symbols'}
           </span>
         </div>
       ),
@@ -105,8 +105,7 @@ function PlanDisplay({ plan, index, isSelected }: PlanDisplayProps) {
             </span>
           </div>
         }
-        noPaddingY
-        noPaddingX
+        noPadding
       >
         <AdviserHoverWrapper adviserContent={'test'}>
           <div className={styles.planContent}>

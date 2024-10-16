@@ -9,6 +9,7 @@ console.log('assetsBuy', assetsBuy);
 
 function EnergyMain() {
   const { selectPlan } = useAppSelector((state) => state.energy);
+  console.log('selectPlan', selectPlan)
 
   if (selectPlan) {
     return <BuyPackages />;

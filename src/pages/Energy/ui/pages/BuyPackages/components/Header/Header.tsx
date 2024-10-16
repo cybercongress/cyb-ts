@@ -3,16 +3,16 @@ import styles from './Header.module.scss';
 import HeaderSwapItem from './ui/HeaderSwapItem/HeaderSwapItem';
 import HeaderItem from './ui/HeaderItem/HeaderItem';
 import HeaderIbcItem from './ui/HeaderIbcItem/HeaderIbcItem';
+import PackageSelected from './ui/PackageSelected/PackageSelected';
 
 function Header() {
-  const { selectPlan } = useAppSelector((state) => state.energy);
 
   return (
     <div className={styles.containerHeader}>
       <HeaderItem title="token to spend">
         <span>choose token to spend</span>
       </HeaderItem>
-      <HeaderItem title={`package ${selectPlan?.keyPackage}$`}>
+      <HeaderItem title={<PackageSelected />}>
         <HeaderSwapItem />
       </HeaderItem>
       <HeaderItem title="send to bostrom">

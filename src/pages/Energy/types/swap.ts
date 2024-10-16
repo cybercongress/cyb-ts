@@ -14,4 +14,5 @@ export type SwapTokensWithRoutes = {
     tokenOut: Coin;
   };
   routes: SwapAmountInRoute[];
+  tokenOutConvert: Coin;
 };

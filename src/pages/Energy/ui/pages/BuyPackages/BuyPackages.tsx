@@ -15,7 +15,7 @@ import styles from './BuyPackages.module.scss';
 
 function BuyPackages() {
   const { balances } = useEnergy();
-  const { selectPlan, tokenSell, ibcResult, statusOrder } = useAppSelector(
+  const { selectPlan, tokenSell, statusOrder } = useAppSelector(
     (state) => state.energy
   );
   const dispatch = useAppDispatch();
@@ -45,15 +45,9 @@ function BuyPackages() {
     }
   }, [balancesTokenSell, dispatch, selectPlan, statusOrder]);
 
-  console.log('balancesTokenSell', balancesTokenSell);
-
-  console.log('energyPackagesByDenom', selectPlan);
-
-  console.log('ibcResult', ibcResult);
-
   return (
     <>
-      <div>
+      <>
         <Header />
 
         <Progress status={statusOrder} />
@@ -83,47 +77,7 @@ function BuyPackages() {
             title="send to"
           />
         </div>
-
-        {/* <div>tokenSell: {tokenSell}</div>
-        <div>tokenIn: {JSON.stringify(selectPlan?.tokenIn)}</div> */}
-
-        {/* <div>{JSON.stringify(balancesTokenSell)}</div> */}
-
-        {/* <br /> */}
-        {/* {selectPackage && !swapResult && (
-          <div key={selectPackage.keyPackage}>
-            <div>
-              {selectPackage.tokenIn.amount} {selectPackage.tokenIn.denom}
-            </div>
-            <div>
-              {selectPackage.swapInfo.map((itemInfo) => {
-                return (
-                  <div key={itemInfo.swap.tokenOut.denom}>
-                    <div>{itemInfo.swap.tokenOut.amount}</div>
-                    <div>
-                      {getOsmoAssetByDenom(itemInfo.swap.tokenOut.denom)
-                        ?.symbol || ''}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )} */}
-
-        {/* <div>
-          {swapResult?.tokens.map((item) => {
-            return (
-              <div key={item.denom}>
-                <div>
-                  {item.amount}
-                  {getOsmoAssetByDenom(item.denom)?.symbol || ''}
-                </div>
-              </div>
-            );
-          })}
-        </div> */}
-      </div>
+      </>
       <ActionBarContainer />
     </>
   );

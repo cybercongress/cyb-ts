@@ -77,49 +77,47 @@ function BalancesInfo({ balancesTokenSell }: { balancesTokenSell?: Coin }) {
   }, [selectPlan]);
 
   return (
-    <div className={styles.wrapper}>
-      <GridContainer>
-        <Col>
-          <AvailableAmount
-            color={Color.Green}
-            amountToken={tokenIn}
-            title="package price"
-          />
-          <AvailableAmount amountToken={balance} />
-        </Col>
-        <Col>
-          <Select
-            valueSelect={valueSelect}
-            currentValue={valueSelect}
-            onChangeSelect={(item: string) => setValueSelect(item)}
-            width="130px"
-            options={reduceOptions()}
-            title="choose token"
-          />
-          <Select
-            valueSelect={CHAIN_ID_OSMO}
-            currentValue={CHAIN_ID_OSMO}
-            disabled
-            width="130px"
-            options={[
-              {
-                value: CHAIN_ID_OSMO,
-                text: <span>{CHAIN_ID_OSMO}</span>,
-                img: (
-                  <DenomArr
-                    denomValue="osmo"
-                    onlyImg
-                    type="network"
-                    tooltipStatusImg={false}
-                  />
-                ),
-              },
-            ]}
-            title="network"
-          />
-        </Col>
-      </GridContainer>
-    </div>
+    <GridContainer>
+      <Col>
+        <AvailableAmount
+          color={Color.Blue}
+          amountToken={tokenIn}
+          title="package price"
+        />
+        <AvailableAmount amountToken={balance} />
+      </Col>
+      <Col>
+        <Select
+          valueSelect={valueSelect}
+          currentValue={valueSelect}
+          onChangeSelect={(item: string) => setValueSelect(item)}
+          width="130px"
+          options={reduceOptions()}
+          title="choose token"
+        />
+        <Select
+          valueSelect={CHAIN_ID_OSMO}
+          currentValue={CHAIN_ID_OSMO}
+          disabled
+          width="130px"
+          options={[
+            {
+              value: CHAIN_ID_OSMO,
+              text: <span>{CHAIN_ID_OSMO}</span>,
+              img: (
+                <DenomArr
+                  denomValue="osmo"
+                  onlyImg
+                  type="network"
+                  tooltipStatusImg={false}
+                />
+              ),
+            },
+          ]}
+          title="network"
+        />
+      </Col>
+    </GridContainer>
   );
 }
 

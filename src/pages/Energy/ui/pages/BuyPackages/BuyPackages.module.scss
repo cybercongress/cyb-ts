@@ -3,5 +3,9 @@
   gap: 20px;
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr;
-  justify-items: end;
+  justify-items: center;
+
+  &>:first-child {
+    transform: translate(-10%, 0);
+  }
 }

@@ -7,12 +7,12 @@ import {
   noDecimals,
 } from '@osmonauts/math';
 import { osmosis } from 'osmojs';
-import { coin } from '@cosmjs/stargate';
+import { Coin, coin } from '@cosmjs/stargate';
 import { SwapAmountInRoute } from 'osmojs/osmosis/poolmanager/v1beta1/swap_route';
 import { Pool } from 'osmojs/osmosis/gamm/v1beta1/balancerPool';
 import { Osmosis } from './assets';
 import { Swap, SwapTokensWithRoutes } from '../types/swap';
-import { getExponentByDenom, isEmptyArray } from './utils';
+import { getExponentByDenom, isEmptyArray, newShiftedMinus } from './utils';
 import { Token } from '../types/token';
 import { assetsBuy } from './tokenBuy';
 import { Slippages } from '../constants';
@@ -25,7 +25,7 @@ export function newToken(assets: Asset): Token {
   };
 }
 
-export function newCoin(token: Token) {
+export function newCoin(token: Token): Coin {
   return {
     denom: token.denom,
     amount: new BigNumber(token.amount || '0')
@@ -143,12 +143,18 @@ export function newTokensRoutes(
         .toString(),
     });
 
+    const tokenOutConvert: Coin = {
+      denom: item.display,
+      amount: newShiftedMinus(tokenOut).amount,
+    };
+
     result.push({
       swap: {
         tokenIn,
         tokenOut,
       },
       routes,
+      tokenOutConvert,
     });
   });
 

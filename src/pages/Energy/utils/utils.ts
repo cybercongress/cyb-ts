@@ -39,7 +39,7 @@ export function newShiftedMinus(token: Coin) {
   const convertAmount = new BigNumber(amount)
     .shiftedBy(-getExponentByDenom(denom))
     .dp(4, BigNumber.ROUND_CEIL)
-    .toNumber();
+    .toString(10);
 
   return { amount: convertAmount, denom };
 }

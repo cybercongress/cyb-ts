@@ -77,9 +77,13 @@ const slice = createSlice({
       state.ibcResult = payload;
       saveToLocalStorage(state);
     },
-    resetEnergy() {
+    resetEnergy: (state) => {
+      state.selectPlan = undefined;
+      state.swapResult = undefined;
+      state.ibcResult = undefined;
+      state.statusOrder = StatusOrder.SELECT_PACK;
+
       localStorage.removeItem(keyEnergyStateApp);
-      return initialState;
     },
   },
 });

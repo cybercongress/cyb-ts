@@ -16,7 +16,7 @@ export interface Plan {
   price: string;
   icon: string;
   features: boolean[];
-  symbols: string;
+  symbols: number;
   uploads: number;
   fuel: number;
   energy: number;
@@ -42,7 +42,7 @@ export const plans: Plan[] = [
     price: 'free',
     icon: ghostIcon,
     features: [true, true, false, false, false, false, false, true, false],
-    symbols: ' 8 ',
+    symbols: 8,
     uploads: 0,
     fuel: 0,
     energy: 0,
@@ -54,7 +54,7 @@ export const plans: Plan[] = [
     price: EnergyPackages[0],
     icon: smartIcon,
     features: [true, true, true, true, true, true, true, true, false],
-    symbols: ' 5 ',
+    symbols: 5,
     uploads: 80,
     fuel: 2,
     energy: 4,
@@ -66,7 +66,7 @@ export const plans: Plan[] = [
     price: EnergyPackages[1],
     icon: prodigyIcon,
     features: [true, true, true, true, true, true, true, true, true],
-    symbols: ' 4 ',
+    symbols: 4,
     uploads: 800,
     fuel: 20,
     energy: 1,
@@ -78,7 +78,7 @@ export const plans: Plan[] = [
     price: EnergyPackages[2],
     icon: geniusIcon,
     features: [true, true, true, true, true, true, true, true, true],
-    symbols: ' 3 ',
+    symbols: 3,
     uploads: 8000,
     fuel: 200,
     energy: 11,

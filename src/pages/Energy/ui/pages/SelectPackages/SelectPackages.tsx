@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import portal from 'images/space-pussy.svg';
 import oracle from 'src/image/new_icons/oracle.svg';
 import docs from 'src/image/new_icons/docs.svg';
@@ -16,6 +16,10 @@ import styles from './Buy.module.scss';
 import { features, plans } from 'src/pages/Energy/types/type';
 import PlanDisplay from './PlanDisplay';
 import { useEnergy } from 'src/pages/Energy/context/Energy.context';
+import { assetsBuy, symbol } from 'src/pages/Energy/utils/tokenBuy';
+import { newShiftedMinus } from 'src/pages/Energy/utils/utils';
+import BigNumber from 'bignumber.js';
+import mapPlan from './utils';
 
 const renderFeatureContent = (feature: (typeof features)[0]) => {
   if (feature.label === '3 free to use aips') {
@@ -68,6 +72,37 @@ function SelectPackages() {
     );
   }, [dispatch, selectedPlan, energyPackageSwapRoutes]);
 
+  const renderPlans = useMemo(() => {
+    return plans.map((plan, index) => {
+      if (energyPackageSwapRoutes) {
+        const findItem = energyPackageSwapRoutes.find(
+          (item) => item.keyPackage === plan.price
+        );
+
+        const { fuel, energy, uploads, symbols } = mapPlan(findItem);
+
+        plan.fuel = fuel.toNumber();
+        plan.energy = energy.toNumber();
+        plan.uploads = uploads.toNumber();
+        plan.symbols = symbols;
+      }
+      return (
+        <button
+          type="button"
+          key={plan.name}
+          onClick={() => setSelectedPlan(plan.price)}
+          className={styles.planWrapper}
+        >
+          <PlanDisplay
+            plan={plan}
+            index={index}
+            isSelected={selectedPlan === plan.price}
+          />
+        </button>
+      );
+    });
+  }, [energyPackageSwapRoutes, selectedPlan]);
+
   return (
     <>
       <div className={styles.buyContainer}>
@@ -86,20 +121,7 @@ function SelectPackages() {
             ))}
           </div>
         </div>
-        {plans.map((plan, index) => (
-          <button
-            type="button"
-            key={plan.name}
-            onClick={() => setSelectedPlan(plan.price)}
-            className={styles.planWrapper}
-          >
-            <PlanDisplay
-              plan={plan}
-              index={index}
-              isSelected={selectedPlan === plan.price}
-            />
-          </button>
-        ))}
+        {renderPlans}
       </div>
 
       {selectedPlan && (

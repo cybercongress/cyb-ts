@@ -56,10 +56,13 @@ function useSwap() {
       const item = energyPackagesByDenom[key];
       const swapRoute = newTokensRoutes(item, fromToken, { pairs, pools });
       if (swapRoute) {
+        const tokenOut = swapRoute.map((item) => item.tokenOutConvert);
+
         result.push({
           keyPackage: key,
           tokenIn: newCoin({ denom: fromToken.denom, amount: item }),
           swapInfo: swapRoute,
+          tokenOut,
         });
       }
     });
