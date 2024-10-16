@@ -11,14 +11,10 @@ import { ActionBar, Button } from 'src/components';
 
 import { useAppDispatch } from 'src/redux/hooks';
 import { setSelectPlan } from 'src/pages/Energy/redux/energy.redux';
-import { EnergyPackageSwapRoutes } from 'src/pages/Energy/types/EnergyPackages';
-import styles from './Buy.module.scss';
 import { features, plans } from 'src/pages/Energy/types/type';
-import PlanDisplay from './PlanDisplay';
 import { useEnergy } from 'src/pages/Energy/context/Energy.context';
-import { assetsBuy, symbol } from 'src/pages/Energy/utils/tokenBuy';
-import { newShiftedMinus } from 'src/pages/Energy/utils/utils';
-import BigNumber from 'bignumber.js';
+import PlanDisplay from './PlanDisplay';
+import styles from './Buy.module.scss';
 import mapPlan from './utils';
 
 const renderFeatureContent = (feature: (typeof features)[0]) => {
