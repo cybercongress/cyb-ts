@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
 import { initPocket } from 'src/redux/features/pocket';
@@ -67,7 +67,17 @@ function App() {
   // }, [communityLoaded, community, dispatch]);
 
   useAdviserTexts({
-    defaultText: 'indexer is in sync now, some data may be not fully available',
+    defaultText: useMemo(() => {
+      return (
+        <div>
+          There are network issues 😔, part of functionality is currently
+          disabled
+          <br />
+          <Link to={routes.social.path}>check socials</Link> for more info
+        </div>
+      );
+      // 'indexer is in sync now, some data may be not fully available'
+    }, []),
   });
 
   useEffect(() => {
