@@ -56,7 +56,7 @@ function ActionBarSteps({
         {children}
       </ActionBarContentText>
       {btnText && (
-        <BtnGrd disabled={disabled} onClick={onClickFnc} text={btnText} />
+        <BtnGrd disabled={!!disabled} onClick={onClickFnc} text={btnText} />
       )}
     </ActionBarContainer>
   );

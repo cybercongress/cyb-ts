@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { WorkerUrl } from 'worker-url';
 import { CozoDbWorker } from './worker';
 import { createWorkerApi } from '../factoryMethods';

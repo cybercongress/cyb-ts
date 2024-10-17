@@ -2,52 +2,53 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { GasPrice } from '@cosmjs/launchpad';
 import { toAscii, toBase64 } from '@cosmjs/encoding';
-import { useSigningClient } from 'src/contexts/signerClient';
-import { getKeplr } from 'src/utils/keplrUtils';
-import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
-import { useDispatch } from 'react-redux';
-import { Citizenship } from 'src/types/citizenship';
-import { useBackend } from 'src/contexts/backend/backend';
-import { PATTERN_CYBER } from 'src/constants/patterns';
-import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
+import { GasPrice } from '@cosmjs/launchpad';
 import BigNumber from 'bignumber.js';
-import { Nullable } from 'src/types';
-import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { CHAIN_ID } from 'src/constants/config';
+import { PATTERN_CYBER } from 'src/constants/patterns';
+import { useBackend } from 'src/contexts/backend/backend';
+import { useSigningClient } from 'src/contexts/signerClient';
+import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
+import { useAppDispatch } from 'src/redux/hooks';
+import Soft3MessageFactory from 'src/services/soft.js/api/msgs';
+import { Nullable } from 'src/types';
+import { Citizenship } from 'src/types/citizenship';
+import { getKeplr } from 'src/utils/keplrUtils';
+
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import {
-  Dots,
-  ButtonIcon,
   ActionBar as ActionBarSteps,
   BtnGrd,
+  ButtonIcon,
+  Dots,
 } from '../../../components';
-import { trimString, groupMsg } from '../../../utils/utils';
+import { groupMsg, trimString } from '../../../utils/utils';
 import {
-  CONSTITUTION_HASH,
-  CONTRACT_ADDRESS_PASSPORT,
   BOOT_ICON,
+  CONSTITUTION_HASH,
   CONTRACT_ADDRESS_GIFT,
+  CONTRACT_ADDRESS_PASSPORT,
 } from '../utils';
 import configTerraKeplr from './configTerraKeplr';
 import STEP_INFO from './utils';
 
+import imgEth from '../../../image/Ethereum_logo_2014.svg';
+import imgCosmos from '../../../image/cosmos-2.svg';
 import imgKeplr from '../../../image/keplr-icon.svg';
 import imgMetaMask from '../../../image/mm-logo.svg';
-import imgEth from '../../../image/Ethereum_logo_2014.svg';
 import imgOsmosis from '../../../image/osmosis.svg';
-import imgTerra from '../../../image/terra.svg';
-import imgCosmos from '../../../image/cosmos-2.svg';
 import imgSpacePussy from '../../../image/space-pussy.svg';
+import imgTerra from '../../../image/terra.svg';
 
 import {
   addAddress,
   deleteAddress,
 } from '../../../features/passport/passports.redux';
-import { ClaimMsg } from './type';
 import { TxHash } from '../hook/usePingTxs';
+import { ClaimMsg } from './type';
 
 const gasPrice = GasPrice.fromString('0.001boot');
 
@@ -137,7 +138,7 @@ function ActionBarPortalGift({
     onSuccess: () => void;
   }>();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useWaitForTransaction({
     hash: currentTx?.hash,

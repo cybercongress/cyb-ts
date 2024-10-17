@@ -1,10 +1,11 @@
 import { Route, Routes } from 'react-router-dom';
 import IpfsSettings from 'src/features/ipfs/ipfsSettings';
-import Layout from './Layout/Layout';
-import Keys from '../Keys/Keys';
 import Hub from '../Hub/hub';
-import Audio from './Audio/Audio';
+import Keys from '../Keys/Keys';
 import Hotkeys from '../robot/Hotkeys/Hotkeys';
+import Audio from './Audio/Audio';
+import Layout from './Layout/Layout';
+import Signer from './Signer/Signer';
 
 function Settings() {
   return (
@@ -12,6 +13,7 @@ function Settings() {
       <Route path="/" element={<Layout />}>
         <Route index element={<IpfsSettings />} />
         <Route path="keys" element={<Keys />} />
+        <Route path="signer" element={<Signer />} />
         <Route path="audio" element={<Audio />} />
 
         <Route path="hotkeys" element={<Hotkeys />} />

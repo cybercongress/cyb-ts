@@ -442,3 +442,5 @@ export {
   getNowUtcTime,
   accountsKeplr,
 };
+
+export const getMnemonic = () => localStorage.getItem('cyb:mnemonic');

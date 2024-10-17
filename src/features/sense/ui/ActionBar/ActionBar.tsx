@@ -4,10 +4,7 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import useWaitForTransaction from 'src/hooks/useWaitForTransaction';
-import { AdviserProps } from '../Sense';
 import { coin } from '@cosmjs/launchpad';
-import { addSenseItem, updateSenseItem } from '../../redux/sense.redux';
-import styles from './ActionBar.module.scss';
 import { isParticle } from 'src/features/particle/utils';
 import { useBackend } from 'src/contexts/backend/backend';
 import { routes } from 'src/routes';
@@ -19,6 +16,9 @@ import {
 } from 'src/services/neuron/neuronApi';
 import { addIfpsMessageOrCid } from 'src/utils/ipfs/helpers';
 import { BASE_DENOM } from 'src/constants/config';
+import styles from './ActionBar.module.scss';
+import { addSenseItem, updateSenseItem } from '../../redux/sense.redux';
+import type { AdviserProps } from '../Sense';
 
 type Props = {
   id: string | undefined;
@@ -189,7 +189,7 @@ function ActionBarWrapper({ id, adviser }: Props) {
         message = (
           <div className={styles.error}>
             sending message needs at least 1{' '}
-            <DenomArr denomValue={'boot'} onlyImg /> <br />
+            <DenomArr denomValue="boot" onlyImg /> <br />
             <Link
               to={{
                 pathname: routes.teleport.swap.path,
@@ -217,11 +217,7 @@ function ActionBarWrapper({ id, adviser }: Props) {
 
   if (step === STEPS.MESSAGE) {
     return (
-      <ActionBar
-      // onClickBack={() => {
-      //   setStep(STEPS.INITIAL);
-      // }}
-      >
+      <ActionBar>
         <Input
           width={480}
           classNameTextbox={styles.messageInput}
