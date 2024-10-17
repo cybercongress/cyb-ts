@@ -201,7 +201,7 @@ function ActionBarConnect({
         selectMethod={connectMethod}
         selectNetwork={selectNetwork}
         connectAddress={connectAddress}
-        keplr={signer}
+        signer={signer}
         onClickBack={onClickBack}
       />
     );

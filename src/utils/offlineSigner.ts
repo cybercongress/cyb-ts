@@ -6,21 +6,9 @@ import {
 } from '@cosmjs/proto-signing/build/directsecp256k1hdwallet';
 import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
 import defaultNetworks from 'src/constants/defaultNetworks';
+import networkList from './networkListIbc';
 
 export class CybOfflineSigner extends DirectSecp256k1HdWallet {
-  // public async signDirect(
-  //   signerAddress: string,
-  //   signDoc: SignDoc
-  // ): Promise<DirectSignResponse> {
-  //   return new Promise((resolve, reject) => {
-  //     store.dispatch(shareSignerPromise({ resolve, reject }));
-  //     getNavigate()?.('/sign');
-  //   }).then(() => {
-  //     store.dispatch(resetSignerState());
-  //     return super.signDirect(signerAddress, signDoc);
-  //   });
-  // }
-
   public static async fromMnemonic(
     mnemonic: string,
     options: Partial<DirectSecp256k1HdWalletOptions> = {}
@@ -40,7 +28,9 @@ export class CybOfflineSigner extends DirectSecp256k1HdWallet {
   }
 }
 
-export const getOfflineSigner = (mnemonic: string) =>
+export const getOfflineSigner = (mnemonic: string, network?: string) =>
   CybOfflineSigner.fromMnemonic(mnemonic, {
-    prefix: defaultNetworks.bostrom.BECH32_PREFIX,
+    prefix: network
+      ? networkList[network].prefix
+      : defaultNetworks.bostrom.BECH32_PREFIX,
   });

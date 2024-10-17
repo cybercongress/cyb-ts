@@ -405,7 +405,7 @@ interface ConnectAddressProps {
   selectMethod: ConnectMethod | '';
   selectNetwork: string;
   connectAddress: () => void;
-  keplr: Option<OfflineSigner>;
+  signer: Option<OfflineSigner>;
   onClickBack: () => void;
 }
 
@@ -414,7 +414,7 @@ export function ConnectAddress({
   selectMethod,
   selectNetwork,
   connectAddress,
-  keplr,
+  signer,
   onClickBack,
 }: ConnectAddressProps) {
   return (
@@ -427,7 +427,7 @@ export function ConnectAddress({
       onClickBack={onClickBack}
     >
       <Pane display="flex" alignItems="center" justifyContent="center" flex={1}>
-        {keplr && (
+        {signer && (
           <ButtonIcon
             onClick={() => selectMethodFunc(KEY_TYPE.keplr)}
             active={selectMethod === KEY_TYPE.keplr}
@@ -436,7 +436,7 @@ export function ConnectAddress({
           />
         )}
 
-        {(!keplr || process.env.IS_TAURI) && (
+        {(!signer?.keplr || process.env.IS_TAURI) && (
           <ButtonIcon
             onClick={() => selectMethodFunc('wallet')}
             active={selectMethod === 'wallet'}
@@ -445,7 +445,7 @@ export function ConnectAddress({
           />
         )}
 
-        {!keplr && !process.env.IS_TAURI && (
+        {!signer?.keplr && !process.env.IS_TAURI && (
           <LinkWindow to="https://www.keplr.app/">
             <Pane marginRight={5} width={34} height={30}>
               <img

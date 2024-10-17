@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-restricted-syntax */
 import { useState, useEffect } from 'react';
 import { GasPrice, SigningStargateClient } from '@cosmjs/stargate';
@@ -5,6 +6,14 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import { getKeplr } from 'src/utils/keplrUtils';
 import { Decimal } from '@cosmjs/math';
 import { CHAIN_ID } from 'src/constants/config';
+import { CybOfflineSigner, getOfflineSigner } from 'src/utils/offlineSigner';
+import { OfflineAminoSigner } from '@keplr-wallet/types';
+import { chains, assets } from 'chain-registry';
+import {
+  getGasPriceRangesFromChain,
+  getChainByChainName,
+} from '@chain-registry/utils';
+import { getMnemonic } from 'src/utils/utils';
 import useGetBalancesIbc from './useGetBalancesIbc';
 
 import networks from '../../../utils/networkListIbc';
@@ -20,29 +29,46 @@ function useSetupIbcClient(denom, network) {
 
       let client = null;
       if (network && network !== CHAIN_ID) {
+        const { rpc, prefix, sourceChainId, chainId } = networks[network];
         const keplr = await getKeplr();
-        const { rpc, prefix, chainId } = networks[network];
-        await keplr.enable(chainId);
-        const offlineSigner = await keplr.getOfflineSignerAuto(chainId);
+        let offlineSigner: OfflineAminoSigner | CybOfflineSigner | null = null;
 
-        const chainInfos = await keplr.getChainInfosWithoutEndpoints();
-        const chainInfoA = chainInfos.find((item) => item.chainId === chainId);
-        const feeCurrenciesA = chainInfoA.feeCurrencies[0];
+        if (keplr) {
+          await keplr.enable(chainId);
+          offlineSigner = (await keplr.getOfflineSignerAuto(
+            chainId
+          )) as OfflineAminoSigner;
+        } else {
+          const mnemonics = getMnemonic();
+          if (mnemonics) {
+            offlineSigner = await getOfflineSigner(mnemonics, network);
+          }
+        }
 
-        const GasPriceA = new GasPrice(
-          Decimal.fromUserInput(
-            feeCurrenciesA.gasPriceStep?.average.toString() || '0',
-            3
-          ),
-          feeCurrenciesA?.coinMinimalDenom
-        );
+        const chain = getChainByChainName(chains, sourceChainId);
+        if (chain) {
+          const gasPriceRanges = getGasPriceRangesFromChain(chain!);
+          const assetList = assets.find(
+            ({ chain_name }) => chain_name === sourceChainId
+          );
+          const minimalDenom = assetList!.assets[0].base;
 
-        const options = { prefix, gasPrice: GasPriceA };
-        client = await SigningStargateClient.connectWithSigner(
-          rpc,
-          offlineSigner,
-          options
-        );
+          const GasPriceA = new GasPrice(
+            Decimal.fromUserInput(gasPriceRanges?.low || '0', 3),
+            minimalDenom
+          );
+          console.log({ GasPriceA, minimalDenom });
+
+          const options = {
+            prefix,
+            gasPrice: GasPriceA,
+          };
+          client = await SigningStargateClient.connectWithSigner(
+            rpc,
+            offlineSigner,
+            options
+          );
+        }
       } else {
         client = signingClient;
       }

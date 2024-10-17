@@ -17,7 +17,7 @@ import { Option } from 'src/types';
 import { CybSignerClient } from 'src/utils/CybSignerClient';
 import configKeplr, { getKeplr } from 'src/utils/keplrUtils';
 import { getOfflineSigner } from 'src/utils/offlineSigner';
-import { accountsKeplr } from 'src/utils/utils';
+import { accountsKeplr, getMnemonic } from 'src/utils/utils';
 
 // TODO: interface for keplr and OfflineSigner
 // type SignerType = OfflineSigner & {
@@ -116,6 +116,9 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
 
       const clientJs = await createClient(offlineSigner);
 
+      window.signer = offlineSigner;
+      window.signingClient = clientJs;
+
       setSigner(offlineSigner);
       setSigningClient(clientJs);
     }
@@ -139,13 +142,13 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
       if (process.env.IS_TAURI || !window.keplr) {
         console.log('Init signing client');
         try {
-          const mnemonic = localStorage.getItem('cyb:mnemonic');
+          const mnemonic = getMnemonic();
           if (mnemonic) {
             const signer = await getOfflineSigner(mnemonic);
             const clientJs = await createClient(signer);
 
-            // window.signer = signer;
-            // window.signingClient = clientJs;
+            window.signer = signer;
+            window.signingClient = clientJs;
 
             console.log('Signer is set');
 
