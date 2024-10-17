@@ -4,7 +4,15 @@ import rootReducer from './reducers';
 const store = configureStore({
   reducer: rootReducer,
 });
-// composeWithDevTools(applyMiddleware(thunk))
+
+// **Declared global Window interface**
+declare global {
+  interface Window {
+    store: typeof store;
+  }
+}
+
+window.store = store;
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

@@ -2,7 +2,7 @@ import { Networks } from 'src/types/networks';
 import defaultNetworks from './defaultNetworks';
 
 // FIXME: seems temp
-function isWorker() {
+export function isWorker() {
   return (
     typeof WorkerGlobalScope !== 'undefined' &&
     self instanceof WorkerGlobalScope

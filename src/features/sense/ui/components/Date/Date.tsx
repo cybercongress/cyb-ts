@@ -1,8 +1,8 @@
 import dateFormat from 'dateformat';
 
 import cx from 'classnames';
-import styles from './Date.module.scss';
 import { Tooltip } from 'src/components';
+import styles from './Date.module.scss';
 
 type Props = {
   timestamp: string;
@@ -13,6 +13,8 @@ type Props = {
 };
 
 function Date2({ timestamp, className, timeOnly }: Props) {
+  console.log(timestamp);
+
   const date = new Date(timestamp);
   const today = new Date();
 

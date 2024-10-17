@@ -23,6 +23,7 @@ type Props = {
   cid?: string;
   fromLog?: boolean;
   status?: SenseItem['status'];
+  avatar?: JSX.Element;
 };
 
 function Message({
@@ -34,6 +35,7 @@ function Message({
   from,
   myMessage,
   cid,
+  avatar,
   status,
 }: Props) {
   const navigate = useNavigate();
@@ -76,6 +78,8 @@ function Message({
           // <span className={styles.icon}>🍀</span>
           // </Tooltip>
         )}
+
+        {avatar}
       </div>
 
       {/* <Link> not good here, because children may have links  */}
