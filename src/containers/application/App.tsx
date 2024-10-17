@@ -21,9 +21,11 @@ import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import NewVersionChecker from 'src/components/NewVersionChecker/NewVersionChecker';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import { Display, MainContainer } from 'src/components';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 import styles from './styles.scss';
 import { setFocus } from './Header/Commander/commander.redux';
+import { mobileAllowedRoutes } from './mobileAllowedRoutes';
 
 export const PORTAL_ID = 'portal';
 
@@ -123,6 +125,10 @@ function App() {
     }
   }, [dispatch]);
 
+  const mobileAllowed = mobileAllowedRoutes.some((path) => {
+    return matchPath(path, location.pathname);
+  });
+
   return (
     <PreviousPageProvider>
       <NewVersionChecker />
@@ -137,7 +143,16 @@ function App() {
 
           <AdviserContainer />
 
-          <Outlet />
+          {!mobileAllowed ? (
+            <MainContainer>
+              <Display>
+                use desktop version
+                {/* <Navigate replace to="use-desktop" /> */}
+              </Display>
+            </MainContainer>
+          ) : (
+            <Outlet />
+          )}
         </>
       </MainLayout>
     </PreviousPageProvider>
