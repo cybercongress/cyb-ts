@@ -73,7 +73,7 @@ function App() {
           There are network issues 😔, part of functionality is currently
           disabled
           <br />
-          <Link to={routes.social.path}>check social</Link> for more info
+          <Link to={routes.social.path}>check socials</Link> for more info
         </div>
       );
       // 'indexer is in sync now, some data may be not fully available'
