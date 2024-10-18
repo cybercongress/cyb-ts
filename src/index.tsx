@@ -1,3 +1,5 @@
+/* eslint-disable import/prefer-default-export */
+/* eslint-disable import/no-unused-modules */
 // eslint-disable-next-line import/no-unused-modules
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -6,36 +8,37 @@ import { createRoot } from 'react-dom/client';
 
 import { ApolloProvider } from '@apollo/client';
 
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { Provider } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import AppRouter from './router';
-import store from './redux/store';
+import { Provider } from 'react-redux';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import store from './redux/store';
+import AppRouter from './router';
 
-import './style/main.css';
-import './style/index.scss';
 import './image/favicon.ico';
+import './style/index.scss';
+import './style/main.css';
 
 // for boot loading
 import './image/robot.svg';
 
-import SdkQueryClientProvider from './contexts/queryClient';
-import SigningClientProvider from './contexts/signerClient';
+// import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import DataProvider from './contexts/appData';
-import WebsocketsProvider from './websockets/context';
+import BackendProvider from './contexts/backend/backend';
 import DeviceProvider from './contexts/device';
 import IbcDenomProvider from './contexts/ibcDenom';
 import NetworksProvider from './contexts/networks';
-import BackendProvider from './contexts/backend/backend';
+import SdkQueryClientProvider from './contexts/queryClient';
+import SigningClientProvider from './contexts/signerClient';
+import WebsocketsProvider from './websockets/context';
 
-import AdviserProvider from './features/adviser/context';
 import HubProvider from './contexts/hub';
+import AdviserProvider from './features/adviser/context';
 
-import ScriptingProvider from './contexts/scripting/scripting';
 import { localStorageKeys } from './constants/localStorageKeys';
 import CyberClientProvider from './contexts/queryCyberClient';
+import ScriptingProvider from './contexts/scripting/scripting';
 import apolloClient from './services/graphql';
 
 const queryClient = new QueryClient({
