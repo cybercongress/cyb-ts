@@ -87,28 +87,28 @@ function PlanDisplay({ plan, index, isSelected }: PlanDisplayProps) {
       }`}
       style={{ left: `${-2 * (index + 1)}px` }}
     >
-      <Display
-        color={plan.color}
-        title={
-          <div className={styles.planTitleWrapper}>
-            <img
-              src={plan.icon}
-              alt={`${plan.name} icon`}
-              className={styles.planIcon}
-            />
-            <span
-              className={`${styles.planName} ${
-                plan.name === 'ghost' ? styles.gray : styles[plan.color]
-              }`}
-            >
-              {plan.name}
-            </span>
-          </div>
-        }
-        noPaddingY
-        noPaddingX
-      >
-        <AdviserHoverWrapper adviserContent={'test'}>
+      <AdviserHoverWrapper adviserContent={'test'}>
+        <Display
+          color={plan.color}
+          title={
+            <div className={styles.planTitleWrapper}>
+              <img
+                src={plan.icon}
+                alt={`${plan.name} icon`}
+                className={styles.planIcon}
+              />
+              <span
+                className={`${styles.planName} ${
+                  plan.name === 'ghost' ? styles.gray : styles[plan.color]
+                }`}
+              >
+                {plan.name}
+              </span>
+            </div>
+          }
+          noPaddingY
+          noPaddingX
+        >
           <div className={styles.planContent}>
             {features.map((_, index) => (
               <div key={index} className={styles.row}>
@@ -125,8 +125,8 @@ function PlanDisplay({ plan, index, isSelected }: PlanDisplayProps) {
               </div>
             </div>
           </div>
-        </AdviserHoverWrapper>
-      </Display>
+        </Display>
+      </AdviserHoverWrapper>
     </div>
   );
 }
