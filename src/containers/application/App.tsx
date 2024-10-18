@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
 import MainLayout from 'src/layouts/Main';
@@ -18,14 +18,14 @@ import { initCyblog } from 'src/utils/logging/bootstrap';
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 
 import NewVersionChecker from 'src/components/NewVersionChecker/NewVersionChecker';
+import SignerModal, {
+  SignerModalRef,
+} from 'src/components/signer-modal/signer-modal';
 import { PreviousPageProvider } from 'src/contexts/previousPage';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
-import SignerModal, {
-  SignerModalRef,
-} from 'src/components/signer-modal/signer-modal';
 import { signerModalHandler } from 'src/services/signer/signer-modal-handler';
 import { setFocus } from './Header/Commander/commander.redux';
 import styles from './styles.scss';
@@ -76,7 +76,17 @@ function App() {
   // }, [communityLoaded, community, dispatch]);
 
   useAdviserTexts({
-    defaultText: 'indexer is in sync now, some data may be not fully available',
+    defaultText: useMemo(() => {
+      return (
+        <div>
+          There are network issues 😔, part of functionality is currently
+          disabled
+          <br />
+          <Link to={routes.social.path}>check socials</Link> for more info
+        </div>
+      );
+      // 'indexer is in sync now, some data may be not fully available'
+    }, []),
   });
 
   useEffect(() => {
