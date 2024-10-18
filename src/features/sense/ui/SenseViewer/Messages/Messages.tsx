@@ -45,8 +45,6 @@ function Messages({ messages, currentChatId }: Props) {
       [...messages].reverse().reduce<{
         [date: string]: SenseItem[] | LLMMessage[];
       }>((acc, senseItem) => {
-        console.log(senseItem.timestamp);
-
         const date = dateFormat(senseItem.timestamp, 'yyyy-mm-dd');
 
         if (!acc[date]) {

@@ -13,8 +13,6 @@ type Props = {
 };
 
 function Date2({ timestamp, className, timeOnly }: Props) {
-  console.log(timestamp);
-
   const date = new Date(timestamp);
   const today = new Date();
 

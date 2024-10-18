@@ -140,8 +140,6 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   //   }
   // }, [isLLMFilter, currentThreadId, dispatch]);
 
-  console.log(selected);
-
   return (
     <>
       <div className={cx(styles.wrapper, { [styles.NotOwner]: !isOwner })}>
