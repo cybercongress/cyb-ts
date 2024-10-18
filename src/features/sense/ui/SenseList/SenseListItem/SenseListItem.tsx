@@ -71,7 +71,11 @@ function SenseListItem({
         !isLLM && <ParticleAvatar particleId={address} />
       )}
 
-      {isLLM && <LLMAvatar onlyImg />}
+      {isLLM && (
+        <div className={styles.llmAvatar}>
+          <LLMAvatar onlyImg />
+        </div>
+      )}
 
       {icon && (
         <Tooltip tooltip={statusText!}>

@@ -17,7 +17,7 @@ import styles from './LLMSpark.module.scss';
 
 // WIP
 
-const provider = createOpenRouter({
+export const provider = createOpenRouter({
   ['a' + 'piK' + 'ey']: `sk-or-v1-${atob(testVar)}`,
 });
 
@@ -71,7 +71,13 @@ export function LLMAvatar({ onlyImg }) {
       }}
     >
       <AdviserHoverWrapper adviserContent={modelName}>
-        <Link to={`${routes.settings.path}/llm`}>
+        <Link
+          to={`${routes.settings.path}/llm`}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
           <img
             src={`https://robohash.org/${modelName}`}
             style={{

@@ -10,13 +10,13 @@ import {
   createLLMThread,
 } from 'src/features/sense/redux/sense.redux';
 import { v4 as uuidv4 } from 'uuid';
-import { Button } from 'src/components';
 import styles from './SenseList.module.scss';
 import SenseListFilters from './SenseListFilters/SenseListFilters';
 import { Filters } from '../types';
 import { AdviserProps } from '../Sense';
 import SenseListItemContainer from './SenseListItem/SenseListItem.container';
 import SenseListItem from './SenseListItem/SenseListItem';
+import NewThreadBtn from './NewThreadBtn/NewThreadBtn';
 
 type Props = {
   select: (id: string) => void;
@@ -90,7 +90,8 @@ function SenseList({ select, selected, setFilter }: Props) {
         </div>
 
         {filter === Filters.LLM && (
-          <Button onClick={handleNewThread}>New Thread</Button>
+          // <Button onClick={handleNewThread}>New Thread</Button>
+          <NewThreadBtn onClick={handleNewThread} />
         )}
 
         {filter === Filters.LLM ? (

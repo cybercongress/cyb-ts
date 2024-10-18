@@ -90,17 +90,33 @@ export function LLMHeader({ selectedId }: { selectedId?: string }) {
     >
       <LLMAvatar />
 
-      {id && (
-        <AdviserHoverWrapper adviserContent="delete thread">
-          <button
-            onClick={() => {
-              dispatch(deleteLLMThread({ id }));
-            }}
-          >
-            ❌
-          </button>
-        </AdviserHoverWrapper>
-      )}
+      <div
+        style={{
+          marginLeft: 'auto',
+        }}
+      >
+        {id && (
+          <AdviserHoverWrapper adviserContent="delete thread">
+            <button
+              type="button"
+              onClick={() => {
+                dispatch(deleteLLMThread({ id }));
+              }}
+            >
+              ❌
+            </button>
+          </AdviserHoverWrapper>
+        )}
+
+        <Link
+          style={{
+            marginLeft: 10,
+          }}
+          to={`${routes.settings.path}/llm`}
+        >
+          ⚙️
+        </Link>
+      </div>
     </header>
   );
 }
