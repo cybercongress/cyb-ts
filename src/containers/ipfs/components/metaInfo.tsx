@@ -40,8 +40,7 @@ function RowItem({ text, value }) {
   );
 }
 
-// TODO: do we need this? I think it's not used and need to be removed
-// because it use @tableflip/react-inspector which is not used anywhere else and not updated for years
+// TODO: seems not used and need to be removed
 function MetaInfo({ data, cid }) {
   try {
     if (!data) {
