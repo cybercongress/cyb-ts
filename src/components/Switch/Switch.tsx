@@ -1,4 +1,9 @@
-import { useEffect, useRef } from 'react';
+import React, {
+  ChangeEventHandler,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 import styles from './Switch.module.scss';
 
 type Props = {
@@ -19,14 +24,15 @@ function Switch({ label, onChange, value }: Props) {
     }
   }, [ref, label]);
 
+  const onInputChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
+    (e) => onChange(e.target.checked),
+    [onChange]
+  );
+
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={styles.switch} ref={ref}>
-      <input
-        type="checkbox"
-        defaultChecked={value}
-        onChange={(e) => onChange(e.target.checked)}
-      />
+      <input type="checkbox" defaultChecked={value} onChange={onInputChange} />
       <span className={styles.slider} />
       <span
         className={styles.labels}
@@ -37,4 +43,4 @@ function Switch({ label, onChange, value }: Props) {
   );
 }
 
-export default Switch;
+export default React.memo(Switch);

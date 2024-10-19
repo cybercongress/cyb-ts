@@ -24,7 +24,7 @@ class KuboNode implements IpfsNode {
     return this._config;
   }
 
-  private _isStarted: boolean = false;
+  private _isStarted = false;
 
   get isStarted() {
     return this._isStarted;

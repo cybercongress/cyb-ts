@@ -3,6 +3,7 @@ import { dataOrNull } from 'src/utils/axios';
 
 import axios from 'axios';
 
+// eslint-disable-next-line import/prefer-default-export
 export const getTxs = async (txHash: string) => {
   const response = await axios({
     method: 'get',
