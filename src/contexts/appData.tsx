@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import useQueryContract from 'src/hooks/contract/useQueryContract';
 import useGetMarketData from 'src/hooks/useGetMarketData';
 import useConvertMarketData from 'src/hooks/warp/useConvertMarketData';
 import { ObjKeyValue } from 'src/types/data';
@@ -12,12 +13,14 @@ type DataProviderContextType = {
   marketData: ObjData;
   dataTotalSupply: ObjData;
   block: number | null;
+  filterParticles: string[];
 };
 
 const valueContext = {
   marketData: {},
   dataTotalSupply: {},
   block: null,
+  filterParticles: [],
 };
 
 const DataProviderContext =
@@ -32,6 +35,15 @@ function DataProvider({ children }: { children: React.ReactNode }) {
   const convertMarketData = useConvertMarketData(marketData);
   const { cyber } = useWebsockets();
   const [blockHeight, setBlockHeight] = useState<number | null>(null);
+
+  const filterContractQuery = useQueryContract(
+    'bostrom1p8drdvmwygrreesp4e425q6xs77zkcsj7z7h9as7sketuv5w334slsxv7l',
+    {
+      particles: {},
+    }
+  );
+
+  const filterParticles = filterContractQuery?.data?.map((item) => item[1]);
 
   const resultMarketData = Object.keys(convertMarketData).length
     ? convertMarketData
@@ -77,8 +89,9 @@ function DataProvider({ children }: { children: React.ReactNode }) {
       marketData: resultMarketData,
       dataTotalSupply: dataTotal,
       block: blockHeight,
+      filterParticles: filterParticles || [],
     }),
-    [resultMarketData, dataTotal, blockHeight]
+    [resultMarketData, dataTotal, blockHeight, filterParticles]
   );
 
   return (
