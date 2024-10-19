@@ -29,12 +29,16 @@ export default function Modal({
     [style]
   );
 
-  return isOpen ? (
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
     <>
       <div style={styles.backdrop} />
       <div ref={ref} style={wrapperStyles} onPaste={onPaste}>
         <Display>{children}</Display>
       </div>
     </>
-  ) : null;
+  );
 }
