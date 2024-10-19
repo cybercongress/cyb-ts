@@ -55,7 +55,11 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
     filterParticles.length > 0 && filterParticles.includes(cid);
 
   if (particleRestricted) {
-    return <div>Content is restricted</div>;
+    return (
+      <div>
+        <TextMarkdown preview={search}>content is restricted</TextMarkdown>
+      </div>
+    );
   }
 
   return (
