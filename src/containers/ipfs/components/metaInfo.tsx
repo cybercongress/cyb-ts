@@ -40,6 +40,7 @@ function RowItem({ text, value }) {
   );
 }
 
+// TODO: seems not used and need to be removed
 function MetaInfo({ data, cid }) {
   try {
     if (!data) {

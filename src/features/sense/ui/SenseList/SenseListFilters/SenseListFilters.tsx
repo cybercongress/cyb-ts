@@ -19,10 +19,10 @@ const config = {
     label: '@',
     tooltip: 'Neuron',
   },
-  // [Filters.LLM]: {
-  //   label: 'llm',
-  //   tooltip: '',
-  // },
+  [Filters.LLM]: {
+    label: 'llm',
+    tooltip: 'LLM',
+  },
 };
 
 function SenseListFilters({ selected, onChangeFilter }: Props) {

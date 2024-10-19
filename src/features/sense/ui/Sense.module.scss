@@ -4,7 +4,7 @@
   display: flex;
   align-content: stretch;
   height: 100%;
-  min-height: 50vh;
+  min-height: 60vh;
   max-height: calc(100vh - $reservedTopHeight - $actionBarHeight);
 
   &.NotOwner {

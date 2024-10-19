@@ -4,15 +4,11 @@
   padding-left: 20px;
   min-height: 62px;
   color: #fff;
-
   max-width: 350px;
-
   grid-template-areas:
     'avatar title date'
     'avatar text  unread';
-
   grid-template-columns: 50px 1fr auto;
-
   gap: 3px 10px;
 
   &::before {
@@ -33,10 +29,8 @@
     position: absolute;
     bottom: -2px;
     right: -5px;
-
-    background-color: rgba(97, 94, 94, 0.461);
+    background-color: rgb(97 94 94 / 46.1%);
     border-radius: 50%;
-
     filter: grayscale(20%);
   }
 }
@@ -48,6 +42,7 @@
   display: flex;
   font-weight: 400;
   width: 100%;
+
   // border: 1px solid red;
   // position: relative;
   // &::after {
@@ -73,6 +68,7 @@
   * {
     color: white;
   }
+
   align-items: center;
   overflow-x: hidden;
 
@@ -94,7 +90,7 @@
 
 .content {
   grid-area: text;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgb(255 255 255 / 50%);
   font-size: 15px;
   line-height: 1.2em;
   max-height: 2.4em;
@@ -133,4 +129,12 @@
 .date,
 .unread {
   justify-self: flex-end;
+}
+
+.llmAvatar {
+  img {
+    width: unset !important;
+    height: unset !important;
+    max-width: 100%;
+  }
 }

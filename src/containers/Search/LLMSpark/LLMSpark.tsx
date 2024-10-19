@@ -11,16 +11,17 @@ import Loader2 from 'src/components/ui/Loader2';
 import useGetIPFSHash from 'src/features/ipfs/hooks/useGetIPFSHash';
 import { isCID } from 'src/utils/ipfs/helpers';
 import { isDevEnv } from 'src/utils/dev';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 import { testVar } from '.';
 import styles from './LLMSpark.module.scss';
 
 // WIP
 
-const provider = createOpenRouter({
+export const provider = createOpenRouter({
   ['a' + 'piK' + 'ey']: `sk-or-v1-${atob(testVar)}`,
 });
 
-const modelName = isDevEnv()
+export const modelName = isDevEnv()
   ? 'meta-llama/llama-3-8b-instruct:free'
   : 'openai/gpt-4o-mini';
 
@@ -61,7 +62,7 @@ export function useIsLLMPageParam() {
   return isLLM;
 }
 
-export function LLMAvatar() {
+export function LLMAvatar({ onlyImg }) {
   return (
     <div
       style={{
@@ -69,16 +70,26 @@ export function LLMAvatar() {
         alignItems: 'center',
       }}
     >
-      <img
-        src="https://robohash.org/llama"
-        style={{
-          width: '20px',
-          height: '20px',
-          borderRadius: '50%',
-          marginRight: '5px',
-        }}
-      />
-      {model.modelId}
+      <AdviserHoverWrapper adviserContent={modelName}>
+        <Link
+          to={`${routes.settings.path}/llm`}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <img
+            src={`https://robohash.org/${modelName}`}
+            style={{
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              marginRight: '5px',
+            }}
+          />
+          {!onlyImg && model.modelId}
+        </Link>
+      </AdviserHoverWrapper>
     </div>
   );
 }

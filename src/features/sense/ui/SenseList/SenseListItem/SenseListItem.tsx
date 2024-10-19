@@ -1,15 +1,15 @@
 import { Account, Tooltip } from 'src/components';
-import styles from './SenseListItem.module.scss';
-
 import Pill from 'src/components/Pill/Pill';
-import Date from '../../components/Date/Date';
 import cx from 'classnames';
-import { cutSenseItem, isBostromAddress } from '../../utils';
-import ParticleAvatar from '../../components/ParticleAvatar/ParticleAvatar';
 import { isParticle as isParticleFunc } from 'src/features/particle/utils';
 import { SenseItem } from 'src/features/sense/redux/sense.redux';
-import { getStatusText } from '../../utils/getStatusText';
 import { MsgSend } from 'cosmjs-types/cosmos/bank/v1beta1/tx';
+import { LLMAvatar } from 'src/containers/Search/LLMSpark/LLMSpark';
+import styles from './SenseListItem.module.scss';
+
+import Date from '../../components/Date/Date';
+import { cutSenseItem } from '../../utils';
+import ParticleAvatar from '../../components/ParticleAvatar/ParticleAvatar';
 import CoinsAmount, {
   CoinAction,
 } from '../../components/CoinAmount/CoinAmount';
@@ -37,6 +37,7 @@ function SenseListItem({
   address,
   date,
   content,
+  isLLM,
   status,
   amountData,
   from,
@@ -62,31 +63,55 @@ function SenseListItem({
 
   const withAmount = Boolean(amountData?.amount?.length);
 
+  const avatarContent = (
+    <>
+      {!isParticle && !isLLM ? (
+        <Account address={address} onlyAvatar avatar sizeAvatar={50} />
+      ) : (
+        !isLLM && <ParticleAvatar particleId={address} />
+      )}
+
+      {isLLM && (
+        <div className={styles.llmAvatar}>
+          <LLMAvatar onlyImg />
+        </div>
+      )}
+
+      {icon && (
+        <Tooltip tooltip={statusText!}>
+          <span className={styles.icon}>{icon}</span>
+        </Tooltip>
+      )}
+
+      {address !== from && (
+        <div className={styles.icon}>
+          <Account address={from} onlyAvatar avatar sizeAvatar={20} />
+        </div>
+      )}
+    </>
+  );
+
+  let titleJSX;
+
+  if (isLLM) {
+    titleJSX = title;
+  } else if (isParticle) {
+    titleJSX = <>{title || `#${cutSenseItem(address)}`}</>;
+  } else {
+    titleJSX = (
+      <>
+        @<Account address={address} />
+      </>
+    );
+  }
+
+  // return (
+  //   <SenseListItemSimple avatarContent={avatarContent}/>
+  // )
+
   return (
-    <div
-      className={cx(styles.wrapper, {
-        [styles.particle]: isParticle,
-      })}
-    >
-      <div className={styles.avatar}>
-        {!isParticle ? (
-          <Account address={address} onlyAvatar avatar sizeAvatar={50} />
-        ) : (
-          <ParticleAvatar particleId={address} />
-        )}
-
-        {icon && (
-          <Tooltip tooltip={statusText!}>
-            <span className={styles.icon}>{icon}</span>
-          </Tooltip>
-        )}
-
-        {address !== from && (
-          <div className={styles.icon}>
-            <Account address={from} onlyAvatar avatar sizeAvatar={20} />
-          </div>
-        )}
-      </div>
+    <div className={styles.wrapper}>
+      <div className={styles.avatar}>{avatarContent}</div>
 
       <h5
         className={cx(styles.title, {
@@ -95,13 +120,7 @@ function SenseListItem({
         })}
         onClickCapture={(e) => e.preventDefault()}
       >
-        {!isParticle ? (
-          <>
-            @<Account address={address} />
-          </>
-        ) : (
-          <>{title || `#${cutSenseItem(address)}`}</>
-        )}
+        {titleJSX}
       </h5>
 
       <div
@@ -138,3 +157,21 @@ function SenseListItem({
 }
 
 export default SenseListItem;
+
+function SenseListItemSimple({ date, title, content, avatarContent }: Props) {
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.avatar}>{avatarContent}</div>
+    </div>
+    // <div className={styles.wrapper}>
+    //   <div className={styles.date}>
+    //     <Date timestamp={date} />
+    //   </div>
+
+    //   <div className={styles.content}>
+    //     <h5 className={styles.title}>{title}</h5>
+    //     <p>{content}</p>
+    //   </div>
+    // </div>
+  );
+}
