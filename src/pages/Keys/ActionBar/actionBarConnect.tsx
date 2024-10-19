@@ -20,6 +20,7 @@ import { KEY_TYPE } from '../types';
 import ActionBarSecrets from './actionBarSecrets';
 import ConnectWalletModal from './ConnectWalletModal/ConnectWalletModal';
 import { ConnectMethod } from './types';
+import { setMnemonic } from 'src/utils/utils';
 
 const { STAGE_INIT, HDPATH, STAGE_ERROR } = LEDGER;
 
@@ -146,7 +147,8 @@ function ActionBarConnect({
 
   const connectKeplrFromMnemonic = async (name: string, mnemonic: string) => {
     const offlineSigner = await getOfflineSigner(mnemonic);
-    localStorage.setItem('cyb:mnemonic', mnemonic);
+    setMnemonic(mnemonic);
+
     if (offlineSigner) {
       setSigner(offlineSigner);
       const [{ address, pubkey: pubKey }] = await offlineSigner.getAccounts();

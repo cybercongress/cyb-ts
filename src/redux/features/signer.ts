@@ -2,6 +2,7 @@ import { StdFee } from '@cosmjs/launchpad';
 import { EncodeObject } from '@cosmjs/proto-signing';
 
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { localStorageKeys } from 'src/constants/localStorageKeys';
 
 type ResolveType = (value: any) => void;
 type RejectType = (reason?: any) => void;
@@ -18,10 +19,13 @@ type InitialState = {
 let confirmation = false;
 try {
   confirmation = JSON.parse(
-    localStorage.getItem('cyb:confirmation') || 'false'
+    localStorage.getItem(localStorageKeys.signer.confirmation) || 'false'
   );
 } catch (error) {
-  console.log('[Signer] failed to parse cyb:confirmation', error);
+  console.error(
+    `[Signer] failed to parse ${localStorageKeys.signer.confirmation}`,
+    error
+  );
 }
 
 const initialState: InitialState = {

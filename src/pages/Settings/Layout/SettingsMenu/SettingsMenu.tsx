@@ -24,13 +24,15 @@ const links: Array<MenuItem[]> = [
       icon: '🗝',
     },
   ],
-  [
-    {
-      text: 'Signer',
-      link: './signer',
-      icon: '🖋️',
-    },
-  ],
+  process.env.IS_TAURI || !window.keplr
+    ? [
+        {
+          text: 'Signer',
+          link: './signer',
+          icon: '🖋️',
+        },
+      ]
+    : undefined,
   [
     {
       text: 'Tokens',
@@ -57,7 +59,7 @@ const links: Array<MenuItem[]> = [
   // ],
   [{ text: 'Hotkeys', link: './hotkeys', icon: '⌨️' }],
   [{ text: 'LLM', link: './llm', icon: '👾' }],
-];
+].filter(Boolean);
 
 function SettingsMenu() {
   return (
