@@ -47,12 +47,18 @@ type ContentTabProps = {
   search?: boolean;
 };
 
-function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
+function ContentIpfs({
+  details,
+  content,
+  cid,
+  search,
+  skipCheck,
+}: ContentTabProps) {
   const contentType = details?.type;
 
   const { filterParticles } = useAppData();
   const particleRestricted =
-    filterParticles.length > 0 && filterParticles.includes(cid);
+    !skipCheck && filterParticles.length > 0 && filterParticles.includes(cid);
 
   if (particleRestricted) {
     return (

@@ -23,6 +23,9 @@ const valueContext = {
   filterParticles: [],
 };
 
+export const FILTERING_CONTRACT =
+  'bostrom1p8drdvmwygrreesp4e425q6xs77zkcsj7z7h9as7sketuv5w334slsxv7l';
+
 const DataProviderContext =
   React.createContext<DataProviderContextType>(valueContext);
 
@@ -36,12 +39,9 @@ function DataProvider({ children }: { children: React.ReactNode }) {
   const { cyber } = useWebsockets();
   const [blockHeight, setBlockHeight] = useState<number | null>(null);
 
-  const filterContractQuery = useQueryContract(
-    'bostrom1p8drdvmwygrreesp4e425q6xs77zkcsj7z7h9as7sketuv5w334slsxv7l',
-    {
-      particles: {},
-    }
-  );
+  const filterContractQuery = useQueryContract(FILTERING_CONTRACT, {
+    particles: {},
+  });
 
   const filterParticles = filterContractQuery?.data?.map((item) => item[1]);
 
