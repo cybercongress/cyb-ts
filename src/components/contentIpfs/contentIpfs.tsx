@@ -69,15 +69,7 @@ function ContentIpfs({
   }
 
   return (
-    <div>
-      {/* <DebugContentInfo
-        cid={cid}
-        source={content?.source}
-        content={content}
-        status={status}
-      /> */}
-      {/* Default */}
-
+    <>
       {!details?.type && <TextMarkdown preview>{cid.toString()}</TextMarkdown>}
 
       {content?.availableDownload && (
@@ -92,7 +84,9 @@ function ContentIpfs({
             <VideoPlayerGatewayOnly content={content} details={details} />
           )}
           {contentType === 'text' && (
-            <TextMarkdown preview={search}>{details.content}</TextMarkdown>
+            <TextMarkdown preview={search}>
+              {details.content || cid}
+            </TextMarkdown>
           )}
           {contentType === 'image' && <Img content={details.content} />}
           {contentType === 'pdf' && details.content && (
@@ -113,7 +107,7 @@ function ContentIpfs({
           )}
         </>
       )}
-    </div>
+    </>
   );
 }
 

@@ -21,9 +21,13 @@ import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import NewVersionChecker from 'src/components/NewVersionChecker/NewVersionChecker';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import { MainContainer } from 'src/components';
+import { useDevice } from 'src/contexts/device';
 import AdviserContainer from '../../features/adviser/AdviserContainer';
 import styles from './styles.scss';
 import { setFocus } from './Header/Commander/commander.redux';
+import { mobileAllowedRoutes } from './mobileAllowedRoutes';
+import UseDesktopVersionBlock from './UseDesktopVersionBlock/UseDesktopVersionBlock';
 
 export const PORTAL_ID = 'portal';
 
@@ -133,6 +137,14 @@ function App() {
     }
   }, [dispatch]);
 
+  const { isMobile } = useDevice();
+
+  const mobileAllowed =
+    location.pathname.includes('@') ||
+    mobileAllowedRoutes.some((path) => {
+      return matchPath(path, location.pathname);
+    });
+
   return (
     <PreviousPageProvider>
       <NewVersionChecker />
@@ -147,7 +159,13 @@ function App() {
 
           <AdviserContainer />
 
-          <Outlet />
+          {isMobile && !mobileAllowed ? (
+            <MainContainer>
+              <UseDesktopVersionBlock />
+            </MainContainer>
+          ) : (
+            <Outlet />
+          )}
         </>
       </MainLayout>
     </PreviousPageProvider>

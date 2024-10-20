@@ -10,6 +10,7 @@ import { useAppSelector } from 'src/redux/hooks';
 import { useSigningClient } from 'src/contexts/signerClient';
 import { trimString } from 'src/utils/utils';
 import { CHAIN_ID } from 'src/constants/config';
+import { useDevice } from 'src/contexts/device';
 import ButtonIcon from '../buttons/ButtonIcon';
 import styles from './styles.module.scss';
 import Button from '../btnGrd';
@@ -58,6 +59,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
 
   const address = useAppSelector(selectCurrentAddress);
   const { passport } = usePassportByAddress(address);
+  const { isMobile } = useDevice();
 
   const noAccount = !defaultAccount.account;
   const noPassport = CHAIN_ID === Networks.BOSTROM && !passport;
@@ -89,7 +91,8 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
     // maybe change to props
     exception &&
     !location.pathname.includes(routes.gift.path) &&
-    !location.pathname.includes('/brain') // both full and robot
+    !location.pathname.includes('/brain') && // both full and robot
+    !isMobile
   ) {
     return (
       <ActionBarContainer>

@@ -72,18 +72,18 @@ function Learn() {
 
     if (noPassport) {
       content = (
-        <>
+        <div>
           moon <Link to={routes.portal.path}>citizenship</Link> unlocks all
           features and takes 3 minutes
-        </>
+        </div>
       );
     } else if (noEnergy) {
       content = (
-        <>
+        <div>
           to cyberlink and learn you need energy <br />
           amperes, 💡 and volts, ⚡️ can be produced by freezing hydrogen H in{' '}
           <Link to={routes.hfr.path}>HFR</Link>
-        </>
+        </div>
       );
       adviserColor = 'red';
     } else {
