@@ -8,6 +8,7 @@ import PlanDisplay from './PlanDisplay';
 import styles from './Buy.module.scss';
 import mapPlan from './utils';
 import { renderFeatureContent } from './planFeatureMapper';
+import { log } from 'tone/build/esm/core/util/Debug';
 
 function SelectPackages() {
   const { energyPackageSwapRoutes } = useEnergy();
@@ -44,12 +45,24 @@ function SelectPackages() {
           (item) => item.keyPackage === plan.price
         );
 
-        const { fuel, energy, uploads, symbols } = mapPlan(findItem);
+        const { fuel, energy, uploads, symbols, ampers, volts } =
+          mapPlan(findItem);
 
+        console.log('Plan details:', {
+          fuel: fuel.toNumber(),
+          energy: energy.toNumber(),
+          uploads: uploads.toNumber(),
+          symbols,
+          ampers: ampers.toNumber(),
+          volts: volts.toNumber(),
+        });
         plan.fuel = fuel.toNumber();
+        console.debug('plan.fuel', plan.fuel);
         plan.energy = energy.toNumber();
         plan.uploads = uploads.toNumber();
         plan.symbols = symbols;
+        plan.ampers = ampers.toNumber();
+        plan.volts = volts.toNumber();
       }
       return (
         <button

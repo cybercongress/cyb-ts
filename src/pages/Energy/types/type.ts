@@ -21,6 +21,8 @@ export interface Plan {
   fuel: number;
   energy: number;
   influence: number;
+  ampers: number;
+  volts: number;
 }
 
 export const features: Feature[] = [
@@ -47,6 +49,8 @@ export const plans: Plan[] = [
     fuel: 0,
     energy: 0,
     influence: 0,
+    ampers: 0,
+    volts: 0,
   },
   {
     name: 'smart',
@@ -59,6 +63,8 @@ export const plans: Plan[] = [
     fuel: 2,
     energy: 4,
     influence: 1,
+    ampers: 0,
+    volts: 0,
   },
   {
     name: 'prodigy',
@@ -71,6 +77,8 @@ export const plans: Plan[] = [
     fuel: 20,
     energy: 1,
     influence: 7,
+    ampers: 0,
+    volts: 0,
   },
   {
     name: 'genius',
@@ -83,5 +91,7 @@ export const plans: Plan[] = [
     fuel: 200,
     energy: 11,
     influence: 19,
+    ampers: 0,
+    volts: 0,
   },
 ];

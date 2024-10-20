@@ -7,6 +7,8 @@ function mapPlan(energyPlan?: EnergyPackageSwapRoutes) {
   let uploads = new BigNumber(0);
   let fuel = new BigNumber(0);
   let symbols = 8;
+  let ampers = new BigNumber(0);
+  let volts = new BigNumber(0);
 
   const findItemH = energyPlan?.tokenOut.find(
     (item) => item.denom === symbol[0]
@@ -30,9 +32,11 @@ function mapPlan(energyPlan?: EnergyPackageSwapRoutes) {
 
   if (findItemA && findItemV) {
     energy = new BigNumber(findItemA.amount).multipliedBy(findItemV.amount);
+    ampers = new BigNumber(findItemA.amount);
+    volts = new BigNumber(findItemV.amount);
   }
 
-  return { fuel, uploads, energy, symbols };
+  return { fuel, uploads, energy, symbols, ampers, volts };
 }
 
 export default mapPlan;

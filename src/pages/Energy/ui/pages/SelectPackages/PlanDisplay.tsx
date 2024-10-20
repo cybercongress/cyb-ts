@@ -2,6 +2,10 @@ import styles from './Buy.module.scss';
 import { features, plans } from '../../../types/type';
 import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 import { Display } from 'src/components';
+import voltImg from 'images/lightning2.png';
+import amperImg from 'images/light.png';
+import hydrogen from 'images/hydrogen.svg';
+import { useMemo } from 'react';
 import { renderPlanFeature } from './planFeatureMapper';
 
 interface PlanDisplayProps {
@@ -11,6 +15,23 @@ interface PlanDisplayProps {
 }
 
 function PlanDisplay({ plan, index, isSelected }: PlanDisplayProps) {
+  const adviserContent = useMemo(() => {
+    return (
+      <div className={styles.adviserContent}>
+        you'll get <span className={styles['blue-lights']}>{plan.volts}</span>
+        <img src={voltImg} alt="lightning bolt" width="15" height="15" /> will
+        tokens, <span className={styles['blue-lights']}>{plan.ampers}</span>
+        <img src={amperImg} alt="light bulb" width="15" height="15" /> attention
+        tokens with total{' '}
+        <span className={styles['blue-lights']}>{plan.energy} </span> kW of
+        linking power,{' '}
+        <span className={styles['blue-lights']}>{plan.fuel}</span>
+        <img src={hydrogen} alt="hydrogen" width="15" height="15" /> hydrogen to
+        play with
+      </div>
+    );
+  }, [plan]);
+
   return (
     <div
       className={`${styles.displayWrapper} ${isSelected ? styles.active : ''} ${
@@ -38,7 +59,7 @@ function PlanDisplay({ plan, index, isSelected }: PlanDisplayProps) {
         }
         noPadding
       >
-        <AdviserHoverWrapper adviserContent={'test'}>
+        <AdviserHoverWrapper adviserContent={adviserContent}>
           <div className={styles.planContent}>
             {features.map((_, featureIndex) => (
               <div key={featureIndex} className={styles.row}>

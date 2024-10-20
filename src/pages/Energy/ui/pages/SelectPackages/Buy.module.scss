@@ -161,3 +161,19 @@
   height: 65px;
   object-fit: fill;
 }
+
+.adviserContent {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  img {
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  .blue-lights {
+    margin: 0 4px;
+    color: var(--blue-light);
+  }
+}
