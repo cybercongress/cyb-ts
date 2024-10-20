@@ -1,14 +1,16 @@
 import dateFormat from 'dateformat';
-import { SenseItem } from 'src/features/sense/redux/sense.redux';
+import { SenseItem, LLMMessage } from 'src/features/sense/redux/sense.redux';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import MessageContainer from './Message/Message.container';
 import styles from './Messages.module.scss';
 import DateTitle from './DateTitle/DateTitle';
+import MessageComponent from './Message/MessageComponent';
 
 type Props = {
-  messages: SenseItem[];
+  messages: SenseItem[] | LLMMessage[];
   currentChatId: string;
+  // Remove 'currentChatId' if not needed
 };
 
 // lengths in days
@@ -41,7 +43,7 @@ function Messages({ messages, currentChatId }: Props) {
   const messagesByDateAll = useMemo(() => {
     return Object.entries(
       [...messages].reverse().reduce<{
-        [date: string]: SenseItem[];
+        [date: string]: SenseItem[] | LLMMessage[];
       }>((acc, senseItem) => {
         const date = dateFormat(senseItem.timestamp, 'yyyy-mm-dd');
 
@@ -65,7 +67,35 @@ function Messages({ messages, currentChatId }: Props) {
     // wrappers for correct scroll
     <div className={styles.wrapper}>
       <div className={styles.messages} ref={ref}>
-        {ref.current && (
+        {currentChatId === 'llm' ? (
+          <InfiniteScroll
+            scrollableTarget={ref.current}
+            inverse
+            loader={null}
+            scrollThreshold={0.9}
+            className={styles.inner}
+            dataLength={(messages as LLMMessage[]).length}
+            hasMore={false}
+            next={() => {}}
+          >
+            {/* {messagesByDateAll.map((message, index) => (
+              <MessageComponent key={index} message={message} />
+            ))} */}
+
+            {messagesByDate.map(([date, messages]) => (
+              <Fragment key={date}>
+                {messages.map((senseItem) => (
+                  <MessageComponent
+                    key={senseItem.timestamp}
+                    message={senseItem}
+                    // currentChatId={currentChatId}
+                  />
+                ))}
+                <DateTitle date={new Date(date)} />
+              </Fragment>
+            ))}
+          </InfiniteScroll>
+        ) : (
           <InfiniteScroll
             scrollableTarget={ref.current}
             inverse
@@ -76,20 +106,18 @@ function Messages({ messages, currentChatId }: Props) {
             hasMore={showItemsLength < messages.length}
             next={setMore}
           >
-            {messagesByDate.map(([date, messages]) => {
-              return (
-                <Fragment key={date}>
-                  {messages.map((senseItem) => (
-                    <MessageContainer
-                      key={senseItem.transactionHash}
-                      senseItem={senseItem}
-                      currentChatId={currentChatId}
-                    />
-                  ))}
-                  <DateTitle date={new Date(date)} />
-                </Fragment>
-              );
-            })}
+            {messagesByDate.map(([date, messages]) => (
+              <Fragment key={date}>
+                {messages.map((senseItem) => (
+                  <MessageContainer
+                    key={senseItem.transactionHash}
+                    senseItem={senseItem}
+                    currentChatId={currentChatId}
+                  />
+                ))}
+                <DateTitle date={new Date(date)} />
+              </Fragment>
+            ))}
           </InfiniteScroll>
         )}
       </div>

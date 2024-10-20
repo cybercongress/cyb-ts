@@ -49,6 +49,7 @@ const links: Array<MenuItem[]> = [
   //   },
   // ],
   [{ text: 'Hotkeys', link: './hotkeys', icon: '⌨️' }],
+  [{ text: 'LLM', link: './llm', icon: '👾' }],
 ];
 
 function SettingsMenu() {
