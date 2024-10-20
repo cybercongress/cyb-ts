@@ -2,6 +2,7 @@ import cx from 'classnames';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { useRef } from 'react';
 import useMediaQuery from 'src/hooks/useMediaQuery';
+import { useAdviser } from 'src/features/adviser/context';
 import styles from './AppSideBar.module.scss';
 import { menuButtonId } from '../../utils/const';
 import BurgerIcon from '../BurgerIcon/BurgerIcon';
@@ -32,6 +33,8 @@ function AppSideBar({ children, menuProps }: Props) {
   const { isOpen, closeMenu, toggleMenu } = menuProps;
   const ref = useRef<HTMLElement>(null);
 
+  const { setIsOpen } = useAdviser();
+
   useOnClickOutside(ref, (e) => {
     if (mediaQuery) {
       return;
@@ -54,7 +57,14 @@ function AppSideBar({ children, menuProps }: Props) {
       })}
     >
       {!mediaQuery && (
-        <button className={styles.toggleBtn} onClick={toggleMenu} type="button">
+        <button
+          className={styles.toggleBtn}
+          onClick={() => {
+            toggleMenu();
+            setIsOpen(false);
+          }}
+          type="button"
+        >
           <BurgerIcon openMenu={isOpen} />
         </button>
       )}
