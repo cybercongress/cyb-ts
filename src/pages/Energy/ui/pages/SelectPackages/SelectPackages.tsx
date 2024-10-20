@@ -1,14 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import portal from 'images/space-pussy.svg';
-import oracle from 'src/image/new_icons/oracle.svg';
-import docs from 'src/image/new_icons/docs.svg';
-import sphere from 'src/image/new_icons/sphere.svg';
-import hfr from 'src/image/new_icons/hfr.svg';
-import teleport from 'src/image/new_icons/teleport.svg';
-import robot from 'src/image/new_icons/robot.svg';
-
 import { ActionBar, Button } from 'src/components';
-
 import { useAppDispatch } from 'src/redux/hooks';
 import { setSelectPlan } from 'src/pages/Energy/redux/energy.redux';
 import { features, plans } from 'src/pages/Energy/types/type';
@@ -16,29 +7,7 @@ import { useEnergy } from 'src/pages/Energy/context/Energy.context';
 import PlanDisplay from './PlanDisplay';
 import styles from './Buy.module.scss';
 import mapPlan from './utils';
-
-const renderFeatureContent = (feature: (typeof features)[0]) => {
-  if (feature.label === '3 free to use aips') {
-    return (
-      <div className={styles.icons}>
-        <img src={portal} alt="portal" width="20" height="20" />
-        <img src={oracle} alt="oracle" width="20" height="20" />
-        <img src={docs} alt="docs" width="20" height="20" />
-      </div>
-    );
-  }
-  if (feature.label === 'all powered aips') {
-    return (
-      <div className={styles.icons}>
-        <img src={sphere} alt="sphere" width="20" height="20" />
-        <img src={hfr} alt="hfr" width="20" height="20" />
-        <img src={teleport} alt="teleport" width="20" height="20" />
-        <img src={robot} alt="robot" width="20" height="20" />
-      </div>
-    );
-  }
-  return null;
-};
+import { renderFeatureContent } from './planFeatureMapper';
 
 function SelectPackages() {
   const { energyPackageSwapRoutes } = useEnergy();
