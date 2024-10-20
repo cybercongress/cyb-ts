@@ -59,6 +59,7 @@ import BrainRoutes from './routing/Brain';
 import Settings from './pages/Settings/Settings';
 import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
+import Filtering from './pages/Settings/Filtering/Filtering';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -221,6 +222,8 @@ function AppRouter() {
           {['/studio', '/studio/:cid'].map((path) => (
             <Route key={path} path={path} element={<StudioWrapper />} />
           ))}
+
+          <Route path="/restricted-content" element={<Filtering />} />
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />

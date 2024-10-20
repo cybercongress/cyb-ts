@@ -2,6 +2,7 @@ import { CYBER_GATEWAY } from 'src/constants/config';
 import { CYBER_GATEWAY_URL } from 'src/services/ipfs/config';
 import { IPFSContent, IPFSContentDetails } from 'src/services/ipfs/types';
 import { Option } from 'src/types';
+import { useAppData } from 'src/contexts/appData';
 import EPubView from '../EPubView/EPubView';
 import Pdf from '../PDF';
 import TextMarkdown from '../TextMarkdown';
@@ -46,8 +47,26 @@ type ContentTabProps = {
   search?: boolean;
 };
 
-function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
+function ContentIpfs({
+  details,
+  content,
+  cid,
+  search,
+  skipCheck,
+}: ContentTabProps) {
   const contentType = details?.type;
+
+  const { filterParticles } = useAppData();
+  const particleRestricted =
+    !skipCheck && filterParticles.length > 0 && filterParticles.includes(cid);
+
+  if (particleRestricted) {
+    return (
+      <div>
+        <TextMarkdown preview={search}>content is restricted</TextMarkdown>
+      </div>
+    );
+  }
 
   return (
     <>
