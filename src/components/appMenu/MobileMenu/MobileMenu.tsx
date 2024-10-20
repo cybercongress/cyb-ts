@@ -1,12 +1,12 @@
 import { useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import getMenuItems from 'src/utils/appsMenu/appsMenu';
-import styles from './MobileMenu.module.scss';
 import cx from 'classnames';
 import useOnClickOutside from 'src/hooks/useOnClickOutside';
 import { useActiveMenuItem } from 'src/hooks/useActiveMenuItem';
+import styles from './MobileMenu.module.scss';
 
-const MobileMenu = () => {
+function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -23,6 +23,7 @@ const MobileMenu = () => {
     >
       <div className={cx(styles.menuContent, { [styles.visible]: isOpen })}>
         <button
+          type="button"
           className={cx(styles.menuButton, { [styles.active]: isOpen })}
           onClick={toggleMenu}
         >
@@ -51,7 +52,7 @@ const MobileMenu = () => {
                   className={styles.icon}
                   alt={`${item.name} menu icon`}
                 />
-                {isExternal && <span className={styles.external}></span>}
+                {isExternal && <span className={styles.external} />}
               </NavLink>
             )
           );
@@ -59,6 +60,6 @@ const MobileMenu = () => {
       </div>
     </div>
   );
-};
+}
 
 export default MobileMenu;

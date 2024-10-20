@@ -8,6 +8,7 @@ export const mobileAllowedRoutes = [
   // oracle
   routes.oracle,
   routes.oracle.ask,
+  routes.oracle.learn,
   routes.oracle.routes.blocks.path,
   routes.oracle.routes.txs.path,
   routes.oracle.routes.stats.path,
@@ -17,4 +18,6 @@ export const mobileAllowedRoutes = [
 
   routes.warp.path,
   routes.social.path,
+
+  // routes.settings.path,
 ];
