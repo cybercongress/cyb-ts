@@ -12,6 +12,7 @@ import Header from './components/Header/Header';
 import SwapResult from './components/SwapResult/SwapResult';
 import BalancesInfo from './components/BalancesInfo/BalancesInfo';
 import styles from './BuyPackages.module.scss';
+import PackageSelected from './components/Header/ui/PackageSelected/PackageSelected';
 
 function BuyPackages() {
   const { balances } = useEnergy();
@@ -47,37 +48,38 @@ function BuyPackages() {
 
   return (
     <>
-      <>
-        <Header />
+      <PackageSelected />
 
-        <Progress status={statusOrder} />
+      <Header />
 
-        <div className={styles.containerContentInfo}>
-          <BalancesInfo balancesTokenSell={balancesTokenSell} />
-          <SwapResult />
-          <Select
-            valueSelect="bostrom"
-            currentValue="bostrom"
-            disabled
-            width="160px"
-            options={[
-              {
-                value: 'bostrom',
-                text: <span>bostrom</span>,
-                img: (
-                  <DenomArr
-                    denomValue={defaultNetworks.bostrom.CHAIN_ID}
-                    onlyImg
-                    type="network"
-                    tooltipStatusImg={false}
-                  />
-                ),
-              },
-            ]}
-            title="send to"
-          />
-        </div>
-      </>
+      <Progress status={statusOrder} />
+
+      <div className={styles.containerContentInfo}>
+        <BalancesInfo balancesTokenSell={balancesTokenSell} />
+        <SwapResult />
+        <Select
+          valueSelect="bostrom"
+          currentValue="bostrom"
+          disabled
+          width="160px"
+          options={[
+            {
+              value: 'bostrom',
+              text: <span>bostrom</span>,
+              img: (
+                <DenomArr
+                  denomValue={defaultNetworks.bostrom.CHAIN_ID}
+                  onlyImg
+                  type="network"
+                  tooltipStatusImg={false}
+                />
+              ),
+            },
+          ]}
+          title="send to"
+        />
+      </div>
+
       <ActionBarContainer />
     </>
   );

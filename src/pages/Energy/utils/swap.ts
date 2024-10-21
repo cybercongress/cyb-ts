@@ -7,6 +7,7 @@ import {
   noDecimals,
 } from '@osmonauts/math';
 import { osmosis } from 'osmojs';
+
 import { Coin, coin } from '@cosmjs/stargate';
 import { SwapAmountInRoute } from 'osmojs/osmosis/poolmanager/v1beta1/swap_route';
 import { Pool } from 'osmojs/osmosis/gamm/v1beta1/balancerPool';
@@ -57,7 +58,7 @@ export function newSwapMessage(
   sender: string
 ) {
   const { swapExactAmountIn } =
-    osmosis.gamm.v1beta1.MessageComposer.withTypeUrl;
+    osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl;
 
   return swapInfo.map((item) => {
     const { routes, swap } = item;
@@ -77,20 +78,17 @@ function newPoolPrice(routes: SwapAmountInRoute[], pools: Pool[]) {
 
   const pool = pools.find((item) => item.id === poolId);
 
-  const poolPrice = pool?.poolAssets.reduce((acc, item) => {
-    const { amount, denom } = item.token;
-    const convertAmount = new BigNumber(amount)
-      .shiftedBy(-getExponentByDenom(denom))
-      .toNumber();
+  if (!pool) {
+    return 0;
+  }
 
-    if (!acc) {
-      return convertAmount;
-    }
+  const { token: tokenA } = pool.poolAssets[0];
+  const amountA = newShiftedMinus(tokenA).amount;
 
-    return new BigNumber(acc).dividedBy(convertAmount).toNumber();
-  }, 0);
+  const { token: tokenB } = pool.poolAssets[1];
+  const amountB = newShiftedMinus(tokenB).amount;
 
-  return poolPrice;
+  return new BigNumber(amountA).dividedBy(amountB).toNumber();
 }
 
 export function newTokensRoutes(
@@ -103,10 +101,7 @@ export function newTokensRoutes(
   }
   const result: SwapTokensWithRoutes[] = [];
 
-  const amountIn = new BigNumber(amountValue)
-    .dividedBy(3)
-    .dp(3, BigNumber.ROUND_DOWN)
-    .toString();
+  const amountIn = new BigNumber(amountValue).dividedBy(3).toString();
 
   const tokenIn = newCoin({
     ...fromToken,
@@ -120,7 +115,6 @@ export function newTokensRoutes(
       {
         from: fromToken,
         to: toToken,
-        slippage: Slippages[0],
       },
       pairs
     );
@@ -132,14 +126,14 @@ export function newTokensRoutes(
     // find pool price
     const poolPrice = newPoolPrice(routes, pools);
     const tokenOutMinAmount = calcAmountWithSlippage(
-      new BigNumber(poolPrice || 0).multipliedBy(amountIn).toString(),
-      Slippages[0]
+      new BigNumber(amountIn).multipliedBy(poolPrice || 1).toString(),
+      Slippages[1]
     );
 
     const tokenOut = newCoin({
       ...toToken,
       amount: new BigNumber(tokenOutMinAmount)
-        .dp(parseFloat(tokenOutMinAmount) > 1 ? 0 : 3, BigNumber.ROUND_FLOOR)
+        .dp(getExponentByDenom(toToken.denom), BigNumber.ROUND_FLOOR)
         .toString(),
     });
 

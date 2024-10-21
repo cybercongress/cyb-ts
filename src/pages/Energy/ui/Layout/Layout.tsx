@@ -6,7 +6,7 @@ import { MoonAnimation, Stars } from 'src/containers/portal/components';
 
 function Layout() {
   return (
-    <MainContainer width="72%">
+    <MainContainer width="62%">
       <Stars />
       {/* <MoonAnimation /> */}
 

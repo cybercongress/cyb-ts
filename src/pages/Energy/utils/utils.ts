@@ -36,9 +36,10 @@ export const getExponentByDenom = (denom: CoinDenom): Exponent => {
 
 export function newShiftedMinus(token: Coin) {
   const { amount, denom } = token;
+  const exp = getExponentByDenom(denom);
   const convertAmount = new BigNumber(amount)
-    .shiftedBy(-getExponentByDenom(denom))
-    .dp(4, BigNumber.ROUND_CEIL)
+    .shiftedBy(-exp)
+    .dp(exp > 0 ? 3 : 0, BigNumber.ROUND_FLOOR)
     .toString(10);
 
   return { amount: convertAmount, denom };

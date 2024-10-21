@@ -17,7 +17,7 @@ function usePools() {
         pagination: paginate(5000n),
       });
     },
-    { enabled: Boolean(rpc) }
+    { enabled: Boolean(rpc), refetchInterval: 1_000 * 60 * 3 }
   );
 
   // rpc?.osmosis.poolmanager.v1beta1.estimateSinglePoolSwapExactAmountIn();

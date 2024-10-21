@@ -42,7 +42,7 @@ function useSwap() {
       return [];
     }
 
-    return makePoolPairs(pools, prices, 200);
+    return makePoolPairs(pools, prices);
   }, [pools, prices]);
 
   const energyPackageSwapRoutes = useMemo(() => {

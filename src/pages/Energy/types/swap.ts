@@ -5,7 +5,6 @@ import { Token } from './token';
 export type Swap = {
   to: Token;
   from: Token;
-  slippage: number;
 };
 
 export type SwapTokensWithRoutes = {

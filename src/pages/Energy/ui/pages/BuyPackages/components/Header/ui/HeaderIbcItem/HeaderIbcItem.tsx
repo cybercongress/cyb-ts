@@ -5,23 +5,17 @@ import StatusIbc from '../../../StatusIbc/StatusIbc';
 function HeaderIbcItem() {
   const { ibcResult } = useAppSelector((state) => state.energy);
 
-  let contentStatus = <span>via IBC</span>;
-  let contentInfo = 'from 2 sec to several hours';
+  let contentStatus = <>send to bostrom via IBC</>;
 
   if (ibcResult) {
     contentStatus = <StatusIbc />;
   }
 
   if (ibcResult && ibcResult.status === StatusTx.COMPLETE) {
-    contentInfo = 'sended to bostrom';
+    contentStatus = <>sended to bostrom</>;
   }
 
-  return (
-    <span>
-      <p>{contentStatus}</p>
-      <p>{contentInfo}</p>
-    </span>
-  );
+  return <span>{contentStatus}</span>;
 }
 
 export default HeaderIbcItem;

@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
-import { estimateOsmoFee } from '@osmonauts/utils';
 import { isDeliverTxSuccess } from '@cosmjs/stargate';
+import { estimateOsmoFee } from '@osmonauts/utils';
 import { cosmos, DeliverTxResponse } from 'osmojs';
 import { useOsmosisSign } from '../context/OsmosisSignerProvider';
 

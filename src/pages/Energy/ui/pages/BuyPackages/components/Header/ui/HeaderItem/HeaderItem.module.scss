@@ -4,17 +4,10 @@
   flex-direction: column;
   gap: 20px;
 
-  .title {
-    height: 65px;
-    font-size: 20px;
-    display: inline-flex;
-    align-items: center;
-  }
-
   .content {
     font-size: 14px;
     color: #A0A0A0;
     text-align: center;
-    height: 60px;
+    height: 50px;
   }
 }

@@ -1,24 +1,27 @@
 import { PrettyPair, PriceHash } from '@osmonauts/math/types';
 import BigNumber from 'bignumber.js';
 import { Pool } from 'osmojs/osmosis/gamm/v1beta1/balancerPool';
-import { getExponentByDenom, getOsmoAssetByDenom } from './utils';
+import { getOsmoAssetByDenom, newShiftedMinus } from './utils';
 
 const calcPoolLiquidity = (pool: Pool, prices: PriceHash): string => {
-  return pool.poolAssets
-    .reduce((res, { token }) => {
-      const liquidity = new BigNumber(token.amount)
-        .shiftedBy(-getExponentByDenom(token.denom))
-        .multipliedBy(prices[token.denom]);
-      return res.plus(liquidity);
-    }, new BigNumber(0))
-    .toString();
+  const { token: tokenA } = pool.poolAssets[0];
+  const amountA = new BigNumber(newShiftedMinus(tokenA).amount).multipliedBy(
+    prices[tokenA.denom] || 0
+  );
+
+  const { token: tokenB } = pool.poolAssets[1];
+  const amountB = new BigNumber(newShiftedMinus(tokenB).amount).multipliedBy(
+    prices[tokenB.denom] || 0
+  );
+
+  return amountA.plus(amountB).toString();
 };
 
 // eslint-disable-next-line import/prefer-default-export
 export const makePoolPairs = (
   pools: Pool[],
   prices: PriceHash,
-  liquidityLimit = 0
+  liquidityLimit = 200
 ): PrettyPair[] => {
   return pools
     .filter(

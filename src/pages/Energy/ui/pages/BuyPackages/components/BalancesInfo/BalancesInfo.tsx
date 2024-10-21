@@ -39,7 +39,7 @@ const reduceOptions = () => {
     }
     const { symbol } = denomInfo;
 
-    console.log('denomInfo', denomInfo);
+    // console.log('denomInfo', denomInfo);
     // if (selected !== key) {
     tempList.push({
       value: key,

@@ -32,14 +32,14 @@ function SwapResult() {
   }, [selectPackage, swapResult]);
 
   const renderItem = coinMap.map((item) => {
-    const denom = getOsmoAssetByDenom(item.denom)?.symbol || item.denom;
+    const asset = getOsmoAssetByDenom(item.denom);
     const amount = new BigNumber(item.amount)
-      .shiftedBy(-getExponentByDenom(denom))
+      .shiftedBy(-getExponentByDenom(asset?.base))
       .toString();
     return (
       <AvailableAmount
         key={item.denom}
-        denom={denom}
+        denom={asset?.symbol}
         amountToken={amount}
         title={textInfo}
       />

@@ -6,16 +6,15 @@ import HeaderIbcItem from './ui/HeaderIbcItem/HeaderIbcItem';
 import PackageSelected from './ui/PackageSelected/PackageSelected';
 
 function Header() {
-
   return (
     <div className={styles.containerHeader}>
-      <HeaderItem title="token to spend">
+      <HeaderItem>
         <span>choose token to spend</span>
       </HeaderItem>
-      <HeaderItem title={<PackageSelected />}>
+      <HeaderItem>
         <HeaderSwapItem />
       </HeaderItem>
-      <HeaderItem title="send to bostrom">
+      <HeaderItem>
         <HeaderIbcItem />
       </HeaderItem>
     </div>
