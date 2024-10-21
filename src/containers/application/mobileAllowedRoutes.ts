@@ -19,5 +19,9 @@ export const mobileAllowedRoutes = [
   routes.warp.path,
   routes.social.path,
 
+  routes.brain,
+
+  'network/bostrom/tx/*',
+
   // routes.settings.path,
 ];
