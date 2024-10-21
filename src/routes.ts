@@ -114,6 +114,26 @@ export const routes = {
       path: '/oracle/ask/:query',
       getLink: (query: string) => `/oracle/ask/${query}`,
     },
+    routes: {
+      stats: {
+        path: '/oracle/stats',
+      },
+      blocks: {
+        path: '/oracle/blocks',
+      },
+      txs: {
+        path: '/oracle/txs',
+      },
+      particles: {
+        path: '/oracle/particles',
+      },
+    },
+  },
+  nebula: {
+    path: '/nebula',
+  },
+  warp: {
+    path: '/warp',
   },
   social: {
     path: '/social',

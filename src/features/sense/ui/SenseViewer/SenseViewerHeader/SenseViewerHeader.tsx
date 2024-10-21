@@ -9,6 +9,10 @@ import useParticleDetails from 'src/features/particle/useParticleDetails';
 import { routes } from 'src/routes';
 import { isParticle as isParticleFunc } from 'src/features/particle/utils';
 import cx from 'classnames';
+import { LLMAvatar } from 'src/containers/Search/LLMSpark/LLMSpark';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { deleteLLMThread } from 'src/features/sense/redux/sense.redux';
+import AdviserHoverWrapper from 'src/features/adviser/AdviserHoverWrapper/AdviserHoverWrapper';
 import styles from './SenseViewerHeader.module.scss';
 
 function SenseViewerHeader({ selected }: { selected: string }) {
@@ -72,3 +76,47 @@ function SenseViewerHeader({ selected }: { selected: string }) {
 }
 
 export default SenseViewerHeader;
+
+export function LLMHeader({ selectedId }: { selectedId?: string }) {
+  const id = useAppSelector((state) => state.sense.llm.currentThreadId);
+  const dispatch = useAppDispatch();
+
+  return (
+    <header
+      className={styles.header}
+      style={{
+        flexDirection: 'row',
+      }}
+    >
+      <LLMAvatar />
+
+      <div
+        style={{
+          marginLeft: 'auto',
+        }}
+      >
+        {id && (
+          <AdviserHoverWrapper adviserContent="delete thread">
+            <button
+              type="button"
+              onClick={() => {
+                dispatch(deleteLLMThread({ id }));
+              }}
+            >
+              ❌
+            </button>
+          </AdviserHoverWrapper>
+        )}
+
+        <Link
+          style={{
+            marginLeft: 10,
+          }}
+          to={`${routes.settings.path}/llm`}
+        >
+          ⚙️
+        </Link>
+      </div>
+    </header>
+  );
+}

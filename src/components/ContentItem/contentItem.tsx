@@ -6,6 +6,7 @@ import useParticle from 'src/hooks/useParticle';
 import type { IpfsContentType } from 'src/services/ipfs/types';
 import { $TsFixMe } from 'src/types/tsfix';
 
+import { routes } from 'src/routes';
 import SearchItem from '../SearchItem/searchItem';
 
 import { getRankGrade } from '../../utils/search/utils';
@@ -41,7 +42,11 @@ function ContentItem({
   }
 
   return (
-    <Link className={className} style={{ color: '#fff' }} to={`/ipfs/${cid}`}>
+    <Link
+      className={className}
+      style={{ color: '#fff' }}
+      to={routes.oracle.ask.getLink(cid)}
+    >
       <SearchItem
         key={cid}
         linkType={linkType}

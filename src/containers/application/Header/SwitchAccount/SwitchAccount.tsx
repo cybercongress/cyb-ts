@@ -14,6 +14,7 @@ import useIsOnline from 'src/hooks/useIsOnline';
 import { useAppSelector } from 'src/redux/hooks';
 import BroadcastChannelSender from 'src/services/backend/channels/BroadcastChannelSender';
 import { useBackend } from 'src/contexts/backend/backend';
+import { useDevice } from 'src/contexts/device';
 import { AvataImgIpfs } from '../../../portal/components/avataIpfs';
 import styles from './SwitchAccount.module.scss';
 import networkStyles from '../CurrentApp/CurrentApp.module.scss';
@@ -94,6 +95,7 @@ function SwitchAccount() {
   const { isIpfsInitialized } = useBackend();
   const isOnline = useIsOnline();
   const mediaQuery = useMediaQuery('(min-width: 768px)');
+  const { isMobile } = useDevice();
 
   const [controlledVisible, setControlledVisible] = React.useState(false);
 
@@ -155,12 +157,20 @@ function SwitchAccount() {
     <div style={{ position: 'relative', fontSize: '20px' }} ref={containerRef}>
       <div className={styles.containerSwichAccount}>
         {(!useGetAddress || !mediaQuery) && (
-          <Link
-            className={networkStyles.btnContainerText}
-            to={routes.settings.path}
-          >
-            {mediaQuery ? 'Settings' : '⚙️'}
-          </Link>
+          // eslint-disable-next-line react/jsx-no-useless-fragment
+          <>
+            {/* FIXME: because of styles */}
+            {isMobile ? (
+              <div />
+            ) : (
+              <Link
+                className={networkStyles.btnContainerText}
+                to={routes.settings.path}
+              >
+                {mediaQuery ? 'Settings' : '⚙️'}
+              </Link>
+            )}
+          </>
         )}
         {mediaQuery && useGetAddress && (
           <div
