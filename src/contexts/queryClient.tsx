@@ -3,6 +3,7 @@ import { CyberClient } from '@cybercongress/cyber-js';
 import { Option } from 'src/types';
 import { useQuery } from '@tanstack/react-query';
 import { RPC_URL } from 'src/constants/config';
+import APIError from 'src/components/ErrorBoundary/APIError/APIError';
 
 const QueryClientContext = React.createContext<Option<CyberClient>>(undefined);
 
@@ -31,6 +32,8 @@ function QueryClientProvider({ children }: { children: React.ReactNode }) {
 
   if (error) {
     console.error('Error queryClient connect: ', error.message);
+
+    return <APIError />;
   }
 
   return (
