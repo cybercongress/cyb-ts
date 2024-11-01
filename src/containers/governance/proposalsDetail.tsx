@@ -2,7 +2,13 @@
 import { useLocation, useParams } from 'react-router-dom';
 import { Pane, Text } from '@cybercongress/gravity';
 
-import { Account, Display, IconStatus, Item } from 'src/components';
+import {
+  Account,
+  Display,
+  FormatNumberTokens,
+  IconStatus,
+  Item,
+} from 'src/components';
 import Loader2 from 'src/components/ui/Loader2';
 import { useGovParam } from 'src/hooks/governance/params/useGovParams';
 import ReactMarkdown from 'react-markdown';
@@ -83,26 +89,25 @@ function ProposalsDetail() {
             value={getSubStr(proposals?.type || '')}
           />
 
-          {/* {proposals.recipient && (
+          {proposals?.recipient && (
             <Item
               title="Recipient"
               marginBottom={15}
-              value={
-                <Link to={`/network/bostrom/contract/${proposals.recipient}`}>
-                  {proposals.recipient}
-                </Link>
-              }
+              value={<Account address={proposals.recipient || ''} avatar />}
             />
-          )} */}
-          {/* {proposals.amount && (
+          )}
+          {proposals?.amount && (
             <Item
               title="Amount"
               marginBottom={15}
-              value={`${formatNumber(
-                parseFloat(proposals.amount[0].amount)
-              )} ${proposals.amount[0].denom.toUpperCase()}`}
+              value={
+                <FormatNumberTokens
+                  text={proposals.amount.denom}
+                  value={parseFloat(proposals.amount.amount)}
+                />
+              }
             />
-          )} */}
+          )}
 
           <Item
             title="Description"

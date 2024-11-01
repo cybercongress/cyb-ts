@@ -31,9 +31,15 @@ const decodeProps = (proposal: any) => {
     ? messages[0].authority
     : proposal.proposer;
 
-  console.log('proposal', proposal);
-
   const plan = messages[0].content ? messages[0].content.plan : undefined;
+  const recipient = messages[0].content
+    ? messages[0].content.recipient
+    : undefined;
+
+  const amount =
+    messages[0].content && messages[0].content.amount
+      ? messages[0].content.amount[0]
+      : undefined;
 
   return {
     type,
@@ -44,6 +50,8 @@ const decodeProps = (proposal: any) => {
     proposer,
     changes: reduceChanges(messages[0]),
     plan,
+    recipient,
+    amount,
   };
 };
 

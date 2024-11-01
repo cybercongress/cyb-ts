@@ -81,8 +81,12 @@ const mapProposalToCard = (proposal: any) => {
     voting_end_time,
     final_tally_result,
     title,
-    // messages,
+    messages,
   } = proposal;
+
+  const type = messages[0].content
+    ? messages[0].content['@type']
+    : messages[0]['@type'];
 
   return {
     proposalId: id,
@@ -97,7 +101,7 @@ const mapProposalToCard = (proposal: any) => {
       : undefined,
     amounts: total_deposit[0] || undefined,
     votes: final_tally_result || undefined,
-    type: undefined,
+    type,
   };
 };
 
