@@ -52,11 +52,6 @@ function ProposalsDetail() {
     refetchPropById();
   };
 
-  console.log(
-    'location.pathname',
-    location.pathname === `/senate/${proposalId}/voters`
-  );
-
   if (isLoadingProp) {
     return <Loader2 />;
   }
