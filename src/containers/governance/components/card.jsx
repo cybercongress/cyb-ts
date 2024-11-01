@@ -1,12 +1,7 @@
 import { Pane } from '@cybercongress/gravity';
-import {
-  Votes,
-  IconStatus,
-  Tooltip,
-  ContainerGradientText,
-} from '../../../components';
 import Display from 'src/components/containerGradient/Display/Display';
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
+import { Votes, IconStatus, Tooltip } from '../../../components';
 
 const textPropsImg = require('../../../image/reader-outline.svg');
 const paramChangePropsImg = require('../../../image/cog-outline.svg');
@@ -20,10 +15,10 @@ const finalTallyResult = (item) => {
     noWithVeto: 0,
   };
   let finalTotalVotes = 0;
-  const yes = parseFloat(item.yes);
-  const abstain = parseFloat(item.abstain);
-  const no = parseFloat(item.no);
-  const noWithVeto = parseFloat(item.no_with_veto);
+  const yes = parseFloat(item.yes_count);
+  const abstain = parseFloat(item.abstain_count);
+  const no = parseFloat(item.no_count);
+  const noWithVeto = parseFloat(item.no_with_veto_count);
 
   finalTotalVotes = yes + abstain + no + noWithVeto;
   if (finalTotalVotes !== 0) {

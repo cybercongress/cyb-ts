@@ -7,7 +7,7 @@ export const getProposals = async () => {
   try {
     const response = await axios({
       method: 'get',
-      url: `${LCD_URL}/cosmos/gov/v1beta1/proposals`,
+      url: `${LCD_URL}/cosmos/gov/v1/proposals`,
     });
 
     return response.data.proposals;
@@ -17,19 +17,17 @@ export const getProposals = async () => {
   }
 };
 
-export const getProposalsDetail = (id) =>
-  new Promise((resolve) => {
-    axios({
-      method: 'get',
-      url: `${LCD_URL}/cosmos/gov/v1beta1/proposals/${id}`,
-    })
-      .then((response) => {
-        resolve(response.data.proposal);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  });
+export const getProposalsDetail = async (id) => {
+  return axios({
+    method: 'get',
+    url: `${LCD_URL}/cosmos/gov/v1/proposals/${id}`,
+  })
+    .then((response) => response.data.proposal)
+    .catch((e) => {
+      console.error('getProposalsDetail: ', e);
+      throw new Error(`Not found: ${id}`);
+    });
+};
 
 export const getStakingPool = () =>
   new Promise((resolve) => {
@@ -110,7 +108,7 @@ export const reduceTxsVoters = (txs) => {
     const messagesItems = item.tx.body.messages.reduce((mPrevObj, value) => {
       let v = value;
 
-      if (value['@type'] === '/cosmos.authz.v1beta1.MsgExec') {
+      if (value['@type'] === '/cosmos.authz.v1.MsgExec') {
         v = value.msgs?.[0];
       }
 

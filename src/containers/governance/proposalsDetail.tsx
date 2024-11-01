@@ -1,219 +1,89 @@
 /* eslint-disable react/no-children-prop */
-import { useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { Pane, Text } from '@cybercongress/gravity';
-import { Link, useParams } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeSanitize from 'rehype-sanitize';
-import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
 
+import { Account, Display, IconStatus, Item } from 'src/components';
+import Loader2 from 'src/components/ui/Loader2';
 import { useGovParam } from 'src/hooks/governance/params/useGovParams';
-import { useAppSelector } from 'src/redux/hooks';
-import {
-  Account,
-  ActionBar,
-  ContainerGradientText,
-  IconStatus,
-  Item,
-} from '../../components';
-
-import {
-  getStakingPool,
-  getTallying,
-  getProposalsDetail,
-  getProposer,
-  getTallyingProposals,
-} from '../../utils/governance';
-import ActionBarDetail from './actionBarDatail';
-
-import { formatNumber } from '../../utils/utils';
-
+import ReactMarkdown from 'react-markdown';
+import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
+import styles from './proposalsDetail.module.scss';
+import useGetPropById from './hooks/useGetPropById';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
 import ProposalsRoutes from './proposalsRoutes';
+import ActionBarDetail from './actionBarDatail';
+import useTallyResult from './hooks/useTallyResult';
 
-import styles from './proposalsDetail.module.scss';
-
-const finalTallyResult = (item) => {
-  const finalVotes = {
-    yes: 0,
-    no: 0,
-    abstain: 0,
-    noWithVeto: 0,
-    finalTotalVotes: 0,
-  };
-  let finalTotalVotes = 0;
-  const yes = parseInt(item.yes, 10);
-  const abstain = parseInt(item.abstain, 10);
-  const no = parseInt(item.no, 10);
-  const noWithVeto = parseInt(item.no_with_veto, 10);
-
-  finalTotalVotes = yes + abstain + no + noWithVeto;
-  if (finalTotalVotes !== 0) {
-    finalVotes.yes = (yes / finalTotalVotes) * 100;
-    finalVotes.no = (no / finalTotalVotes) * 100;
-    finalVotes.abstain = (abstain / finalTotalVotes) * 100;
-    finalVotes.noWithVeto = (noWithVeto / finalTotalVotes) * 100;
-    finalVotes.finalTotalVotes = finalTotalVotes;
+const getSubStr = (str: string) => {
+  let string = str;
+  if (string.indexOf('cosmos-sdk/') !== -1) {
+    string = string.slice(string.indexOf('/') + 1);
+    return string;
   }
-
-  return finalVotes;
+  return string;
 };
 
 function ProposalsDetail() {
   const { proposalId } = useParams();
+  const location = useLocation();
+  const {
+    tallying,
+    tallyResult,
+    refetch: refetchTally,
+  } = useTallyResult(proposalId);
 
-  const currentAccount = useAppSelector((state) => state.pocket.defaultAccount);
+  const {
+    data: proposals,
+    isLoading: isLoadingProp,
+    refetch: refetchPropById,
+  } = useGetPropById(proposalId);
 
-  const { bech32: addressActive, keys } = currentAccount?.account?.cyber || {};
-  const isOwner = keys === 'keplr';
+  const { paramData: minDeposit } = useGovParam('deposit');
 
-  const [proposals, setProposals] = useState({});
-  const [updateFunc, setUpdateFunc] = useState(0);
-  const [tally, setTally] = useState({
-    participation: 0,
-    yes: 0,
-    abstain: 0,
-    no: 0,
-    noWithVeto: 0,
-  });
-  const [tallying, setTallying] = useState({
-    quorum: 0,
-    threshold: 0,
-    veto_threshold: 0,
-  });
-
-  const [totalDeposit, setTotalDeposit] = useState(0);
-  const { paramData: minDeposit, isLoading, error } = useGovParam('deposit');
-
-  useEffect(() => {
-    const getProposalsInfo = async () => {
-      setProposals({});
-      let proposalsInfo = {};
-      let totalDepositAmount = 0;
-      if (proposalId && proposalId > 0) {
-        const responseProposalsDetail = await getProposalsDetail(proposalId);
-        if (Object.keys(responseProposalsDetail).length > 0) {
-          proposalsInfo = { ...responseProposalsDetail };
-          const { title, description, plan, changes, recipient, amount } =
-            responseProposalsDetail.content;
-          proposalsInfo.title = title;
-          proposalsInfo.type = responseProposalsDetail.content['@type'];
-          proposalsInfo.description = description;
-          proposalsInfo.status = ProposalStatus[responseProposalsDetail.status];
-
-          if (plan) {
-            proposalsInfo.plan = plan;
-          }
-          if (changes) {
-            proposalsInfo.changes = changes;
-          }
-          if (recipient) {
-            proposalsInfo.recipient = recipient;
-          }
-          if (amount) {
-            proposalsInfo.amount = amount;
-          }
-
-          const responseProposer = await getProposer(proposalId);
-
-          if (responseProposer !== null) {
-            proposalsInfo.proposer = responseProposer.proposer;
-          }
-
-          if (responseProposalsDetail.total_deposit.length) {
-            totalDepositAmount = parseFloat(
-              responseProposalsDetail.total_deposit[0].amount
-            );
-          }
-        }
-      }
-      setTotalDeposit(totalDepositAmount);
-      setProposals(proposalsInfo);
-    };
-    getProposalsInfo();
-  }, [proposalId, updateFunc]);
-
-  useEffect(() => {
-    const getStatusVoting = async () => {
-      setProposals({});
-      let tallyTemp = {};
-      let participation = 0;
-      let tallyResult = {};
-      if (proposalId && proposalId > 0) {
-        const stakingPool = await getStakingPool();
-
-        const tallyingResponse = await getTallying();
-        if (tallyingResponse !== null) {
-          setTallying({ ...tallyingResponse });
-        }
-
-        const responceTallyingProposals = await getTallyingProposals(
-          proposalId
-        );
-
-        if (responceTallyingProposals !== null) {
-          tallyResult = responceTallyingProposals;
-        } else {
-          tallyResult = proposals.final_tally_result;
-        }
-
-        tallyTemp = finalTallyResult(tallyResult);
-        participation =
-          (tallyTemp.finalTotalVotes / stakingPool.bonded_tokens) * 100;
-        tallyTemp.participation = participation;
-      }
-      setTally(tallyTemp);
-    };
-    getStatusVoting();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proposalId, updateFunc]);
-
-  const getSubStr = (str) => {
-    let string = str;
-    if (string.indexOf('cosmos-sdk/') !== -1) {
-      string = string.slice(string.indexOf('/') + 1);
-      return string;
-    }
-    return string;
+  const refetch = () => {
+    refetchTally();
+    refetchPropById();
   };
+
+  console.log(
+    'location.pathname',
+    location.pathname === `/senate/${proposalId}/voters`
+  );
+
+  if (isLoadingProp) {
+    return <Loader2 />;
+  }
 
   return (
     <>
       <>
         <Pane display="flex" alignItems="center" marginBottom={20}>
           <Text fontSize="25px" color="#fff">
-            {proposals.title && ` #${proposalId} ${proposals.title}`}
+            {proposals && ` #${proposalId} ${proposals.title}`}
           </Text>
         </Pane>
-        {proposals.status && (
-          <Pane>
-            <IconStatus status={proposals.status} text marginRight={8} />
-          </Pane>
-        )}
-        <br />
-        <ContainerGradientText>
-          {/* fix, should be something */}
-          {proposals.proposer && (
-            <Item
-              marginBottom={15}
-              title="Proposer"
-              value={
-                // <Link to={`/network/bostrom/contract/${proposals.proposer}`}>
-                //   {proposals.proposer}
-                // </Link>
+        <Pane>
+          <IconStatus status={proposals?.status || 0} text marginRight={8} />
+        </Pane>
 
-                <Account address={proposals.proposer} avatar />
-              }
-            />
-          )}
-          {proposals.type && (
-            <Item
-              marginBottom={15}
-              title="Type"
-              value={getSubStr(proposals.type)}
-            />
-          )}
-          {proposals.recipient && (
+        <br />
+        <Display>
+          {/* fix, should be something */}
+
+          <Item
+            marginBottom={15}
+            title="Proposer"
+            value={<Account address={proposals?.proposer || ''} avatar />}
+          />
+
+          <Item
+            marginBottom={15}
+            title="Type"
+            value={getSubStr(proposals?.type || '')}
+          />
+
+          {/* {proposals.recipient && (
             <Item
               title="Recipient"
               marginBottom={15}
@@ -223,8 +93,8 @@ function ProposalsDetail() {
                 </Link>
               }
             />
-          )}
-          {proposals.amount && (
+          )} */}
+          {/* {proposals.amount && (
             <Item
               title="Amount"
               marginBottom={15}
@@ -232,36 +102,37 @@ function ProposalsDetail() {
                 parseFloat(proposals.amount[0].amount)
               )} ${proposals.amount[0].denom.toUpperCase()}`}
             />
-          )}
-          {proposals.description && (
-            <Item
-              title="Description"
-              value={
-                <Pane className={styles.containerDescription}>
-                  <ReactMarkdown
-                    children={proposals.description.replace(/\\n/g, '\n')}
-                    rehypePlugins={[rehypeSanitize]}
-                    remarkPlugins={[remarkGfm]}
-                  />
-                </Pane>
-              }
-            />
-          )}
-          {proposals.changes && Object.keys(proposals.changes).length > 0 && (
+          )} */}
+
+          <Item
+            title="Description"
+            value={
+              <Pane className={styles.containerDescription}>
+                <ReactMarkdown
+                  rehypePlugins={[rehypeSanitize]}
+                  remarkPlugins={[remarkGfm]}
+                >
+                  {proposals ? proposals.summary.replace(/\\n/g, '\n') : ''}
+                </ReactMarkdown>
+              </Pane>
+            }
+          />
+
+          {proposals?.changes && (
             <Item
               title="Changes"
               value={
                 <Pane className={styles.containerDescription}>
-                  {proposals.changes.map((item) => (
-                    <Pane key={item.key}>
-                      {item.subspace}: {item.key} {item.value}
+                  {Object.entries(proposals.changes).map(([key, value]) => (
+                    <Pane key={key}>
+                      {key}: {value}
                     </Pane>
                   ))}
                 </Pane>
               }
             />
           )}
-          {proposals.plan && (
+          {proposals?.plan && (
             <Item
               title="Plan"
               value={
@@ -272,43 +143,29 @@ function ProposalsDetail() {
               }
             />
           )}
-        </ContainerGradientText>
+        </Display>
         <ProposalsDetailProgressBar
           proposals={proposals}
-          totalDeposit={totalDeposit}
+          totalDeposit={proposals?.totalDeposit.amount || 0}
           minDeposit={minDeposit}
           tallying={tallying}
-          tally={tally}
+          tally={tallyResult}
         />
 
         <ProposalsRoutes
           proposals={proposals}
           tallying={tallying}
-          tally={tally}
-          totalDeposit={totalDeposit}
-          updateFunc={updateFunc}
+          tally={tallyResult}
+          totalDeposit={proposals?.totalDeposit.amount || 0}
+          updateFunc={refetch}
         />
       </>
-      {addressActive &&
-      isOwner &&
-      location.pathname === `/senate/${proposalId}/voters` ? (
+      {location.pathname === `/senate/${proposalId}/voters` && (
         <ActionBarDetail
           id={proposalId}
           proposals={proposals}
-          minDeposit={minDeposit}
-          totalDeposit={totalDeposit}
-          update={() => setUpdateFunc((item) => item + 1)}
-          addressActive={addressActive}
+          update={refetch}
         />
-      ) : (
-        !addressActive && (
-          <ActionBar
-            button={{
-              text: 'connect',
-              link: '/keys',
-            }}
-          />
-        )
       )}
     </>
   );
