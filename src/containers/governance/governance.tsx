@@ -12,11 +12,11 @@ import { useQuery } from '@tanstack/react-query';
 import Loader2 from 'src/components/ui/Loader2';
 import { routes } from 'src/routes';
 import { getProposals } from '../../utils/governance';
-import Columns from './components/columns';
 import { AcceptedCard, ActiveCard, RejectedCard } from './components/card';
 import { ActionBar, CardStatisics } from '../../components';
 import { formatNumber, coinDecimals } from '../../utils/utils';
 import styles from './components/styles.module.scss';
+import Columns from './components/columns';
 
 type KeyOfProposalStatus = keyof typeof ProposalStatus;
 
@@ -74,17 +74,23 @@ function ProposalWrapper({
 //  ProposalsData['proposals'] extends (infer U)[] ? U : never
 const mapProposalToCard = (proposal: any) => {
   const {
-    proposal_id,
-    content,
+    id,
     total_deposit,
     status,
     deposit_end_time,
     voting_end_time,
     final_tally_result,
+    title,
+    messages,
   } = proposal;
+
+  const type = messages[0].content
+    ? messages[0].content['@type']
+    : messages[0]['@type'];
+
   return {
-    proposalId: proposal_id,
-    title: content.title || '<not set>',
+    proposalId: id,
+    title: title || '<not set>',
     totalDeposit: total_deposit,
     state: ProposalStatus[status as KeyOfProposalStatus],
     timeEndDeposit: deposit_end_time
@@ -95,7 +101,7 @@ const mapProposalToCard = (proposal: any) => {
       : undefined,
     amounts: total_deposit[0] || undefined,
     votes: final_tally_result || undefined,
-    type: content['@type'] || undefined,
+    type,
   };
 };
 
