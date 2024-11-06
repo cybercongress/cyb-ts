@@ -24,6 +24,8 @@ import { selectCurrentPassport } from 'src/features/passport/passports.redux';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { useAdviser } from 'src/features/adviser/context';
 import { selectAccountsPassports } from 'src/features/passport/passports.redux';
+import usePassportContract from 'src/features/passport/usePassportContract';
+import { Citizenship } from 'src/types/citizenship';
 
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 
@@ -128,26 +130,82 @@ function PassportMoonCitizenship() {
     setTxHash(data);
   };
 
+  const convertPassportToCitizenship = (passport: any): Citizenship => {
+    return {
+      owner: addressActive?.bech32,
+      extension: {
+        nickname: passport.extension?.nickname,
+        avatar: passport.extension?.avatar,
+        addresses: passport.extension?.addresses,
+      },
+    };
+  };
+
+  const activePassport = usePassportContract<Citizenship>({
+    query: {
+      active_passport: {
+        address: addressActive?.bech32,
+      },
+    },
+  });
+
+  const passportIds = usePassportContract<{ tokens: string[] }>({
+    query: {
+      tokens: {
+        owner: addressActive?.bech32,
+      },
+    },
+  });
+
+  function PassportLoader({
+    tokenId,
+    render,
+  }: {
+    tokenId: string;
+    render: (passport: Citizenship) => JSX.Element | null;
+  }) {
+    const { data: passport } = usePassportContract<Citizenship>({
+      query: {
+        nft_info: {
+          token_id: tokenId,
+        },
+      },
+    });
+
+    if (!passport) {
+      return null;
+    }
+    console.debug('passport', passport);
+    console.debug(
+      'convertPassportToCitizenship(passport)',
+      convertPassportToCitizenship(passport)
+    );
+    return render(passport);
+  }
+
   return (
     <>
       <MainContainer>
         <Stars />
         {!mobile && <MoonAnimation />}
 
-        {Object.entries(accountsPassports.accounts).map(
-          ([address, passport]) => (
-            <PasportCitizenship
-              key={address}
-              citizenship={passport?.data}
-              initStateCard={false}
-              txHash={txHash}
-              onClickProveeAddress={onClickProveeAddress}
-              onClickDeleteAddress={onClickDeleteAddress}
-              onClickEditAvatar={onClickEditAvatar}
-              updateFunc={setSelectedAddress}
-            />
-          )
-        )}
+        {passportIds.data?.tokens.map((tokenId) => (
+          <PassportLoader
+            key={tokenId}
+            tokenId={tokenId}
+            render={(passport) => (
+              <PasportCitizenship
+                citizenship={convertPassportToCitizenship(passport)}
+                initStateCard={false}
+                txHash={txHash}
+                onClickProveeAddress={onClickProveeAddress}
+                onClickDeleteAddress={onClickDeleteAddress}
+                onClickEditAvatar={onClickEditAvatar}
+                /* updateFunc={setSelectedAddress} */
+              />
+            )}
+          />
+        ))}
       </MainContainer>
       {Math.floor(appStep) === STEP_INFO.STATE_INIT && (
         <ActionBarSteps>
