@@ -14,6 +14,7 @@ import { useGovParam } from 'src/hooks/governance/params/useGovParams';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
+import { stringifyJson } from 'src/utils/json';
 import styles from './proposalsDetail.module.scss';
 import useGetPropById from './hooks/useGetPropById';
 import ProposalsDetailProgressBar from './proposalsDetailProgressBar';
@@ -125,7 +126,7 @@ function ProposalsDetail() {
                 <Pane className={styles.containerDescription}>
                   {Object.entries(proposals.changes).map(([key, value]) => (
                     <Pane key={key}>
-                      {key}: {value}
+                      {key}: {JSON.stringify(value, stringifyJson)}
                     </Pane>
                   ))}
                 </Pane>
