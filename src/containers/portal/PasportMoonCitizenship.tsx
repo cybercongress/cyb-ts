@@ -21,11 +21,11 @@ import { Button } from '../../components';
 import { routes } from 'src/routes';
 import { useAppSelector } from 'src/redux/hooks';
 import { selectCurrentPassport } from 'src/features/passport/passports.redux';
-import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { useAdviser } from 'src/features/adviser/context';
 import { selectAccountsPassports } from 'src/features/passport/passports.redux';
 import usePassportContract from 'src/features/passport/usePassportContract';
-import { Citizenship } from 'src/types/citizenship';
+import PassportLoader from 'src/features/passport/PassportLoader';
+import convertPassportToCitizenship from './convertPassportToCitizenship';
 
 const portalAmbient = require('../../sounds/portalAmbient112.mp3');
 
@@ -130,25 +130,6 @@ function PassportMoonCitizenship() {
     setTxHash(data);
   };
 
-  const convertPassportToCitizenship = (passport: any): Citizenship => {
-    return {
-      owner: addressActive?.bech32,
-      extension: {
-        nickname: passport.extension?.nickname,
-        avatar: passport.extension?.avatar,
-        addresses: passport.extension?.addresses,
-      },
-    };
-  };
-
-  const activePassport = usePassportContract<Citizenship>({
-    query: {
-      active_passport: {
-        address: addressActive?.bech32,
-      },
-    },
-  });
-
   const passportIds = usePassportContract<{ tokens: string[] }>({
     query: {
       tokens: {
@@ -156,32 +137,6 @@ function PassportMoonCitizenship() {
       },
     },
   });
-
-  function PassportLoader({
-    tokenId,
-    render,
-  }: {
-    tokenId: string;
-    render: (passport: Citizenship) => JSX.Element | null;
-  }) {
-    const { data: passport } = usePassportContract<Citizenship>({
-      query: {
-        nft_info: {
-          token_id: tokenId,
-        },
-      },
-    });
-
-    if (!passport) {
-      return null;
-    }
-    console.debug('passport', passport);
-    console.debug(
-      'convertPassportToCitizenship(passport)',
-      convertPassportToCitizenship(passport)
-    );
-    return render(passport);
-  }
 
   return (
     <>
@@ -195,13 +150,16 @@ function PassportMoonCitizenship() {
             tokenId={tokenId}
             render={(passport) => (
               <PasportCitizenship
-                citizenship={convertPassportToCitizenship(passport)}
+                citizenship={convertPassportToCitizenship(
+                  passport,
+                  addressActive?.bech32
+                )}
                 initStateCard={false}
                 txHash={txHash}
                 onClickProveeAddress={onClickProveeAddress}
                 onClickDeleteAddress={onClickDeleteAddress}
                 onClickEditAvatar={onClickEditAvatar}
-                /* updateFunc={setSelectedAddress} */
+                updateFunc={setSelectedAddress}
               />
             )}
           />
