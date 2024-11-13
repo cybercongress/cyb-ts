@@ -6,9 +6,8 @@ import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import Button from 'src/components/btnGrd';
-import { routes } from 'src/routes';
 import useDelegation from 'src/features/staking/delegation/useDelegation';
-import { BASE_DENOM, DENOM_LIQUID, MEMO_KEPLR } from 'src/constants/config';
+import { BASE_DENOM, MEMO_KEPLR } from 'src/constants/config';
 import {
   Confirmed,
   TransactionSubmitted,
@@ -19,10 +18,9 @@ import {
   ActionBar,
 } from '../../components';
 
-import { trimString } from '../../utils/utils';
-
 import { LEDGER } from '../../utils/config';
-import useGetHeroes from './getHeroesHook';
+import useGetHeroes from './hooks/getHeroesHook';
+import { ValidatorTableData } from './types/tableData';
 
 const {
   STAGE_INIT,
@@ -95,17 +93,6 @@ const getValidatorAddres = (validators) => {
   return validatorAddres;
 };
 
-const checkAddress = (addressPocket, addressKeplr, updateState) => {
-  if (addressPocket !== null && addressPocket.bech32 === addressKeplr) {
-    return true;
-  }
-  const { setStage, setErrorMessage } = updateState;
-  const trimAdd = trimString(addressKeplr, 9, 5);
-  setStage(STAGE_ERROR);
-  setErrorMessage(`Add address ${trimAdd} to your pocket or make active `);
-  return false;
-};
-
 const checkTxs = (response, updateState) => {
   console.log('response', response);
   const { setStage, setTxHash, setErrorMessage } = updateState;
@@ -157,15 +144,20 @@ const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
   return { txHeight };
 };
 
+type Props = {
+  validators?: ValidatorTableData;
+  updateFnc: () => void;
+  loadingBalanceInfo: boolean;
+  unStake: boolean;
+};
+
 function ActionBarContainer({
-  addressPocket,
   validators,
   balance,
   loadingBalanceInfo,
-  balanceToken,
-  unStake,
   updateFnc,
-}) {
+  unStake,
+}: Props) {
   const { signer, signingClient } = useSigningClient();
   const { validators: validatorsAll } = useGetHeroes();
   const queryClient = useQueryClient();
@@ -184,7 +176,7 @@ function ActionBarContainer({
   );
 
   const validatorSelected =
-    validators.operator_address || validators.operatorAddress;
+    validators?.operator_address || validators?.operatorAddress;
 
   const { data } = useDelegation(validatorSelected);
   const staked = data?.balance?.amount || 0;
@@ -213,22 +205,16 @@ function ActionBarContainer({
       try {
         const [{ address: addressKeplr }] = await signer.getAccounts();
         const validatorAddres = getValidatorAddres(validators);
-        if (
-          checkAddress(addressPocket, addressKeplr, {
-            setErrorMessage,
-            setStage,
-          })
-        ) {
-          setStage(STAGE_WAIT);
-          const response = await signingClient.delegateTokens(
-            addressKeplr,
-            validatorAddres,
-            coin(amount, BASE_DENOM),
-            fee,
-            MEMO_KEPLR
-          );
-          checkTxs(response, { setTxHash, setErrorMessage, setStage });
-        }
+
+        setStage(STAGE_WAIT);
+        const response = await signingClient.delegateTokens(
+          addressKeplr,
+          validatorAddres,
+          coin(amount, BASE_DENOM),
+          fee,
+          MEMO_KEPLR
+        );
+        checkTxs(response, { setTxHash, setErrorMessage, setStage });
       } catch (error) {
         errorState(error);
       }
@@ -241,22 +227,16 @@ function ActionBarContainer({
         const [{ address: addressKeplr }] = await signer.getAccounts();
 
         const validatorAddres = getValidatorAddres(validators);
-        if (
-          checkAddress(addressPocket, addressKeplr, {
-            setErrorMessage,
-            setStage,
-          })
-        ) {
-          setStage(STAGE_WAIT);
-          const response = await signingClient.undelegateTokens(
-            addressKeplr,
-            validatorAddres,
-            coin(amount, BASE_DENOM),
-            fee,
-            MEMO_KEPLR
-          );
-          checkTxs(response, { setTxHash, setErrorMessage, setStage });
-        }
+
+        setStage(STAGE_WAIT);
+        const response = await signingClient.undelegateTokens(
+          addressKeplr,
+          validatorAddres,
+          coin(amount, BASE_DENOM),
+          fee,
+          MEMO_KEPLR
+        );
+        checkTxs(response, { setTxHash, setErrorMessage, setStage });
       } catch (error) {
         errorState(error);
       }
@@ -267,24 +247,18 @@ function ActionBarContainer({
     if (signer && signingClient) {
       try {
         const [{ address: addressKeplr }] = await signer.getAccounts();
-        if (
-          checkAddress(addressPocket, addressKeplr, {
-            setErrorMessage,
-            setStage,
-          })
-        ) {
-          setStage(STAGE_WAIT);
-          const validatorAddres = getValidatorAddres(validators);
-          const response = await signingClient.redelegateTokens(
-            addressKeplr,
-            validatorAddres,
-            valueSelect,
-            coin(amount, BASE_DENOM),
-            fee,
-            MEMO_KEPLR
-          );
-          checkTxs(response, { setTxHash, setErrorMessage, setStage });
-        }
+
+        setStage(STAGE_WAIT);
+        const validatorAddres = getValidatorAddres(validators);
+        const response = await signingClient.redelegateTokens(
+          addressKeplr,
+          validatorAddres,
+          valueSelect,
+          coin(amount, BASE_DENOM),
+          fee,
+          MEMO_KEPLR
+        );
+        checkTxs(response, { setTxHash, setErrorMessage, setStage });
       } catch (error) {
         errorState(error);
       }
@@ -296,34 +270,26 @@ function ActionBarContainer({
       try {
         const [{ address: addressKeplr }] = await signer.getAccounts();
         const validatorAddress: string[] = [];
-        if (
-          checkAddress(addressPocket, addressKeplr, {
-            setErrorMessage,
-            setStage,
-          })
-        ) {
-          setStage(LEDGER_GENERATION);
-          const delegationTotalRewards =
-            await queryClient.delegationTotalRewards(addressKeplr);
-          if (
-            delegationTotalRewards !== null &&
-            delegationTotalRewards.rewards
-          ) {
-            const { rewards } = delegationTotalRewards;
-            Object.keys(rewards).forEach((key) => {
-              if (rewards[key].reward !== null) {
-                validatorAddress.push(rewards[key].validatorAddress);
-              }
-            });
 
-            setStage(STAGE_WAIT);
-            const response = await signingClient.withdrawAllRewards(
-              addressKeplr,
-              validatorAddress,
-              fee
-            );
-            checkTxs(response, { setTxHash, setErrorMessage, setStage });
-          }
+        setStage(LEDGER_GENERATION);
+        const delegationTotalRewards = await queryClient.delegationTotalRewards(
+          addressKeplr
+        );
+        if (delegationTotalRewards !== null && delegationTotalRewards.rewards) {
+          const { rewards } = delegationTotalRewards;
+          Object.keys(rewards).forEach((key) => {
+            if (rewards[key].reward !== null) {
+              validatorAddress.push(rewards[key].validatorAddress);
+            }
+          });
+
+          setStage(STAGE_WAIT);
+          const response = await signingClient.withdrawAllRewards(
+            addressKeplr,
+            validatorAddress,
+            fee
+          );
+          checkTxs(response, { setTxHash, setErrorMessage, setStage });
         }
       } catch (error) {
         errorState(error);
@@ -376,11 +342,7 @@ function ActionBarContainer({
   };
 
   // loadingBalanceInfo
-  if (
-    Object.keys(validators).length === 0 &&
-    stage === STAGE_INIT &&
-    loadingBalanceInfo
-  ) {
+  if (!validators && stage === STAGE_INIT && loadingBalanceInfo) {
     return (
       <ActionBar>
         <Pane fontSize="18px">
@@ -391,11 +353,7 @@ function ActionBarContainer({
   }
 
   // stage balance.delegation === 0
-  if (
-    Object.keys(validators).length === 0 &&
-    stage === STAGE_INIT &&
-    balance?.delegation === 0
-  ) {
+  if (!validators && stage === STAGE_INIT && balance?.delegation === 0) {
     return (
       <ActionBar>
         <Pane fontSize="18px">Choose hero to get H and earn rewards</Pane>
@@ -404,30 +362,12 @@ function ActionBarContainer({
   }
 
   // stage balance.delegation === 0
-  if (Object.keys(validators).length === 0 && stage === STAGE_INIT) {
+  if (!validators && stage === STAGE_INIT) {
     return (
       <ActionBar>
         <Pane fontSize="18px" display="flex" alignItems="center">
-          {balanceToken[DENOM_LIQUID] &&
-            balanceToken[DENOM_LIQUID].liquid !== 0 && (
-              <Pane>
-                <Button
-                  link={routes.hfr.path}
-                  style={{
-                    marginRight: 15,
-                  }}
-                >
-                  Investmint
-                </Button>
-                yor free H to get A and V
-              </Pane>
-            )}
-          {balanceToken[DENOM_LIQUID].liquid === 0 &&
-            balance.available !== 0 &&
-            'Choose hero to get H'}
           {validRewards && (
             <Pane marginLeft={15}>
-              or
               <Button
                 style={{
                   marginLeft: 15,
@@ -443,26 +383,7 @@ function ActionBarContainer({
     );
   }
 
-  if (
-    Object.keys(validators).length !== 0 &&
-    stage === STAGE_INIT &&
-    addressPocket !== null &&
-    addressPocket.keys === 'read-only'
-  ) {
-    return (
-      <ActionBar>
-        <Pane fontSize="18px">
-          this {trimString(addressPocket.bech32, 8, 6)} address is read-only
-        </Pane>
-      </ActionBar>
-    );
-  }
-
-  if (
-    Object.keys(validators).length !== 0 &&
-    stage === STAGE_INIT &&
-    txType === null
-  ) {
+  if (validators && stage === STAGE_INIT && txType === null) {
     return (
       <ActionBar
         button={{
@@ -498,9 +419,7 @@ function ActionBarContainer({
   ) {
     return (
       <Delegate
-        moniker={
-          Object.keys(validators).length ? validators.description.moniker : ''
-        }
+        moniker={validators ? validators.description.moniker : ''}
         onChangeInputAmount={amountChangeHandler}
         toSend={amount}
         available={txType === TXTYPE_DELEGATE ? balance?.available : staked}

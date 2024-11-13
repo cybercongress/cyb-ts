@@ -1,8 +1,7 @@
-import { Link } from 'react-router-dom';
 import { Pane } from '@cybercongress/gravity';
-import { CardStatisics, Dots, DenomArr } from '../../../components';
+import { BASE_DENOM } from 'src/constants/config';
+import { CardStatisics, Dots } from '../../../components';
 import { formatNumber } from '../../../utils/utils';
-import { DENOM_LIQUID, BASE_DENOM } from 'src/constants/config';
 
 function TootipContent() {
   return (
@@ -26,7 +25,7 @@ function ContainerGrid({ children }) {
   );
 }
 
-function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
+function InfoBalance({ balance, loadingBalanceInfo, apr }) {
   return (
     <ContainerGrid>
       <CardStatisics
@@ -51,31 +50,6 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
         }
       />
 
-      <Link to="/hfr">
-        <CardStatisics
-          title={
-            <span>
-              <DenomArr denomValue={DENOM_LIQUID} />
-              available
-            </span>
-          }
-          value={
-            loadingBalanceInfo ? (
-              <Dots />
-            ) : (
-              formatNumber(
-                balanceToken[DENOM_LIQUID]
-                  ? balanceToken[DENOM_LIQUID].liquid
-                  : 0
-              )
-            )
-          }
-          tooltipValue={<TootipContent />}
-          positionTooltip="bottom"
-          styleTitle={{ alignItems: 'center' }}
-        />
-      </Link>
-
       <CardStatisics
         title={`${BASE_DENOM.toUpperCase()} rewards`}
         value={
@@ -86,6 +60,8 @@ function InfoBalance({ balance, loadingBalanceInfo, balanceToken }) {
           )
         }
       />
+
+      {apr && <CardStatisics title="APR, %" value={formatNumber(apr)} />}
     </ContainerGrid>
   );
 }

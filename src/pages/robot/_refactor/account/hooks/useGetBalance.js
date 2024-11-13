@@ -43,7 +43,7 @@ function useGetBalance(address, updateAddress) {
   );
 
   useEffect(() => {
-    if (address !== null) {
+    if (address) {
       if (address.bech32) {
         setAddressActive(address.bech32);
       } else {

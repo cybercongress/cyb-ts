@@ -1,6 +1,5 @@
 import {
   useReactTable,
-  Column,
   ColumnDef,
   getCoreRowModel,
   flexRender,
@@ -8,16 +7,15 @@ import {
   InitialTableState,
   SortingState,
   TableOptions,
-  SortingOptions,
 } from '@tanstack/react-table';
 
+import { useEffect, useState, useCallback } from 'react';
+import cx from 'classnames';
+import { sessionStorageKeys } from 'src/constants/sessionStorageKeys';
 import styles from './Table.module.scss';
 import Loader2 from '../ui/Loader2';
 import NoItems from '../ui/noItems';
-import { useEffect, useState, useCallback } from 'react';
-import cx from 'classnames';
 import Triangle from '../atoms/Triangle/Triangle';
-import { sessionStorageKeys } from 'src/constants/sessionStorageKeys';
 import { tableIDs } from './tableIDs';
 
 const storage = sessionStorage;
