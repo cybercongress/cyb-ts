@@ -11,6 +11,20 @@ const renderColumnsData = () => [
   columnHelper.accessor('id', {
     header: 'id',
     size: 70,
+    cell: (info) => {
+      const { id, rank } = info.row.original;
+      return (
+        <span
+          style={{
+            color:
+              rank === '33' ? '#FF0000' : rank === '67' ? '#FFCA42' : '#fff',
+            fontSize: '14px',
+          }}
+        >
+          {id}
+        </span>
+      );
+    },
   }),
   columnHelper.accessor('description.moniker', {
     header: 'moniker',
