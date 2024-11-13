@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Pane, Text } from '@cybercongress/gravity';
 import { coin } from '@cosmjs/launchpad';
 import { useNavigate } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
@@ -343,43 +342,24 @@ function ActionBarContainer({
 
   // loadingBalanceInfo
   if (!validators && stage === STAGE_INIT && loadingBalanceInfo) {
-    return (
-      <ActionBar>
-        <Pane fontSize="18px">
-          <Dots />
-        </Pane>
-      </ActionBar>
-    );
+    return <ActionBar text={<Dots />} />;
   }
 
   // stage balance.delegation === 0
   if (!validators && stage === STAGE_INIT && balance?.delegation === 0) {
-    return (
-      <ActionBar>
-        <Pane fontSize="18px">Choose hero to get H and earn rewards</Pane>
-      </ActionBar>
-    );
+    return <ActionBar text="Choose hero to get H and earn rewards" />;
   }
 
   // stage balance.delegation === 0
   if (!validators && stage === STAGE_INIT) {
     return (
-      <ActionBar>
-        <Pane fontSize="18px" display="flex" alignItems="center">
-          {validRewards && (
-            <Pane marginLeft={15}>
-              <Button
-                style={{
-                  marginLeft: 15,
-                }}
-                onClick={claimRewards}
-              >
-                Claim rewards
-              </Button>
-            </Pane>
-          )}
-        </Pane>
-      </ActionBar>
+      <ActionBar
+        button={{
+          text: ' Claim rewards',
+          disabled: !validRewards,
+          onClick: claimRewards,
+        }}
+      />
     );
   }
 
@@ -391,9 +371,7 @@ function ActionBarContainer({
           onClick: () => funcSetTxType(TXTYPE_DELEGATE),
         }}
       >
-        <Text fontSize="18px" color="#fff" marginRight={20} fontWeight={600}>
-          {validators.description.moniker}
-        </Text>
+        <span>{validators.description.moniker}</span>
         {unStake && (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Button
