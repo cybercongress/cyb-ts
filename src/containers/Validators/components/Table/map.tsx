@@ -73,6 +73,27 @@ const renderColumnsData = () => [
       );
     },
   }),
+  columnHelper.accessor('apr', {
+    header: 'APR',
+    size: 80,
+    sortingFn: (rowA, rowB) => {
+      const a = rowA.original.apr;
+      const b = rowB.original.apr;
+      return a - b;
+    },
+    cell: (info) => {
+      const val = info.getValue();
+      return (
+        <FormatNumber
+          currency="%"
+          number={new BigNumber(val)
+            .multipliedBy(100)
+            .dp(2, BigNumber.ROUND_FLOOR)
+            .toFixed(2)}
+        />
+      );
+    },
+  }),
   columnHelper.accessor('delegation', {
     header: 'Your bond',
     sortingFn: (rowA, rowB) => {

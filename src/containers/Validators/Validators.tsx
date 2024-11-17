@@ -49,7 +49,8 @@ function Validators() {
       .dividedBy(24)
       .toNumber();
 
-  const { stakingProvisions } = useValidatorStakingProvisions();
+  const { stakingProvisions, isFetching: isFetchingStakingProvisions } =
+    useValidatorStakingProvisions();
 
   const [updatePage, setUpdatePage] = useState(0);
 
@@ -100,7 +101,7 @@ function Validators() {
     refetchDelegations();
   };
 
-  if (loadingValidators) {
+  if (loadingValidators || isFetchingStakingProvisions) {
     return <Loader2 />;
   }
 
@@ -114,9 +115,9 @@ function Validators() {
         />
         <ValidatorTable
           data={reduceValidatorData(validators, {
-            apr: 0,
             bondedTokens,
             delegationsData,
+            stakingProvisions,
           })}
           onSelect={setValidatorSelect}
         />

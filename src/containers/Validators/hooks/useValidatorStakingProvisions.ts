@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js';
 
 function useValidatorStakingProvisions() {
   const { rpc } = useCyberClient();
-  const { data: resAnnPro } = useQuery({
+  const { data: resAnnPro, isFetching } = useQuery({
     queryKey: ['mint', 'annualProvisions'],
     queryFn: () => rpc.cosmos.mint.v1beta1.annualProvisions(),
   });
@@ -32,7 +32,7 @@ function useValidatorStakingProvisions() {
       .toString(10);
   }, [resAnnPro, resDistParams]);
 
-  return { stakingProvisions };
+  return { stakingProvisions, isFetching };
 }
 
 export default useValidatorStakingProvisions;

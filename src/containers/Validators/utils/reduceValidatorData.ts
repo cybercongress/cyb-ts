@@ -6,7 +6,7 @@ import { ValidatorTableData } from '../types/tableData';
 type Options = {
   bondedTokens: number;
   delegationsData: { [key: string]: Coin };
-  apr: number;
+  stakingProvisions?: string;
 };
 
 const checkRank = (percent: number): ValidatorTableData['rank'] => {
@@ -21,10 +21,10 @@ const checkRank = (percent: number): ValidatorTableData['rank'] => {
 };
 
 function reduceValidatorData(data: Validator[], options: Options) {
-  const { bondedTokens, delegationsData } = options;
+  const { bondedTokens, delegationsData, stakingProvisions } = options;
   return data.reduce<{ total: number; list: ValidatorTableData[] }>(
     (acc, item, id) => {
-      const { jailed, operatorAddress, tokens } = item;
+      const { jailed, operatorAddress, tokens, commission } = item;
 
       acc.total = jailed
         ? acc.total
@@ -42,11 +42,21 @@ function reduceValidatorData(data: Validator[], options: Options) {
         .dp(2, BigNumber.ROUND_FLOOR)
         .toFixed(2);
 
+      const totalVotingPower = new BigNumber(bondedTokens).multipliedBy(
+        new BigNumber(1).minus(commission.commissionRates.rate)
+      );
+
+      const estimatedApr = stakingProvisions
+        ? new BigNumber(stakingProvisions)
+            .dividedBy(totalVotingPower)
+            .toNumber()
+        : 0;
+
       acc.list.push({
         ...item,
         delegation,
         id: id + 1,
-        apr: 0,
+        apr: estimatedApr,
         powerPercent,
         rank: jailed ? 'primary' : checkRank(percent),
       });
