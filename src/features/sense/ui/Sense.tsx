@@ -15,6 +15,7 @@ import { convertTimestampToString } from 'src/utils/date';
 import ActionBar from './ActionBar/ActionBar';
 import ActionBarLLM from './ActionBar/ActionBarLLM';
 import styles from './Sense.module.scss';
+import { Filters } from './types';
 
 export type AdviserProps = {
   adviser: {
@@ -48,10 +49,11 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   const [error, setError] = useState<string>();
   const [adviserText, setAdviserText] = useState('');
 
-  const [isLLMFilter, setIsLLMFilter] = useState(true);
+  const [currentFilter, setCurrentFilter] = useState(Filters.All);
+
   const currentThreadId = useAppSelector((state) => {
     const { llm } = state.sense;
-    console.log(llm);
+    // console.log(llm);
     return llm.currentThreadId;
   });
 
@@ -140,6 +142,8 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
   //   }
   // }, [isLLMFilter, currentThreadId, dispatch]);
 
+  const isLLMFilter = currentFilter === Filters.LLM;
+
   return (
     <>
       <div className={cx(styles.wrapper, { [styles.NotOwner]: !isOwner })}>
@@ -160,7 +164,10 @@ function Sense({ urlSenseId }: { urlSenseId?: string }) {
             }}
             selected={selected}
             adviser={adviserProps}
-            setFilter={setIsLLMFilter}
+            currentFilter={{
+              value: currentFilter,
+              set: setCurrentFilter,
+            }}
           />
         )}
         <SenseViewer

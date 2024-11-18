@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import cx from 'classnames';
 import Display from 'src/components/containerGradient/Display/Display';
 import Loader2 from 'src/components/ui/Loader2';
@@ -21,17 +19,21 @@ import SenseListItemContainer from './SenseListItem/SenseListItem.container';
 type Props = {
   select: (id: string) => void;
   selected?: string;
-  setFilter: (isLLMFilter: boolean) => void;
+  currentFilter: {
+    value: any;
+    set: (value: any) => void;
+  };
 } & AdviserProps;
 
-function SenseList({ select, selected, setFilter }: Props) {
-  const [filter, updateFilter] = useState(Filters.LLM);
+function SenseList({ select, selected, currentFilter }: Props) {
   const dispatch = useAppDispatch();
   const llmThreads = useAppSelector((state) => state.sense.llm.threads);
 
   const senseList = useAppSelector((store) => store.sense.list);
 
   let items = senseList.data || [];
+
+  const filter = currentFilter.value;
 
   if (filter !== Filters.All) {
     items = items.filter((item) => {
@@ -68,7 +70,7 @@ function SenseList({ select, selected, setFilter }: Props) {
     dispatch(createLLMThread({ id: newThreadId }));
     dispatch(selectLLMThread({ id: newThreadId }));
     select(newThreadId);
-    setFilter(true);
+    currentFilter.set(Filters.LLM);
   };
 
   return (
@@ -78,8 +80,8 @@ function SenseList({ select, selected, setFilter }: Props) {
           <SenseListFilters
             selected={filter}
             onChangeFilter={(filter: Filters) => {
-              updateFilter(filter);
-              setFilter(filter === Filters.LLM);
+              currentFilter.set(filter);
+              select(null);
 
               // Select LLM chat when LLM filter is selected
               if (filter === Filters.LLM) {

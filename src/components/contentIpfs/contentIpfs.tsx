@@ -2,6 +2,7 @@ import { CYBER_GATEWAY } from 'src/constants/config';
 import { CYBER_GATEWAY_URL } from 'src/services/ipfs/config';
 import { IPFSContent, IPFSContentDetails } from 'src/services/ipfs/types';
 import { Option } from 'src/types';
+import { useAppData } from 'src/contexts/appData';
 import EPubView from '../EPubView/EPubView';
 import Pdf from '../PDF';
 import TextMarkdown from '../TextMarkdown';
@@ -46,19 +47,29 @@ type ContentTabProps = {
   search?: boolean;
 };
 
-function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
+function ContentIpfs({
+  details,
+  content,
+  cid,
+  search,
+  skipCheck,
+}: ContentTabProps) {
   const contentType = details?.type;
 
-  return (
-    <div>
-      {/* <DebugContentInfo
-        cid={cid}
-        source={content?.source}
-        content={content}
-        status={status}
-      /> */}
-      {/* Default */}
+  const { filterParticles } = useAppData();
+  const particleRestricted =
+    !skipCheck && filterParticles.length > 0 && filterParticles.includes(cid);
 
+  if (particleRestricted) {
+    return (
+      <div>
+        <TextMarkdown preview={search}>content is restricted</TextMarkdown>
+      </div>
+    );
+  }
+
+  return (
+    <>
       {!details?.type && <TextMarkdown preview>{cid.toString()}</TextMarkdown>}
 
       {content?.availableDownload && (
@@ -73,7 +84,9 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
             <VideoPlayerGatewayOnly content={content} details={details} />
           )}
           {contentType === 'text' && (
-            <TextMarkdown preview={search}>{details.content}</TextMarkdown>
+            <TextMarkdown preview={search}>
+              {details.content || cid}
+            </TextMarkdown>
           )}
           {contentType === 'image' && <Img content={details.content} />}
           {contentType === 'pdf' && details.content && (
@@ -94,7 +107,7 @@ function ContentIpfs({ details, content, cid, search }: ContentTabProps) {
           )}
         </>
       )}
-    </div>
+    </>
   );
 }
 

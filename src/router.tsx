@@ -59,6 +59,7 @@ import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
 import Map from './pages/Portal/Map/Map';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
+import Filtering from './pages/Settings/Filtering/Filtering';
 import Settings from './pages/Settings/Settings';
 import Sign from './pages/Sign/Sign';
 import BrainRoutes from './routing/Brain';
@@ -226,6 +227,8 @@ function AppRouter() {
           {['/studio', '/studio/:cid'].map((path) => (
             <Route key={path} path={path} element={<StudioWrapper />} />
           ))}
+
+          <Route path="/restricted-content" element={<Filtering />} />
 
           {/* works as 404 also */}
           <Route path=":username/*" element={<CheckPassportPage />} />

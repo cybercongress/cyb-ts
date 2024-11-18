@@ -40,7 +40,7 @@ function Ipfs() {
       })();
     }
   }, [isText, isReady, query, ipfsApi, isIpfsInitialized]);
-  useEffect(() => {}, [details]);
+
   useEffect(() => {
     if (!status) {
       return;

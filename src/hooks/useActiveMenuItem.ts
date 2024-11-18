@@ -1,6 +1,7 @@
 import { MenuItem } from 'src/types/menu';
 import { useLocation } from 'react-router-dom';
 
+// eslint-disable-next-line import/prefer-default-export
 export const useActiveMenuItem = (menuItems: MenuItem[]) => {
   const location = useLocation();
   const isActiveItem = (item: MenuItem) => {
@@ -16,9 +17,11 @@ export const useActiveMenuItem = (menuItems: MenuItem[]) => {
     if (item.to === '/senate' && location.pathname.startsWith('/senate/')) {
       return true;
     }
+
     return item.subItems?.some((subItem) => location.pathname === subItem.to);
   };
 
   const activeItem = menuItems.find((item) => isActiveItem(item)) || null;
+
   return { isActiveItem, activeItem };
 };

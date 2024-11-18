@@ -31,6 +31,9 @@ function QueryClientProvider({ children }: { children: React.ReactNode }) {
 
   if (error) {
     console.error('Error queryClient connect: ', error.message);
+
+    return 'api connection error';
+    // return <APIError />;
   }
 
   return (

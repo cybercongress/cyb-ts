@@ -1,5 +1,6 @@
 export const enum Networks {
   BOSTROM = 'bostrom',
+  LOCAL_BOSTROM = 'localbostrom',
   SPACE_PUSSY = 'space-pussy',
   ETH = 'eth',
   OSMO = 'osmo',

@@ -73,7 +73,7 @@ function OracleLanding() {
   const [searchParams] = useSearchParams();
   const type = searchParams.get(QUERY_KEY);
 
-  const [titleType, setTitleType] = useState<TitleType>(TitleType.ai);
+  const [titleType, setTitleType] = useState<TitleType>(TitleType.search);
 
   const ref = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();

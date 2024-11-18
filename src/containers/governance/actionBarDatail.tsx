@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { NumericFormat } from 'react-number-format';
-import { ActionBar, Pane } from '@cybercongress/gravity';
+import { Pane } from '@cybercongress/gravity';
 import { coins } from '@cosmjs/launchpad';
 import { useSigningClient } from 'src/contexts/signerClient';
 import {
@@ -27,6 +27,7 @@ import {
   BtnGrd,
   DenomArr,
   Select,
+  ActionBar,
 } from '../../components';
 
 // import styles from './ActionBarDetail.module.scss';
@@ -46,7 +47,7 @@ const {
 
 type Props = {
   proposals: any;
-  id: number;
+  id: string;
   update: () => void;
 };
 

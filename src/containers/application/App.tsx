@@ -17,10 +17,12 @@ import { initCyblog } from 'src/utils/logging/bootstrap';
 
 // eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
 
+import { MainContainer } from 'src/components';
 import NewVersionChecker from 'src/components/NewVersionChecker/NewVersionChecker';
 import SignerModal, {
   SignerModalRef,
 } from 'src/components/signer-modal/signer-modal';
+import { useDevice } from 'src/contexts/device';
 import { PreviousPageProvider } from 'src/contexts/previousPage';
 import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
@@ -28,7 +30,9 @@ import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.
 import useCurrentAddress from 'src/hooks/useCurrentAddress';
 import { signerModalHandler } from 'src/services/signer/signer-modal-handler';
 import { setFocus } from './Header/Commander/commander.redux';
+import { mobileAllowedRoutes } from './mobileAllowedRoutes';
 import styles from './styles.scss';
+import UseDesktopVersionBlock from './UseDesktopVersionBlock/UseDesktopVersionBlock';
 
 export const PORTAL_ID = 'portal';
 
@@ -142,6 +146,14 @@ function App() {
     }
   }, [dispatch]);
 
+  const { isMobile } = useDevice();
+
+  const mobileAllowed =
+    location.pathname.includes('@') ||
+    mobileAllowedRoutes.some((path) => {
+      return matchPath(path, location.pathname);
+    });
+
   return (
     <PreviousPageProvider>
       <NewVersionChecker />
@@ -156,7 +168,13 @@ function App() {
 
           <AdviserContainer />
 
-          <Outlet />
+          {isMobile && !mobileAllowed ? (
+            <MainContainer>
+              <UseDesktopVersionBlock />
+            </MainContainer>
+          ) : (
+            <Outlet />
+          )}
         </>
       </MainLayout>
       <SignerModal ref={signerModalRef} />
