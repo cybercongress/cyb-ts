@@ -18,7 +18,7 @@ import Heroes from './_refactor/account/tabs/heroes';
 import Karma from './Karma/Karma';
 import Follows from './_refactor/account/tabs/Follows/Follows';
 import Soul from './Soul/Soul';
-import Hotkeys from './Hotkeys/Hotkeys';
+import Settings from '../Settings/Settings';
 
 function RobotRoutes() {
   const { address, isFetched } = useRobotContext();
@@ -39,6 +39,7 @@ function RobotRoutes() {
         {newUser ? (
           <>
             <Route index element={<ZeroUser />} />
+            <Route path="settings/*" element={<Settings />} />
             <Route path="*" element={<Navigate to="/robot" />} />
           </>
         ) : (
@@ -70,6 +71,7 @@ function RobotRoutes() {
 
         <Route path="sigma" element={<Sigma />} />
         <Route path="time" element={<TxsTable />} />
+        <Route path="settings/*" element={<Settings />} />
 
         {['sense', 'sense/:senseId'].map((path) => (
           <Route key={path} path={path} element={<SensePage />} />

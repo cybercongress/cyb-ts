@@ -30,6 +30,11 @@ const getMenuItems = () => {
           icon: require('./images/horizontal-traffic-light.png'),
         },
         { name: 'sigma', to: 'sigma', icon: require('./images/sigma@2x.png') },
+        {
+          name: 'settings',
+          to: 'settings',
+          icon: '⚙️',
+        },
       ],
       // subItems: myRobotLinks,
     },
@@ -73,7 +78,7 @@ const getMenuItems = () => {
     },
     {
       name: 'Docs',
-      to: 'https://docs.cyb.ai',
+      to: 'https://cyber.page/',
       subItems: [],
       icon: require('src/image/new_icons/docs.svg'),
     },

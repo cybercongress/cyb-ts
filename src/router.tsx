@@ -56,7 +56,6 @@ import Social from './pages/Social/Social';
 import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Map from './pages/Portal/Map/Map';
 import BrainRoutes from './routing/Brain';
-import Settings from './pages/Settings/Settings';
 import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
 import Filtering from './pages/Settings/Filtering/Filtering';
@@ -214,8 +213,6 @@ function AppRouter() {
           )} */}
 
           <Route path="/keys" element={<Keys />} />
-
-          <Route path="/settings/*" element={<Settings />} />
 
           <Route path={routes.social.path} element={<Social />} />
 

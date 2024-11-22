@@ -165,7 +165,7 @@ function SwitchAccount() {
             ) : (
               <Link
                 className={networkStyles.btnContainerText}
-                to={routes.settings.path}
+                to={`/robot${routes.settings.path}`}
               >
                 {mediaQuery ? 'Settings' : '⚙️'}
               </Link>
@@ -250,12 +250,6 @@ function SwitchAccount() {
                   link={routes.sigma.path}
                   setControlledVisible={setControlledVisible}
                   image={require('../../../../image/sigma.png')}
-                />
-                <AccountItem
-                  name="settings"
-                  setControlledVisible={setControlledVisible}
-                  link={routes.settings.path}
-                  image={require('./keys.png')}
                 />
               </div>
             </div>
