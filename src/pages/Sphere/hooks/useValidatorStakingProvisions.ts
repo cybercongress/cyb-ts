@@ -10,10 +10,12 @@ function useValidatorStakingProvisions() {
   const { data: resAnnPro, isFetching } = useQuery({
     queryKey: ['mint', 'annualProvisions'],
     queryFn: () => rpc.cosmos.mint.v1beta1.annualProvisions(),
+    enabled: Boolean(rpc),
   });
   const { data: resDistParams } = useQuery({
     queryKey: ['distribution', 'params'],
     queryFn: () => rpc.cosmos.distribution.v1beta1.params(),
+    enabled: Boolean(rpc),
   });
 
   const stakingProvisions = useMemo(() => {

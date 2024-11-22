@@ -1,7 +1,8 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import BigNumber from 'bignumber.js';
-import { FormatNumber, FormatNumberTokens } from 'src/components';
-import { ValidatorTableData } from '../../types/tableData';
+import { FormatNumber } from 'src/components';
+import IconsNumber from 'src/components/IconsNumber/IconsNumber';
+import { ValidatorTableData } from '../../../../../types/tableData';
 import Moniker from './ui/Moniker/Moniker';
 import VotingPower from './ui/VotingPower/VoitingPower';
 
@@ -52,27 +53,6 @@ const renderColumnsData = () => [
       return <VotingPower data={info.row.original} />;
     },
   }),
-  columnHelper.accessor('commission.commissionRates', {
-    header: 'Commission',
-    size: 130,
-    sortingFn: (rowA, rowB) => {
-      const a = parseFloat(rowA.original.commission.commissionRates.rate);
-      const b = parseFloat(rowB.original.commission.commissionRates.rate);
-      return a - b;
-    },
-    cell: (info) => {
-      const val = info.getValue();
-      return (
-        <FormatNumber
-          currency="%"
-          number={new BigNumber(val.rate)
-            .multipliedBy(100)
-            .dp(2, BigNumber.ROUND_FLOOR)
-            .toFixed(2)}
-        />
-      );
-    },
-  }),
   columnHelper.accessor('apr', {
     header: 'APR',
     size: 80,
@@ -108,7 +88,9 @@ const renderColumnsData = () => [
     cell: (info) => {
       const item = info.getValue();
       return item ? (
-        <FormatNumberTokens text={item.denom} value={parseFloat(item.amount)} />
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <IconsNumber value={item.amount} type={item.denom} />
+        </div>
       ) : (
         ''
       );

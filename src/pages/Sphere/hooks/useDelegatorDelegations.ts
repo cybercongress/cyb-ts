@@ -1,3 +1,4 @@
+import { Coin } from '@cosmjs/stargate';
 import { useCyberClient } from 'src/contexts/queryCyberClient';
 
 function useDelegatorDelegations(addressActive?: string) {
@@ -11,7 +12,7 @@ function useDelegatorDelegations(addressActive?: string) {
 
   const delegationsData =
     delegationsResponse && delegationsResponse.delegationResponses
-      ? delegationsResponse.delegationResponses.reduce(
+      ? delegationsResponse.delegationResponses.reduce<{ [key: string]: Coin }>(
           (acc, item) => ({
             ...acc,
             [item.delegation.validatorAddress]: item.balance,

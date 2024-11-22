@@ -81,8 +81,8 @@ export const routes = {
     getLink: (search: string) => `/oracle/ask/${search}`,
   },
   hero: {
-    path: '/network/bostrom/hero/:address',
-    getLink: (address: string) => `/network/bostrom/hero/${address}`,
+    path: '/sphere/hero/:address',
+    getLink: (address: string) => `/sphere/hero/${address}`,
   },
   teleport: {
     path: '/teleport',

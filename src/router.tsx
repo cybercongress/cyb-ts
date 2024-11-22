@@ -9,10 +9,8 @@ import {
 } from 'react-router-dom';
 import App from './containers/application/App';
 import Home from './containers/home/home';
-import Validators from './containers/Validators/Validators';
 import Story from './containers/story/story';
 import TxsDetails from './containers/txs/txsDetails';
-import ValidatorsDetails from './containers/validator';
 import Ipfs from './containers/ipfs/ipfs';
 import BlockDetails from './containers/blok/blockDetails';
 import Txs from './containers/txs';
@@ -60,6 +58,7 @@ import Settings from './pages/Settings/Settings';
 import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
 import Filtering from './pages/Settings/Filtering/Filtering';
+import Sphere from './pages/Sphere/Sphere';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -151,8 +150,8 @@ function AppRouter() {
           <Route path="/mint" element={<Navigate to={routes.hfr.path} />} />
           {/* old links - end */}
 
-          <Route path="/sphere" element={<Validators />} />
-          <Route path="/sphere/:status" element={<Validators />} />
+          <Route path="/sphere/*" element={<Sphere />} />
+          {/* <Route path="/sphere/:status" element={<Validators />} /> */}
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
 
@@ -168,8 +167,8 @@ function AppRouter() {
               element={<RedirectToRobot />}
             />
 
-            <Route path="hero/:address/" element={<ValidatorsDetails />} />
-            <Route path="hero/:address/:tab" element={<ValidatorsDetails />} />
+            {/* <Route path="hero/:address/" element={<ValidatorsDetails />} />
+            <Route path="hero/:address/:tab" element={<ValidatorsDetails />} /> */}
             <Route path="parameters" element={<ParamNetwork />} />
             <Route path="parameters/:param" element={<ParamNetwork />} />
             <Route path="blocks" element={<Block />} />

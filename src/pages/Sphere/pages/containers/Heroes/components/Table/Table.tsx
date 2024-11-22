@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import Table from 'src/components/Table/Table';
-import { ValidatorTableData } from '../../types/tableData';
+import { ValidatorTableData } from '../../../../../types/tableData';
 import renderColumnsData from './map';
 
 function ValidatorTable({

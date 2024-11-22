@@ -5,8 +5,9 @@ import BigNumber from 'bignumber.js';
 import { useQueryClient } from 'src/contexts/queryClient';
 import { useSigningClient } from 'src/contexts/signerClient';
 import Button from 'src/components/btnGrd';
-import useDelegation from 'src/features/staking/delegation/useDelegation';
 import { BASE_DENOM, MEMO_KEPLR } from 'src/constants/config';
+import { useSphereContext } from 'src/pages/Sphere/Sphere.context';
+import { ValidatorTableData } from 'src/pages/Sphere/types/tableData';
 import {
   Confirmed,
   TransactionSubmitted,
@@ -15,11 +16,9 @@ import {
   TransactionError,
   Dots,
   ActionBar,
-} from '../../components';
+} from '../../../../../components';
 
-import { LEDGER } from '../../utils/config';
-import useGetHeroes from './hooks/getHeroesHook';
-import { ValidatorTableData } from './types/tableData';
+import { LEDGER } from '../../../../../utils/config';
 
 const {
   STAGE_INIT,
@@ -146,19 +145,17 @@ const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
 type Props = {
   validators?: ValidatorTableData;
   updateFnc: () => void;
-  loadingBalanceInfo: boolean;
   unStake: boolean;
 };
 
-function ActionBarContainer({
-  validators,
-  balance,
-  loadingBalanceInfo,
-  updateFnc,
-  unStake,
-}: Props) {
+function ActionBarContainer({ validators, updateFnc, unStake }: Props) {
   const { signer, signingClient } = useSigningClient();
-  const { validators: validatorsAll } = useGetHeroes();
+  const {
+    validators: validatorsAll,
+    balance,
+    isFetchingBalance,
+    delegationsData,
+  } = useSphereContext();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [stage, setStage] = useState(STAGE_INIT);
@@ -174,11 +171,12 @@ function ActionBarContainer({
     updateFnc
   );
 
-  const validatorSelected =
-    validators?.operator_address || validators?.operatorAddress;
+  const validatorSelected = validators?.operatorAddress;
 
-  const { data } = useDelegation(validatorSelected);
-  const staked = data?.balance?.amount || 0;
+  const staked =
+    validatorSelected && delegationsData[validatorSelected]
+      ? delegationsData[validatorSelected].amount
+      : 0;
 
   const errorState = (error) => {
     setTxHash(null);
@@ -306,13 +304,13 @@ function ActionBarContainer({
   const validRewards = useMemo(() => {
     if (
       balance &&
-      balance.delegation &&
-      balance.delegation !== 0 &&
-      balance.rewards &&
-      balance.rewards !== 0
+      balance.frozen &&
+      balance.frozen.amount !== 0 &&
+      balance.growth &&
+      balance.growth.amount !== 0
     ) {
-      const delegation = new BigNumber(balance.delegation);
-      const rewards = new BigNumber(balance.rewards);
+      const delegation = new BigNumber(balance.frozen.amount);
+      const rewards = new BigNumber(balance.growth.amount);
       const procentRewards = rewards
         .div(delegation)
         .multipliedBy(100)
@@ -341,12 +339,12 @@ function ActionBarContainer({
   };
 
   // loadingBalanceInfo
-  if (!validators && stage === STAGE_INIT && loadingBalanceInfo) {
+  if (!validators && stage === STAGE_INIT && isFetchingBalance) {
     return <ActionBar text={<Dots />} />;
   }
 
   // stage balance.delegation === 0
-  if (!validators && stage === STAGE_INIT && balance?.delegation === 0) {
+  if (!validators && stage === STAGE_INIT && balance?.frozen.amount === 0) {
     return <ActionBar text="Choose hero to get H and earn rewards" />;
   }
 
@@ -400,7 +398,7 @@ function ActionBarContainer({
         moniker={validators ? validators.description.moniker : ''}
         onChangeInputAmount={amountChangeHandler}
         toSend={amount}
-        available={txType === TXTYPE_DELEGATE ? balance?.available : staked}
+        available={txType === TXTYPE_DELEGATE ? balance?.liquid.amount : staked}
         generateTx={
           txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
         }

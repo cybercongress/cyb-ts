@@ -128,11 +128,11 @@ const getMenuItems = () => {
       icon: shpere,
       to: routes.sphere.path,
       subItems: [
-        {
-          name: 'Heroes at rest',
-          to: routes.sphereJailed.path,
-          icon: require('./images/astronaut.png'),
-        },
+        // {
+        //   name: 'Heroes at rest',
+        //   to: routes.sphereJailed.path,
+        //   icon: require('./images/astronaut.png'),
+        // },
       ],
     },
     { name: 'HFR', icon: hfr, to: '/hfr', subItems: [] },

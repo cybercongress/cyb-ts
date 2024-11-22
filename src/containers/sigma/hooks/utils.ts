@@ -10,8 +10,8 @@ import { useQueryClient } from 'src/contexts/queryClient';
 
 import { isPussyChain } from 'src/utils/chains/pussy';
 
-import { fromBech32 } from '../../../utils/utils';
 import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
+import { fromBech32 } from '../../../utils/utils';
 
 const initValue = {
   denom: BASE_DENOM,
@@ -174,7 +174,7 @@ export const useGetBalance = (addressBech32) => {
 
   // TODO: refactor below
   if (isFetching) {
-    return { data: initValueMainToken, refetch };
+    return { data: initValueMainToken, refetch, isFetching };
   }
 
   const result = {
@@ -201,5 +201,6 @@ export const useGetBalance = (addressBech32) => {
   return {
     data: result,
     refetch,
+    isFetching,
   };
 };

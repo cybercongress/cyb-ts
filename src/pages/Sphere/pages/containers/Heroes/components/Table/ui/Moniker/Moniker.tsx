@@ -1,10 +1,10 @@
-import KeybaseAvatar from 'src/containers/validator/keybaseAvatar';
-import { ValidatorTableData } from 'src/containers/Validators/types/tableData';
+
+import { ValidatorTableData } from 'src/pages/Sphere/types/tableData';
 import { Link } from 'react-router-dom';
 import { routes } from 'src/routes';
-import imgSearch from 'images/ionicons_svg_ios-help-circle-outline.svg';
 import styles from './Moniker.module.scss';
 import { StatusTooltip } from '../../../ui';
+import KeybaseAvatar from 'src/pages/Sphere/pages/containers/HeroDetails/keybaseAvatar';
 
 function Moniker({
   data,
@@ -25,21 +25,6 @@ function Moniker({
         className={styles.moniker}
       >
         {moniker}
-      </Link>
-      <Link
-        style={{
-          position: 'absolute',
-          left: '100%',
-        }}
-        to={`/search/${moniker}`}
-      >
-        <img
-          src={imgSearch}
-          alt="img"
-          style={{
-            width: 15,
-          }}
-        />
       </Link>
     </div>
   );

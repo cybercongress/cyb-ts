@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { keybaseAvatar } from '../../utils/search/utils';
+import { keybaseAvatar } from 'src/utils/search/utils';
 
-const img = require('../../image/logo-cyb-v3.svg');
+const img = require('images/logo-cyb-v3.svg');
 
 function KeybaseAvatar({ identity }: { identity?: string }) {
   const { data } = useQuery({
     queryKey: ['KeybaseAvatar', identity],
-    queryFn: () => keybaseAvatar(identity),
+    queryFn: () => keybaseAvatar(identity).catch((e) => {}),
     enabled: Boolean(identity),
   });
 

@@ -4,7 +4,7 @@ import { Card } from '../../components';
 import { formatNumber } from '../../utils/utils';
 import KeybaseAvatar from './keybaseAvatar';
 import UptimeHook from './UptimeHook';
-import { StatusTooltip } from '../Validators/components';
+import { StatusTooltip } from '../Heroes/components';
 
 // function Row({ value, title, marginBottom }) {
 //   return (

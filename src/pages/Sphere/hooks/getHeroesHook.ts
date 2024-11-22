@@ -27,6 +27,7 @@ function useGetHeroes() {
           rpc.cosmos.staking.v1beta1.validators({ status }).then((response) => {
             return response.validators.sort(sortFunc);
           }),
+        enabled: Boolean(rpc),
       };
     }),
   });
