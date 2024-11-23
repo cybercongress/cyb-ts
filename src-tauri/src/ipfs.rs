@@ -80,7 +80,8 @@ pub fn start_ipfs() -> Result<(), IpfsError> {
         .map_err(|e| IpfsError::Other(e.to_string()))?;
 
     if is_running.status.success() {
-        return Err(IpfsError::AlreadyRunning);
+        println!("IPFS is already running.");
+        return Ok(()); // If it's already running, don't try to start it again
     }
 
     // Start the IPFS daemon
@@ -88,6 +89,10 @@ pub fn start_ipfs() -> Result<(), IpfsError> {
         .arg("daemon")
         .spawn()
         .map_err(|e| IpfsError::Other(e.to_string()))?;
+    println!("IPFS daemon started");
+
+    // Give IPFS a moment to start up properly
+    std::thread::sleep(std::time::Duration::from_secs(2));
 
     // Configure IPFS to allow all origins
     let config_output1 = Command::new(&ipfs_binary)

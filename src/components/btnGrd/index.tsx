@@ -32,7 +32,7 @@ const playAudioClick = () => {
 // };
 
 export interface Props extends Partial<HTMLButtonElement> {
-  disabled: boolean;
+  disabled?: boolean;
   text?: string | JSX.Element;
   img?: $TsFixMe;
   pending?: boolean;

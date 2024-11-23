@@ -8,6 +8,7 @@ import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useAdviser } from 'src/features/adviser/context';
 import { getIpfsOpts } from 'src/services/ipfs/config';
 import { IPFSNodes } from 'src/services/ipfs/types';
+import { invoke } from '@tauri-apps/api/tauri';
 import BtnPassport from '../../../containers/portal/pasport/btnPasport';
 import Drive from '../Drive';
 import ErrorIpfsSettings from './ErrorIpfsSettings';
@@ -46,7 +47,7 @@ function IpfsSettings() {
 
   useEffect(() => {
     let text;
-    let status: AdviserColors = undefined;
+    let status: AdviserColors;
     if (!isIpfsInitialized) {
       text = 'trying to connect to ipfs...';
       status = 'yellow';
@@ -75,11 +76,22 @@ function IpfsSettings() {
     updateUserGatewayUrl(valueInputGateway);
   }, [valueInputGateway]);
 
-  const onClickReConnect = () => {
-    ipfsApi
-      ?.stop()
-      .then(() => ipfsApi?.start(getIpfsOpts()))
-      .then();
+  const onClickReConnect = async () => {
+    if (process.env.IS_TAURI) {
+      try {
+        console.log('Restarting IPFS');
+
+        await invoke('stop_ipfs');
+        await invoke('start_ipfs');
+
+        console.log('IPFS restarted');
+      } catch (error) {
+        console.error('Error restarting IPFS', error);
+      }
+    }
+
+    await ipfsApi?.stop().catch(console.error);
+    await ipfsApi?.start(getIpfsOpts()).catch(console.error);
   };
 
   const stateProps = {
