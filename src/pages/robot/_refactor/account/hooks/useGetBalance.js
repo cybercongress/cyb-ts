@@ -7,6 +7,7 @@ import {
 } from 'src/constants/config';
 
 import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
+import { useCyberClient } from 'src/contexts/queryCyberClient';
 import { coinDecimals, fromBech32 } from '../../../../../utils/utils';
 import useGetSlots from '../../../../../containers/mint/useGetSlots';
 
@@ -32,6 +33,7 @@ const initValueToken = {
 
 function useGetBalance(address, updateAddress) {
   const queryClient = useQueryClient();
+  const { rpc } = useCyberClient();
   const [addressActive, setAddressActive] = useState(null);
   const [loadingBalanceInfo, setLoadingBalanceInfo] = useState(true);
   const [loadingBalanceToken, setLoadingBalanceToken] = useState(true);
@@ -55,7 +57,7 @@ function useGetBalance(address, updateAddress) {
   useEffect(() => {
     const getBalance = async () => {
       try {
-        if (queryClient && addressActive !== null) {
+        if (queryClient && addressActive !== null && rpc) {
           setBalance(initValue);
           setLoadingBalanceInfo(true);
           const availablePromise = await queryClient.getBalance(
@@ -69,7 +71,7 @@ function useGetBalance(address, updateAddress) {
           }));
 
           const delegationResponses = await getDelegatorDelegations(
-            queryClient,
+            rpc,
             addressActive
           );
           let delegationsAmount = 0;
@@ -150,7 +152,7 @@ function useGetBalance(address, updateAddress) {
       }
     };
     getBalance();
-  }, [queryClient, addressActive, updateAddress]);
+  }, [queryClient, rpc, addressActive, updateAddress]);
 
   useEffect(() => {
     const getBalance = async () => {

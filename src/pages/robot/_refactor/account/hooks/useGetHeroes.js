@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { useQueryClient } from 'src/contexts/queryClient';
 
 import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
+import { useCyberClient } from 'src/contexts/queryCyberClient';
 import { coinDecimals } from '../../../../../utils/utils';
 
 function useGetHeroes(address, updateAddress) {
   const queryClient = useQueryClient();
+  const { rpc } = useCyberClient();
   const [staking, setStaking] = useState([]);
   const [totalRewards, setTotalRewards] = useState([]);
   const [loadingHeroesInfo, setLoadingHeroesInfo] = useState(true);
@@ -14,12 +16,9 @@ function useGetHeroes(address, updateAddress) {
     setStaking([]);
     setTotalRewards([]);
     setLoadingHeroesInfo(true);
-    if (queryClient) {
+    if (queryClient && rpc) {
       let delegations = [];
-      const delegatorDelegations = await getDelegatorDelegations(
-        queryClient,
-        address
-      );
+      const delegatorDelegations = await getDelegatorDelegations(rpc, address);
 
       if (delegatorDelegations.length) {
         delegations = delegatorDelegations.reduce(

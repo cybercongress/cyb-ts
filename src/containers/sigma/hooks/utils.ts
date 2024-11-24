@@ -11,6 +11,7 @@ import { useQueryClient } from 'src/contexts/queryClient';
 import { isPussyChain } from 'src/utils/chains/pussy';
 
 import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
+import { useCyberClient } from 'src/contexts/queryCyberClient';
 import { fromBech32 } from '../../../utils/utils';
 
 const initValue = {
@@ -111,6 +112,7 @@ function useCyberverBalance({ address }) {
 
 export const useGetBalance = (addressBech32) => {
   const client = useQueryClient();
+  const { rpc } = useCyberClient();
 
   const { data, isFetching, refetch } = useQuery(
     ['getBalance', addressBech32],
@@ -121,7 +123,7 @@ export const useGetBalance = (addressBech32) => {
       );
 
       const responsedelegatorDelegations = await getDelegatorDelegations(
-        client,
+        rpc,
         addressBech32
       );
 
@@ -166,7 +168,7 @@ export const useGetBalance = (addressBech32) => {
       return resultBalance;
     },
     {
-      enabled: Boolean(client && addressBech32),
+      enabled: Boolean(client && addressBech32 && rpc),
     }
   );
 
