@@ -3,8 +3,8 @@ import { BASE_DENOM } from 'src/constants/config';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import { Coin } from '@cosmjs/stargate';
 import { DecCoin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
-import { convertAmount } from 'src/utils/utils';
 import KeybaseAvatar from 'src/pages/Sphere/pages/components/KeybaseAvatar/keybaseAvatar';
+import { Decimal } from '@cosmjs/math';
 import { StatusTooltip } from '../../../Heroes/components/ui';
 import styles from './Statistics.module.scss';
 
@@ -44,7 +44,9 @@ function Statistics({ data }: Props) {
         value={
           <IconsNumber
             value={
-              reward?.amount ? Math.floor(convertAmount(reward.amount, 18)) : 0
+              reward?.amount
+                ? Decimal.fromAtomics(reward.amount, 18).floor().toString()
+                : 0
             }
             type={reward?.denom || BASE_DENOM}
           />

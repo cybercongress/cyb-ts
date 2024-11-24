@@ -13,13 +13,15 @@ import useDelegationRewards from './hooks/useDelegationRewards';
 import useValidatorByContext from './hooks/useValidatorByContext';
 import useValidatorDelegations from './hooks/useValidatorDelegations';
 import ActionBarContainer from '../../components/ActionBarContainer/ActionBarContainer';
-import Rumors from './components/Rumors/rumors';
 import Leadership from './components/Leadership/Leadership';
+import Rumors from './components/Rumors/Rumors';
+import SearchResultsTab from './components/SearchResultsTab/SearchResultsTab';
 
 const mapTabs = [
   { key: 'main', to: '' },
   { key: 'rumors', to: 'rumors' },
   { key: 'leadership', to: 'leadership' },
+  { key: 'search', to: 'search' },
 ];
 
 function HeroDetails() {
@@ -96,7 +98,13 @@ function HeroDetails() {
         <Leadership accountUser={validatorInfo.operatorAddress} />
       )}
 
-      <ActionBarContainer validators={validatorInfo} updateFnc={updateFnc} />
+      {tab === 'search' && (
+        <SearchResultsTab moniker={validatorInfo.description.moniker} />
+      )}
+
+      {tab !== 'search' && (
+        <ActionBarContainer validators={validatorInfo} updateFnc={updateFnc} />
+      )}
     </>
   );
 }

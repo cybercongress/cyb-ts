@@ -16,13 +16,12 @@ function useSelfDelegation(operatorAddress?: string) {
       },
       options: {
         enabled: Boolean(hooks && delegateAddress && operatorAddress),
+        select: (data) =>
+          data.delegationResponse ? data.delegationResponse.balance : undefined,
       },
     });
 
-  const selfDelegationCoin = dataDelegatorValidator
-    ? dataDelegatorValidator.delegationResponse?.balance
-    : undefined;
-  return { selfDelegationCoin };
+  return { selfDelegationCoin: dataDelegatorValidator };
 }
 
 export default useSelfDelegation;

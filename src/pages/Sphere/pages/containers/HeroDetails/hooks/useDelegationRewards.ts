@@ -12,14 +12,14 @@ function useDelegationRewards(
         delegatorAddress: addressActive || '',
         validatorAddress: operatorAddress || '',
       },
-      options: { enabled: Boolean(hooks && addressActive && operatorAddress) },
+      options: {
+        enabled: Boolean(hooks && addressActive && operatorAddress),
+        select: (items) =>
+          items.rewards.length ? items.rewards[0] : undefined,
+      },
     });
 
-  const reward = dataDelegationRewards?.rewards
-    ? dataDelegationRewards.rewards[0]
-    : undefined;
-
-  return { reward, refetch };
+  return { reward: dataDelegationRewards, refetch };
 }
 
 export default useDelegationRewards;

@@ -1,25 +1,26 @@
 import { Coin } from '@cosmjs/stargate';
+import { useQuery } from '@tanstack/react-query';
 import { useCyberClient } from 'src/contexts/queryCyberClient';
+import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
 
 function useDelegatorDelegations(addressActive?: string) {
-  const { hooks } = useCyberClient();
+  const { rpc } = useCyberClient();
 
-  const { data: delegationsResponse, refetch: refetchDelegations } =
-    hooks.cosmos.staking.v1beta1.useDelegatorDelegations({
-      request: { delegatorAddr: addressActive || '' },
-      options: { enabled: Boolean(addressActive) },
-    });
+  const { data: delegationsResponse, refetch: refetchDelegations } = useQuery({
+    queryKey: ['staking', 'delegatorDelegations', addressActive],
+    queryFn: () => getDelegatorDelegations(rpc, addressActive || ''),
+    enabled: Boolean(rpc && addressActive),
+  });
 
-  const delegationsData =
-    delegationsResponse && delegationsResponse.delegationResponses
-      ? delegationsResponse.delegationResponses.reduce<{ [key: string]: Coin }>(
-          (acc, item) => ({
-            ...acc,
-            [item.delegation.validatorAddress]: item.balance,
-          }),
-          {}
-        )
-      : {};
+  const delegationsData = delegationsResponse
+    ? delegationsResponse.reduce<{ [key: string]: Coin }>(
+        (acc, item) => ({
+          ...acc,
+          [item.delegation.validatorAddress]: item.balance,
+        }),
+        {}
+      )
+    : {};
 
   return { delegationsData, refetchDelegations };
 }

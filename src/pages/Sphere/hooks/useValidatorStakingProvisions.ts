@@ -7,32 +7,29 @@ import BigNumber from 'bignumber.js';
 
 function useValidatorStakingProvisions() {
   const { rpc } = useCyberClient();
-  const { data: resAnnPro, isFetching } = useQuery({
+  const { data: annualProvisions, isFetching } = useQuery({
     queryKey: ['mint', 'annualProvisions'],
     queryFn: () => rpc.cosmos.mint.v1beta1.annualProvisions(),
     enabled: Boolean(rpc),
+    select: (data) =>
+      Decimal.fromAtomics(fromAscii(data.annualProvisions), 18).toString(),
   });
-  const { data: resDistParams } = useQuery({
+  const { data: communityTax } = useQuery({
     queryKey: ['distribution', 'params'],
     queryFn: () => rpc.cosmos.distribution.v1beta1.params(),
     enabled: Boolean(rpc),
+    select: (data) => data.params.communityTax,
   });
 
   const stakingProvisions = useMemo(() => {
-    if (!resAnnPro || !resDistParams) {
+    if (!annualProvisions || !communityTax) {
       return undefined;
     }
-
-    const annualProvisions = Decimal.fromAtomics(
-      fromAscii(resAnnPro.annualProvisions),
-      18
-    ).toString();
-    const { communityTax } = resDistParams.params;
 
     return new BigNumber(annualProvisions)
       .multipliedBy(new BigNumber(1).minus(communityTax))
       .toString(10);
-  }, [resAnnPro, resDistParams]);
+  }, [annualProvisions, communityTax]);
 
   return { stakingProvisions, isFetching };
 }
