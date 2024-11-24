@@ -1,10 +1,9 @@
-
 import { ValidatorTableData } from 'src/pages/Sphere/types/tableData';
 import { Link } from 'react-router-dom';
 import { routes } from 'src/routes';
+import KeybaseAvatar from 'src/pages/Sphere/pages/components/KeybaseAvatar/keybaseAvatar';
 import styles from './Moniker.module.scss';
 import { StatusTooltip } from '../../../ui';
-import KeybaseAvatar from 'src/pages/Sphere/pages/containers/HeroDetails/keybaseAvatar';
 
 function Moniker({
   data,

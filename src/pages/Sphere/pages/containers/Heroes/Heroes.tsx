@@ -79,11 +79,7 @@ function Heroes() {
         onSelect={setValidatorSelect}
       />
 
-      <ActionBarContainer
-        updateFnc={updateFnc}
-        validators={validatorSelect}
-        unStake={!!(validatorSelect && validatorSelect.delegation)}
-      />
+      <ActionBarContainer updateFnc={updateFnc} validators={validatorSelect} />
     </>
   );
 }

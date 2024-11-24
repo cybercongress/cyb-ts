@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import SphereContextProvider from './Sphere.context';
 import Layout from './Layout/Layout';
 import Heroes from './pages/containers/Heroes/Heroes';
-import HeroDetails from './pages/containers/HeroDetails';
+import HeroDetails from './pages/containers/HeroDetails/HeroDetails';
 
 function SphereRoutes() {
   return (
@@ -10,6 +10,7 @@ function SphereRoutes() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Heroes />} />
         <Route path="hero/:address/" element={<HeroDetails />} />
+        <Route path="hero/:address/:tab" element={<HeroDetails />} />
       </Route>
     </Routes>
   );

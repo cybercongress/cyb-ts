@@ -7,7 +7,7 @@ import { useSigningClient } from 'src/contexts/signerClient';
 import Button from 'src/components/btnGrd';
 import { BASE_DENOM, MEMO_KEPLR } from 'src/constants/config';
 import { useSphereContext } from 'src/pages/Sphere/Sphere.context';
-import { ValidatorTableData } from 'src/pages/Sphere/types/tableData';
+import { Validator } from '@cybercongress/cyber-ts/cosmos/staking/v1beta1/staking';
 import {
   Confirmed,
   TransactionSubmitted,
@@ -143,12 +143,11 @@ const useCheckStatusTx = (txHash, setStage, setErrorMessage, updateFnc) => {
 };
 
 type Props = {
-  validators?: ValidatorTableData;
+  validators?: Validator;
   updateFnc: () => void;
-  unStake: boolean;
 };
 
-function ActionBarContainer({ validators, updateFnc, unStake }: Props) {
+function ActionBarContainer({ validators, updateFnc }: Props) {
   const { signer, signingClient } = useSigningClient();
   const {
     validators: validatorsAll,
@@ -370,7 +369,7 @@ function ActionBarContainer({ validators, updateFnc, unStake }: Props) {
         }}
       >
         <span>{validators.description.moniker}</span>
-        {unStake && (
+        {new BigNumber(staked).comparedTo(0) > 0 && (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Button
               style={{
