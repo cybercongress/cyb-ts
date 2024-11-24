@@ -13,6 +13,8 @@ import { DenomArr, MainContainer, Loading } from 'src/components';
 import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 import useStakingParams from 'src/features/staking/useStakingParams';
 
+import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
+import { useCyberClient } from 'src/contexts/queryCyberClient';
 import { fromBech32, formatNumber, asyncForEach } from '../../utils/utils';
 import ActionBarContainer from './ActionBarContainer';
 import { TableHeroes, TableItem, InfoBalance } from './components';
@@ -20,13 +22,13 @@ import getHeroes from './getHeroesHook';
 import { useGetBalance } from '../../pages/robot/_refactor/account/hooks';
 import useSetActiveAddress from '../../hooks/useSetActiveAddress';
 import styles from './Validators.module.scss';
-import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
 
 function Validators({ defaultAccount }) {
   const { isMobile: mobile } = useDevice();
   const { status = 'active' } = useParams();
 
   const queryClient = useQueryClient();
+  const { rpc } = useCyberClient();
   const [updatePage, setUpdatePage] = useState(0);
   const { addressActive } = useSetActiveAddress(defaultAccount);
   const { balance, loadingBalanceInfo, balanceToken } = useGetBalance(
@@ -102,7 +104,7 @@ function Validators({ defaultAccount }) {
         let delegationsDataTemp = [];
         if (addressActive !== null && queryClient) {
           const responseDelegatorDelegations = await getDelegatorDelegations(
-            queryClient,
+            rpc,
             addressActive.bech32
           );
           delegationsDataTemp = responseDelegatorDelegations;
@@ -114,7 +116,7 @@ function Validators({ defaultAccount }) {
       console.log(`e`, e);
       setDelegationsData([]);
     }
-  }, [addressActive, queryClient, updatePage]);
+  }, [addressActive, rpc, updatePage]);
 
   useEffect(() => {
     if (validators.length > 0 && delegationsData.length > 0) {
