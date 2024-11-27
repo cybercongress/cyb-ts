@@ -41,6 +41,16 @@ jobs:
           node-version: 18
           cache: 'yarn'
 
+      - name: cache node modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+            ~/.yarn/cache
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -52,8 +62,8 @@ jobs:
           workspaces: './src-tauri -> target'
 
       - name: install deps
-        run: yarn add -D @tauri-apps/cli && yarn install
-          
+        run: yarn install
+
       - name: install frontend dependencies
         run: yarn tauri build ${{ matrix.settings.args }}
       - uses: tauri-apps/tauri-action@v0
