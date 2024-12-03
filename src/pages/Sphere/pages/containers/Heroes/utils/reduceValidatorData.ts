@@ -1,4 +1,7 @@
-import { Validator } from '@cybercongress/cyber-ts/cosmos/staking/v1beta1/staking';
+import {
+  BondStatus,
+  Validator,
+} from '@cybercongress/cyber-ts/cosmos/staking/v1beta1/staking';
 import BigNumber from 'bignumber.js';
 import { Coin } from '@cosmjs/stargate';
 import { ValidatorTableData } from '../../../../types/tableData';
@@ -9,15 +12,32 @@ type Options = {
   stakingProvisions?: string;
 };
 
-const checkRank = (percent: number): ValidatorTableData['rank'] => {
-  switch (true) {
-    case percent < 0.33:
-      return '33';
-    case percent < 0.67:
-      return '67';
-    default:
-      return 'primary';
+const checkRank = (
+  percent: number,
+  id: number,
+  status: ValidatorTableData['status']
+): ValidatorTableData['rank'] => {
+  if (id === 0) {
+    return 'imperator';
   }
+
+  if (status === BondStatus.BOND_STATUS_BONDED && percent < 0.33) {
+    return 'jedi';
+  }
+
+  if (status === BondStatus.BOND_STATUS_BONDED && percent < 0.67) {
+    return 'padawan';
+  }
+
+  if (status === BondStatus.BOND_STATUS_UNBONDING) {
+    return 'relax';
+  }
+
+  if (status === BondStatus.BOND_STATUS_UNBONDED) {
+    return 'inactive';
+  }
+
+  return 'heroes';
 };
 
 function reduceValidatorData(data: Validator[], options: Options) {
@@ -68,7 +88,7 @@ function reduceValidatorData(data: Validator[], options: Options) {
         id: id + 1,
         apr: estimatedApr,
         powerPercent,
-        rank: jailed ? 'primary' : checkRank(percent),
+        rank: checkRank(percent, id, item.status),
       });
       return acc;
     },

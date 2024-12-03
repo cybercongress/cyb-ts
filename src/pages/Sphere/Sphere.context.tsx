@@ -39,6 +39,9 @@ const SphereContext = React.createContext<{
 export const useSphereContext = () => React.useContext(SphereContext);
 
 function SphereContextProvider({ children }: { children: React.ReactNode }) {
+  // const { chainId = CHAIN_ID } = useParams();
+  // const { signingClient, rpcClient } = useChain(chainId);
+
   const {
     validators,
     loadingValidators,

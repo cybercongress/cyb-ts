@@ -3,7 +3,7 @@ import { Validator } from '@cybercongress/cyber-ts/cosmos/staking/v1beta1/stakin
 
 export interface ValidatorTableData extends Validator {
   id: number;
-  rank: '33' | '67' | 'primary' | 'imperator';
+  rank: 'imperator' | 'jedi' | 'padawan' | 'heroes' | 'relax' | 'inactive';
   apr: number;
   powerPercent: string;
   delegation?: Coin;

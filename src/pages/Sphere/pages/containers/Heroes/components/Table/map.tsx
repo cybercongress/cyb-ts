@@ -27,6 +27,14 @@ const renderColumnsData = () => [
       );
     },
   }),
+  columnHelper.accessor('rank', {
+    header: 'rank',
+
+    cell: (info) => {
+      const item = info.getValue();
+      return item;
+    },
+  }),
   columnHelper.accessor('description.moniker', {
     header: 'moniker',
     enableSorting: false,
@@ -72,6 +80,13 @@ const renderColumnsData = () => [
             .toFixed(2)}
         />
       );
+    },
+    aggregationFn: 'mean',
+    aggregatedCell: ({ getValue }) => {
+      return new BigNumber(getValue())
+        .multipliedBy(100)
+        .dp(2, BigNumber.ROUND_FLOOR)
+        .toFixed(2);
     },
   }),
   columnHelper.accessor('delegation', {

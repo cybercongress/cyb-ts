@@ -151,7 +151,8 @@ function AppRouter() {
           {/* old links - end */}
 
           <Route path="/sphere/*" element={<Sphere />} />
-          {/* <Route path="/sphere/:status" element={<Validators />} /> */}
+          {/* <Route path="/sphere/:chainId/*" element={<Sphere />} /> */}
+
           <Route path="/episode-1" element={<Story />} />
           <Route path="/quitter" element={<ForceQuitter />} />
 

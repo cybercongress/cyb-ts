@@ -18,9 +18,11 @@ function SphereRoutes() {
 
 function Sphere() {
   return (
+    // <ChainProvider>
     <SphereContextProvider>
       <SphereRoutes />
     </SphereContextProvider>
+    // </ChainProvider>
   );
 }
 

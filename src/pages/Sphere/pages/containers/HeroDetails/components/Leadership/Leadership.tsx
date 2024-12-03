@@ -1,6 +1,7 @@
 import { useMessagesByAddressQuery } from 'src/generated/graphql';
 import { useState } from 'react';
 import TableTxsInfinite from 'src/components/TableTxsInfinite/TableTxsInfinite';
+import { fromBech32 } from '@cosmjs/encoding';
 
 const LIMIT = 10;
 
@@ -10,7 +11,7 @@ function Leadership({ accountUser }: { accountUser: string }) {
   const [hasMore, setHasMore] = useState(true);
   const { loading, error, data, fetchMore } = useMessagesByAddressQuery({
     variables: {
-      address: `{${accountUser}}`,
+      address: `{${fromBech32(accountUser)}}`,
       types: typeTx,
       limit: LIMIT,
       offset: 0,
