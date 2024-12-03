@@ -176,7 +176,7 @@ export const useGetBalance = (addressBech32) => {
 
   // TODO: refactor below
   if (isFetching) {
-    return { data: initValueMainToken, refetch };
+    return { data: initValueMainToken, refetch, isFetching };
   }
 
   const result = {
@@ -203,5 +203,6 @@ export const useGetBalance = (addressBech32) => {
   return {
     data: result,
     refetch,
+    isFetching,
   };
 };

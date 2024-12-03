@@ -15,7 +15,9 @@ import { Keplr } from '@keplr-wallet/types';
 import { addAddressPocket, setDefaultAccount } from 'src/redux/features/pocket';
 import { accountsKeplr } from 'src/utils/utils';
 import usePrevious from 'src/hooks/usePrevious';
-import { RPC_URL, BECH32_PREFIX, CHAIN_ID } from 'src/constants/config';
+import { RPC_URL, CHAIN_ID } from 'src/constants/config';
+import { Networks } from 'src/types/networks';
+import defaultNetworks from 'src/constants/defaultNetworks';
 
 // TODO: interface for keplr and OfflineSigner
 // type SignerType = OfflineSigner & {
@@ -26,6 +28,9 @@ type SignerClientContextType = {
   readonly signingClient: Option<SigningCyberClient>;
   readonly signer: Option<OfflineSigner>;
   readonly signerReady: boolean;
+  readonly getSignClientByChainId: (
+    chainId: Networks.BOSTROM | Networks.SPACE_PUSSY
+  ) => Promise<Option<SigningCyberClient>>;
   initSigner: () => void;
 };
 
@@ -42,6 +47,7 @@ const SignerClientContext = React.createContext<SignerClientContextType>({
   signerReady: false,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   initSigner: () => {},
+  getSignClientByChainId: () => {},
 });
 
 export function useSigningClient() {
@@ -96,26 +102,47 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
     })();
   }, [defaultAccount, signer]);
 
-  const initSigner = useCallback(async () => {
-    const windowKeplr = await getKeplr();
-    if (windowKeplr && windowKeplr.experimentalSuggestChain) {
-      selectAddress(windowKeplr);
+  const getOfflineSigner = useCallback(
+    async (chainId: Networks.BOSTROM | Networks.SPACE_PUSSY) => {
+      const windowKeplr = await getKeplr();
+
+      if (!windowKeplr || !windowKeplr.experimentalSuggestChain) {
+        return undefined;
+      }
+
+      const { CHAIN_ID: _CHAIN_ID, BECH32_PREFIX: _BECH32_PREFIX } =
+        defaultNetworks[chainId];
+
+      if (CHAIN_ID === _CHAIN_ID) {
+        selectAddress(windowKeplr);
+      }
 
       windowKeplr.defaultOptions = {
         sign: {
           preferNoSetFee: true,
         },
       };
-      await windowKeplr.experimentalSuggestChain(configKeplr(BECH32_PREFIX));
+      await windowKeplr.experimentalSuggestChain(configKeplr(_BECH32_PREFIX));
       await windowKeplr.enable(CHAIN_ID);
-      const offlineSigner = await windowKeplr.getOfflineSignerAuto(CHAIN_ID);
+      const offlineSigner = await windowKeplr.getOfflineSignerAuto(_CHAIN_ID);
 
-      const clientJs = await createClient(offlineSigner);
+      return offlineSigner;
+    },
+    [selectAddress]
+  );
 
-      setSigner(offlineSigner);
-      setSigningClient(clientJs);
+  const initSigner = useCallback(async () => {
+    const offlineSigner = await getOfflineSigner(CHAIN_ID);
+
+    if (!offlineSigner) {
+      return;
     }
-  }, [selectAddress]);
+
+    const clientJs = await createClient(offlineSigner);
+
+    setSigner(offlineSigner);
+    setSigningClient(clientJs);
+  }, [getOfflineSigner]);
 
   useEffect(() => {
     (async () => {
@@ -132,9 +159,30 @@ function SigningClientProvider({ children }: { children: React.ReactNode }) {
     });
   }, [initSigner]);
 
+  const getSignClientByChainId = useCallback(
+    async (chainId: Networks.BOSTROM | Networks.SPACE_PUSSY) => {
+      const offlineSigner = await getOfflineSigner(chainId);
+
+      if (!offlineSigner) {
+        return undefined;
+      }
+
+      const { RPC_URL: _RPC_URL } = defaultNetworks[chainId];
+
+      return SigningCyberClient.connectWithSigner(_RPC_URL, offlineSigner);
+    },
+    [getOfflineSigner]
+  );
+
   const value = useMemo(
-    () => ({ initSigner, signer, signingClient, signerReady }),
-    [signer, signingClient, signerReady, initSigner]
+    () => ({
+      initSigner,
+      signer,
+      signingClient,
+      signerReady,
+      getSignClientByChainId,
+    }),
+    [signer, signingClient, signerReady, initSigner, getSignClientByChainId]
   );
 
   return (

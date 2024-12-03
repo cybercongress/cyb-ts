@@ -1,6 +1,5 @@
 import {
   useReactTable,
-  Column,
   ColumnDef,
   getCoreRowModel,
   flexRender,
@@ -8,16 +7,15 @@ import {
   InitialTableState,
   SortingState,
   TableOptions,
-  SortingOptions,
 } from '@tanstack/react-table';
 
+import { useEffect, useState, useCallback } from 'react';
+import cx from 'classnames';
+import { sessionStorageKeys } from 'src/constants/sessionStorageKeys';
 import styles from './Table.module.scss';
 import Loader2 from '../ui/Loader2';
 import NoItems from '../ui/noItems';
-import { useEffect, useState, useCallback } from 'react';
-import cx from 'classnames';
 import Triangle from '../atoms/Triangle/Triangle';
-import { sessionStorageKeys } from 'src/constants/sessionStorageKeys';
 import { tableIDs } from './tableIDs';
 
 const storage = sessionStorage;
@@ -53,6 +51,7 @@ export type Props<T extends object> = {
 
   // maybe temporary
   enableSorting?: boolean;
+  hideHeader?: boolean;
 };
 
 function Table<T extends object>({
@@ -64,6 +63,7 @@ function Table<T extends object>({
   initialState,
   id,
   enableSorting = true,
+  hideHeader = false,
 }: Props<T>) {
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -115,10 +115,11 @@ function Table<T extends object>({
       <table
         className={cx(styles.table, {
           [styles.selectable]: !!onSelect,
+          [styles.hideHeader]: hideHeader,
         })}
         style={style}
       >
-        <thead>
+        <thead className={cx({ [styles.hideHeader]: hideHeader })}>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
