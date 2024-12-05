@@ -39,7 +39,7 @@ function createCozoDb() {
 
   const loadCozoDb = async () => {
     if (!process.env.IS_TAURI) {
-      console.log('[CozoDB] going to get new from indexedDB');
+      // console.log('[CozoDB] going to get new from indexedDB');
       db = await CozoDb.new_from_indexed_db(
         DB_NAME,
         DB_STORE_NAME,
@@ -47,7 +47,7 @@ function createCozoDb() {
       );
     }
 
-    console.log('[CozoDB] going to init db schema');
+    // console.log('[CozoDB] going to init db schema');
     await initDbSchema();
   };
 
@@ -57,9 +57,9 @@ function createCozoDb() {
       await initCozoDb();
     }
 
-    console.log('[CozoDB] going to load cozo db');
+    // console.log('[CozoDB] going to load cozo db');
     await loadCozoDb();
-    console.log('[CozoDB] cozo db loaded');
+    // console.log('[CozoDB] cozo db loaded');
 
     if (!process.env.IS_TAURI) {
       await performHardReset();
@@ -192,7 +192,7 @@ function createCozoDb() {
     command: string,
     immutable = false
   ): Promise<IDBResult> => {
-    console.log('[CozoDB] command', command);
+    // console.log('[CozoDB] command', command);
 
     if (!db && !process.env.IS_TAURI) {
       throw new Error('DB is not initialized');
@@ -201,7 +201,7 @@ function createCozoDb() {
       ? runHttpCommand(command, immutable)
       : runWasmCommand(command, immutable));
 
-    console.log('[CozoDB] command result:', result);
+    // console.log('[CozoDB] command result:', result);
 
     if (!result.ok) {
       console.log('----> runCommand error ', command, result);

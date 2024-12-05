@@ -60,7 +60,7 @@ pub async fn download_and_extract_ipfs() -> Result<(), String> {
 
 #[derive(Debug, Serialize)]
 pub enum IpfsError {
-    AlreadyRunning,
+    // AlreadyRunning,
     HomeDirNotFound,
     // CommandFailed(String),
     ConfigError(String),

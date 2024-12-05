@@ -23,6 +23,10 @@ async fn main() {
         start_server(app_state).await;
     });
 
+    if let Err(e) = start_ipfs() {
+        eprintln!("Failed to start IPFS: {:?}", e);
+    }
+
     tauri::Builder::default()
         .invoke_handler(generate_handler![
             download_and_extract_ipfs,
