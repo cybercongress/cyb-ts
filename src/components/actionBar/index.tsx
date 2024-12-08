@@ -1,34 +1,26 @@
 import React from 'react';
 import { $TsFixMeFunc } from 'src/types/tsfix';
 
-import { routes } from 'src/routes';
 import { useLocation } from 'react-router-dom';
-import { Networks } from 'src/types/networks';
+import { CHAIN_ID } from 'src/constants/config';
+import { useDevice } from 'src/contexts/device';
+import { useSigningClient } from 'src/contexts/signerClient';
 import usePassportByAddress from 'src/features/passport/hooks/usePassportByAddress';
 import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
-import { useSigningClient } from 'src/contexts/signerClient';
+import { routes } from 'src/routes';
+import { Networks } from 'src/types/networks';
 import { trimString } from 'src/utils/utils';
-import { CHAIN_ID } from 'src/constants/config';
-import { useDevice } from 'src/contexts/device';
+import Button from '../btnGrd';
 import ButtonIcon from '../buttons/ButtonIcon';
 import styles from './styles.module.scss';
-import Button from '../btnGrd';
 
 const back = require('../../image/arrow-left-img.svg');
 
-function ActionBarContainer({ children }) {
+function ActionBarContainer({ children }: { children: React.ReactNode }) {
   return (
     <div className={styles.ActionBarContainer}>
       <div className={styles.ActionBarContainerContent}>{children}</div>
-    </div>
-  );
-}
-
-function ActionBarContentText({ children, ...props }) {
-  return (
-    <div className={styles.ActionBarContentText} {...props}>
-      {children}
     </div>
   );
 }
@@ -141,7 +133,7 @@ function ActionBar({ children, text, onClickBack, button }: Props) {
         />
       )}
 
-      {content && <ActionBarContentText>{content}</ActionBarContentText>}
+      {content && <div className={styles.ActionBarContentText}>{content}</div>}
 
       {button?.text && (
         <Button

@@ -10,7 +10,7 @@ export enum IPFSNodes {
   HELIA = 'helia',
 }
 
-type IpfsNodeType = 'embedded' | 'external' | 'helia';
+export type IpfsNodeType = 'embedded' | 'external' | 'helia';
 
 export type IpfsFileStats = {
   type: 'file' | 'directory' | 'raw';

@@ -1,7 +1,7 @@
 import cx from 'classnames';
-import { $TsFixMe } from 'src/types/tsfix';
 import React, { ComponentProps } from 'react';
 import { Link } from 'react-router-dom';
+import { $TsFixMe } from 'src/types/tsfix';
 import { Dots } from '../ui/Dots';
 import styles from './Button.module.scss';
 
@@ -31,7 +31,7 @@ const playAudioClick = () => {
 //   audioBtnHoverObg.currentTime = 0;
 // };
 
-export type Props = {
+export interface Props extends Partial<HTMLButtonElement> {
   disabled?: boolean;
   text?: string | JSX.Element;
   img?: $TsFixMe;
@@ -42,10 +42,10 @@ export type Props = {
   link?: string;
   onClick?: () => void;
   small?: boolean;
-};
+}
 
 function Button({
-  disabled,
+  disabled = false,
   text,
   img,
   children,

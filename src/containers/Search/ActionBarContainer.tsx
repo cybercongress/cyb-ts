@@ -1,6 +1,7 @@
 /* eslint-disable */
-import React, { Component } from 'react';
+// @ts-expect-error no types
 import { Pane, ActionBar } from '@cybercongress/gravity';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
   TransactionSubmitted,
@@ -361,7 +362,6 @@ class ActionBarContainer extends Component<Props, any> {
           keys={addressLocalStor !== null ? addressLocalStor.keys : false}
           onClickBtn={this.onClickInit}
           contentHash={file?.name || contentHash}
-          searchHash={this.props.keywordHash}
           onChangeInputContentHash={this.onChangeInput}
           inputOpenFileRef={this.inputOpenFileRef}
           showOpenFileDlg={this.showOpenFileDlg}

@@ -1,65 +1,68 @@
 import {
-  Link,
-  HashRouter,
   BrowserRouter,
-  Routes,
-  Route,
+  HashRouter,
+  Link,
   Navigate,
+  Route,
+  Routes,
   useParams,
 } from 'react-router-dom';
 import App from './containers/application/App';
-import Home from './containers/home/home';
-import Validators from './containers/Validators/Validators';
-import Story from './containers/story/story';
-import TxsDetails from './containers/txs/txsDetails';
-import ValidatorsDetails from './containers/validator';
-import Ipfs from './containers/ipfs/ipfs';
-import BlockDetails from './containers/blok/blockDetails';
-import Txs from './containers/txs';
 import Block from './containers/blok';
-import ParamNetwork from './containers/parameters';
-import TrollBoxx from './containers/trollBox';
+import BlockDetails from './containers/blok/blockDetails';
 import ForceQuitter from './containers/forceGraph/forceQuitter';
-import TestKeplr from './containers/testKeplre';
-import Mint from './containers/mint';
+import Home from './containers/home/home';
+import Ipfs from './containers/ipfs/ipfs';
 import Market from './containers/market';
-import Oracle from './containers/oracle';
-import Objects from './containers/Objects';
-import Nebula from './containers/nebula';
+import Mint from './containers/mint';
 import Movie from './containers/movie';
+import Nebula from './containers/nebula';
+import Objects from './containers/Objects';
+import Oracle from './containers/oracle';
+import ParamNetwork from './containers/parameters';
 import PortalCitizenship from './containers/portal';
 import PortalGift from './containers/portal/gift';
 import Release from './containers/portal/release';
+import Story from './containers/story/story';
 import Temple from './containers/temple/Temple';
+import TestKeplr from './containers/testKeplre';
+import TrollBoxx from './containers/trollBox';
+import Txs from './containers/txs';
+import TxsDetails from './containers/txs/txsDetails';
+import ValidatorsDetails from './containers/validator';
+import Validators from './containers/Validators/Validators';
 // import IpfsSettings from './features/ipfs/ipfsSettings';
+import Help from './containers/help';
+import MainPartal from './containers/portal/mainPortal';
 import {
-  Codes,
   CodePage,
+  Codes,
   ContractPage,
   DashboardPage,
 } from './containers/wasm';
-import Help from './containers/help';
-import MainPartal from './containers/portal/mainPortal';
 
-import { routes } from './routes';
-import WarpDashboardPools from './containers/warp/WarpDashboardPools';
-import Warp from './containers/warp/Warp';
-import Robot from './pages/robot/Robot';
 import SigmaWrapper from './containers/sigma/SigmaWrapper';
+import Warp from './containers/warp/Warp';
+import WarpDashboardPools from './containers/warp/WarpDashboardPools';
 import Keys from './pages/Keys/Keys';
-import Teleport from './pages/teleport/Teleport';
 import OracleLanding from './pages/oracle/landing/OracleLanding';
 import Learn from './pages/oracle/Learn/Learn';
 import ToOracleAsk from './pages/redirects/ToOracleAsk';
+import Robot from './pages/robot/Robot';
 import Social from './pages/Social/Social';
+import Teleport from './pages/teleport/Teleport';
+import { routes } from './routes';
 // import Cybernet from './features/cybernet/ui/Cybernet';
-import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
-import Map from './pages/Portal/Map/Map';
-import BrainRoutes from './routing/Brain';
-import Settings from './pages/Settings/Settings';
+
+// import Cybernet from './features/cybernet/ui/Cybernet';
 import GovernanceRoutes from './containers/governance/GovernanceRoutes';
 import StudioWrapper from './features/studio/StudioWrapper';
+import Map from './pages/Portal/Map/Map';
+import FreestyleIde from './pages/robot/Soul/RuneEditor/FreestyleIde/FreestyleIde';
 import Filtering from './pages/Settings/Filtering/Filtering';
+import Settings from './pages/Settings/Settings';
+import Sign from './pages/Sign/Sign';
+import BrainRoutes from './routing/Brain';
 
 type WrappedRouterProps = {
   children: React.ReactNode;
@@ -80,7 +83,7 @@ function PageNotExist() {
         textAlign: 'center',
       }}
     >
-      page not exists
+      page does not exists
       <br />
       <Link to={routes.home.path}>Home</Link>
     </div>
@@ -120,6 +123,8 @@ function AppRouter() {
             path="/ipfs"
             element={<Navigate to={routes.settings.path} />}
           />
+
+          <Route path="/sign" element={<Sign />} />
 
           <Route path={routes.temple.path} element={<Temple />} />
           <Route path={routes.neuron.path} element={<Robot />} />

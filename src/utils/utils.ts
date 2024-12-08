@@ -9,6 +9,7 @@ import { Option } from 'src/types';
 import { Key } from '@keplr-wallet/types';
 import { AccountValue } from 'src/types/defaultAccount';
 import { BECH32_PREFIX, BECH32_PREFIX_VAL_CONS } from 'src/constants/config';
+import { localStorageKeys } from 'src/constants/localStorageKeys';
 import { LEDGER } from './config';
 
 import cyberSpace from '../image/large-purple-circle.png';
@@ -442,3 +443,9 @@ export {
   getNowUtcTime,
   accountsKeplr,
 };
+
+export const getMnemonic = () =>
+  localStorage.getItem(localStorageKeys.signer.mnemonic);
+
+export const setMnemonic = (mnemonic: string) =>
+  localStorage.setItem(localStorageKeys.signer.mnemonic, mnemonic);

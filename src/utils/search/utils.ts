@@ -2,8 +2,8 @@ import axios from 'axios';
 
 import { CyberClient } from '@cybercongress/cyber-js';
 import { LCD_URL } from 'src/constants/config';
-import { ParticleCid } from 'src/types/base';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
+import { ParticleCid } from 'src/types/base';
 
 import { getIpfsHash } from '../ipfs/helpers';
 import { encodeSlash } from '../utils';
@@ -94,7 +94,7 @@ export const keybaseCheck = async (identity) => {
   }
 };
 
-export const keybaseAvatar = async (identity) => {
+export const keybaseAvatar = async (identity: string) => {
   try {
     const response = await axios({
       method: 'get',

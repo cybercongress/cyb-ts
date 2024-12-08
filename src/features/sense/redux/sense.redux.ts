@@ -4,22 +4,22 @@ import {
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { SenseApi } from 'src/contexts/backend/services/senseApi';
+import type { SenseApi } from 'src/contexts/backend/services/senseApi';
+import type { RootState } from 'src/redux/store';
+import {
+  MsgMultiSendValue,
+  MsgSendValue,
+} from 'src/services/backend/services/indexer/types';
 import {
   SenseItemLinkMeta,
   SenseListItem,
   SenseListItemTransactionMeta,
 } from 'src/services/backend/types/sense';
 import { EntryType } from 'src/services/CozoDb/types/entities';
-import {
-  MsgMultiSendValue,
-  MsgSendValue,
-} from 'src/services/backend/services/indexer/types';
-import { RootState } from 'src/redux/store';
-// Add this import for generating unique thread IDs
-import { SenseItemId } from '../types/sense';
-import { isParticle } from '../../particle/utils';
 import { isWorker } from 'src/constants/config';
+import { isParticle } from '../../particle/utils';
+import { SenseItemId } from '../types/sense';
+// Add this import for generating unique thread IDs
 
 // similar to blockchain/tx/message type
 export type SenseItem = {
@@ -159,7 +159,7 @@ function formatApiData(item: SenseListItem): SenseItem {
 
     default:
       // sholdn't be
-      debugger;
+      // debugger;
       return {};
   }
 
@@ -566,7 +566,7 @@ export const {
   clearLLMThreads,
 } = slice.actions;
 
-export { getSenseList, getSenseChat, markAsRead };
+export { getSenseChat, getSenseList, markAsRead };
 
 // selectors
 export { selectUnreadCounts };

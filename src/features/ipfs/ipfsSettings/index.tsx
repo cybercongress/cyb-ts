@@ -1,25 +1,26 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Input, Button, Display, DisplayTitle } from 'src/components';
 import { Pane } from '@cybercongress/gravity';
+import { useCallback, useEffect, useState } from 'react';
+import { Button, Display, DisplayTitle, Input } from 'src/components';
 
-import { useAdviser } from 'src/features/adviser/context';
 import Select from 'src/containers/warp/components/Select';
-import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
-import BtnPassport from '../../../containers/portal/pasport/btnPasport';
-import {
-  updateIpfsStateUrl,
-  updateIpfsStateType,
-  updateUserGatewayUrl,
-  renderOptions,
-  ContainerKeyValue,
-} from './ipfsComponents/utilsComponents';
-import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
-import ErrorIpfsSettings from './ErrorIpfsSettings';
-import ComponentLoader from './ipfsComponents/ipfsLoader';
-import Drive from '../Drive';
 import { useBackend } from 'src/contexts/backend/backend';
-import { IPFSNodes } from 'src/services/ipfs/types';
+import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
+import { useAdviser } from 'src/features/adviser/context';
 import { getIpfsOpts } from 'src/services/ipfs/config';
+import { IPFSNodes } from 'src/services/ipfs/types';
+import { invoke } from '@tauri-apps/api/tauri';
+import BtnPassport from '../../../containers/portal/pasport/btnPasport';
+import Drive from '../Drive';
+import ErrorIpfsSettings from './ErrorIpfsSettings';
+import InfoIpfsNode from './ipfsComponents/infoIpfsNode';
+import ComponentLoader from './ipfsComponents/ipfsLoader';
+import {
+  ContainerKeyValue,
+  renderOptions,
+  updateIpfsStateType,
+  updateIpfsStateUrl,
+  updateUserGatewayUrl,
+} from './ipfsComponents/utilsComponents';
 
 const dataOpts = [IPFSNodes.EXTERNAL, IPFSNodes.EMBEDDED, IPFSNodes.HELIA];
 
@@ -46,7 +47,7 @@ function IpfsSettings() {
 
   useEffect(() => {
     let text;
-    let status: AdviserColors = undefined;
+    let status: AdviserColors;
     if (!isIpfsInitialized) {
       text = 'trying to connect to ipfs...';
       status = 'yellow';
@@ -75,11 +76,22 @@ function IpfsSettings() {
     updateUserGatewayUrl(valueInputGateway);
   }, [valueInputGateway]);
 
-  const onClickReConnect = () => {
-    ipfsApi
-      ?.stop()
-      .then(() => ipfsApi?.start(getIpfsOpts()))
-      .then();
+  const onClickReConnect = async () => {
+    if (process.env.IS_TAURI) {
+      try {
+        console.log('Restarting IPFS');
+
+        await invoke('stop_ipfs');
+        await invoke('start_ipfs');
+
+        console.log('IPFS restarted');
+      } catch (error) {
+        console.error('Error restarting IPFS', error);
+      }
+    }
+
+    await ipfsApi?.stop().catch(console.error);
+    await ipfsApi?.start(getIpfsOpts()).catch(console.error);
   };
 
   const stateProps = {

@@ -1,20 +1,20 @@
-import { useAppSelector, useAppDispatch } from 'src/redux/hooks';
+import cx from 'classnames';
 import Display from 'src/components/containerGradient/Display/Display';
 import Loader2 from 'src/components/ui/Loader2';
-import cx from 'classnames';
 import { isParticle } from 'src/features/particle/utils';
 import {
-  selectLLMThread,
   createLLMThread,
+  selectLLMThread,
 } from 'src/features/sense/redux/sense.redux';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
 import { v4 as uuidv4 } from 'uuid';
+import type { AdviserProps } from '../Sense';
+import { Filters } from '../types';
+import NewThreadBtn from './NewThreadBtn/NewThreadBtn';
 import styles from './SenseList.module.scss';
 import SenseListFilters from './SenseListFilters/SenseListFilters';
-import { Filters } from '../types';
-import { AdviserProps } from '../Sense';
-import SenseListItemContainer from './SenseListItem/SenseListItem.container';
 import SenseListItem from './SenseListItem/SenseListItem';
-import NewThreadBtn from './NewThreadBtn/NewThreadBtn';
+import SenseListItemContainer from './SenseListItem/SenseListItem.container';
 
 type Props = {
   select: (id: string) => void;

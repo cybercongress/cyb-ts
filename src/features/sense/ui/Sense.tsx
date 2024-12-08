@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react';
-import SenseViewer from 'src/features/sense/ui/SenseViewer/SenseViewer';
-import SenseList from 'src/features/sense/ui/SenseList/SenseList';
 import cx from 'classnames';
-import { useAdviser } from 'src/features/adviser/context';
-import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useBackend } from 'src/contexts/backend/backend';
+import { useAdviser } from 'src/features/adviser/context';
 import {
   getSenseChat,
   getSenseList,
 } from 'src/features/sense/redux/sense.redux';
-import { useNavigate, useParams } from 'react-router-dom';
-import { convertTimestampToString } from 'src/utils/date';
+import SenseList from 'src/features/sense/ui/SenseList/SenseList';
+import SenseViewer from 'src/features/sense/ui/SenseViewer/SenseViewer';
 import { useRobotContext } from 'src/pages/robot/robot.context';
-import styles from './Sense.module.scss';
-import ActionBarLLM from './ActionBar/ActionBarLLM';
+import { useAppDispatch, useAppSelector } from 'src/redux/hooks';
+import { convertTimestampToString } from 'src/utils/date';
 import ActionBar from './ActionBar/ActionBar';
+import ActionBarLLM from './ActionBar/ActionBarLLM';
+import styles from './Sense.module.scss';
 import { Filters } from './types';
 
 export type AdviserProps = {

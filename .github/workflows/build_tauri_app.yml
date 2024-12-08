@@ -1,0 +1,79 @@
+name: 'publish_tauri_app'
+
+on:
+  push:
+    tags:
+    - '*'
+  workflow_dispatch:
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # for Intel based macs.
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.settings.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: install dependencies (ubuntu only)
+        if: matrix.settings.platform == 'ubuntu-22.04' # This must match the platform value defined above.
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y build-essential libssl-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+            echo "PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig" >> $GITHUB_ENV
+            echo "LIBRARY_PATH=\$LIBRARY_PATH:/usr/local/opt/openssl/lib" >> $GITHUB_ENV
+            echo "C_INCLUDE_PATH=\$C_INCLUDE_PATH:/usr/local/opt/openssl/include" >> $GITHUB_ENV
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: cache node modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+            ~/.yarn/cache
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.settings.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: install deps
+        run: yarn install
+
+      - name: install frontend dependencies
+        run: yarn tauri build ${{ matrix.settings.args }}
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_RELEASE_ACCESS_TOKEN }}
+        with:
+          tauriScript: true
+          tagName: cyb-tauri-${{ github.sha }}
+          releaseName: 'Cyb standalone app ${{ github.sha }}'
+          releaseBody: 'See the assets to install this version.'
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.settings.args }}

@@ -1,7 +1,7 @@
-import { NeuronAddress, ParticleCid } from 'src/types/base';
 import { CID_FOLLOW } from 'src/constants/app';
-import { getIpfsHash } from 'src/utils/ipfs/helpers';
 import { getTransactions } from 'src/services/transactions/lcd';
+import { NeuronAddress, ParticleCid } from 'src/types/base';
+import { getIpfsHash } from 'src/utils/ipfs/helpers';
 
 export const getFollowsAsCid = async (
   address: NeuronAddress,
@@ -31,7 +31,7 @@ export const getFollowsAsCid = async (
   }
 
   return response.txResponses.map(
-    (item) => item?.tx?.body.messages[0].links[0].to
+    (item) => item?.tx?.body?.messages[0].links[0].to
   );
 };
 
@@ -65,5 +65,10 @@ export const getFollowers = async (
     return [];
   }
 
-  return response.txResponses.map((item) => item?.tx?.body.messages[0].neuron);
+  // debugger;
+  // check
+
+  return response.txResponses
+    .map((item) => item?.tx?.body?.messages?.[0].value?.neuron)
+    .filter(Boolean);
 };

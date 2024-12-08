@@ -1,32 +1,37 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Link, Outlet, matchPath, useLocation } from 'react-router-dom';
 
-import { initPocket } from 'src/redux/features/pocket';
 import MainLayout from 'src/layouts/Main';
+import { initPocket } from 'src/redux/features/pocket';
 
-import { getPassport } from 'src/features/passport/passports.redux';
-import { useAdviser } from 'src/features/adviser/context';
-import { routes } from 'src/routes';
-import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
 import { useBackend } from 'src/contexts/backend/backend';
+import { AdviserColors } from 'src/features/adviser/Adviser/Adviser';
+import { useAdviser } from 'src/features/adviser/context';
+import { getPassport } from 'src/features/passport/passports.redux';
+import { routes } from 'src/routes';
 
-import { useAppDispatch } from 'src/redux/hooks';
+import AdviserContainer from 'src/features/adviser/AdviserContainer';
 import useSenseManager from 'src/features/sense/ui/useSenseManager';
-
+import { useAppDispatch } from 'src/redux/hooks';
 import { initCyblog } from 'src/utils/logging/bootstrap';
 
-import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
-import { PreviousPageProvider } from 'src/contexts/previousPage';
-import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
-import useCurrentAddress from 'src/hooks/useCurrentAddress';
-import NewVersionChecker from 'src/components/NewVersionChecker/NewVersionChecker';
-import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+// eslint-disable-next-line unused-imports/no-unused-imports, @typescript-eslint/no-unused-vars
+
 import { MainContainer } from 'src/components';
+import NewVersionChecker from 'src/components/NewVersionChecker/NewVersionChecker';
+import SignerModal, {
+  SignerModalRef,
+} from 'src/components/signer-modal/signer-modal';
 import { useDevice } from 'src/contexts/device';
-import AdviserContainer from '../../features/adviser/AdviserContainer';
-import styles from './styles.scss';
+import { PreviousPageProvider } from 'src/contexts/previousPage';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
+import { cybernetRoutes } from 'src/features/cybernet/ui/routes';
+import { setTimeHistoryRoute } from 'src/features/TimeHistory/redux/TimeHistory.redux';
+import useCurrentAddress from 'src/hooks/useCurrentAddress';
+import { signerModalHandler } from 'src/services/signer/signer-modal-handler';
 import { setFocus } from './Header/Commander/commander.redux';
 import { mobileAllowedRoutes } from './mobileAllowedRoutes';
+import styles from './styles.scss';
 import UseDesktopVersionBlock from './UseDesktopVersionBlock/UseDesktopVersionBlock';
 
 export const PORTAL_ID = 'portal';
@@ -37,9 +42,7 @@ function App() {
   const dispatch = useAppDispatch();
   const address = useCurrentAddress();
 
-  // const { community, communityLoaded } = useGetCommunity(address || null, {
-  //   main: true,
-  // });
+  const signerModalRef = useRef<SignerModalRef>(null);
 
   const location = useLocation();
   const adviserContext = useAdviser();
@@ -50,6 +53,12 @@ function App() {
   useEffect(() => {
     dispatch(initPocket());
   }, []);
+
+  useEffect(() => {
+    if (signerModalRef?.current) {
+      signerModalHandler.setSignerModalRef(signerModalRef.current);
+    }
+  }, [signerModalRef]);
 
   useEffect(() => {
     if (!address) {
@@ -168,6 +177,7 @@ function App() {
           )}
         </>
       </MainLayout>
+      <SignerModal ref={signerModalRef} />
     </PreviousPageProvider>
   );
 }

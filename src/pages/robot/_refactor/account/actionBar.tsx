@@ -1,30 +1,31 @@
-import React, { Component } from 'react';
+/* eslint-disable */
 import { ActionBar } from '@cybercongress/gravity';
+import React, { Component } from 'react';
 import { PATTERN_IPFS_HASH } from 'src/constants/patterns';
 
-import { sendCyberlink } from 'src/services/neuron/neuronApi';
-import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
-import { routes } from 'src/routes';
 import { createSearchParams } from 'react-router-dom';
-import { AccountValue } from 'src/types/defaultAccount';
+import { CID_FOLLOW, CID_TWEET } from 'src/constants/app';
 import { useBackend } from 'src/contexts/backend/backend';
-import { useSigningClient } from 'src/contexts/signerClient';
 import { useQueryClient } from 'src/contexts/queryClient';
+import { useSigningClient } from 'src/contexts/signerClient';
+import { routes } from 'src/routes';
+import { sendCyberlink } from 'src/services/neuron/neuronApi';
 import { getTxs } from 'src/services/transactions/lcd';
+import { AccountValue } from 'src/types/defaultAccount';
 import withIpfsAndKeplr from '../../../../hocs/withIpfsAndKeplr';
 
-import { LEDGER } from '../../../../utils/config';
 import {
-  TransactionSubmitted,
+  ActionBar as ActionBarComp,
+  ActionBarContentText,
+  Button,
   Confirmed,
+  Dots,
   RewardsDelegators,
   StartStageSearchActionBar,
   TransactionError,
-  Dots,
-  ActionBarContentText,
-  ActionBar as ActionBarComp,
-  Button,
+  TransactionSubmitted,
 } from '../../../../components';
+import { LEDGER } from '../../../../utils/config';
 
 const {
   STAGE_INIT,
@@ -300,7 +301,11 @@ class ActionBarContainer extends Component<Props> {
     const isOwner = defaultAccount && defaultAccount.bech32 === addressSend;
 
     if (stage === STAGE_INIT) {
-      const followBtn = <Button onClick={this.onClickSend}>Follow</Button>;
+      const followBtn = (
+        <Button key={'action-bar-button-follow'} onClick={this.onClickSend}>
+          Follow
+        </Button>
+      );
 
       const content = [];
 
@@ -352,7 +357,14 @@ class ActionBarContainer extends Component<Props> {
       }
 
       if (type === 'security' && isOwner && defaultAccount.keys === 'keplr') {
-        content.push(<Button onClick={this.onClickSend}>Claim rewards</Button>);
+        content.push(
+          <Button
+            key={'action-bar-button-claim-rewards'}
+            onClick={this.onClickSend}
+          >
+            Claim rewards
+          </Button>
+        );
       }
 
       return <ActionBarComp>{content}</ActionBarComp>;
