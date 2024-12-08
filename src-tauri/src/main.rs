@@ -23,7 +23,7 @@ async fn main() {
         start_server(app_state).await;
     });
 
-    if let Err(e) = start_ipfs() {
+    if let Err(e) = start_ipfs().await {
         eprintln!("Failed to start IPFS: {:?}", e);
     }
 

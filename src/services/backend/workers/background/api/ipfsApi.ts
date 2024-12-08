@@ -1,5 +1,4 @@
-import { proxy } from 'comlink';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import QueueManager from 'src/services/QueueManager/QueueManager';
 import {
   QueueItemCallback,
@@ -36,15 +35,19 @@ export const createIpfsApi = (
 
   const startIpfs = async (ipfsOpts: IpfsOptsType) => {
     try {
+      console.log('🔋 ipfs node init start');
+
       const ipfsNode = ipfsInstance$.getValue();
       if (ipfsNode) {
-        // console.log('Ipfs node already started!');
+        console.log('🔋 Ipfs node already started!');
+
         setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
         return Promise.resolve();
         // await ipfsNode.stop();
       }
-      broadcastApi.postServiceStatus('ipfs', 'starting');
+
       console.time('🔋 ipfs initialized');
+      broadcastApi.postServiceStatus('ipfs', 'starting');
 
       const newIpfsNode = await initIpfsNode(ipfsOpts);
       console.timeEnd('🔋 ipfs initialized');
@@ -53,7 +56,7 @@ export const createIpfsApi = (
       setTimeout(() => broadcastApi.postServiceStatus('ipfs', 'started'), 0);
       return true;
     } catch (err) {
-      console.log('----ipfs node init error ', err);
+      console.log('🔋 ipfs node init error ', err);
       const msg = err instanceof Error ? err.message : (err as string);
       broadcastApi.postServiceStatus('ipfs', 'error', msg);
       throw Error(msg);

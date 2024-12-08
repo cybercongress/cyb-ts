@@ -41,17 +41,25 @@ class KuboNode implements IpfsNode {
   }
 
   async init(options?: InitOptions) {
+    console.log('🔋 ipfs KuboNode init', options);
+
     this.node = createKuboClient(options);
+    console.log('🔋 ipfs KuboNode initialized', this.node);
+
+    console.log('🔋 ipfs config init');
     this._config = await this.initConfig();
+    console.log('🔋 ipfs config initialized', this._config);
 
     if (typeof window !== 'undefined') {
       window.node = this.node;
       window.toCid = stringToCid;
     }
-    console.log(
-      'IPFS - Kubo addrs',
-      (await this.node.swarm.localAddrs()).map((a) => a.toString())
-    );
+
+    // const kuboAddresses = (await this.node.swarm.localAddrs()).map((a) =>
+    //   a.toString()
+    // );
+    // console.log('🔋 ipfs - Kubo addrs', kuboAddresses);
+
     this._isStarted = true;
   }
 
@@ -87,8 +95,9 @@ class KuboNode implements IpfsNode {
     return (await this.node!.swarm.peers()).map((c) => c.peer.toString());
   }
 
-  async stop() {}
-  async start() {}
+  async stop() { }
+
+  async start() { }
 
   async connectPeer(address: string) {
     const addr = multiaddr(address);
