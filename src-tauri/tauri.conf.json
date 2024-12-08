@@ -55,11 +55,22 @@
     },
     "windows": [
       {
+        "label": "main",
         "fullscreen": false,
         "height": 760,
         "resizable": true,
         "title": "BOSTROM cyb.ai",
         "width": 1200
+      },
+      {
+        "label": "splashscreen",
+        "fullscreen": false,
+        "height": 760,
+        "resizable": false,
+        "decorations": false,
+        "title": "BOSTROM cyb.ai",
+        "width": 1200,
+        "url": "splashscreen.html"
       }
     ]
   }

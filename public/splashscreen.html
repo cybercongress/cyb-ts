@@ -1,0 +1,9 @@
+<body style="width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: black;color: white;">
+  <img width="300" src="images/robot.svg" />
+  <div id="message"></div>
+  <script>
+    window.updateSplashMessage = (text) => {
+      document.getElementById('message').innerText = text;
+    };
+  </script>
+</body>

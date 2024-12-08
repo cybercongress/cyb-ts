@@ -4,6 +4,7 @@
 mod db;
 mod ipfs;
 mod server;
+mod utils;
 
 use std::sync::Arc;
 
@@ -13,7 +14,8 @@ use ipfs::{
     start_ipfs, stop_ipfs,
 };
 use server::start_server;
-use tauri::generate_handler;
+use tauri::{generate_handler, Manager};
+use utils::update_splash_message;
 
 #[tokio::main]
 async fn main() {
@@ -37,6 +39,43 @@ async fn main() {
             is_ipfs_initialized,
             init_ipfs
         ])
+        .setup(|app| {
+            println!("[CYB.AI] Starting setup...");
+
+            println!("[CYB.AI] Getting splash screen window...");
+            let splashscreen_window = app.get_window("splashscreen").unwrap();
+            println!("[CYB.AI] Splash screen window reference is obtained!");
+
+            println!("[CYB.AI] Going to show splash screen window...");
+            splashscreen_window.show().unwrap();
+            println!("[CYB.AI] Splash screen window must be shown!");
+
+            println!("[CYB.AI] Getting main window...");
+            let main_window = app.get_window("main").unwrap();
+            println!("[CYB.AI] Main window reference is obtained!");
+
+            tauri::async_runtime::spawn(async move {
+                println!("[CYB.AI] Waiting for 15 seconds...");
+                update_splash_message(
+                    splashscreen_window.clone(),
+                    "updated from setup".to_string(),
+                )
+                .await;
+
+                tokio::time::sleep(tokio::time::Duration::from_secs(15)).await; // Use async sleep
+                println!("[CYB.AI] Waiting for 15 seconds completed!");
+
+                println!("[CYB.AI] Going to show main window...");
+                main_window.show().unwrap();
+                println!("[CYB.AI] Main window must be shown!");
+
+                println!("[CYB.AI] Going to close splash screen window...");
+                splashscreen_window.close().unwrap();
+                println!("[CYB.AI] Splash screen window must be closed!");
+            });
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
