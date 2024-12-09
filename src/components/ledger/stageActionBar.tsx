@@ -289,8 +289,7 @@ export function ReDelegate({
         <option value="">pick hero</option>
         {validatorsAll
           .filter(
-            (validator) =>
-              BondStatus[validator.status] === BondStatus.BOND_STATUS_BONDED
+            (validator) => validator.status === BondStatus.BOND_STATUS_BONDED
           )
           .map((item) => (
             <option
