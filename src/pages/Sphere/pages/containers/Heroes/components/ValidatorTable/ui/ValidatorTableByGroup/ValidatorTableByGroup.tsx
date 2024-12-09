@@ -1,13 +1,10 @@
-import { useMemo } from 'react';
-import Table from 'src/components/Table/Table';
-import _ from 'lodash';
 import BigNumber from 'bignumber.js';
+import { ValidatorTableData } from 'src/pages/Sphere/types/tableData';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
-import { ValidatorTableData } from '../../../../../types/tableData';
-import renderColumnsData from './map';
-import TransitionContainer from './ui/TransitionContainer/TransitionContainer';
+import Table from 'src/components/Table/Table';
+import TransitionContainer from '../TransitionContainer/TransitionContainer';
 
-function TableGroup({
+function ValidatorTableByGroup({
   data,
   columns,
   onSelect,
@@ -52,7 +49,7 @@ function TableGroup({
             <Table
               data={itemData}
               columns={columns}
-              enableSorting={!(itemData.length === 1)}
+              hideHeader
               onSelect={(row) => {
                 onSelect(row ? itemData[Number(row)] : undefined);
               }}
@@ -64,30 +61,4 @@ function TableGroup({
   );
 }
 
-function ValidatorTable({
-  data,
-  onSelect,
-}: {
-  data: ValidatorTableData[];
-  onSelect: (row?: ValidatorTableData) => void;
-}) {
-  const columns = useMemo(() => renderColumnsData(), []);
-
-  const dataGroup = useMemo(() => {
-    return _.groupBy(data, (item) => item.rank);
-  }, [data]);
-
-  return <TableGroup data={dataGroup} columns={columns} onSelect={onSelect} />;
-
-  // return (
-  //   <Table
-  //     data={data}
-  //     columns={columns}
-  //     onSelect={(row) => {
-  //       onSelect(row ? data[Number(row)] : undefined);
-  //     }}
-  //   />
-  // );
-}
-
-export default ValidatorTable;
+export default ValidatorTableByGroup;

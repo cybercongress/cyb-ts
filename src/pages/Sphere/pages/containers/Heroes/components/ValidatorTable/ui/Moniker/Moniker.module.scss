@@ -5,14 +5,14 @@
   align-items: center;
   position: relative;
 
-  >img {
+  > img {
     width: 30px !important;
     height: 30px !important;
   }
 
   .moniker {
     text-align: start;
-    text-Overflow: ellipsis;
+    text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     text-transform: none !important;

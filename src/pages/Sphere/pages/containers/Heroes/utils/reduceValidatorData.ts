@@ -4,7 +4,7 @@ import {
 } from '@cybercongress/cyber-ts/cosmos/staking/v1beta1/staking';
 import BigNumber from 'bignumber.js';
 import { Coin } from '@cosmjs/stargate';
-import { ValidatorTableData } from '../../../../types/tableData';
+import { RankHeroes, ValidatorTableData } from '../../../../types/tableData';
 
 type Options = {
   bondedTokens: number;
@@ -16,28 +16,28 @@ const checkRank = (
   percent: number,
   id: number,
   status: ValidatorTableData['status']
-): ValidatorTableData['rank'] => {
+): RankHeroes => {
   if (id === 0) {
-    return 'imperator';
+    return RankHeroes.imperator;
   }
 
   if (status === BondStatus.BOND_STATUS_BONDED && percent < 0.33) {
-    return 'jedi';
+    return RankHeroes.jedi;
   }
 
   if (status === BondStatus.BOND_STATUS_BONDED && percent < 0.67) {
-    return 'padawan';
+    return RankHeroes.padawan;
   }
 
   if (status === BondStatus.BOND_STATUS_UNBONDING) {
-    return 'relax';
+    return RankHeroes.relax;
   }
 
   if (status === BondStatus.BOND_STATUS_UNBONDED) {
-    return 'inactive';
+    return RankHeroes.inactive;
   }
 
-  return 'heroes';
+  return RankHeroes.heroes;
 };
 
 function reduceValidatorData(data: Validator[], options: Options) {

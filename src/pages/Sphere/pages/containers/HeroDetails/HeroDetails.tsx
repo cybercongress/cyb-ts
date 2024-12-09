@@ -62,9 +62,8 @@ function HeroDetails() {
           staked,
           reward,
           info: {
-            moniker: validatorInfo.description.moniker,
+            ...validatorInfo.description,
             status: validatorInfo.status,
-            identity: validatorInfo.description.identity,
           },
         }}
       />

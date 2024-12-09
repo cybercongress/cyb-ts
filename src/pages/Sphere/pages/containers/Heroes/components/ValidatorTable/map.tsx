@@ -2,7 +2,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import BigNumber from 'bignumber.js';
 import { FormatNumber } from 'src/components';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
-import { ValidatorTableData } from '../../../../../types/tableData';
+import { RankHeroes, ValidatorTableData } from '../../../../../types/tableData';
 import Moniker from './ui/Moniker/Moniker';
 import VotingPower from './ui/VotingPower/VoitingPower';
 
@@ -18,21 +18,17 @@ const renderColumnsData = () => [
         <span
           style={{
             color:
-              rank === '33' ? '#FF0000' : rank === '67' ? '#FFCA42' : '#fff',
+              rank === RankHeroes.jedi || rank === RankHeroes.imperator
+                ? '#FF0000'
+                : rank === RankHeroes.padawan
+                ? '#FFCA42'
+                : '#fff',
             fontSize: '14px',
           }}
         >
           {id}
         </span>
       );
-    },
-  }),
-  columnHelper.accessor('rank', {
-    header: 'rank',
-
-    cell: (info) => {
-      const item = info.getValue();
-      return item;
     },
   }),
   columnHelper.accessor('description.moniker', {

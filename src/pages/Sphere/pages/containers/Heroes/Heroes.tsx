@@ -25,9 +25,7 @@ function Heroes() {
     refetchFunc,
   } = useSphereContext();
 
-  const [validatorSelect, setValidatorSelect] = useState<
-    ValidatorTableData | undefined
-  >(undefined);
+  const [validatorSelect, setValidatorSelect] = useState<ValidatorTableData>();
 
   const { setAdviser } = useAdviser();
 
