@@ -72,7 +72,7 @@ function Heroes() {
           delegationsData,
           stakingProvisions,
         })}
-        onSelect={setValidatorSelect}
+        onSelectRow={setValidatorSelect}
       />
 
       <ActionBarContainer updateFnc={updateFnc} validators={validatorSelect} />

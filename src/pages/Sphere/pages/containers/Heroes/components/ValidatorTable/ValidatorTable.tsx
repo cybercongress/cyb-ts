@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash';
 import { Display, Tabs } from 'src/components';
 import Table from 'src/components/Table/Table';
@@ -27,10 +27,10 @@ const TabsKeyConfig = {
 
 function ValidatorTable({
   data,
-  onSelect,
+  onSelectRow,
 }: {
   data: ValidatorTableData[];
-  onSelect: (row?: ValidatorTableData) => void;
+  onSelectRow: (row?: ValidatorTableData) => void;
 }) {
   const [selected, setSelected] = useState<TabsKey>(TabsKey.power);
   const columns = useMemo(() => renderColumnsData(), []);
@@ -52,6 +52,14 @@ function ValidatorTable({
     return _.groupBy(data, (item) => item.rank);
   }, [data, selected]);
 
+  const handleOnClickTab = useCallback(
+    (type: TabsKey) => {
+      setSelected(type);
+      onSelectRow(undefined);
+    },
+    [onSelectRow]
+  );
+
   return (
     <>
       <Tabs
@@ -60,7 +68,7 @@ function ValidatorTable({
           return {
             text: TabsKeyConfig[type].title,
             key: type,
-            onClick: () => setSelected(type),
+            onClick: () => handleOnClickTab(type),
           };
         })}
       />
@@ -69,7 +77,7 @@ function ValidatorTable({
         <ValidatorTableByGroup
           data={dataBySelected}
           columns={columns}
-          onSelect={onSelect}
+          onSelect={onSelectRow}
         />
       ) : (
         <Display noPadding>
@@ -79,7 +87,7 @@ function ValidatorTable({
             hideHeader
             enableSorting={false}
             onSelect={(row) => {
-              onSelect(row ? data[Number(row)] : undefined);
+              onSelectRow(row ? data[Number(row)] : undefined);
             }}
           />
         </Display>
