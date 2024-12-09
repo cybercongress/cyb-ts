@@ -6,7 +6,7 @@ import {
   DENOM_LIQUID,
 } from 'src/constants/config';
 
-import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
+import { getDelegatorDelegations } from 'src/features/staking/delegation/getDelegatorDelegations';
 import { useCyberClient } from 'src/contexts/queryCyberClient';
 import { coinDecimals, fromBech32 } from '../../../../../utils/utils';
 import useGetSlots from '../../../../../containers/mint/useGetSlots';

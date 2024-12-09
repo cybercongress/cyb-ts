@@ -2,9 +2,11 @@ import { createColumnHelper } from '@tanstack/react-table';
 import BigNumber from 'bignumber.js';
 import { FormatNumber } from 'src/components';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
-import { RankHeroes, ValidatorTableData } from '../../../../../types/tableData';
-import Moniker from './ui/Moniker/Moniker';
-import VotingPower from './ui/VotingPower/VoitingPower';
+import cx from 'classnames';
+import { ValidatorTableData } from '../../../../../../types/tableData';
+import Moniker from '../ui/Moniker/Moniker';
+import VotingPower from '../ui/VotingPower/VoitingPower';
+import styles from './mapValidatorTable.module.scss';
 
 const columnHelper = createColumnHelper<ValidatorTableData>();
 
@@ -14,21 +16,7 @@ const renderColumnsData = () => [
     size: 70,
     cell: (info) => {
       const { id, rank } = info.row.original;
-      return (
-        <span
-          style={{
-            color:
-              rank === RankHeroes.jedi || rank === RankHeroes.imperator
-                ? '#FF0000'
-                : rank === RankHeroes.padawan
-                ? '#FFCA42'
-                : '#fff',
-            fontSize: '14px',
-          }}
-        >
-          {id}
-        </span>
-      );
+      return <span className={cx(styles.idStatus, styles[rank])}>{id}</span>;
     },
   }),
   columnHelper.accessor('description.moniker', {

@@ -1,22 +1,8 @@
-import { Pane } from '@cybercongress/gravity';
 import { CardStatisics, Dots } from 'src/components';
 import IconsNumber from 'src/components/IconsNumber/IconsNumber';
 import { BASE_DENOM } from 'src/constants/config';
 import { useGetBalance } from 'src/containers/sigma/hooks/utils';
-
-function ContainerGrid({ children }) {
-  return (
-    <Pane
-      marginTop={10}
-      marginBottom={50}
-      display="grid"
-      gridTemplateColumns="repeat(auto-fit, minmax(220px, 1fr))"
-      gridGap="20px"
-    >
-      {children}
-    </Pane>
-  );
-}
+import styles from './InfoBalance.module.scss';
 
 function InfoBalance({
   balance,
@@ -28,7 +14,7 @@ function InfoBalance({
   apr?: string;
 }) {
   return (
-    <ContainerGrid>
+    <div className={styles.containerGrid}>
       <CardStatisics
         title="available"
         value={
@@ -72,7 +58,7 @@ function InfoBalance({
       />
 
       {apr && <CardStatisics title="APR, %" value={apr} />}
-    </ContainerGrid>
+    </div>
   );
 }
 

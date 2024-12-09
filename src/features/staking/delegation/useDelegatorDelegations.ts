@@ -1,7 +1,7 @@
 import { Coin } from '@cosmjs/stargate';
 import { useQuery } from '@tanstack/react-query';
 import { useCyberClient } from 'src/contexts/queryCyberClient';
-import { getDelegatorDelegations } from 'src/features/staking/getDelegatorDelegations';
+import { getDelegatorDelegations } from 'src/features/staking/delegation/getDelegatorDelegations';
 
 function useDelegatorDelegations(addressActive?: string) {
   const { rpc } = useCyberClient();

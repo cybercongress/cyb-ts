@@ -5,28 +5,29 @@ import { useParams } from 'react-router-dom';
 import { useSphereContext } from 'src/pages/Sphere/Sphere.context';
 import { Tabs } from 'src/components';
 import { useCallback } from 'react';
+import { routes } from 'src/routes';
 import Statistics from './components/Statistics/Statistics';
 import Details from './components/Details/Details';
 import reduceDetails from './utils/reduceDetails';
-import useSelfDelegation from './hooks/useSelfDelegation';
-import useDelegationRewards from './hooks/useDelegationRewards';
+import useSelfDelegation from '../../../../../features/staking/delegation/useSelfDelegation';
+import useDelegationRewards from '../../../../../features/staking/rewards/useDelegationRewards';
 import useValidatorByContext from './hooks/useValidatorByContext';
-import useValidatorDelegations from './hooks/useValidatorDelegations';
+import useValidatorDelegations from '../../../../../features/staking/delegation/useValidatorDelegations';
 import ActionBarContainer from '../../components/ActionBarContainer/ActionBarContainer';
 import Leadership from './components/Leadership/Leadership';
 import Rumors from './components/Rumors/Rumors';
 import SearchResultsTab from './components/SearchResultsTab/SearchResultsTab';
 
-const mapTabs = [
-  { key: 'main', to: '' },
-  { key: 'rumors', to: 'rumors' },
-  { key: 'leadership', to: 'leadership' },
-  { key: 'search', to: 'search' },
-];
+enum TabsKey {
+  main = 'main',
+  rumors = 'rumors',
+  leadership = 'leadership',
+  search = 'search',
+}
 
 function HeroDetails() {
   const addressActive = useAppSelector(selectCurrentAddress);
-  const { address: operatorAddress, tab = 'main' } = useParams();
+  const { address: operatorAddress, tab = TabsKey.main } = useParams();
   const { delegationsData, bondedTokens, stakingProvisions, refetchFunc } =
     useSphereContext();
 
@@ -69,14 +70,17 @@ function HeroDetails() {
       />
 
       <Tabs
-        selected={tab || 'main'}
-        options={mapTabs.map((item) => ({
-          key: item.key,
-          to: `/sphere/hero/${validatorInfo.operatorAddress}/${item.to}`,
+        selected={tab}
+        options={Object.keys(TabsKey).map((item) => ({
+          key: item,
+          to: routes.hero.getLinkToTab(
+            validatorInfo.operatorAddress,
+            item === TabsKey.main ? '' : item
+          ),
         }))}
       />
 
-      {tab === 'main' && (
+      {tab === TabsKey.main && (
         <Details
           data={validatorInfo}
           options={{
@@ -90,18 +94,18 @@ function HeroDetails() {
           }}
         />
       )}
-      {tab === 'rumors' && (
+      {tab === TabsKey.rumors && (
         <Rumors accountUser={validatorInfo.operatorAddress} />
       )}
-      {tab === 'leadership' && (
+      {tab === TabsKey.leadership && (
         <Leadership accountUser={validatorInfo.operatorAddress} />
       )}
 
-      {tab === 'search' && (
+      {tab === TabsKey.search && (
         <SearchResultsTab moniker={validatorInfo.description.moniker} />
       )}
 
-      {tab !== 'search' && (
+      {tab !== TabsKey.search && (
         <ActionBarContainer validators={validatorInfo} updateFnc={updateFnc} />
       )}
     </>

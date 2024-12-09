@@ -4,7 +4,7 @@ import { Display, Tabs } from 'src/components';
 import Table from 'src/components/Table/Table';
 import BigNumber from 'bignumber.js';
 import { ValidatorTableData } from '../../../../../types/tableData';
-import renderColumnsData from './map';
+import renderColumnsData from './utils/mapValidatorTable';
 import ValidatorTableByGroup from './ui/ValidatorTableByGroup/ValidatorTableByGroup';
 
 enum TabsKey {

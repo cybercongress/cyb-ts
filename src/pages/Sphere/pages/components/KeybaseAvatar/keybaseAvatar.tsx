@@ -12,7 +12,7 @@ function KeybaseAvatar({ identity }: { identity?: string }) {
   });
 
   const imgKeyBase = useMemo(() => {
-    if (data && data.them && data.them.length && data.them[0].pictures) {
+    if (data?.them && data.them[0]?.pictures) {
       return data.them[0].pictures.primary.url;
     }
     return undefined;
@@ -25,7 +25,7 @@ function KeybaseAvatar({ identity }: { identity?: string }) {
         height: '80px',
         borderRadius: imgKeyBase ? '50%' : 'none',
       }}
-      alt="img-avatar"
+      alt="img-keybase-avatar"
       src={imgKeyBase || img}
     />
   );

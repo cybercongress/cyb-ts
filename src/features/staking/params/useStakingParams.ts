@@ -1,4 +1,4 @@
-import useQueryClientMethod from '../../hooks/useQueryClientMethod';
+import useQueryClientMethod from '../../../hooks/useQueryClientMethod';
 
 function useStakingParams() {
   return useQueryClientMethod<'stakingParams'>('stakingParams');

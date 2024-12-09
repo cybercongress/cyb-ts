@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { MainContainer } from 'src/components';
 
-function Layout() {
+function SphereLayout() {
   return (
     <MainContainer>
       <Helmet>
@@ -14,4 +14,4 @@ function Layout() {
   );
 }
 
-export default Layout;
+export default SphereLayout;

@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useAdviser } from 'src/features/adviser/context';
+import { useMemo, useState } from 'react';
 
 import { DenomArr } from 'src/components';
 import { BASE_DENOM, DENOM_LIQUID } from 'src/constants/config';
 
 import BigNumber from 'bignumber.js';
 import { useSphereContext } from 'src/pages/Sphere/Sphere.context';
+import useAdviserTexts from 'src/features/adviser/useAdviserTexts';
 import { InfoBalance, ValidatorTable } from './components';
 import styles from './Heroes.module.scss';
 import reduceValidatorData from './utils/reduceValidatorData';
@@ -27,21 +27,8 @@ function Heroes() {
 
   const [validatorSelect, setValidatorSelect] = useState<ValidatorTableData>();
 
-  const { setAdviser } = useAdviser();
-
-  const estimatedApr = useMemo(() => {
-    if (!stakingProvisions || !bondedTokens) {
-      return undefined;
-    }
-    return new BigNumber(stakingProvisions)
-      .dividedBy(bondedTokens)
-      .multipliedBy(100)
-      .dp(2, BigNumber.ROUND_FLOOR)
-      .toString();
-  }, [stakingProvisions, bondedTokens]);
-
-  useEffect(() => {
-    setAdviser(
+  useAdviserTexts({
+    defaultText: (
       <div className={styles.info}>
         {unbondingDays && (
           <>
@@ -53,8 +40,19 @@ function Heroes() {
         you need to burn 1 <DenomArr denomValue={DENOM_LIQUID} onlyImg /> to
         unstake 1 <DenomArr denomValue={BASE_DENOM} onlyImg />
       </div>
-    );
-  }, [setAdviser, unbondingDays]);
+    ),
+  });
+
+  const estimatedApr = useMemo(() => {
+    if (!stakingProvisions || !bondedTokens) {
+      return undefined;
+    }
+    return new BigNumber(stakingProvisions)
+      .dividedBy(bondedTokens)
+      .multipliedBy(100)
+      .dp(2, BigNumber.ROUND_FLOOR)
+      .toString();
+  }, [stakingProvisions, bondedTokens]);
 
   const updateFnc = () => {
     setValidatorSelect(undefined);

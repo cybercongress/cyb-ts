@@ -3,12 +3,7 @@ import { useQueries } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useCallback, useMemo } from 'react';
 import { useCyberClient } from 'src/contexts/queryCyberClient';
-
-const BondStatusKey = [
-  'BOND_STATUS_BONDED',
-  'BOND_STATUS_UNBONDING',
-  'BOND_STATUS_UNBONDED',
-];
+import BondStatusKey from '../../pages/Sphere/types/bondStatus';
 
 const sortFunc = (itemA: Validator, itemB: Validator) => {
   return new BigNumber(itemB.tokens)
@@ -20,7 +15,7 @@ function useGetHeroes() {
   const { rpc } = useCyberClient();
 
   const queries = useQueries({
-    queries: BondStatusKey.map((status) => {
+    queries: Object.keys(BondStatusKey).map((status) => {
       return {
         queryKey: ['validators', status],
         queryFn: () =>

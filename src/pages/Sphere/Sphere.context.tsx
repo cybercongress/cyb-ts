@@ -3,11 +3,11 @@ import { selectCurrentAddress } from 'src/redux/features/pocket';
 import { useAppSelector } from 'src/redux/hooks';
 import { useGetBalance } from 'src/containers/sigma/hooks/utils';
 import Loader2 from 'src/components/ui/Loader2';
-import useValidatorStakingProvisions from './hooks/useValidatorStakingProvisions';
-import useStakingPool from './hooks/useStakingPool';
-import useDelegatorDelegations from './hooks/useDelegatorDelegations';
-import useGetUnbondingDays from './hooks/useGetUnbondingDays';
-import useGetHeroes from './hooks/getHeroesHook';
+import useValidatorStakingProvisions from '../../features/staking/params/useValidatorStakingProvisions';
+import useStakingPool from '../../features/staking/useStakingPool';
+import useDelegatorDelegations from '../../features/staking/delegation/useDelegatorDelegations';
+import useGetUnbondingDays from '../../features/staking/params/useGetUnbondingDays';
+import useGetHeroes from '../../features/staking/getHeroesHook';
 
 // type ResponesGetHeroes = Omit<
 //   ReturnType<typeof useGetHeroes>,
