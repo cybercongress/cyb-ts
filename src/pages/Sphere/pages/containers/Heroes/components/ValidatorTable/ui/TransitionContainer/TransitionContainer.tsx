@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Transition } from 'react-transition-group';
 import cx from 'classnames';
 import { Display, DisplayTitle } from 'src/components';
-import arrowImg from 'images/Line22.svg';
+import ArrowToggle from 'src/components/ArrowToggle/ArrowToggle';
 import styles from './TransitionContainer.module.scss';
 
 function TransitionContainer({
@@ -39,13 +39,7 @@ function TransitionContainer({
                   onClick={onClickBtnOpen}
                   className={styles.btnOpenIcon}
                 >
-                  <img
-                    alt="img"
-                    src={arrowImg}
-                    className={cx(styles.btnOpenIconArrowImg, {
-                      [styles.btnOpenIconArrowImgOpen]: isOpen,
-                    })}
-                  />
+                  <ArrowToggle isOpen={isOpen} />
                 </button>
               </span>
               {titleOptions}

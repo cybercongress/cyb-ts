@@ -44,15 +44,4 @@
   &:hover {
     opacity: 0.8;
   }
-
-  .btnOpenIconArrowImg {
-    width: 14px;
-    height: 14px;
-    object-fit: contain;
-    transition: 0.5s;
-
-    &Open {
-      transform: rotate(90deg);
-    }
-  }
 }
