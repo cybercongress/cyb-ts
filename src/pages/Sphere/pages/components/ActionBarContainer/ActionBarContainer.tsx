@@ -11,14 +11,14 @@ import { Validator } from '@cybercongress/cyber-ts/cosmos/staking/v1beta1/stakin
 import {
   Confirmed,
   TransactionSubmitted,
-  Delegate,
-  ReDelegate,
   TransactionError,
   Dots,
   ActionBar,
 } from '../../../../../components';
 
 import { LEDGER } from '../../../../../utils/config';
+import Delegate from './components/Delegate/Delegate';
+import ReDelegate from './components/ReDelegate/ReDelegate';
 
 const {
   STAGE_INIT,
@@ -393,35 +393,48 @@ function ActionBarContainer({ validators, updateFnc }: Props) {
     (txType === TXTYPE_DELEGATE || txType === TXTYPE_UNDELEGATE)
   ) {
     return (
-      <Delegate
-        moniker={validators ? validators.description.moniker : ''}
-        onChangeInputAmount={amountChangeHandler}
-        toSend={amount}
-        available={txType === TXTYPE_DELEGATE ? balance?.liquid.amount : staked}
-        generateTx={
-          txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens
-        }
-        disabledBtn={!amount}
-        delegate={txType === TXTYPE_DELEGATE}
+      <ActionBar
         onClickBack={onClickBackToChoseHandler}
-      />
+        button={{
+          text: 'Generate Tx',
+          onClick:
+            txType === TXTYPE_DELEGATE ? delegateTokens : undelegateTokens,
+          disabled: !amount,
+        }}
+      >
+        <Delegate
+          moniker={validators ? validators.description.moniker : ''}
+          onChangeInputAmount={amountChangeHandler}
+          value={amount}
+          maxValue={
+            txType === TXTYPE_DELEGATE ? balance?.liquid.amount : staked
+          }
+          delegate={txType === TXTYPE_DELEGATE}
+        />
+      </ActionBar>
     );
   }
 
   if (stage === STAGE_READY && txType === TXTYPE_REDELEGATE) {
     return (
-      <ReDelegate
-        generateTx={() => redelegateTokens()}
-        onChangeInputAmount={amountChangeHandler}
-        toSend={amount}
-        disabledBtn={!validRestakeBtn}
-        validatorsAll={validatorsAll}
-        validators={validators}
-        available={staked}
-        onChangeReDelegate={(e) => setValueSelect(e.target.value)}
-        valueSelect={valueSelect}
+      <ActionBar
         onClickBack={onClickBackToChoseHandler}
-      />
+        button={{
+          text: 'Generate Tx',
+          onClick: redelegateTokens,
+          disabled: !validRestakeBtn,
+        }}
+      >
+        <ReDelegate
+          onChangeInputAmount={amountChangeHandler}
+          amount={amount}
+          validatorsAll={validatorsAll}
+          validatorSelect={validators}
+          maxValue={staked}
+          onChangeReDelegate={(val) => setValueSelect(val)}
+          valueSelect={valueSelect}
+        />
+      </ActionBar>
     );
   }
 

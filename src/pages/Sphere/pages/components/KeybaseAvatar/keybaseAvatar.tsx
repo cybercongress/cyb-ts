@@ -4,7 +4,13 @@ import { keybaseAvatar } from 'src/utils/search/utils';
 
 const img = require('images/logo-cyb-v3.svg');
 
-function KeybaseAvatar({ identity }: { identity?: string }) {
+function KeybaseAvatar({
+  identity,
+  size = '80px',
+}: {
+  identity?: string;
+  size?: string;
+}) {
   const { data } = useQuery({
     queryKey: ['KeybaseAvatar', identity],
     queryFn: () => keybaseAvatar(identity).catch((e) => {}),
@@ -21,8 +27,8 @@ function KeybaseAvatar({ identity }: { identity?: string }) {
   return (
     <img
       style={{
-        width: '80px',
-        height: '80px',
+        width: size,
+        height: size,
         borderRadius: imgKeyBase ? '50%' : 'none',
       }}
       alt="img-keybase-avatar"
