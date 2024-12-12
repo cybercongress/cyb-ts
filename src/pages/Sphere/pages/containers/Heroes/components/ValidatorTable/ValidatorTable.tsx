@@ -35,6 +35,8 @@ function ValidatorTable({
   const [selected, setSelected] = useState<TabsKey>(TabsKey.power);
   const columns = useMemo(() => renderColumnsData(), []);
 
+  const dataGroup = _.groupBy(data, (item) => item.rank);
+
   const dataBySelected = useMemo(() => {
     if (selected === TabsKey.bond) {
       return data.filter(
@@ -49,7 +51,7 @@ function ValidatorTable({
         .sort((itemA, itemB) => itemB.apr - itemA.apr);
     }
 
-    return _.groupBy(data, (item) => item.rank);
+    return data;
   }, [data, selected]);
 
   const handleOnClickTab = useCallback(
@@ -75,7 +77,7 @@ function ValidatorTable({
       <Table data={[]} columns={columns} enableSorting={false} hideBody />
       {selected === TabsKey.power ? (
         <ValidatorTableByGroup
-          data={dataBySelected}
+          data={dataGroup}
           columns={columns}
           onSelect={onSelectRow}
         />
