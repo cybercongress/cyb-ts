@@ -102,8 +102,7 @@ export const keybaseAvatar = async (identity) => {
     });
     return response.data;
   } catch (e) {
-    console.log(e);
-    return null;
+    return undefined;
   }
 };
 
