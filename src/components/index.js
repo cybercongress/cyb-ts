@@ -63,7 +63,6 @@ export {
   StartStageSearchActionBar,
   ActionBarSend,
   RewardsDelegators,
-  ReDelegate,
   TransactionError,
   TextTable,
   Vitalik,
