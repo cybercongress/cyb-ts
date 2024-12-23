@@ -33,7 +33,7 @@ function Col({
 }
 
 type Options = {
-  apr?: number;
+  apr?: string;
   power?: number;
   delegateAddress?: string;
   selfStake?: number;
