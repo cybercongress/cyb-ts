@@ -32,17 +32,19 @@ function reduceDetails(
     ? big(100).minus(self).dp(3, BigNumber.ROUND_FLOOR).toNumber()
     : undefined;
 
-  const totalVotingPower = big(bondedTokens).multipliedBy(
-    big(1).minus(validatorInfo.commission.commissionRates.rate)
-  );
+  const stakingProvisionsByItem = stakingProvisions
+    ? big(stakingProvisions).multipliedBy(
+        big(1).minus(validatorInfo.commission.commissionRates.rate)
+      )
+    : undefined;
 
   const estimatedApr =
-    bondedTokens && stakingProvisions
-      ? big(stakingProvisions)
-          .dividedBy(totalVotingPower)
+    bondedTokens && stakingProvisionsByItem
+      ? big(stakingProvisionsByItem)
+          .dividedBy(bondedTokens)
           .multipliedBy(100)
           .dp(2, BigNumber.ROUND_FLOOR)
-          .toNumber()
+          .toFixed(2)
       : undefined;
 
   return {

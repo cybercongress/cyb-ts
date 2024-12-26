@@ -72,13 +72,15 @@ function reduceValidatorData(data: Validator[], options: Options) {
         .dp(2, BigNumber.ROUND_FLOOR)
         .toFixed(2);
 
-      const totalVotingPower = new BigNumber(bondedTokens).multipliedBy(
-        new BigNumber(1).minus(commission.commissionRates.rate)
-      );
+      const stakingProvisionsByItem = stakingProvisions
+        ? new BigNumber(stakingProvisions).multipliedBy(
+            new BigNumber(1).minus(commission.commissionRates.rate)
+          )
+        : undefined;
 
-      const estimatedApr = stakingProvisions
-        ? new BigNumber(stakingProvisions)
-            .dividedBy(totalVotingPower)
+      const estimatedApr = stakingProvisionsByItem
+        ? new BigNumber(stakingProvisionsByItem)
+            .dividedBy(bondedTokens)
             .toNumber()
         : 0;
 
