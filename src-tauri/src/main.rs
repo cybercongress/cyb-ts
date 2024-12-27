@@ -10,8 +10,8 @@ use std::sync::Arc;
 
 use db::DbState;
 use ipfs::{
-    check_ipfs, download_and_extract_ipfs, init_ipfs, is_ipfs_initialized, is_ipfs_running,
-    start_ipfs, stop_ipfs,
+    check_if_ipfs_exists, download_and_extract_ipfs, init_ipfs, is_ipfs_initialized,
+    is_ipfs_running, start_ipfs, stop_ipfs,
 };
 use server::start_server;
 use tauri::{generate_handler, Manager};
@@ -22,19 +22,17 @@ async fn main() {
     let app_state = Arc::new(DbState::new());
 
     tokio::spawn(async move {
+        println!("[CYB.AI] Starting server...");
         start_server(app_state).await;
+        println!("[CYB.AI] Server is started!");
     });
-
-    if let Err(e) = start_ipfs().await {
-        eprintln!("Failed to start IPFS: {:?}", e);
-    }
 
     tauri::Builder::default()
         .invoke_handler(generate_handler![
             download_and_extract_ipfs,
             start_ipfs,
             stop_ipfs,
-            check_ipfs,
+            check_if_ipfs_exists,
             is_ipfs_running,
             is_ipfs_initialized,
             init_ipfs
@@ -55,15 +53,16 @@ async fn main() {
             println!("[CYB.AI] Main window reference is obtained!");
 
             tauri::async_runtime::spawn(async move {
-                println!("[CYB.AI] Waiting for 15 seconds...");
-                update_splash_message(
-                    splashscreen_window.clone(),
-                    "updated from setup".to_string(),
-                )
-                .await;
+                println!("[CYB.AI] IPFS initialization...");
+                update_splash_message(splashscreen_window.clone(), "IPFS initialization...");
 
-                tokio::time::sleep(tokio::time::Duration::from_secs(15)).await; // Use async sleep
-                println!("[CYB.AI] Waiting for 15 seconds completed!");
+                if let Err(e) = start_ipfs().await {
+                    eprintln!("Failed to start IPFS: {:?}", e);
+                    update_splash_message(splashscreen_window.clone(), "Failed to start IPFS");
+                } else {
+                    update_splash_message(splashscreen_window.clone(), "IPFS started successfully");
+                }
+                tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
 
                 println!("[CYB.AI] Going to show main window...");
                 main_window.show().unwrap();

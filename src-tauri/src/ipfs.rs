@@ -156,7 +156,7 @@ pub async fn download_and_extract_ipfs() -> Result<(), String> {
 pub async fn start_ipfs() -> Result<(), IpfsError> {
     println!("Starting IPFS");
     // check if installed
-    let is_ipfs_installed = check_ipfs().await.unwrap();
+    let is_ipfs_installed = check_if_ipfs_exists().await.unwrap();
     println!("IPFS installed: {}", is_ipfs_installed);
 
     // check if latest version
@@ -171,6 +171,17 @@ pub async fn start_ipfs() -> Result<(), IpfsError> {
             Err(e) => return Err(IpfsError::Other(e)),
         }
         println!("IPFS downloaded and extracted successfully");
+    }
+
+    // Check if IPFS is initialized
+    let is_ipfs_initialized = is_ipfs_initialized().unwrap();
+    if !is_ipfs_initialized {
+        println!("Initializing IPFS");
+        match init_ipfs() {
+            Ok(_) => println!("IPFS initialized successfully"),
+            Err(e) => return Err(IpfsError::Other(e)),
+        }
+        println!("IPFS initialized successfully");
     }
 
     // Check if IPFS is already running
@@ -248,7 +259,7 @@ pub fn stop_ipfs() -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn check_ipfs() -> Result<bool, String> {
+pub async fn check_if_ipfs_exists() -> Result<bool, String> {
     let home_dir = dirs::home_dir().ok_or("Cannot find home directory")?;
     let cyb_dir = home_dir.join(".cyb");
     let ipfs_binary = cyb_dir.join("kubo/ipfs"); // Adjust based on the extracted path

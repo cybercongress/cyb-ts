@@ -53,6 +53,8 @@ export default function Sign() {
 
       const qMemo = params.get('memo') ?? '';
 
+      console.log({ address, qMessages, qFee, qMemo });
+
       if (address && qMessages) {
         signingClient.signAndBroadcast(address, qMessages, qFee, qMemo);
       }
