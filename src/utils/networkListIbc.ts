@@ -43,7 +43,7 @@ const networkList: ObjectKey<NetworkCons> = {
     coinMinimalDenom: 'uatom',
     coinDecimals: 6,
     denom: 'ATOM',
-    rpc: 'https://rpc.cosmoshub-4.cybernode.ai/',
+    rpc: 'https://rpc.cosmoshub-4.bronbro.io:443',
     prefix: 'cosmos',
     explorerUrlToTx: 'https://www.mintscan.io/cosmos/txs/{txHash}',
   },
