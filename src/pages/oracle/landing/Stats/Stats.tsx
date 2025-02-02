@@ -1,84 +1,54 @@
-import {
-  useGetGraphStats,
-  useGetNegentropy,
-} from 'src/containers/temple/hooks';
-import { TypingText } from 'src/containers/temple/pages/play/PlayBanerContent';
+import { FC } from 'react';
 import cx from 'classnames';
-import { routes } from 'src/routes';
-import { Link } from 'react-router-dom';
-import { formatNumber, timeSince } from 'src/utils/utils';
+import { TypingText } from 'src/components/TypingText/TypingText';
+import { formatNumber } from 'src/utils/utils';
 import styles from './Stats.module.scss';
-import { TitleType } from '../type';
 
-type Props = {
-  type: TitleType;
-};
+interface StatsProps {
+  /** The type of statistic being displayed */
+  type: string;
+  /** The numerical value to display */
+  value?: number;
+  /** The descriptive text for the value */
+  text?: string;
+  /** The amount of change to display */
+  change?: number;
+  /** The time period for the change */
+  time?: string;
+}
 
-const REFETCH_INTERVAL = 1000 * 7;
-
-function Stats({ type }: Props) {
-  const dataGetGraphStats = useGetGraphStats(REFETCH_INTERVAL);
-  const negentropy = useGetNegentropy(REFETCH_INTERVAL);
-  let value: number | undefined;
-  let text: string | JSX.Element;
-  let change: number | undefined;
-  let time = timeSince(dataGetGraphStats.changeTimeAmount.time);
-
-  switch (type) {
-    case TitleType.search:
-      value = dataGetGraphStats.data?.particles;
-      text = <Link to={routes.oracle.ask.getLink('particle')}>particles</Link>;
-      if (dataGetGraphStats.changeTimeAmount.particles) {
-        change = dataGetGraphStats.changeTimeAmount.particles;
-      }
-      break;
-
-    case TitleType.learning:
-      value = dataGetGraphStats.data?.cyberlinks;
-      text = (
-        <Link to={routes.oracle.ask.getLink('cyberlink')}>cyberlinks</Link>
-      );
-      if (dataGetGraphStats.changeTimeAmount.cyberlinks) {
-        change = dataGetGraphStats.changeTimeAmount.cyberlinks;
-      }
-      break;
-
-    case TitleType.ai:
-      value = negentropy.data?.negentropy;
-      text = (
-        <Link to={routes.oracle.ask.getLink('negentropy')}>syntropy bits</Link>
-      );
-      if (negentropy.changeTimeAmount.amount) {
-        change = negentropy.changeTimeAmount.amount;
-        time = timeSince(negentropy.changeTimeAmount.time);
-      }
-      break;
-
-    default:
+export const Stats: FC<StatsProps> = ({ 
+  type,
+  value,
+  text = '',
+  change,
+  time
+}) => {
+  if (!value) {
+    return null;
   }
+
+  const formattedValue = value.toLocaleString().replaceAll(',', ' ');
+  const formattedChange = change ? formatNumber(change) : null;
 
   return (
     <div className={cx(styles.wrapper)}>
-      {value && (
+      <TypingText
+        content={formattedValue}
+        delay={40}
+      />{' '}
+      <strong>{text}</strong>{' '}
+      {change ? (
+        <p className={styles.change}>
+          | <strong>+{formattedChange}</strong> in {time}
+        </p>
+      ) : (
         <>
-          <TypingText
-            content={`${Number(value).toLocaleString().replaceAll(',', ' ')}`}
-            delay={40}
-          />{' '}
-          <strong>{text}</strong>{' '}
-          {change ? (
-            <p className={styles.change}>
-              | <strong>+{formatNumber(change)}</strong> in {time}
-            </p>
-          ) : (
-            <>
-              and <strong>growing</strong>
-            </>
-          )}
+          and <strong>growing</strong>
         </>
       )}
     </div>
   );
-}
+};
 
 export default Stats;
