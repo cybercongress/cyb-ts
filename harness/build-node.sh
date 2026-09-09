@@ -21,7 +21,7 @@ cd "$(dirname "$0")/../.."   # ~/cyber — the workspace root
 
 # The exact sibling set comes from cargo metadata (path deps outside cyb).
 SIBLINGS=(cyb bbg cybergraph evy foculus glia hemera honeycrisp inf lens
-          mir mudra nox nu prysm rune soma strata tape tok tru zheng zheng-pin)
+          mir mudra nox nu prysm rune soma strata tape tok tru zheng)
 
 echo "build-node: syncing ${#SIBLINGS[@]} repos to $HOST..."
 for repo in "${SIBLINGS[@]}"; do
