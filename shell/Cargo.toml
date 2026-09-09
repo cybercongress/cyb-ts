@@ -1,6 +1,6 @@
 [package]
 name = "cyb"
-version = "0.11.0"
+version = "0.12.0"
 edition = "2024"
 description = "cyb — immortal robot GUI (Bevy shell)"
 license-file = "LICENSE"
@@ -21,8 +21,7 @@ path = "src/main.rs"
 
 [dependencies]
 ureq       = { version = "3", features = ["json"] }
-# TEMP PIN: zheng-pin worktree at 0.2.2 (see cybergraph/foculus manifests).
-zheng      = { path = "../../zheng-022/rs" }
+zheng      = { path = "../../zheng-pin/rs" }
 nebu       = { package = "strata-nebu", path = "../../strata/nebu/rs" }
 # vault: encrypted-at-rest secrets (pure-rust, all platforms)
 chacha20poly1305 = "0.10"
