@@ -35,12 +35,32 @@ impl Plugin for MemoryWorldPlugin {
             .add_systems(OnExit(WorldState::Memory), despawn_page)
             .add_systems(
                 Update,
-                (handle_open, scroll_page).run_if(in_state(WorldState::Memory)),
+                (refresh_on_index, handle_open, scroll_page)
+                    .run_if(in_state(WorldState::Memory)),
             );
     }
 }
 
 fn enter(commands: Commands, index: Option<Res<BrainIndex>>) {
+    build_page(commands, index);
+}
+
+/// Rebuild whenever the graph's own index moves — which includes the very
+/// first frames after a `CYB_WORLD=memory` boot, where OnEnter fired
+/// before graph's Startup pass had computed anything: the page was built
+/// against an empty index and would otherwise stay empty forever.
+fn refresh_on_index(
+    mut commands: Commands,
+    index: Option<Res<BrainIndex>>,
+    roots: Query<Entity, With<MemoryRoot>>,
+) {
+    let Some(ref idx) = index else { return };
+    if !idx.is_changed() {
+        return;
+    }
+    for e in &roots {
+        commands.entity(e).despawn();
+    }
     build_page(commands, index);
 }
 
