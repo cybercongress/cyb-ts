@@ -11,6 +11,8 @@ pub mod models;
 pub mod soma_bridge;
 pub mod viewer;
 pub mod vault;
+pub mod memory;
+pub mod oracle;
 
 use bevy::prelude::*;
 
@@ -31,6 +33,10 @@ pub enum WorldState {
     Models,
     /// Secrets sealed under the owner's mnemonic; never cast to the graph.
     Vault,
+    /// The file manager: every particle, ranked by focus, sized and dated.
+    Memory,
+    /// The block explorer: height, time, hashrate, supply, transactions.
+    Oracle,
 }
 
 /// Shell command forwarded from the commander bar to nushell.
@@ -185,6 +191,8 @@ impl Plugin for WorldsPlugin {
             Ok("sigma") => Some(WorldState::Sigma),
             Ok("models") => Some(WorldState::Models),
             Ok("vault") => Some(WorldState::Vault),
+            Ok("memory") => Some(WorldState::Memory),
+            Ok("oracle") => Some(WorldState::Oracle),
             _ => None,
         };
         if let Some(w) = initial {

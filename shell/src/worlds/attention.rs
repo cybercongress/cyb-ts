@@ -115,6 +115,8 @@ pub fn world_name(w: WorldState) -> &'static str {
         WorldState::Sigma => "sigma",
         WorldState::Models => "models",
         WorldState::Vault => "vault",
+        WorldState::Memory => "memory",
+        WorldState::Oracle => "oracle",
     }
 }
 

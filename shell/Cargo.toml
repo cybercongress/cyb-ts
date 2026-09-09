@@ -21,7 +21,8 @@ path = "src/main.rs"
 
 [dependencies]
 ureq       = { version = "3", features = ["json"] }
-zheng      = { path = "../../zheng/rs" }
+# TEMP PIN: zheng-pin worktree at 0.2.2 (see cybergraph/foculus manifests).
+zheng      = { path = "../../zheng-022/rs" }
 nebu       = { package = "strata-nebu", path = "../../strata/nebu/rs" }
 # vault: encrypted-at-rest secrets (pure-rust, all platforms)
 chacha20poly1305 = "0.10"

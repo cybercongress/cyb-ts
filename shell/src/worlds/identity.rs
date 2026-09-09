@@ -10,11 +10,13 @@
 //! The mnemonic lives in `~/cyb/mnemonic`, mode 0600, generated on first
 //! boot. That file IS the owner: back it up and the identity survives the
 //! machine; lose it and nobody — by construction — can produce the neuron
-//! again. Signals are not yet signed (the chain format carries no signature
-//! field today); what the keypair buys now is a neuron that is *claimable* —
-//! the day chains verify, this identity already has a key behind it.
+//! again. Every outgoing signal now signs — `Identity::sign` produces the
+//! same ADR-036 doc mudra's claim module already uses, over the wire's own
+//! canonical bytes, so a chain that verifies rejects anything not backed by
+//! this key.
 
 use bevy::prelude::*;
+use std::sync::Arc;
 
 /// The spacepussy bech32 prefix — the nearest chain this cyb will join,
 /// and the address format its owner will actually see elsewhere.
@@ -26,6 +28,11 @@ pub struct Identity {
     pub neuron: [u8; 32],
     /// bech32 account address for the same key, `pussy1...`.
     pub address: String,
+    /// Compressed secp256k1 pubkey — `Hemera(pubkey) == neuron`. Carried
+    /// on the wire alongside a signature so a verifier can check that
+    /// binding itself before trusting anything signed with it.
+    pub pubkey: [u8; 33],
+    signer: Arc<mudra::SigningKey>,
 }
 
 impl Identity {
@@ -39,6 +46,24 @@ impl Identity {
             &self.address[..8],
             &self.address[self.address.len() - 4..]
         )
+    }
+
+    /// The neuron as lowercase hex — the id every wire call keys on.
+    pub fn hex(&self) -> String {
+        self.neuron.iter().map(|b| format!("{b:02x}")).collect()
+    }
+
+    /// Sign `data` (the wire call's own canonical bytes) as an ADR-036 doc,
+    /// this identity's hex neuron filling the doc's signer field — the
+    /// verifier rebuilds the identical doc from `pubkey` + the neuron the
+    /// request claims, so there is nothing to agree on out of band.
+    pub fn sign(&self, data: &[u8]) -> [u8; 64] {
+        mudra::claim::sign_arbitrary(&self.signer, &self.hex(), data)
+    }
+
+    /// The pubkey as lowercase hex, for the wire.
+    pub fn pubkey_hex(&self) -> String {
+        self.pubkey.iter().map(|b| format!("{b:02x}")).collect()
     }
 }
 
@@ -86,10 +111,23 @@ pub fn load_or_mint() -> Identity {
         }
         None => {
             warn!("identity: no usable mnemonic — running ephemeral for this session");
-            Identity {
-                neuron: super::local_neuron(),
-                address: "ephemeral".into(),
-            }
+            // Coherent but unclaimed: a fresh in-memory key whose neuron is
+            // its own Hemera(pubkey), so signatures still verify — a chain
+            // simply never granted this session-local identity any pussy.
+            mudra::seed::generate_mnemonic()
+                .ok()
+                .and_then(|m| identity_from_mnemonic(&m))
+                .unwrap_or_else(|| Identity {
+                    neuron: super::local_neuron(),
+                    address: "ephemeral".into(),
+                    pubkey: [0u8; 33],
+                    signer: Arc::new(mudra::seed::cosmos_key(
+                        "abandon abandon abandon abandon abandon abandon abandon \
+                         abandon abandon abandon abandon about",
+                        "",
+                    )
+                    .expect("fixed test vector always derives")),
+                })
         }
     }
 }
@@ -102,7 +140,12 @@ fn identity_from_mnemonic(mnemonic: &str) -> Option<Identity> {
     let pubkey = mudra::cosmos::compressed(&key.verifying_key());
     let neuron = mudra::claim::neuron_of(&pubkey);
     let address = mudra::cosmos::address(&pubkey, HRP).ok()?;
-    Some(Identity { neuron, address })
+    Some(Identity {
+        neuron,
+        address,
+        pubkey,
+        signer: Arc::new(key),
+    })
 }
 
 #[cfg(test)]

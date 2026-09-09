@@ -63,13 +63,31 @@ fn append(text: &str) {
         .replace('\\', "\\\\")
         .replace('"', "\\\"")
         .replace('\n', "\\n");
+    let created = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
     if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(&path) {
-        let _ = writeln!(f, "{{\"particle\":\"{hex}\",\"text\":\"{escaped}\"}}");
+        let _ = writeln!(
+            f,
+            "{{\"particle\":\"{hex}\",\"text\":\"{escaped}\",\"created\":{created}}}"
+        );
     }
 }
 
-/// Everything the store holds, particle → text.
-pub fn load() -> HashMap<[u8; 32], String> {
+/// One particle's record: the text and, where the line carries it, when it
+/// was (re-)remembered. `created` is `None` for lines soma-kernel wrote
+/// before this field existed, or ever writes without it — an unknown date
+/// stays unknown, never a fabricated one.
+pub struct ParticleMeta {
+    pub text: String,
+    pub created: Option<u64>,
+}
+
+/// Everything the store holds, with its metadata. The store keeps the last
+/// line for a given particle, so a re-remembered particle's `created` is
+/// its most recent remembering, not its first.
+pub fn load_with_meta() -> HashMap<[u8; 32], ParticleMeta> {
     let mut map = HashMap::new();
     let Ok(body) = std::fs::read_to_string(store_path()) else { return map };
     for line in body.lines() {
@@ -85,10 +103,32 @@ pub fn load() -> HashMap<[u8; 32], String> {
                 .is_ok()
         });
         if ok {
-            map.insert(hash, text);
+            let created = json_u64_field(line, "created");
+            map.insert(hash, ParticleMeta { text, created });
         }
     }
     map
+}
+
+/// Everything the store holds, particle → text.
+pub fn load() -> HashMap<[u8; 32], String> {
+    load_with_meta()
+        .into_iter()
+        .map(|(k, v)| (k, v.text))
+        .collect()
+}
+
+/// One unsigned-integer field out of a hand-written JSON line — the numeric
+/// counterpart to [`json_field`] (no quotes, no escapes).
+fn json_u64_field(line: &str, name: &str) -> Option<u64> {
+    let key = format!("\"{name}\":");
+    let start = line.find(&key)? + key.len();
+    let rest = &line[start..];
+    let end = rest.find(|c: char| !c.is_ascii_digit()).unwrap_or(rest.len());
+    if end == 0 {
+        return None;
+    }
+    rest[..end].parse().ok()
 }
 
 /// One string field out of a hand-written JSON line — the exact mirror of the

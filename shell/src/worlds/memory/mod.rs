@@ -1,0 +1,287 @@
+//! memory — the file manager for particles.
+//!
+//! Every particle this body holds text for, one row each, ranked by the
+//! same tru φ* focus brain draws by (`super::graph::BrainIndex` — one
+//! computation, two consumers), with its size in bytes and when it was
+//! last remembered. Tap a row to read it: the exact fullscreen page brain
+//! opens on a tap, landed on without ever touching the graph itself.
+
+use bevy::prelude::*;
+use mir::bevy::resources::WarpTarget;
+use prysm::theme;
+
+use super::graph::BrainIndex;
+use super::{content, WorldState};
+use crate::shell::chrome::{ContentRoot, CHROME_BOTTOM_H, CHROME_TOP_H};
+
+pub struct MemoryWorldPlugin;
+
+#[derive(Component)]
+struct MemoryRoot;
+
+#[derive(Component)]
+struct MemoryScroll;
+
+/// Tap the row: open the same particle brain would show for this node.
+#[derive(Component)]
+struct OpenRow {
+    idx: usize,
+    hash: [u8; 32],
+}
+
+impl Plugin for MemoryWorldPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(OnEnter(WorldState::Memory), enter)
+            .add_systems(OnExit(WorldState::Memory), despawn_page)
+            .add_systems(
+                Update,
+                (handle_open, scroll_page).run_if(in_state(WorldState::Memory)),
+            );
+    }
+}
+
+fn enter(commands: Commands, index: Option<Res<BrainIndex>>) {
+    build_page(commands, index);
+}
+
+fn despawn_page(mut commands: Commands, roots: Query<Entity, With<MemoryRoot>>) {
+    for e in &roots {
+        commands.entity(e).despawn();
+    }
+}
+
+/// One ranked row: hash, label, focus, byte size, and when it was last
+/// remembered — `None` when the store never carried a `created` stamp for
+/// this particle (the graph's own label-only guesses, or lines soma-kernel
+/// wrote before the field existed).
+struct Row {
+    idx: usize,
+    hash: [u8; 32],
+    label: String,
+    focus: f32,
+    size: usize,
+    created: Option<u64>,
+}
+
+fn ranked_rows(index: &BrainIndex) -> Vec<Row> {
+    let meta = content::load_with_meta();
+    let mut rows: Vec<Row> = index
+        .hashes
+        .iter()
+        .enumerate()
+        .map(|(idx, hash)| {
+            let m = meta.get(hash);
+            let label = m
+                .map(|m| m.text.clone())
+                .or_else(|| index.labels.get(idx).cloned().flatten())
+                .unwrap_or_else(|| short_hex(hash));
+            Row {
+                idx,
+                hash: *hash,
+                label,
+                focus: index.focus.get(idx).copied().unwrap_or(0.0),
+                size: m.map(|m| m.text.len()).unwrap_or(0),
+                created: m.and_then(|m| m.created),
+            }
+        })
+        .collect();
+    rows.sort_by(|a, b| b.focus.partial_cmp(&a.focus).unwrap_or(std::cmp::Ordering::Equal));
+    rows
+}
+
+fn short_hex(hash: &[u8; 32]) -> String {
+    hash[..4].iter().map(|b| format!("{b:02x}")).collect()
+}
+
+fn size_text(n: usize) -> String {
+    if n == 0 {
+        "-".into()
+    } else if n < 1024 {
+        format!("{n} B")
+    } else {
+        format!("{:.1} KB", n as f64 / 1024.0)
+    }
+}
+
+fn date_text(created: Option<u64>) -> String {
+    match created {
+        None => "-".into(),
+        Some(secs) => chrono::DateTime::from_timestamp(secs as i64, 0)
+            .map(|dt| dt.format("%Y-%m-%d %H:%M").to_string())
+            .unwrap_or_else(|| "-".into()),
+    }
+}
+
+fn build_page(mut commands: Commands, index: Option<Res<BrainIndex>>) {
+    let root = commands
+        .spawn((
+            MemoryRoot,
+            ContentRoot,
+            Node {
+                position_type: PositionType::Absolute,
+                top: Val::Px(CHROME_TOP_H),
+                bottom: Val::Px(CHROME_BOTTOM_H),
+                left: Val::Px(0.0),
+                right: Val::Px(0.0),
+                flex_direction: FlexDirection::Column,
+                align_items: AlignItems::Center,
+                overflow: Overflow::clip(),
+                ..default()
+            },
+            BackgroundColor(theme::DARK_BASE),
+        ))
+        .id();
+
+    let page = commands
+        .spawn((
+            MemoryScroll,
+            Node {
+                width: Val::Percent(100.0),
+                max_width: Val::Px(theme::MEASURE),
+                height: Val::Percent(100.0),
+                flex_direction: FlexDirection::Column,
+                padding: UiRect::all(Val::Px(theme::G * 3.0)),
+                row_gap: Val::Px(theme::G),
+                overflow: Overflow::scroll_y(),
+                ..default()
+            },
+            ScrollPosition::default(),
+            ChildOf(root),
+        ))
+        .id();
+
+    let text = |commands: &mut Commands, parent: Entity, s: String, size: f32, color: Color| {
+        commands.spawn((
+            Text::new(s),
+            TextFont { font_size: size, ..default() },
+            TextColor(color),
+            ChildOf(parent),
+        ));
+    };
+
+    text(&mut commands, page, "memory".into(), theme::H2, theme::TEXT_PRIMARY);
+
+    let Some(index) = index else {
+        text(
+            &mut commands,
+            page,
+            "the graph has not opened yet".into(),
+            theme::CAPTION,
+            theme::TEXT_DIM,
+        );
+        return;
+    };
+
+    let rows = ranked_rows(&index);
+    text(
+        &mut commands,
+        page,
+        format!("{} particles, ranked by focus - tap to read", rows.len()),
+        theme::CAPTION,
+        theme::TEXT_DIM,
+    );
+
+    if rows.is_empty() {
+        text(
+            &mut commands,
+            page,
+            "nothing remembered yet".into(),
+            theme::BODY,
+            theme::TEXT_DIM,
+        );
+        return;
+    }
+
+    for row in &rows {
+        let r = commands
+            .spawn((
+                OpenRow { idx: row.idx, hash: row.hash },
+                Button,
+                Node {
+                    width: Val::Percent(100.0),
+                    justify_content: JustifyContent::SpaceBetween,
+                    align_items: AlignItems::Center,
+                    padding: UiRect::axes(Val::Px(theme::G * 1.5), Val::Px(theme::G)),
+                    border: UiRect::all(Val::Px(1.0)),
+                    column_gap: Val::Px(theme::G),
+                    ..default()
+                },
+                BackgroundColor(theme::DARK_BASE),
+                BorderColor::all(theme::BORDER),
+                ChildOf(page),
+            ))
+            .id();
+
+        let left = commands
+            .spawn((
+                Node {
+                    flex_direction: FlexDirection::Row,
+                    align_items: AlignItems::Center,
+                    column_gap: Val::Px(theme::G * 1.5),
+                    ..default()
+                },
+                ChildOf(r),
+            ))
+            .id();
+        let mut label: String = row.label.chars().take(40).collect();
+        if row.label.chars().count() > 40 {
+            label.push_str("..");
+        }
+        text(&mut commands, left, label, theme::BODY, theme::TEXT_PRIMARY);
+        text(&mut commands, left, format!("focus {:.3}", row.focus), theme::CAPTION, theme::TEXT_DIM);
+
+        let right = commands
+            .spawn((
+                Node {
+                    flex_direction: FlexDirection::Row,
+                    align_items: AlignItems::Center,
+                    column_gap: Val::Px(theme::G * 1.5),
+                    ..default()
+                },
+                ChildOf(r),
+            ))
+            .id();
+        text(&mut commands, right, size_text(row.size), theme::CAPTION, theme::TEXT_DIM);
+        text(&mut commands, right, date_text(row.created), theme::CAPTION, theme::TEXT_DIM);
+    }
+}
+
+fn handle_open(
+    interactions: Query<(&Interaction, &OpenRow), Changed<Interaction>>,
+    mut commands: Commands,
+    mut next: ResMut<NextState<WorldState>>,
+    warp: Option<ResMut<WarpTarget>>,
+) {
+    for (interaction, row) in &interactions {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+        if let Some(mut warp) = warp {
+            warp.particle_idx = Some(row.idx as u32);
+        }
+        super::viewer::open(&mut commands, row.idx, row.hash);
+        next.set(WorldState::Graph);
+        break;
+    }
+}
+
+fn scroll_page(
+    mut wheel: MessageReader<bevy::input::mouse::MouseWheel>,
+    touches: Res<Touches>,
+    mut q: Query<(&mut ScrollPosition, &ComputedNode), With<MemoryScroll>>,
+) {
+    let mut dy: f32 = wheel.read().map(|e| -e.y * 40.0).sum();
+    let live: Vec<&bevy::input::touch::Touch> = touches.iter().collect();
+    if live.len() == 1 {
+        dy -= live[0].delta().y;
+    }
+    if dy == 0.0 {
+        return;
+    }
+    for (mut pos, computed) in &mut q {
+        let content = computed.content_size().y * computed.inverse_scale_factor();
+        let view = computed.size().y * computed.inverse_scale_factor();
+        let max = (content - view).max(0.0);
+        pos.y = (pos.y + dy).clamp(0.0, max);
+    }
+}

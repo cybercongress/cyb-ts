@@ -199,7 +199,7 @@ fn setup_sigma(mut commands: Commands, _state: Res<SigmaState>) {
                 ))
                 .with_children(|inner| {
                     inner.spawn((
-                        Text::new("copy my address"),
+                        Text::new("receive"),
                         TextFont { font_size: 14.0, ..default() },
                         TextColor(Color::srgb(0.6, 0.65, 0.7)),
                     ));

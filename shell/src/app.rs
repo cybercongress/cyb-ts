@@ -148,6 +148,8 @@ pub fn build_app() -> App {
     .add_plugins(worlds::sigma::SigmaWorldPlugin)
     .add_plugins(worlds::models::ModelsWorldPlugin)
     .add_plugins(worlds::vault::VaultWorldPlugin)
+    .add_plugins(worlds::memory::MemoryWorldPlugin)
+    .add_plugins(worlds::oracle::OracleWorldPlugin)
     .add_plugins(agent::AgentPlugin);
 
     // `CYB_SHOT=/path.png` (with optional `CYB_SHOT_AT=secs`, default 8)

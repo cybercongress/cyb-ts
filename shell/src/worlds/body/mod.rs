@@ -7,6 +7,7 @@
 //! only declared (not measured) number on the page, the PUSSY rate, says
 //! so out loud.
 
+pub mod chainsync;
 pub mod telemetry;
 #[cfg(target_os = "macos")]
 pub mod miner;
@@ -36,6 +37,7 @@ struct BodyLink {
     prover: prover::Prover,
     pub(crate) nets: networks::NetHub,
     relay: relay::Relay,
+    chainsync: chainsync::ChainSync,
 }
 
 /// The snapshot the page renders. Rewritten once a second while the body
@@ -56,6 +58,7 @@ struct BodyView {
     nets: Vec<networks::NetState>,
     relayed: u64,
     relay_pending: u64,
+    absorbed: u64,
 }
 
 #[derive(Component)]
@@ -89,7 +92,8 @@ impl Plugin for BodyWorldPlugin {
             #[cfg(target_os = "macos")]
             miner: miner::Miner::start(),
             prover: prover::Prover::start(),
-            relay: relay::Relay::start(shared, nets.clone()),
+            relay: relay::Relay::start(shared.clone(), nets.clone()),
+            chainsync: chainsync::ChainSync::start(shared, nets.clone()),
             nets,
         })
         .init_resource::<BodyView>()
@@ -289,6 +293,7 @@ fn tick_view(
     view.nets = link.nets.snapshot();
     view.relayed = link.relay.sent.load(std::sync::atomic::Ordering::Relaxed);
     view.relay_pending = link.relay.pending.load(std::sync::atomic::Ordering::Relaxed);
+    view.absorbed = link.chainsync.absorbed.load(std::sync::atomic::Ordering::Relaxed);
     #[cfg(target_os = "macos")]
     {
         view.miner = link.miner.stat.lock().map(|s| s.clone()).unwrap_or_default();
@@ -578,8 +583,8 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
             &mut commands,
             page,
             format!(
-                "relayed {} signals this session{stuck}   -   net add <name> <url> | net set | net rm",
-                view.relayed
+                "relayed {} out, absorbed {} in this session{stuck}   -   net add <name> <url> | net set | net rm",
+                view.relayed, view.absorbed
             ),
             theme::CAPTION,
             theme::TEXT_DIM,

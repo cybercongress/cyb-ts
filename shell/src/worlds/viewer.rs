@@ -33,6 +33,15 @@ struct Viewed {
     since: Instant,
 }
 
+/// Open the reading page directly at a known particle — the door "memory"'s
+/// file list uses to read a row, the same resource a tap in brain inserts.
+/// The caller is responsible for landing in [`WorldState::Graph`] (brain's
+/// own state gates every viewer system) — this only stages what to show
+/// once it does.
+pub fn open(commands: &mut Commands, idx: usize, hash: [u8; 32]) {
+    commands.insert_resource(Viewed { idx, hash, since: Instant::now() });
+}
+
 #[derive(Component)]
 struct ViewerRoot;
 

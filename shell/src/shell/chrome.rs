@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 use prysm::theme;
 
-use crate::shell::clipboard::read_clipboard;
+use crate::shell::clipboard::{read_clipboard, write_clipboard};
 use crate::shell::platform::{SafeArea, SoftInput};
 use crate::worlds::{Notice, WorldState};
 
@@ -25,6 +25,10 @@ pub struct PayDraft {
     pub amount: String,
     /// 0 = recipient, 1 = amount.
     pub field: u8,
+    /// Cmd+A marked the active field selected: the next keystroke or
+    /// paste replaces its whole content, the way a real text field's
+    /// select-all behaves.
+    pub selected: bool,
 }
 
 #[derive(Resource)]
@@ -37,6 +41,9 @@ pub struct ChromeState {
     pub submit_now: bool,
     pub just_submitted: bool, // true for one frame after commander Enter
     pub text: String,
+    /// Cmd+A marked the commander text selected — same select-all-then-
+    /// replace behavior as the pay form's own `PayDraft::selected`.
+    pub selected: bool,
     key_cursor: bevy::ecs::message::MessageCursor<KeyboardInput>,
 }
 
@@ -48,6 +55,7 @@ impl Default for ChromeState {
             submit_now: false,
             just_submitted: false,
             text: String::new(),
+            selected: false,
             key_cursor: Default::default(),
         }
     }
@@ -390,6 +398,8 @@ fn spawn_chrome(mut commands: Commands) {
                             ("sigma", WorldState::Sigma),
                             ("models", WorldState::Models),
                             ("vault", WorldState::Vault),
+                            ("memory", WorldState::Memory),
+                            ("oracle", WorldState::Oracle),
                         ] {
                             tabs.spawn((
                                 WorldNavButton(world),
@@ -627,6 +637,8 @@ fn update_address_bar(
         WorldState::Sigma => "cyb://sigma",
         WorldState::Models => "cyb://models",
         WorldState::Vault => "cyb://vault",
+        WorldState::Memory => "cyb://memory",
+        WorldState::Oracle => "cyb://oracle",
     };
     for mut text in &mut q {
         **text = uri.to_string();
@@ -644,8 +656,12 @@ fn update_commander_display(
     if !chrome.is_changed() && !world_state.is_changed() {
         return;
     }
-    let cursor = |s: &str, active: bool| -> String {
-        if active {
+    // `selected`: Cmd+A marked the whole field selected — no caret, a
+    // bright highlight instead, the same signal a real text field gives.
+    let cursor = |s: &str, active: bool, selected: bool| -> String {
+        if active && selected {
+            if s.is_empty() { " ".into() } else { s.to_string() }
+        } else if active {
             format!("{s}_")
         } else if s.is_empty() {
             " ".into()
@@ -663,9 +679,11 @@ fn update_commander_display(
             **text = if pay.to.is_empty() && pay.field != 0 {
                 "recipient".into()
             } else {
-                cursor(&pay.to, pay.field == 0)
+                cursor(&pay.to, pay.field == 0, pay.selected)
             };
-            *color = TextColor(if pay.field == 0 {
+            *color = TextColor(if pay.field == 0 && pay.selected {
+                theme::ACID_YELLOW
+            } else if pay.field == 0 {
                 Color::srgb(0.95, 0.95, 0.95)
             } else {
                 Color::srgba(0.6, 0.6, 0.65, 0.9)
@@ -678,9 +696,11 @@ fn update_commander_display(
             **text = if pay.amount.is_empty() && pay.field != 1 {
                 "amount".into()
             } else {
-                cursor(&pay.amount, pay.field == 1)
+                cursor(&pay.amount, pay.field == 1, pay.selected)
             };
-            *color = TextColor(if pay.field == 1 {
+            *color = TextColor(if pay.field == 1 && pay.selected {
+                theme::ACID_YELLOW
+            } else if pay.field == 1 {
                 Color::srgb(0.95, 0.95, 0.95)
             } else {
                 Color::srgba(0.6, 0.6, 0.65, 0.9)
@@ -696,13 +716,19 @@ fn update_commander_display(
     }
     for (mut text, mut color) in &mut q {
         if chrome.focused {
-            let display = if chrome.text.is_empty() {
+            let display = if chrome.selected {
+                if chrome.text.is_empty() { " ".to_string() } else { chrome.text.clone() }
+            } else if chrome.text.is_empty() {
                 "_".to_string()
             } else {
                 format!("{}_", chrome.text)
             };
             **text = display;
-            *color = TextColor(Color::srgb(0.95, 0.95, 0.95));
+            *color = TextColor(if chrome.selected {
+                theme::ACID_YELLOW
+            } else {
+                Color::srgb(0.95, 0.95, 0.95)
+            });
         } else {
             // The robot's landing asks for the one act that matters there.
             **text = if *world_state.get() == crate::worlds::WorldState::Robot {
@@ -730,6 +756,7 @@ pub fn handle_chrome_input(world: &mut World) {
             let mut chrome = world.resource_mut::<ChromeState>();
             chrome.focused = true;
             chrome.text.clear();
+            chrome.selected = false;
             return;
         }
     }
@@ -739,17 +766,74 @@ pub fn handle_chrome_input(world: &mut World) {
         return;
     }
 
-    // Cmd+V: paste clipboard into commander (single-line: strip newlines)
+    // Cmd+A: select the active field — the pay form's current field, or
+    // the plain commander text. The next keystroke or paste replaces it
+    // whole, same as any real text field's select-all.
+    {
+        let keys = world.resource::<ButtonInput<KeyCode>>();
+        if cmd_held && keys.just_pressed(KeyCode::KeyA) {
+            let mut chrome = world.resource_mut::<ChromeState>();
+            if let Some(pay) = chrome.pay.as_mut() {
+                pay.selected = true;
+            } else {
+                chrome.selected = true;
+            }
+            return;
+        }
+    }
+
+    // Cmd+C: copy the active field's whole content — there is no partial
+    // selection here, only select-all, so copy always takes everything.
+    {
+        let keys = world.resource::<ButtonInput<KeyCode>>();
+        if cmd_held && keys.just_pressed(KeyCode::KeyC) {
+            let chrome = world.resource::<ChromeState>();
+            let text = match &chrome.pay {
+                Some(pay) if pay.field == 1 => pay.amount.clone(),
+                Some(pay) => pay.to.clone(),
+                None => chrome.text.clone(),
+            };
+            if !text.is_empty() {
+                let _ = write_clipboard(&text);
+            }
+            return;
+        }
+    }
+
+    // Cmd+V: paste the clipboard into whichever field is active — the pay
+    // form's recipient/amount when it is open, the plain commander text
+    // otherwise. A prior Cmd+A replaces; anything else appends. Single
+    // line: newlines fold to a space, control characters are dropped.
     {
         let keys = world.resource::<ButtonInput<KeyCode>>();
         if cmd_held && keys.just_pressed(KeyCode::KeyV) {
             if let Ok(text) = read_clipboard() {
                 let mut chrome = world.resource_mut::<ChromeState>();
-                for ch in text.chars() {
-                    if ch == '\n' || ch == '\r' {
-                        chrome.text.push(' ');
-                    } else if !ch.is_control() {
-                        chrome.text.push(ch);
+                if let Some(pay) = chrome.pay.as_mut() {
+                    let selected = pay.selected;
+                    pay.selected = false;
+                    if pay.field == 1 {
+                        if selected {
+                            pay.amount.clear();
+                        }
+                        pay.amount.extend(text.chars().filter(|c| c.is_ascii_digit()));
+                    } else {
+                        if selected {
+                            pay.to.clear();
+                        }
+                        pay.to.extend(text.chars().filter(|c| !c.is_whitespace() && !c.is_control()));
+                    }
+                } else {
+                    if chrome.selected {
+                        chrome.text.clear();
+                        chrome.selected = false;
+                    }
+                    for ch in text.chars() {
+                        if ch == '\n' || ch == '\r' {
+                            chrome.text.push(' ');
+                        } else if !ch.is_control() {
+                            chrome.text.push(ch);
+                        }
                     }
                 }
             }
@@ -797,6 +881,7 @@ pub fn handle_chrome_input(world: &mut World) {
                         Key::Enter | Key::Tab => {
                             if pay.field == 0 && !pay.to.is_empty() {
                                 pay.field = 1;
+                                pay.selected = false;
                             } else if pay.field == 1 && !pay.amount.is_empty() {
                                 submit = Some(format!("pay {} {}", pay.to.trim(), pay.amount.trim()));
                             }
@@ -807,7 +892,14 @@ pub fn handle_chrome_input(world: &mut World) {
                             continue;
                         }
                         Key::Backspace => {
-                            if pay.field == 1 && pay.amount.is_empty() {
+                            if pay.selected {
+                                if pay.field == 1 {
+                                    pay.amount.clear();
+                                } else {
+                                    pay.to.clear();
+                                }
+                                pay.selected = false;
+                            } else if pay.field == 1 && pay.amount.is_empty() {
                                 pay.field = 0;
                             } else if pay.field == 1 {
                                 pay.amount.pop();
@@ -820,9 +912,18 @@ pub fn handle_chrome_input(world: &mut World) {
                             // is a step to the amount.
                             if !pay.to.is_empty() {
                                 pay.field = 1;
+                                pay.selected = false;
                             }
                         }
                         Key::Character(c) => {
+                            if pay.selected {
+                                if pay.field == 1 {
+                                    pay.amount.clear();
+                                } else {
+                                    pay.to.clear();
+                                }
+                                pay.selected = false;
+                            }
                             for ch in c.chars().filter(|ch| !ch.is_control()) {
                                 if pay.field == 1 {
                                     if ch.is_ascii_digit() {
@@ -857,12 +958,25 @@ pub fn handle_chrome_input(world: &mut World) {
                     break;
                 }
                 Key::Backspace => {
-                    chrome.text.pop();
+                    if chrome.selected {
+                        chrome.text.clear();
+                        chrome.selected = false;
+                    } else {
+                        chrome.text.pop();
+                    }
                 }
                 Key::Character(c) => {
+                    if chrome.selected {
+                        chrome.text.clear();
+                        chrome.selected = false;
+                    }
                     chrome.text.push_str(c.as_str());
                 }
                 Key::Space => {
+                    if chrome.selected {
+                        chrome.text.clear();
+                        chrome.selected = false;
+                    }
                     chrome.text.push(' ');
                 }
                 _ => {}
@@ -886,6 +1000,8 @@ pub fn handle_chrome_input(world: &mut World) {
             "sigma" | "money" => Some(WorldState::Sigma),
             "models" | "mind" => Some(WorldState::Models),
             "vault" | "secrets" => Some(WorldState::Vault),
+            "memory" | "files" => Some(WorldState::Memory),
+            "oracle" | "blocks" | "explorer" => Some(WorldState::Oracle),
             _ => None,
         };
         if let Some(t) = target {
