@@ -11,8 +11,12 @@ android {
         applicationId = "ai.cyb.app"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0"
+        // The release number comes from shell/Cargo.toml via the Makefile
+        // (-PcybVersionCode/-PcybVersionName), so the APK, the version chip
+        // and the GitHub tag are one number. Defaults keep a bare
+        // `./gradlew` build working outside make.
+        versionCode = (findProperty("cybVersionCode") as String?)?.toInt() ?: 1
+        versionName = (findProperty("cybVersionName") as String?) ?: "0.0.0-dev"
 
         ndk {
             abiFilters += listOf("arm64-v8a")

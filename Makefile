@@ -93,6 +93,12 @@ NDK_HOME     ?= $(shell find "$(ANDROID_HOME)/ndk" -mindepth 1 -maxdepth 1 -type
 NDK_VERSION  ?= $(notdir $(NDK_HOME))
 ANDROID_TARGET ?= aarch64-linux-android
 ANDROID_API  ?= 24
+# Android version = the crate version. versionCode must be a rising
+# integer: major*10000 + minor*100 + patch (0.12.2 -> 1202). Without this
+# every APK claimed versionCode 1 / 0.1.0 and no phone could tell two
+# releases apart or update one to the next.
+CYB_VER      := $(shell awk -F'"' '/^version/{print $$2; exit}' shell/Cargo.toml)
+CYB_VER_CODE := $(shell echo "$(CYB_VER)" | awk -F. '{print $$1*10000 + $$2*100 + $$3}')
 NDK_HOST     ?= $(shell find "$(NDK_HOME)/toolchains/llvm/prebuilt" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1 | xargs -I{} basename {})
 NDK_BIN      ?= $(NDK_HOME)/toolchains/llvm/prebuilt/$(NDK_HOST)/bin
 
@@ -131,11 +137,13 @@ android-jnilibs:
 
 # Release APK — unsigned, for distribution. `adb install` rejects it.
 android-apk: android-jnilibs
-	cd shell/gen/android && ANDROID_HOME=$(ANDROID_HOME) JAVA_HOME=$(JAVA_HOME) ./gradlew assembleRelease
+	cd shell/gen/android && ANDROID_HOME=$(ANDROID_HOME) JAVA_HOME=$(JAVA_HOME) ./gradlew assembleRelease \
+		-PcybVersionCode=$(CYB_VER_CODE) -PcybVersionName=$(CYB_VER)
 
 # Debug APK — Gradle signs it with the local debug key, so a device accepts it
 android-debug: android-rust android-jnilibs
-	cd shell/gen/android && ANDROID_HOME=$(ANDROID_HOME) JAVA_HOME=$(JAVA_HOME) ./gradlew assembleDebug
+	cd shell/gen/android && ANDROID_HOME=$(ANDROID_HOME) JAVA_HOME=$(JAVA_HOME) ./gradlew assembleDebug \
+		-PcybVersionCode=$(CYB_VER_CODE) -PcybVersionName=$(CYB_VER)
 
 # Source to running app on a plugged-in phone, one command
 android-run: android-debug
