@@ -80,20 +80,24 @@ impl Oracle {
             .name("oracle-blocks".into())
             .spawn(move || {
                 let agent = super::body::networks::agent();
-                let out = agent
-                    .get(&format!("{url}/blocks?limit=50"))
-                    .call()
-                    .ok()
-                    .and_then(|mut r| r.body_mut().read_to_string().ok());
+                let out = agent.get(&format!("{url}/blocks?limit=50")).call();
                 let mut s = slot.lock().expect("oracle state");
                 s.busy = false;
                 s.version += 1;
                 match out {
-                    Some(body) => {
-                        s.rows = parse_blocks(&body);
-                        s.error.clear();
+                    Ok(mut r) => match r.body_mut().read_to_string() {
+                        Ok(body) => {
+                            s.rows = parse_blocks(&body);
+                            s.error.clear();
+                        }
+                        Err(_) => s.error = "chain unreachable".into(),
+                    },
+                    // A reachable node without the route is a different truth
+                    // than a dead wire: say which one it is.
+                    Err(ureq::Error::StatusCode(404)) => {
+                        s.error = "this node does not serve /blocks yet - it needs updating".into()
                     }
-                    None => s.error = "chain unreachable".into(),
+                    Err(_) => s.error = "chain unreachable".into(),
                 }
             })
             .expect("spawn oracle-blocks");

@@ -1,8 +1,9 @@
 //! Stamp the build so the chrome can say which cyb is running.
 //!
-//! `CYB_VERSION` = short git hash (+ `*` when the tree is dirty) and the
-//! build minute. The one question it answers is the one that kept coming
-//! up: "is the window I am looking at the build I just made?"
+//! `CYB_VERSION` = the RELEASE version first (`v0.12.1` — the number on
+//! the GitHub release), then the short git hash (+ `*` when the tree is
+//! dirty) and the build minute. Two questions, one chip: "which release
+//! is this?" and "is the window I am looking at the build I just made?"
 
 use std::process::Command;
 
@@ -29,7 +30,11 @@ fn main() {
         .unwrap_or_default();
 
     let mark = if dirty { "*" } else { "" };
-    println!("cargo:rustc-env=CYB_VERSION={hash}{mark} {stamp}");
+    // The release number comes from the manifest cargo is building — the
+    // same one `make ship` bumps and tags, so the chip and the GitHub
+    // release can never drift apart.
+    let release = std::env::var("CARGO_PKG_VERSION").unwrap_or_default();
+    println!("cargo:rustc-env=CYB_VERSION=v{release}  {hash}{mark} {stamp}");
     // Re-stamp whenever HEAD moves.
     println!("cargo:rerun-if-changed=../.git/HEAD");
     println!("cargo:rerun-if-changed=../.git/index");
