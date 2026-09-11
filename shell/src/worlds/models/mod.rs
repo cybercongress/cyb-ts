@@ -140,7 +140,7 @@ impl Plugin for ModelsWorldPlugin {
         };
         app.insert_resource(status)
             .init_resource::<FetchState>()
-            .add_systems(OnEnter(WorldState::Models), build_page)
+            .add_systems(OnEnter(WorldState::Models), enter_models)
             .add_systems(Update, (poll_fetch, tick_fetch_progress))
             .add_systems(
                 Update,
@@ -175,6 +175,18 @@ fn models_on_disk(active: Option<&std::path::Path>) -> Vec<(std::path::PathBuf, 
     }
     found.sort_by_key(|(p, size)| (Some(p.as_path()) != active, *size));
     found
+}
+
+fn enter_models(
+    commands: Commands,
+    status: Res<MindStatus>,
+    fetch: Res<FetchState>,
+    mut worlds: Query<(&crate::worlds::WorldUi, &mut Node)>,
+) {
+    if crate::worlds::reveal_world(WorldState::Models, &mut worlds) {
+        return;
+    }
+    build_page(commands, status, fetch);
 }
 
 fn build_page(mut commands: Commands, status: Res<MindStatus>, fetch: Res<FetchState>) {

@@ -205,28 +205,38 @@ impl Plugin for WorldsPlugin {
             .init_resource::<Notice>()
             .insert_resource(identity::load_or_mint())
             .insert_resource(SharedCell::open_default())
-            // Reap the previous world's UI only AFTER the next one exists.
-            // Despawning on OnExit left a black frame between worlds — a
-            // flash on Android where a frame is ~30ms, invisible on a 120Hz
-            // desktop. Com hides itself (taffy); vault despawns (secrets).
-            .add_systems(Update, reap_foreign_worlds);
+            // Hide, never despawn: tearing the tree down leaves a black
+            // frame while the next world lays out. Com already does this
+            // for taffy; every world does it so Android nav does not flash.
+            .add_systems(Update, hide_foreign_worlds);
     }
 }
 
-/// Marker on a world's root so a later frame can drop it once another
-/// world has actually been drawn. Com and vault are not tagged.
+/// Marker on a world's root. Hidden when you leave, shown when you come
+/// back — the tree stays in the ECS so layout does not start from zero.
 #[derive(Component)]
 pub struct WorldUi(pub WorldState);
 
-fn reap_foreign_worlds(
-    state: Res<State<WorldState>>,
-    q: Query<(Entity, &WorldUi)>,
-    mut commands: Commands,
-) {
-    let here = *state.get();
-    for (e, tag) in &q {
-        if tag.0 != here {
-            commands.entity(e).despawn();
+/// Unhide an already-built world. OnEnter must call this before spawning
+/// a second copy.
+pub fn reveal_world(here: WorldState, q: &mut Query<(&WorldUi, &mut Node)>) -> bool {
+    let mut found = false;
+    for (tag, mut node) in q.iter_mut() {
+        if tag.0 == here {
+            node.display = Display::Flex;
+            found = true;
         }
+    }
+    found
+}
+
+fn hide_foreign_worlds(state: Res<State<WorldState>>, mut q: Query<(&WorldUi, &mut Node)>) {
+    let here = *state.get();
+    for (tag, mut node) in &mut q {
+        node.display = if tag.0 == here {
+            Display::Flex
+        } else {
+            Display::None
+        };
     }
 }

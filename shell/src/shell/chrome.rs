@@ -152,6 +152,7 @@ fn spawn_chrome(mut commands: Commands) {
                 clear_color: ClearColorConfig::None,
                 ..default()
             },
+            IsDefaultUiCamera,
         ))
         .id();
 
@@ -198,7 +199,10 @@ fn spawn_chrome(mut commands: Commands) {
                 band.spawn((
                     NoticeText,
                     Text::new(""),
-                    TextFont { font_size: 13.0, ..default() },
+                    TextFont {
+                        font_size: 13.0,
+                        ..default()
+                    },
                     TextColor(theme::ACID_GREEN),
                 ));
             });
@@ -309,13 +313,19 @@ fn spawn_chrome(mut commands: Commands) {
                             cmd.spawn((
                                 CommanderPrompt,
                                 Text::new("> "),
-                                TextFont { font_size: 14.0, ..default() },
+                                TextFont {
+                                    font_size: 14.0,
+                                    ..default()
+                                },
                                 TextColor(theme::ACID_BLUE),
                             ));
                             cmd.spawn((
                                 CommanderText,
                                 Text::new("ask, search, transact..."),
-                                TextFont { font_size: 14.0, ..default() },
+                                TextFont {
+                                    font_size: 14.0,
+                                    ..default()
+                                },
                                 TextColor(Color::srgba(0.30, 0.30, 0.40, 0.55)),
                             ));
                         });
@@ -342,7 +352,10 @@ fn spawn_chrome(mut commands: Commands) {
                             b.spawn((
                                 PayAmountText,
                                 Text::new("amount"),
-                                TextFont { font_size: 14.0, ..default() },
+                                TextFont {
+                                    font_size: 14.0,
+                                    ..default()
+                                },
                                 TextColor(Color::srgba(0.30, 0.30, 0.40, 0.55)),
                             ));
                         });
@@ -367,7 +380,10 @@ fn spawn_chrome(mut commands: Commands) {
                         .with_children(|b| {
                             b.spawn((
                                 Text::new(">"),
-                                TextFont { font_size: 17.0, ..default() },
+                                TextFont {
+                                    font_size: 17.0,
+                                    ..default()
+                                },
                                 TextColor(Color::srgb(0.21, 0.84, 0.68)),
                             ));
                         });
@@ -417,7 +433,10 @@ fn spawn_chrome(mut commands: Commands) {
                             .with_children(|btn| {
                                 btn.spawn((
                                     Text::new(label),
-                                    TextFont { font_size: 14.0, ..default() },
+                                    TextFont {
+                                        font_size: 14.0,
+                                        ..default()
+                                    },
                                     TextColor(Color::srgba(0.21, 0.84, 0.68, 0.55)),
                                 ));
                             });
@@ -452,10 +471,7 @@ fn handle_commander_submit(
 }
 
 fn handle_world_buttons(
-    mut q: Query<
-        (&Interaction, &WorldNavButton, &mut BackgroundColor),
-        Changed<Interaction>,
-    >,
+    mut q: Query<(&Interaction, &WorldNavButton, &mut BackgroundColor), Changed<Interaction>>,
     current: Res<State<WorldState>>,
     mut next: ResMut<NextState<WorldState>>,
 ) {
@@ -504,9 +520,30 @@ fn sync_commander_focus_style(
 /// gesture pill and the address bar clears the status bar.
 fn apply_safe_area(
     safe: Res<SafeArea>,
-    mut top: Query<&mut Node, (With<ChromeTopBar>, Without<ChromeBottomBar>, Without<ContentRoot>)>,
-    mut bottom: Query<&mut Node, (With<ChromeBottomBar>, Without<ChromeTopBar>, Without<ContentRoot>)>,
-    mut content: Query<&mut Node, (With<ContentRoot>, Without<ChromeTopBar>, Without<ChromeBottomBar>)>,
+    mut top: Query<
+        &mut Node,
+        (
+            With<ChromeTopBar>,
+            Without<ChromeBottomBar>,
+            Without<ContentRoot>,
+        ),
+    >,
+    mut bottom: Query<
+        &mut Node,
+        (
+            With<ChromeBottomBar>,
+            Without<ChromeTopBar>,
+            Without<ContentRoot>,
+        ),
+    >,
+    mut content: Query<
+        &mut Node,
+        (
+            With<ContentRoot>,
+            Without<ChromeTopBar>,
+            Without<ChromeBottomBar>,
+        ),
+    >,
 ) {
     // No is_changed() gate: SafeArea is written by another plugin, and if
     // that write landed after this system in the same frame the change would
@@ -555,11 +592,11 @@ struct NoticeText;
 /// bar grows by the status-bar inset, and the band sits under whatever height
 /// that leaves.
 fn show_notice(
-    time:      Res<Time>,
-    safe:      Res<SafeArea>,
+    time: Res<Time>,
+    safe: Res<SafeArea>,
     mut notice: ResMut<Notice>,
-    mut band:  Query<&mut Node, With<NoticeBand>>,
-    mut text:  Query<&mut Text, With<NoticeText>>,
+    mut band: Query<&mut Node, With<NoticeBand>>,
+    mut text: Query<&mut Text, With<NoticeText>>,
 ) {
     if notice.ttl > 0.0 {
         notice.ttl = (notice.ttl - time.delta_secs()).max(0.0);
@@ -568,7 +605,11 @@ fn show_notice(
 
     for mut node in &mut band {
         node.top = Val::Px(CHROME_TOP_H + safe.top);
-        node.display = if showing { Display::Flex } else { Display::None };
+        node.display = if showing {
+            Display::Flex
+        } else {
+            Display::None
+        };
     }
     if showing {
         for mut t in &mut text {
@@ -596,7 +637,12 @@ fn request_soft_input(mut chrome: ResMut<ChromeState>, mut input: ResMut<SoftInp
         // The IME marks "go" with a newline. Everything before it is the
         // line; seeing one is Enter, since the key event itself is consumed
         // by GameTextInput and never reaches Bevy.
-        if let Some(line) = input.text.split('\n').next().filter(|_| input.text.contains('\n')) {
+        if let Some(line) = input
+            .text
+            .split('\n')
+            .next()
+            .filter(|_| input.text.contains('\n'))
+        {
             chrome.text = line.to_string();
             chrome.submit_now = true;
         } else {
@@ -607,14 +653,15 @@ fn request_soft_input(mut chrome: ResMut<ChromeState>, mut input: ResMut<SoftInp
 
 /// The commander shows com's prompt. Before com has ever run there is no
 /// shell to ask, so the plain marker stands in.
-fn sync_commander_prompt(
-    prompt: Res<ComPrompt>,
-    mut q: Query<&mut Text, With<CommanderPrompt>>,
-) {
+fn sync_commander_prompt(prompt: Res<ComPrompt>, mut q: Query<&mut Text, With<CommanderPrompt>>) {
     if !prompt.is_changed() {
         return;
     }
-    let shown = if prompt.0.is_empty() { "> ".to_string() } else { prompt.0.clone() };
+    let shown = if prompt.0.is_empty() {
+        "> ".to_string()
+    } else {
+        prompt.0.clone()
+    };
     for mut text in &mut q {
         if **text != shown {
             **text = shown.clone();
@@ -649,7 +696,14 @@ fn update_commander_display(
     chrome: Res<ChromeState>,
     world_state: Res<State<crate::worlds::WorldState>>,
     mut q: Query<(&mut Text, &mut TextColor), With<CommanderText>>,
-    mut prompt_q: Query<&mut Text, (With<CommanderPrompt>, Without<CommanderText>, Without<PayAmountText>)>,
+    mut prompt_q: Query<
+        &mut Text,
+        (
+            With<CommanderPrompt>,
+            Without<CommanderText>,
+            Without<PayAmountText>,
+        ),
+    >,
     mut amount_box: Query<&mut Node, With<PayAmountBox>>,
     mut amount_q: Query<(&mut Text, &mut TextColor), (With<PayAmountText>, Without<CommanderText>)>,
 ) {
@@ -660,7 +714,11 @@ fn update_commander_display(
     // bright highlight instead, the same signal a real text field gives.
     let cursor = |s: &str, active: bool, selected: bool| -> String {
         if active && selected {
-            if s.is_empty() { " ".into() } else { s.to_string() }
+            if s.is_empty() {
+                " ".into()
+            } else {
+                s.to_string()
+            }
         } else if active {
             format!("{s}_")
         } else if s.is_empty() {
@@ -717,7 +775,11 @@ fn update_commander_display(
     for (mut text, mut color) in &mut q {
         if chrome.focused {
             let display = if chrome.selected {
-                if chrome.text.is_empty() { " ".to_string() } else { chrome.text.clone() }
+                if chrome.text.is_empty() {
+                    " ".to_string()
+                } else {
+                    chrome.text.clone()
+                }
             } else if chrome.text.is_empty() {
                 "_".to_string()
             } else {
@@ -816,12 +878,16 @@ pub fn handle_chrome_input(world: &mut World) {
                         if selected {
                             pay.amount.clear();
                         }
-                        pay.amount.extend(text.chars().filter(|c| c.is_ascii_digit()));
+                        pay.amount
+                            .extend(text.chars().filter(|c| c.is_ascii_digit()));
                     } else {
                         if selected {
                             pay.to.clear();
                         }
-                        pay.to.extend(text.chars().filter(|c| !c.is_whitespace() && !c.is_control()));
+                        pay.to.extend(
+                            text.chars()
+                                .filter(|c| !c.is_whitespace() && !c.is_control()),
+                        );
                     }
                 } else {
                     if chrome.selected {
@@ -883,7 +949,8 @@ pub fn handle_chrome_input(world: &mut World) {
                                 pay.field = 1;
                                 pay.selected = false;
                             } else if pay.field == 1 && !pay.amount.is_empty() {
-                                submit = Some(format!("pay {} {}", pay.to.trim(), pay.amount.trim()));
+                                submit =
+                                    Some(format!("pay {} {}", pay.to.trim(), pay.amount.trim()));
                             }
                         }
                         Key::Escape => {

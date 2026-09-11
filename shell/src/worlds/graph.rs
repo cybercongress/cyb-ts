@@ -1,9 +1,9 @@
-use std::sync::Arc;
 use bevy::prelude::*;
+use std::sync::Arc;
 
-use mir::graph::{Csr, ParticleIndex, Cyberlink};
 use mir::bevy::resources::{GpuBuffers, GraphCamera, GraphWorldConfig};
 use mir::bevy::world::GraphWorldState;
+use mir::graph::{Csr, Cyberlink, ParticleIndex};
 use prysm::theme;
 
 use super::{SharedCell, WorldState};
@@ -18,15 +18,9 @@ impl Plugin for GraphBridgePlugin {
             .init_resource::<BrainStats>()
             .add_systems(OnEnter(WorldState::Graph), spawn_hud)
             .add_systems(OnExit(WorldState::Graph), despawn_hud)
-            .add_systems(
-                Update,
-                refresh_hud.run_if(in_state(WorldState::Graph)),
-            )
+            .add_systems(Update, refresh_hud.run_if(in_state(WorldState::Graph)))
             .add_systems(Startup, insert_graph_config)
-            .add_systems(
-                Update,
-                place_labels.run_if(in_state(WorldState::Graph)),
-            )
+            .add_systems(Update, place_labels.run_if(in_state(WorldState::Graph)))
             .add_systems(OnExit(WorldState::Graph), hide_labels)
             // Refresh on entering brain, so links cast since the last visit —
             // sigma's money, soma's answers — are in the picture. mir reads
@@ -79,19 +73,31 @@ fn insert_graph_config(
         // decomposition and the syntropy of the whole distribution. One
         // computation feeds four consumers — label rank, particle radius,
         // particle colour, and the HUD.
-        let tru_links = axons.iter().map(|&(from, to, w)| {
-            tru::Link::stake(from, to, w.max(1) as u128)
-        });
+        let tru_links = axons
+            .iter()
+            .map(|&(from, to, w)| tru::Link::stake(from, to, w.max(1) as u128));
         let g = tru::FocusingGraph::build(tru_links, &tru::Context::none());
         let result = tru::compute_focusing(&g, &tru::FocusingParams::default());
 
         let mut by_hash: std::collections::HashMap<[u8; 32], (f32, [f32; 3])> =
             std::collections::HashMap::new();
         for (i, id) in g.node_ids().iter().enumerate() {
-            let f = result.focus.get(i).map(|x| x.to_f64() as f32).unwrap_or(0.0);
+            let f = result
+                .focus
+                .get(i)
+                .map(|x| x.to_f64() as f32)
+                .unwrap_or(0.0);
             let k = [
-                result.diffusion.get(i).map(|x| x.to_f64() as f32).unwrap_or(0.0),
-                result.springs.get(i).map(|x| x.to_f64() as f32).unwrap_or(0.0),
+                result
+                    .diffusion
+                    .get(i)
+                    .map(|x| x.to_f64() as f32)
+                    .unwrap_or(0.0),
+                result
+                    .springs
+                    .get(i)
+                    .map(|x| x.to_f64() as f32)
+                    .unwrap_or(0.0),
                 result.heat.get(i).map(|x| x.to_f64() as f32).unwrap_or(0.0),
             ];
             by_hash.insert(*id, (f, k));
@@ -109,11 +115,16 @@ fn insert_graph_config(
         values = Some(std::sync::Arc::new(gv));
 
         // The HUD's numbers, computed once here where everything is at hand.
-        let world_particles: std::collections::HashSet<[u8; 32]> =
-            [WorldState::Graph, WorldState::Com, WorldState::Robot, WorldState::Sigma, WorldState::Models]
-                .into_iter()
-                .map(|w| super::content::particle_of(super::attention::world_name(w)))
-                .collect();
+        let world_particles: std::collections::HashSet<[u8; 32]> = [
+            WorldState::Graph,
+            WorldState::Com,
+            WorldState::Robot,
+            WorldState::Sigma,
+            WorldState::Models,
+        ]
+        .into_iter()
+        .map(|w| super::content::particle_of(super::attention::world_name(w)))
+        .collect();
         let attention_secs: u64 = axons
             .iter()
             .filter(|(f, t, _)| world_particles.contains(f) && world_particles.contains(t))
@@ -135,11 +146,10 @@ fn insert_graph_config(
             [(d / total) as f32, (sp / total) as f32, (h / total) as f32]
         };
         let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
-        stats.graph_bytes = std::fs::metadata(
-            std::path::Path::new(&home).join("cyb").join("graph.log"),
-        )
-        .map(|m| m.len())
-        .unwrap_or(0);
+        stats.graph_bytes =
+            std::fs::metadata(std::path::Path::new(&home).join("cyb").join("graph.log"))
+                .map(|m| m.len())
+                .unwrap_or(0);
         // Top particles by focus, with the words behind them when known.
         let texts = super::content::load();
         let mut ranked: Vec<([u8; 32], f32)> =
@@ -168,11 +178,18 @@ fn insert_graph_config(
     };
     info!(
         "brain: graph from {} ({} axons, {} labels)",
-        if axons.is_empty() { "synthetic demo" } else { "cybergraph" },
+        if axons.is_empty() {
+            "synthetic demo"
+        } else {
+            "cybergraph"
+        },
         axons.len(),
         index.labels.iter().flatten().count(),
     );
-    commands.insert_resource(GraphWorldConfig { graph: Arc::new(csr), values });
+    commands.insert_resource(GraphWorldConfig {
+        graph: Arc::new(csr),
+        values,
+    });
 }
 
 // ── labels ───────────────────────────────────────────────────────────────────
@@ -237,7 +254,11 @@ impl BrainIndex {
             });
             focus.push(focus_by_hash.get(hash).copied().unwrap_or(0.0));
         }
-        Self { labels, focus, hashes: vocab.anchor().to_vec() }
+        Self {
+            labels,
+            focus,
+            hashes: vocab.anchor().to_vec(),
+        }
     }
 
     /// The φ* floor a particle must clear for its label to be drawn: the
@@ -331,7 +352,18 @@ fn hud_text(stats: &BrainStats) -> String {
     out
 }
 
-fn spawn_hud(mut commands: Commands, stats: Res<BrainStats>) {
+fn spawn_hud(
+    mut commands: Commands,
+    stats: Res<BrainStats>,
+    existing: Query<Entity, With<HudRoot>>,
+    mut nodes: Query<&mut Node, With<HudRoot>>,
+) {
+    if !existing.is_empty() {
+        for mut node in &mut nodes {
+            node.display = Display::Flex;
+        }
+        return;
+    }
     commands
         .spawn((
             HudRoot,
@@ -348,15 +380,18 @@ fn spawn_hud(mut commands: Commands, stats: Res<BrainStats>) {
             hud.spawn((
                 HudText,
                 Text::new(hud_text(&stats)),
-                TextFont { font_size: 11.0, ..default() },
+                TextFont {
+                    font_size: 11.0,
+                    ..default()
+                },
                 TextColor(prysm::theme::TEXT_DIM),
             ));
         });
 }
 
-fn despawn_hud(mut commands: Commands, q: Query<Entity, With<HudRoot>>) {
-    for e in &q {
-        commands.entity(e).despawn();
+fn despawn_hud(mut q: Query<&mut Node, With<HudRoot>>) {
+    for mut node in &mut q {
+        node.display = Display::None;
     }
 }
 
@@ -382,9 +417,17 @@ fn place_labels(
     index: Res<BrainIndex>,
     gpu: Option<Res<GpuBuffers>>,
     cam: Option<Res<GraphCamera>>,
-    mut existing: Query<(Entity, &ParticleLabel, &mut Node, &mut Text, &mut Visibility)>,
+    mut existing: Query<(
+        Entity,
+        &ParticleLabel,
+        &mut Node,
+        &mut Text,
+        &mut Visibility,
+    )>,
 ) {
-    let (Some(gpu), Some(cam)) = (gpu, cam) else { return };
+    let (Some(gpu), Some(cam)) = (gpu, cam) else {
+        return;
+    };
     let m = cam.view_proj();
     let [lw, lh] = cam.input_viewport;
 
@@ -406,7 +449,11 @@ fn place_labels(
             spots.insert(i, None);
             continue;
         }
-        let (x, y, z) = (gpu.pos_cpu[base], gpu.pos_cpu[base + 1], gpu.pos_cpu[base + 2]);
+        let (x, y, z) = (
+            gpu.pos_cpu[base],
+            gpu.pos_cpu[base + 1],
+            gpu.pos_cpu[base + 2],
+        );
         let w = m[0][3] * x + m[1][3] * y + m[2][3] * z + m[3][3];
         if w <= 0.0 {
             // Behind the camera; the label would project to nonsense.
@@ -440,12 +487,17 @@ fn place_labels(
 
     // First sighting of a particle: give it its label.
     for (i, spot) in spots {
-        let Some(Some(label)) = index.labels.get(i) else { continue };
+        let Some(Some(label)) = index.labels.get(i) else {
+            continue;
+        };
         let Some((sx, sy)) = spot else { continue };
         commands.spawn((
             ParticleLabel(i),
             Text::new(label.clone()),
-            TextFont { font_size: 11.0, ..default() },
+            TextFont {
+                font_size: 11.0,
+                ..default()
+            },
             TextColor(theme::TEXT_DIM),
             Node {
                 position_type: PositionType::Absolute,
@@ -462,8 +514,6 @@ fn hide_labels(mut q: Query<&mut Visibility, With<ParticleLabel>>) {
         *v = Visibility::Hidden;
     }
 }
-
-
 
 /// Tell mir which screen bands the chrome owns, so a thumb on the tab strip
 /// or in the commander never reaches the camera.
@@ -483,7 +533,7 @@ fn sync_camera_inset(cam: Option<ResMut<GraphCamera>>, safe: Res<SafeArea>) {
 }
 
 fn sync_graph_state(
-    world_state:     Res<State<WorldState>>,
+    world_state: Res<State<WorldState>>,
     graph_state_cur: Res<State<GraphWorldState>>,
     mut graph_state: ResMut<NextState<GraphWorldState>>,
 ) {
@@ -496,5 +546,3 @@ fn sync_graph_state(
         graph_state.set(target);
     }
 }
-
-

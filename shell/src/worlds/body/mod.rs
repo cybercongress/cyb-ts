@@ -76,11 +76,12 @@ impl Plugin for BodyWorldPlugin {
         })
         .init_resource::<BodyView>()
         .init_resource::<ProofMeter>()
-        .add_systems(OnEnter(WorldState::Body), build_page)
+        .add_systems(OnEnter(WorldState::Body), enter_body)
         .add_systems(
             Update,
             (
                 tick_view,
+                paint_live,
                 rebuild_on_change,
                 handle_prove_press,
                 handle_prover_intensity_press,
@@ -260,15 +261,126 @@ fn tick_view(
         .load(std::sync::atomic::Ordering::Relaxed);
 }
 
+fn enter_body(
+    commands: Commands,
+    view: Res<BodyView>,
+    link: Res<BodyLink>,
+    mut worlds: Query<(&crate::worlds::WorldUi, &mut Node)>,
+) {
+    if crate::worlds::reveal_world(WorldState::Body, &mut worlds) {
+        return;
+    }
+    build_page(commands, view, link);
+}
+
+#[derive(Component, Clone, Copy)]
+enum BodyStat {
+    Cpu,
+    CpuTop,
+    Gpu,
+    Mem,
+    NetIo,
+}
+
+fn cpu_line(view: &BodyView) -> String {
+    let v = &view.vitals;
+    let watts = if v.cpu_mw > 0 {
+        format!("  {:.1} W", v.cpu_mw as f32 / 1000.0)
+    } else {
+        String::new()
+    };
+    let cpu_task = if view.prover.running {
+        "   zheng (proving)"
+    } else {
+        ""
+    };
+    format!(
+        "cpu     {}  {:>3.0}%{}{}",
+        bar(v.cpu_pct / 100.0),
+        v.cpu_pct,
+        watts,
+        cpu_task
+    )
+}
+
+fn cpu_top_line(view: &BodyView) -> String {
+    let who = view
+        .vitals
+        .top
+        .iter()
+        .map(|t| format!("{} {:.0}%", t.name, t.cpu_pct))
+        .collect::<Vec<_>>()
+        .join("   ");
+    format!("        {who}")
+}
+
+fn gpu_line(view: &BodyView) -> String {
+    let v = &view.vitals;
+    let watts = if v.gpu_mw > 0 {
+        format!("  {:.1} W", v.gpu_mw as f32 / 1000.0)
+    } else {
+        String::new()
+    };
+    format!(
+        "gpu     {}  {:>3.0}%{}",
+        bar(v.gpu_pct / 100.0),
+        v.gpu_pct,
+        watts
+    )
+}
+
+fn mem_line(view: &BodyView) -> String {
+    let v = &view.vitals;
+    format!(
+        "memory  {}  {:.1} / {:.0} GB",
+        bar(v.mem_used as f32 / v.mem_total as f32),
+        gb(v.mem_used),
+        gb(v.mem_total)
+    )
+}
+
+fn net_io_line(view: &BodyView) -> String {
+    let v = &view.vitals;
+    format!(
+        "network  down {}   up {}",
+        rate(v.net_rx_bps),
+        rate(v.net_tx_bps)
+    )
+}
+
+fn paint_live(view: Res<BodyView>, mut q: Query<(&BodyStat, &mut Text)>) {
+    if !view.is_changed() {
+        return;
+    }
+    for (stat, mut t) in &mut q {
+        **t = match stat {
+            BodyStat::Cpu => cpu_line(&view),
+            BodyStat::CpuTop => cpu_top_line(&view),
+            BodyStat::Gpu => gpu_line(&view),
+            BodyStat::Mem => mem_line(&view),
+            BodyStat::NetIo => net_io_line(&view),
+        };
+    }
+}
+
 fn rebuild_on_change(
     mut commands: Commands,
     view: Res<BodyView>,
     link: Res<BodyLink>,
     roots: Query<Entity, With<BodyRoot>>,
+    mut last: Local<Option<(usize, bool)>>,
 ) {
-    if !view.is_changed() || view.is_added() || roots.is_empty() {
+    // Numbers tick every second; tearing the tree down to rewrite them
+    // is the jerk on the phone. Only rebuild when the page's shape moves.
+    let key = (view.nets.len(), view.prover.running);
+    if last.is_none() && !roots.is_empty() {
+        *last = Some(key);
         return;
     }
+    if Some(key) == *last || roots.is_empty() {
+        return;
+    }
+    *last = Some(key);
     for e in &roots {
         commands.entity(e).despawn();
     }
@@ -415,86 +527,70 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
     );
 
     let v = &view.vitals;
-    let watts = |mw: u32| {
-        if mw > 0 {
-            format!("  {:.1} W", mw as f32 / 1000.0)
-        } else {
-            String::new()
-        }
+    let stat = |commands: &mut Commands,
+                parent: Entity,
+                kind: BodyStat,
+                s: String,
+                size: f32,
+                color: Color| {
+        commands.spawn((
+            kind,
+            Text::new(s),
+            TextFont {
+                font_size: size,
+                ..default()
+            },
+            TextColor(color),
+            ChildOf(parent),
+        ));
     };
 
-    let cpu_task = if view.prover.running {
-        "   zheng (proving)"
-    } else {
-        ""
-    };
-    text(
+    stat(
         &mut commands,
         page,
-        format!(
-            "cpu     {}  {:>3.0}%{}{}",
-            bar(v.cpu_pct / 100.0),
-            v.cpu_pct,
-            watts(v.cpu_mw),
-            cpu_task
-        ),
+        BodyStat::Cpu,
+        cpu_line(&view),
         theme::BODY,
         theme::TEXT_PRIMARY,
     );
     if !v.top.is_empty() {
-        let who = v
-            .top
-            .iter()
-            .map(|t| format!("{} {:.0}%", t.name, t.cpu_pct))
-            .collect::<Vec<_>>()
-            .join("   ");
-        text(
+        stat(
             &mut commands,
             page,
-            format!("        {who}"),
+            BodyStat::CpuTop,
+            cpu_top_line(&view),
             theme::CAPTION,
             theme::TEXT_DIM,
         );
     }
 
     if v.gpu_pct >= 0.0 {
-        text(
+        stat(
             &mut commands,
             page,
-            format!(
-                "gpu     {}  {:>3.0}%{}",
-                bar(v.gpu_pct / 100.0),
-                v.gpu_pct,
-                watts(v.gpu_mw)
-            ),
+            BodyStat::Gpu,
+            gpu_line(&view),
             theme::BODY,
             theme::TEXT_PRIMARY,
         );
     }
 
     if v.mem_total > 0 {
-        text(
+        stat(
             &mut commands,
             page,
-            format!(
-                "memory  {}  {:.1} / {:.0} GB",
-                bar(v.mem_used as f32 / v.mem_total as f32),
-                gb(v.mem_used),
-                gb(v.mem_total)
-            ),
+            BodyStat::Mem,
+            mem_line(&view),
             theme::BODY,
             theme::TEXT_PRIMARY,
         );
     }
 
-    text(
+    stat(
         &mut commands,
         page,
-        format!(
-            "network  down {}   up {}",
-            rate(v.net_rx_bps),
-            rate(v.net_tx_bps)
-        ),
+        BodyStat::NetIo,
+        net_io_line(&view),
         theme::BODY,
         theme::TEXT_PRIMARY,
     );

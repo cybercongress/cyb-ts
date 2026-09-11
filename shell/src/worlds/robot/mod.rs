@@ -111,7 +111,10 @@ pub fn being_name() -> String {
         .unwrap_or_else(|| "Cyb".into())
 }
 
-fn setup_cell(mut commands: Commands) {
+fn setup_cell(mut commands: Commands, mut worlds: Query<(&crate::worlds::WorldUi, &mut Node)>) {
+    if crate::worlds::reveal_world(WorldState::Robot, &mut worlds) {
+        return;
+    }
     // The whole page is six lines, centered on both axes. Nothing else:
     // the being introduces itself, and the commander below hints at the
     // one thing worth doing here — giving it a name.

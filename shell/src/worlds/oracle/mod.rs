@@ -205,11 +205,19 @@ fn network_url(hub: &BodyLinkHub) -> Option<String> {
     crate::worlds::sigma::chain::chain_url(&hub.0)
 }
 
-fn enter(oracle: Res<Oracle>, hub: Option<Res<BodyLinkHub>>, commands: Commands) {
+fn enter(
+    oracle: Res<Oracle>,
+    hub: Option<Res<BodyLinkHub>>,
+    commands: Commands,
+    mut worlds: Query<(&crate::worlds::WorldUi, &mut Node)>,
+) {
     if let Some(hub) = &hub {
         if let Some(url) = network_url(hub) {
             oracle.refresh_list(url);
         }
+    }
+    if crate::worlds::reveal_world(WorldState::Oracle, &mut worlds) {
+        return;
     }
     build_page(commands, &oracle.snapshot(), &OracleUi::default());
 }
