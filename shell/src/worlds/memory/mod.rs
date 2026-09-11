@@ -69,6 +69,10 @@ fn refresh_on_index(
         idx.hashes.first().copied(),
         idx.hashes.last().copied(),
     );
+    if last.is_none() && !roots.is_empty() {
+        *last = Some(fp);
+        return;
+    }
     if Some(fp) == *last && !roots.is_empty() {
         return;
     }
