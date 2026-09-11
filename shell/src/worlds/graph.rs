@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use std::sync::Arc;
 
 use mir::bevy::resources::{GpuBuffers, GraphCamera, GraphWorldConfig};
-use mir::bevy::world::{GraphWorldState, RenderOutput};
+use mir::bevy::world::GraphWorldState;
 use mir::graph::{Csr, Cyberlink, ParticleIndex};
 use prysm::theme;
 
@@ -12,73 +12,18 @@ use crate::shell::platform::SafeArea;
 
 pub struct GraphBridgePlugin;
 
-/// Camera that owns the graph image and its labels — a separate taffy
-/// tree from chrome. Labels used to live on the default UI camera; every
-/// pan wrote Node on fifty labels and Bevy relaid the whole app, chrome
-/// and memory included. That is the flash while surfing brain.
-#[derive(Component)]
-struct GraphUiCam;
-
-#[derive(Resource, Clone, Copy)]
-struct GraphUiCamId(Entity);
-
 impl Plugin for GraphBridgePlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<BrainIndex>()
             .init_resource::<BrainStats>()
-            .add_systems(Startup, (spawn_graph_ui_cam, insert_graph_config).chain())
+            .add_systems(Startup, insert_graph_config)
             .add_systems(OnEnter(WorldState::Graph), spawn_hud)
             .add_systems(OnExit(WorldState::Graph), despawn_hud)
             .add_systems(Update, refresh_hud.run_if(in_state(WorldState::Graph)))
             .add_systems(Update, place_labels.run_if(in_state(WorldState::Graph)))
             .add_systems(OnExit(WorldState::Graph), hide_labels)
             .add_systems(OnEnter(WorldState::Graph), insert_graph_config)
-            .add_systems(
-                Update,
-                (
-                    sync_graph_state,
-                    sync_graph_ui_cam,
-                    attach_graph_ui,
-                    sync_camera_inset,
-                ),
-            );
-    }
-}
-
-fn spawn_graph_ui_cam(mut commands: Commands) {
-    let id = commands
-        .spawn((
-            GraphUiCam,
-            Camera2d,
-            Camera {
-                order: 1,
-                is_active: false,
-                clear_color: ClearColorConfig::None,
-                ..default()
-            },
-        ))
-        .id();
-    commands.insert_resource(GraphUiCamId(id));
-}
-
-fn sync_graph_ui_cam(state: Res<State<WorldState>>, mut cam: Query<&mut Camera, With<GraphUiCam>>) {
-    let want = *state.get() == WorldState::Graph;
-    for mut c in &mut cam {
-        if c.is_active != want {
-            c.is_active = want;
-        }
-    }
-}
-
-fn attach_graph_ui(
-    cam: Res<GraphUiCamId>,
-    mut commands: Commands,
-    images: Query<Entity, (With<RenderOutput>, Without<UiTargetCamera>)>,
-    labels: Query<Entity, (With<ParticleLabel>, Without<UiTargetCamera>)>,
-    hud: Query<Entity, (With<HudRoot>, Without<UiTargetCamera>)>,
-) {
-    for e in images.iter().chain(labels.iter()).chain(hud.iter()) {
-        commands.entity(e).insert(UiTargetCamera(cam.0));
+            .add_systems(Update, (sync_graph_state, sync_camera_inset));
     }
 }
 
@@ -414,7 +359,6 @@ fn spawn_hud(
     stats: Res<BrainStats>,
     existing: Query<Entity, With<HudRoot>>,
     mut vis_q: Query<&mut Visibility, With<HudRoot>>,
-    ui_cam: Option<Res<GraphUiCamId>>,
 ) {
     if !existing.is_empty() {
         for mut vis in &mut vis_q {
@@ -422,31 +366,29 @@ fn spawn_hud(
         }
         return;
     }
-    let mut e = commands.spawn((
-        HudRoot,
-        Node {
-            position_type: PositionType::Absolute,
-            left: Val::Px(12.0),
-            top: Val::Px(CHROME_TOP_H + 10.0),
-            padding: UiRect::all(Val::Px(8.0)),
-            ..default()
-        },
-        GlobalZIndex(5),
-    ));
-    if let Some(cam) = ui_cam {
-        e.insert(UiTargetCamera(cam.0));
-    }
-    e.with_children(|hud| {
-        hud.spawn((
-            HudText,
-            Text::new(hud_text(&stats)),
-            TextFont {
-                font_size: 11.0,
+    commands
+        .spawn((
+            HudRoot,
+            Node {
+                position_type: PositionType::Absolute,
+                left: Val::Px(12.0),
+                top: Val::Px(CHROME_TOP_H + 10.0),
+                padding: UiRect::all(Val::Px(8.0)),
                 ..default()
             },
-            TextColor(prysm::theme::TEXT_DIM),
-        ));
-    });
+            GlobalZIndex(5),
+        ))
+        .with_children(|hud| {
+            hud.spawn((
+                HudText,
+                Text::new(hud_text(&stats)),
+                TextFont {
+                    font_size: 11.0,
+                    ..default()
+                },
+                TextColor(prysm::theme::TEXT_DIM),
+            ));
+        });
 }
 
 fn despawn_hud(mut q: Query<&mut Visibility, With<HudRoot>>) {
@@ -477,7 +419,8 @@ fn place_labels(
     index: Res<BrainIndex>,
     gpu: Option<Res<GpuBuffers>>,
     cam: Option<Res<GraphCamera>>,
-    ui_cam: Option<Res<GraphUiCamId>>,
+    touches: Res<Touches>,
+    mouse: Res<ButtonInput<MouseButton>>,
     mut existing: Query<(
         Entity,
         &ParticleLabel,
@@ -486,6 +429,18 @@ fn place_labels(
         &mut Visibility,
     )>,
 ) {
+    // A finger on the graph is a camera move. Writing fifty label Nodes
+    // every tick relaids the whole UI and the picture strobes. Hide the
+    // words while surfing; they come back when the finger lifts.
+    let surfing = mouse.pressed(MouseButton::Left) || touches.iter().next().is_some();
+    if surfing {
+        for (_, _, _, _, mut vis) in &mut existing {
+            if *vis != Visibility::Hidden {
+                *vis = Visibility::Hidden;
+            }
+        }
+        return;
+    }
     let (Some(gpu), Some(cam)) = (gpu, cam) else {
         return;
     };
@@ -567,7 +522,7 @@ fn place_labels(
             continue;
         };
         let Some((sx, sy)) = spot else { continue };
-        let mut e = commands.spawn((
+        commands.spawn((
             ParticleLabel(i),
             Text::new(label.clone()),
             TextFont {
@@ -582,9 +537,6 @@ fn place_labels(
                 ..default()
             },
         ));
-        if let Some(cam) = &ui_cam {
-            e.insert(UiTargetCamera(cam.0));
-        }
     }
 }
 
