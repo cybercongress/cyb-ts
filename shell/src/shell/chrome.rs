@@ -156,6 +156,20 @@ fn spawn_chrome(mut commands: Commands) {
         ))
         .id();
 
+    // Fills the hole between chrome bars when a world is not yet drawn.
+    // Camera does not clear; without this the swapchain shows a black flash.
+    commands.spawn((
+        Node {
+            position_type: PositionType::Absolute,
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            ..default()
+        },
+        BackgroundColor(theme::DARK_BASE),
+        GlobalZIndex(-100),
+        UiTargetCamera(cam),
+    ));
+
     commands
         .spawn((
             Node {
@@ -545,21 +559,33 @@ fn apply_safe_area(
         ),
     >,
 ) {
-    // No is_changed() gate: SafeArea is written by another plugin, and if
-    // that write landed after this system in the same frame the change would
-    // be missed for good. Assigning an equal Val is free.
+    // Writing Node marks it Changed even when the Val is equal, and Bevy
+    // then relayouts the whole UI. On a phone that is a jerk every frame.
+    let top_h = Val::Px(CHROME_TOP_H + safe.top);
+    let top_pad = Val::Px(safe.top);
+    let bot_pad = Val::Px(safe.bottom);
+    let content_top = Val::Px(CHROME_TOP_H + safe.top);
+    let content_bot = Val::Px(CHROME_BOTTOM_H + safe.bottom);
     for mut node in &mut top {
-        node.height = Val::Px(CHROME_TOP_H + safe.top);
-        node.padding.top = Val::Px(safe.top);
+        if node.height != top_h {
+            node.height = top_h;
+        }
+        if node.padding.top != top_pad {
+            node.padding.top = top_pad;
+        }
     }
     for mut node in &mut bottom {
-        node.padding.bottom = Val::Px(safe.bottom);
+        if node.padding.bottom != bot_pad {
+            node.padding.bottom = bot_pad;
+        }
     }
-    // World roots live exactly between the bars — insets included, so
-    // content never sits under either panel on any device.
     for mut node in &mut content {
-        node.top = Val::Px(CHROME_TOP_H + safe.top);
-        node.bottom = Val::Px(CHROME_BOTTOM_H + safe.bottom);
+        if node.top != content_top {
+            node.top = content_top;
+        }
+        if node.bottom != content_bot {
+            node.bottom = content_bot;
+        }
     }
 }
 
@@ -603,13 +629,19 @@ fn show_notice(
     }
     let showing = notice.ttl > 0.0;
 
+    let band_top = Val::Px(CHROME_TOP_H + safe.top);
+    let band_display = if showing {
+        Display::Flex
+    } else {
+        Display::None
+    };
     for mut node in &mut band {
-        node.top = Val::Px(CHROME_TOP_H + safe.top);
-        node.display = if showing {
-            Display::Flex
-        } else {
-            Display::None
-        };
+        if node.top != band_top {
+            node.top = band_top;
+        }
+        if node.display != band_display {
+            node.display = band_display;
+        }
     }
     if showing {
         for mut t in &mut text {

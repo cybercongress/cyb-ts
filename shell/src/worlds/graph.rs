@@ -356,11 +356,11 @@ fn spawn_hud(
     mut commands: Commands,
     stats: Res<BrainStats>,
     existing: Query<Entity, With<HudRoot>>,
-    mut nodes: Query<&mut Node, With<HudRoot>>,
+    mut vis_q: Query<&mut Visibility, With<HudRoot>>,
 ) {
     if !existing.is_empty() {
-        for mut node in &mut nodes {
-            node.display = Display::Flex;
+        for mut vis in &mut vis_q {
+            *vis = Visibility::Visible;
         }
         return;
     }
@@ -389,9 +389,9 @@ fn spawn_hud(
         });
 }
 
-fn despawn_hud(mut q: Query<&mut Node, With<HudRoot>>) {
-    for mut node in &mut q {
-        node.display = Display::None;
+fn despawn_hud(mut q: Query<&mut Visibility, With<HudRoot>>) {
+    for mut vis in &mut q {
+        *vis = Visibility::Hidden;
     }
 }
 

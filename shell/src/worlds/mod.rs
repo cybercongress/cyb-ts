@@ -205,9 +205,9 @@ impl Plugin for WorldsPlugin {
             .init_resource::<Notice>()
             .insert_resource(identity::load_or_mint())
             .insert_resource(SharedCell::open_default())
-            // Hide, never despawn: tearing the tree down leaves a black
-            // frame while the next world lays out. Com already does this
-            // for taffy; every world does it so Android nav does not flash.
+            // Visibility, not Display::None: None drops layout, so the next
+            // show spends a frame at size zero — the remaining flash on
+            // Android. Hidden keeps the last layout and just skips draw.
             .add_systems(Update, hide_foreign_worlds);
     }
 }
@@ -219,24 +219,27 @@ pub struct WorldUi(pub WorldState);
 
 /// Unhide an already-built world. OnEnter must call this before spawning
 /// a second copy.
-pub fn reveal_world(here: WorldState, q: &mut Query<(&WorldUi, &mut Node)>) -> bool {
+pub fn reveal_world(here: WorldState, q: &mut Query<(&WorldUi, &mut Visibility)>) -> bool {
     let mut found = false;
-    for (tag, mut node) in q.iter_mut() {
+    for (tag, mut vis) in q.iter_mut() {
         if tag.0 == here {
-            node.display = Display::Flex;
+            *vis = Visibility::Visible;
             found = true;
         }
     }
     found
 }
 
-fn hide_foreign_worlds(state: Res<State<WorldState>>, mut q: Query<(&WorldUi, &mut Node)>) {
+fn hide_foreign_worlds(state: Res<State<WorldState>>, mut q: Query<(&WorldUi, &mut Visibility)>) {
     let here = *state.get();
-    for (tag, mut node) in &mut q {
-        node.display = if tag.0 == here {
-            Display::Flex
+    for (tag, mut vis) in &mut q {
+        let want = if tag.0 == here {
+            Visibility::Visible
         } else {
-            Display::None
+            Visibility::Hidden
         };
+        if *vis != want {
+            *vis = want;
+        }
     }
 }
