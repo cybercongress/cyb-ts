@@ -104,7 +104,7 @@ NDK_BIN      ?= $(NDK_HOME)/toolchains/llvm/prebuilt/$(NDK_HOST)/bin
 
 # Full Android build: compile Rust → copy assets → assemble APK
 android: android-rust android-apk
-	@echo "APK: shell/gen/android/app/build/outputs/apk/release/app-release-unsigned.apk"
+	@echo "APK: shell/gen/android/app/build/outputs/apk/release/app-release.apk"
 
 # Cross-compile Rust → libcyb.so
 android-rust:
@@ -135,12 +135,12 @@ android-jnilibs:
 	cp $(NDK_BIN)/../sysroot/usr/lib/aarch64-linux-android/libc++_shared.so \
 		shell/gen/android/app/src/main/jniLibs/arm64-v8a/
 
-# Release APK — unsigned, for distribution. `adb install` rejects it.
+# Release APK — Gradle signs with ~/.cyb-release.keystore when present.
 android-apk: android-jnilibs
 	cd shell/gen/android && ANDROID_HOME=$(ANDROID_HOME) JAVA_HOME=$(JAVA_HOME) ./gradlew assembleRelease \
 		-PcybVersionCode=$(CYB_VER_CODE) -PcybVersionName=$(CYB_VER)
 
-# Debug APK — Gradle signs it with the local debug key, so a device accepts it
+# Debug APK — same keystore as release, so the two upgrade each other.
 android-debug: android-rust android-jnilibs
 	cd shell/gen/android && ANDROID_HOME=$(ANDROID_HOME) JAVA_HOME=$(JAVA_HOME) ./gradlew assembleDebug \
 		-PcybVersionCode=$(CYB_VER_CODE) -PcybVersionName=$(CYB_VER)

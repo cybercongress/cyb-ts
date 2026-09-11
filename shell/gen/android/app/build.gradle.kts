@@ -23,15 +23,41 @@ android {
         }
     }
 
+    // Pixel 8+/10 use 16 KB pages. mmap of .so from the APK
+    // (extractNativeLibs=false) then fails install with a blank
+    // "App not installed". Extract at install; debug and release
+    // share the same key so they upgrade each other.
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    val ks = file("${System.getProperty("user.home")}/.cyb-release.keystore")
+    val ksPassFile = file("${System.getProperty("user.home")}/.cyb-release.keystore.pass")
+    if (ks.exists() && ksPassFile.exists()) {
+        val pass = ksPassFile.readText().trim()
+        signingConfigs {
+            create("cyb") {
+                storeFile = ks
+                storePassword = pass
+                keyAlias = "cyb"
+                keyPassword = pass
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt")
             )
+            signingConfigs.findByName("cyb")?.let { signingConfig = it }
         }
         debug {
             isDebuggable = true
+            signingConfigs.findByName("cyb")?.let { signingConfig = it }
         }
     }
 

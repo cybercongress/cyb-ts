@@ -73,14 +73,23 @@ if [ -f "$KS" ]; then
   echo "ship: building the android body..."
   make android
   BT="$HOME/Library/Android/sdk/build-tools/34.0.0"
-  RAW="shell/gen/android/app/build/outputs/apk/release/app-release-unsigned.apk"
   APK="target/release/cyb-$V.apk"
-  "$BT/zipalign" -f 4 "$RAW" "$APK.aligned"
-  "$BT/apksigner" sign --ks "$KS" --ks-key-alias cyb \
-    --ks-pass "file:$HOME/.cyb-release.keystore.pass" \
-    --out "$APK" "$APK.aligned"
-  rm -f "$APK.aligned" "$APK.idsig"
-  "$BT/apksigner" verify "$APK"
+  # Gradle signs with ~/.cyb-release.keystore when present, and extracts
+  # native libs (16 KB page devices reject mmap-from-apk). Prefer that
+  # APK. Fall back to the old unsigned + apksigner path.
+  SIGNED="shell/gen/android/app/build/outputs/apk/release/app-release.apk"
+  RAW="shell/gen/android/app/build/outputs/apk/release/app-release-unsigned.apk"
+  if [ -f "$SIGNED" ]; then
+    cp "$SIGNED" "$APK"
+  else
+    "$BT/zipalign" -p -f 4 "$RAW" "$APK.aligned"
+    "$BT/apksigner" sign --ks "$KS" --ks-key-alias cyb \
+      --ks-pass "file:$HOME/.cyb-release.keystore.pass" \
+      --v1-signing-enabled true --v2-signing-enabled true \
+      --out "$APK" "$APK.aligned"
+    rm -f "$APK.aligned" "$APK.idsig"
+  fi
+  "$BT/apksigner" verify --verbose "$APK"
   echo "ship: apk signed and verified"
   ASSETS+=("$APK")
 else
