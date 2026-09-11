@@ -49,6 +49,16 @@ const CATALOG: &[FetchEntry] = &[
         hf_id: "Qwen/Qwen3-1.7B",
         download: "3.4 GB download, 2.1 GB installed",
     },
+    // Heretic-abliterated (p-e-w's own release, github.com/p-e-w/heretic):
+    // refusals ablated, otherwise stock Qwen3-8B. Same LlamaStyle family
+    // as the two entries above - no runtime changes needed. Walked end to
+    // end: downloaded, imported (8.7 GB q8), answered on honeycrisp at
+    // 16 tok/s - fast enough to be the default, not just an option.
+    FetchEntry {
+        label: "qwen3-8b-heretic",
+        hf_id: "p-e-w/Qwen3-8B-heretic",
+        download: "16.4 GB download, 8.7 GB installed",
+    },
 ];
 
 struct FetchEntry {
@@ -83,7 +93,10 @@ pub struct FetchState {
 /// throughput is nowhere near a single constant over weight — small models
 /// pay fixed overheads, large ones fall off the fast path. Order-of-
 /// magnitude honesty, not a benchmark.
-const SPEED_ANCHORS: &[(f32, f32)] = &[(0.43, 230.0), (2.2, 57.0), (15.7, 1.5)];
+// (8.7, 16.0) is a real measurement (qwen3-8b-heretic, honeycrisp,
+// `mr run --backend honeycrisp`) - the log-log interpolation without it
+// guessed ~4.5 tok/s here, 3.6x too pessimistic. Measured beats guessed.
+const SPEED_ANCHORS: &[(f32, f32)] = &[(0.43, 230.0), (2.2, 57.0), (8.7, 16.0), (15.7, 1.5)];
 
 fn est_tok_per_s(bytes: u64) -> f32 {
     let gb = (bytes as f32 / 1e9).max(0.05);
