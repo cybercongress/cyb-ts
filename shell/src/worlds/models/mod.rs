@@ -181,7 +181,7 @@ fn enter_models(
     commands: Commands,
     status: Res<MindStatus>,
     fetch: Res<FetchState>,
-    mut worlds: Query<(&crate::worlds::WorldUi, &mut Node)>,
+    mut worlds: Query<(&crate::worlds::WorldUi, &mut Visibility)>,
 ) {
     if crate::worlds::reveal_world(WorldState::Models, &mut worlds) {
         return;

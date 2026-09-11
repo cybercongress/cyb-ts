@@ -42,7 +42,7 @@ impl Plugin for MemoryWorldPlugin {
 fn enter(
     commands: Commands,
     index: Option<Res<BrainIndex>>,
-    mut worlds: Query<(&crate::worlds::WorldUi, &mut Node)>,
+    mut worlds: Query<(&crate::worlds::WorldUi, &mut Visibility)>,
 ) {
     if crate::worlds::reveal_world(WorldState::Memory, &mut worlds) {
         return;

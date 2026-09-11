@@ -209,7 +209,7 @@ fn enter(
     oracle: Res<Oracle>,
     hub: Option<Res<BodyLinkHub>>,
     commands: Commands,
-    mut worlds: Query<(&crate::worlds::WorldUi, &mut Node)>,
+    mut worlds: Query<(&crate::worlds::WorldUi, &mut Visibility)>,
 ) {
     if let Some(hub) = &hub {
         if let Some(url) = network_url(hub) {

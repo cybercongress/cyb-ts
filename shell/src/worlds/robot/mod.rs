@@ -111,7 +111,10 @@ pub fn being_name() -> String {
         .unwrap_or_else(|| "Cyb".into())
 }
 
-fn setup_cell(mut commands: Commands, mut worlds: Query<(&crate::worlds::WorldUi, &mut Node)>) {
+fn setup_cell(
+    mut commands: Commands,
+    mut worlds: Query<(&crate::worlds::WorldUi, &mut Visibility)>,
+) {
     if crate::worlds::reveal_world(WorldState::Robot, &mut worlds) {
         return;
     }
