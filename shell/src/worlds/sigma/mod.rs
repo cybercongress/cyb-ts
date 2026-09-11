@@ -91,19 +91,18 @@ impl Plugin for SigmaWorldPlugin {
         let neuron = app.world().resource::<super::identity::Identity>().neuron;
         app.insert_resource(SigmaState::new(&shared, neuron));
         app.init_resource::<chain::ChainMoney>();
-        app
-            .add_systems(OnEnter(WorldState::Sigma), (setup_sigma, refresh_chain_on_enter))
-            .add_systems(OnExit(WorldState::Sigma), destroy_sigma)
-            .add_systems(
-                Update,
-                (handle_chain_buttons, refresh_chain_labels)
-                    .run_if(in_state(WorldState::Sigma)),
-            )
-            // The balance poll runs in EVERY world: sigma and the body's
-            // zheng card read the same ChainMoney, so the money is one
-            // number everywhere — coherent by construction.
-            .add_systems(Update, poll_chain
-            );
+        app.add_systems(
+            OnEnter(WorldState::Sigma),
+            (setup_sigma, refresh_chain_on_enter),
+        )
+        .add_systems(
+            Update,
+            (handle_chain_buttons, refresh_chain_labels).run_if(in_state(WorldState::Sigma)),
+        )
+        // The balance poll runs in EVERY world: sigma and the body's
+        // zheng card read the same ChainMoney, so the money is one
+        // number everywhere — coherent by construction.
+        .add_systems(Update, poll_chain);
     }
 }
 
@@ -113,6 +112,7 @@ fn setup_sigma(mut commands: Commands, _state: Res<SigmaState>) {
     commands
         .spawn((
             SigmaRoot,
+            crate::worlds::WorldUi(WorldState::Sigma),
             crate::shell::chrome::ContentRoot,
             Node {
                 position_type: PositionType::Absolute,
@@ -144,19 +144,28 @@ fn setup_sigma(mut commands: Commands, _state: Res<SigmaState>) {
             // ── the chain: earned by proving, spendable now ────────────
             root.spawn((
                 Text::new("on the chain (pussy) - earned by proven work"),
-                TextFont { font_size: 13.0, ..default() },
+                TextFont {
+                    font_size: 13.0,
+                    ..default()
+                },
                 TextColor(Color::srgb(0.55, 0.6, 0.65)),
             ));
             root.spawn((
                 ChainMoneyLabel,
                 Text::new("querying the chain..."),
-                TextFont { font_size: 28.0, ..default() },
+                TextFont {
+                    font_size: 28.0,
+                    ..default()
+                },
                 TextColor(Color::srgb(0.4, 0.95, 0.6)),
             ));
             root.spawn((
                 ChainReceiptLabel,
                 Text::new(""),
-                TextFont { font_size: 13.0, ..default() },
+                TextFont {
+                    font_size: 13.0,
+                    ..default()
+                },
                 TextColor(Color::srgb(0.55, 0.6, 0.65)),
             ));
             // One lever: send. It folds the commander into a pay form
@@ -182,7 +191,10 @@ fn setup_sigma(mut commands: Commands, _state: Res<SigmaState>) {
                 .with_children(|inner| {
                     inner.spawn((
                         Text::new("send"),
-                        TextFont { font_size: 14.0, ..default() },
+                        TextFont {
+                            font_size: 14.0,
+                            ..default()
+                        },
                         TextColor(Color::srgb(0.8, 0.9, 0.85)),
                     ));
                 });
@@ -200,12 +212,14 @@ fn setup_sigma(mut commands: Commands, _state: Res<SigmaState>) {
                 .with_children(|inner| {
                     inner.spawn((
                         Text::new("receive"),
-                        TextFont { font_size: 14.0, ..default() },
+                        TextFont {
+                            font_size: 14.0,
+                            ..default()
+                        },
                         TextColor(Color::srgb(0.6, 0.65, 0.7)),
                     ));
                 });
             });
-
 
             // No event list here. Everything this page does is said in com,
             // where it can be scrolled back through; repeating the last twelve
@@ -213,12 +227,6 @@ fn setup_sigma(mut commands: Commands, _state: Res<SigmaState>) {
             // stale. What is left on the page is the state — balance, tip —
             // and what just happened arrives as a notice under the address bar.
         });
-}
-
-fn destroy_sigma(mut commands: Commands, q: Query<Entity, With<SigmaRoot>>) {
-    for e in &q {
-        commands.entity(e).despawn();
-    }
 }
 
 #[allow(dead_code)] // demo wallet retired; kept until MoneyWallet grows a real role
@@ -240,10 +248,10 @@ fn handle_sigma_buttons(
         // the left-hand side of the record in com; everything the wallet says
         // back lands on the right.
         let intent = match btn {
-            SigmaBtn::Fund     => "fund 100 PUSSY".to_string(),
-            SigmaBtn::Send     => "send 10 PUSSY to bob".to_string(),
+            SigmaBtn::Fund => "fund 100 PUSSY".to_string(),
+            SigmaBtn::Send => "send 10 PUSSY to bob".to_string(),
             SigmaBtn::Finalize => "finalize the block".to_string(),
-            SigmaBtn::Refresh  => "refresh the tip".to_string(),
+            SigmaBtn::Refresh => "refresh the tip".to_string(),
         };
         inbox.say(Speaker::User, intent);
 
@@ -275,7 +283,10 @@ fn handle_sigma_buttons(
                 let ready = wallet.mature_settles();
                 let h = wallet.tip().height;
                 let g4 = wallet.grade4();
-                said.push(format!("finalize h={h} grade4={g4} matured={}", ready.len()));
+                said.push(format!(
+                    "finalize h={h} grade4={g4} matured={}",
+                    ready.len()
+                ));
             }
             SigmaBtn::Refresh => {
                 wallet.sync_tip_local(cell);
@@ -317,14 +328,8 @@ fn drain_sense_parts(wallet: &mut MoneyWallet, log: &mut Vec<String>) {
 #[allow(dead_code)]
 fn refresh_sigma_labels(
     state: Res<SigmaState>,
-    mut bal: Query<
-        &mut Text,
-        (With<SigmaBalanceLabel>, Without<SigmaStatusLabel>),
-    >,
-    mut status: Query<
-        &mut Text,
-        (With<SigmaStatusLabel>, Without<SigmaBalanceLabel>),
-    >,
+    mut bal: Query<&mut Text, (With<SigmaBalanceLabel>, Without<SigmaStatusLabel>)>,
+    mut status: Query<&mut Text, (With<SigmaStatusLabel>, Without<SigmaBalanceLabel>)>,
 ) {
     if !state.is_changed() {
         return;
@@ -387,9 +392,6 @@ fn hex3(b: &[u8]) -> String {
         .collect()
 }
 
-
-
-
 /// Entering sigma asks the chain; the answer lands via the shared slot.
 /// Defensive on purpose: with `CYB_WORLD=sigma` the initial OnEnter can
 /// fire while plugins are still assembling, before body's resources
@@ -399,7 +401,9 @@ fn refresh_chain_on_enter(
     hub: Option<Res<crate::worlds::body::BodyLinkHub>>,
     who: Option<Res<crate::worlds::identity::Identity>>,
 ) {
-    let (Some(money), Some(hub), Some(who)) = (money, hub, who) else { return };
+    let (Some(money), Some(hub), Some(who)) = (money, hub, who) else {
+        return;
+    };
     if let Some(url) = chain::chain_url(&hub.0) {
         money.refresh(url, chain::neuron_hex(&who));
     }
@@ -449,7 +453,7 @@ fn refresh_chain_labels(
         **t = if s.busy && s.balance == 0 {
             "querying the chain...".into()
         } else {
-            format!("{} PUSSY   (chain h={}, supply {})", s.balance, s.height, s.supply)
+            format!("{} PUSSY", s.balance)
         };
     }
     for mut t in &mut receipt_q {
@@ -460,7 +464,6 @@ fn refresh_chain_labels(
         };
     }
 }
-
 
 /// While sigma is open the balance stays live: a poll every 15s, and the
 /// FIRST poll fires immediately — which also covers the boot-into-sigma
@@ -490,7 +493,9 @@ fn poll_chain(
     if !due {
         return;
     }
-    let (Some(money), Some(hub), Some(who)) = (money, hub, who) else { return };
+    let (Some(money), Some(hub), Some(who)) = (money, hub, who) else {
+        return;
+    };
     if money.snapshot().busy {
         return;
     }

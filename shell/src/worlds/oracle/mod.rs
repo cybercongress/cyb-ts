@@ -13,9 +13,9 @@ use std::sync::{Arc, Mutex};
 use bevy::prelude::*;
 use prysm::theme;
 
-use super::body::BodyLinkHub;
 use super::WorldState;
-use crate::shell::chrome::{ContentRoot, CHROME_BOTTOM_H, CHROME_TOP_H};
+use super::body::BodyLinkHub;
+use crate::shell::chrome::{CHROME_BOTTOM_H, CHROME_TOP_H, ContentRoot};
 
 pub struct OracleWorldPlugin;
 
@@ -24,7 +24,6 @@ impl Plugin for OracleWorldPlugin {
         app.init_resource::<Oracle>()
             .init_resource::<OracleUi>()
             .add_systems(OnEnter(WorldState::Oracle), enter)
-            .add_systems(OnExit(WorldState::Oracle), leave)
             .add_systems(
                 Update,
                 (poll_list, repaint, handle_row_press, scroll_page)
@@ -53,6 +52,10 @@ struct BlockDetail {
 
 #[derive(Clone, Debug, Default)]
 struct OracleState {
+    height: u64,
+    supply: u64,
+    root: String,
+    signals: u64,
     rows: Vec<BlockRow>,
     details: HashMap<u64, BlockDetail>,
     error: String,
@@ -79,25 +82,50 @@ impl Oracle {
         std::thread::Builder::new()
             .name("oracle-blocks".into())
             .spawn(move || {
-                let agent = super::body::networks::agent();
-                let out = agent.get(&format!("{url}/blocks?limit=50")).call();
+                let agent = super::body::networks::agent_raw();
+                let status = agent
+                    .get(&format!("{url}/status"))
+                    .call()
+                    .ok()
+                    .and_then(|mut r| {
+                        r.status()
+                            .is_success()
+                            .then(|| r.body_mut().read_to_string().ok())
+                            .flatten()
+                    });
+                let blocks = agent
+                    .get(&format!("{url}/blocks?limit=50"))
+                    .call()
+                    .ok()
+                    .and_then(|mut r| {
+                        r.status()
+                            .is_success()
+                            .then(|| r.body_mut().read_to_string().ok())
+                            .flatten()
+                    });
                 let mut s = slot.lock().expect("oracle state");
                 s.busy = false;
                 s.version += 1;
-                match out {
-                    Ok(mut r) => match r.body_mut().read_to_string() {
-                        Ok(body) => {
-                            s.rows = parse_blocks(&body);
-                            s.error.clear();
-                        }
-                        Err(_) => s.error = "chain unreachable".into(),
-                    },
-                    // A reachable node without the route is a different truth
-                    // than a dead wire: say which one it is.
-                    Err(ureq::Error::StatusCode(404)) => {
-                        s.error = "this node does not serve /blocks yet - it needs updating".into()
+                match status {
+                    Some(body) => {
+                        let field = |key: &str| -> Option<String> {
+                            body.lines()
+                                .find(|l| l.trim_start().starts_with(key))
+                                .and_then(|l| l.split_once(':'))
+                                .map(|(_, v)| v.trim().to_string())
+                        };
+                        s.height = field("height:").and_then(|h| h.parse().ok()).unwrap_or(0);
+                        s.root = field("bbg-root:").unwrap_or_default();
+                        s.signals = field("signals:").and_then(|n| n.parse().ok()).unwrap_or(0);
+                        s.error.clear();
                     }
-                    Err(_) => s.error = "chain unreachable".into(),
+                    None => s.error = "chain unreachable".into(),
+                }
+                if let Some(body) = blocks {
+                    s.rows = parse_blocks(&body);
+                    if let Some(top) = s.rows.first() {
+                        s.supply = top.supply;
+                    }
                 }
             })
             .expect("spawn oracle-blocks");
@@ -186,13 +214,6 @@ fn enter(oracle: Res<Oracle>, hub: Option<Res<BodyLinkHub>>, commands: Commands)
     build_page(commands, &oracle.snapshot(), &OracleUi::default());
 }
 
-fn leave(mut commands: Commands, roots: Query<Entity, With<OracleRoot>>, mut ui: ResMut<OracleUi>) {
-    ui.expanded = None;
-    for e in &roots {
-        commands.entity(e).despawn();
-    }
-}
-
 /// A slow background refresh — block history does not change under you
 /// the way a live balance does; this just keeps new blocks appearing.
 fn poll_list(
@@ -275,7 +296,9 @@ fn hashrate_text(rows: &[BlockRow], i: usize) -> String {
     }
     // rows are newest-first: the previous block in wall-clock time is the
     // NEXT entry in this slice.
-    let Some(prev) = rows.get(i + 1) else { return "-".into() };
+    let Some(prev) = rows.get(i + 1) else {
+        return "-".into();
+    };
     let dt = row.time.saturating_sub(prev.time).max(1);
     format!("{:.2}/s", row.weight as f64 / dt as f64)
 }
@@ -293,6 +316,7 @@ fn build_page(mut commands: Commands, snap: &OracleState, ui: &OracleUi) {
     let root = commands
         .spawn((
             OracleRoot,
+            crate::worlds::WorldUi(WorldState::Oracle),
             ContentRoot,
             Node {
                 position_type: PositionType::Absolute,
@@ -330,16 +354,49 @@ fn build_page(mut commands: Commands, snap: &OracleState, ui: &OracleUi) {
     let text = |commands: &mut Commands, parent: Entity, s: String, size: f32, color: Color| {
         commands.spawn((
             Text::new(s),
-            TextFont { font_size: size, ..default() },
+            TextFont {
+                font_size: size,
+                ..default()
+            },
             TextColor(color),
             ChildOf(parent),
         ));
     };
 
-    text(&mut commands, page, "oracle".into(), theme::H2, theme::TEXT_PRIMARY);
+    text(
+        &mut commands,
+        page,
+        "oracle".into(),
+        theme::H2,
+        theme::TEXT_PRIMARY,
+    );
+
+    if snap.height > 0 {
+        let root = if snap.root.len() > 12 {
+            format!("{}..{}", &snap.root[..8], &snap.root[snap.root.len() - 4..])
+        } else {
+            snap.root.clone()
+        };
+        text(
+            &mut commands,
+            page,
+            format!(
+                "height {}   supply {}   signals {}   root {}",
+                snap.height, snap.supply, snap.signals, root
+            ),
+            theme::BODY,
+            theme::ACID_GREEN,
+        );
+    }
 
     if !snap.error.is_empty() {
-        text(&mut commands, page, format!("! {}", snap.error), theme::CAPTION, theme::ACID_RED);
+        text(
+            &mut commands,
+            page,
+            format!("! {}", snap.error),
+            theme::CAPTION,
+            theme::ACID_RED,
+        );
     }
     if snap.rows.is_empty() {
         let msg = if snap.busy {
@@ -365,7 +422,13 @@ fn build_page(mut commands: Commands, snap: &OracleState, ui: &OracleUi) {
         ))
         .id();
     for h in ["height", "time", "hashrate", "supply"] {
-        text(&mut commands, header, h.into(), theme::CAPTION, theme::TEXT_DIM);
+        text(
+            &mut commands,
+            header,
+            h.into(),
+            theme::CAPTION,
+            theme::TEXT_DIM,
+        );
     }
 
     for (i, row) in snap.rows.iter().enumerate() {
@@ -396,10 +459,34 @@ fn build_page(mut commands: Commands, snap: &OracleState, ui: &OracleUi) {
                 ChildOf(r),
             ))
             .id();
-        text(&mut commands, top, format!("{}", row.height), theme::BODY, theme::ACID_GREEN);
-        text(&mut commands, top, time_text(row.time), theme::CAPTION, theme::TEXT_DIM);
-        text(&mut commands, top, hashrate_text(&snap.rows, i), theme::CAPTION, theme::TEXT_DIM);
-        text(&mut commands, top, format!("{}", row.supply), theme::CAPTION, theme::TEXT_DIM);
+        text(
+            &mut commands,
+            top,
+            format!("{}", row.height),
+            theme::BODY,
+            theme::ACID_GREEN,
+        );
+        text(
+            &mut commands,
+            top,
+            time_text(row.time),
+            theme::CAPTION,
+            theme::TEXT_DIM,
+        );
+        text(
+            &mut commands,
+            top,
+            hashrate_text(&snap.rows, i),
+            theme::CAPTION,
+            theme::TEXT_DIM,
+        );
+        text(
+            &mut commands,
+            top,
+            format!("{}", row.supply),
+            theme::CAPTION,
+            theme::TEXT_DIM,
+        );
 
         if ui.expanded == Some(row.height) {
             match snap.details.get(&row.height) {
@@ -421,7 +508,13 @@ fn build_page(mut commands: Commands, snap: &OracleState, ui: &OracleUi) {
                         );
                     }
                     for line in &d.lines {
-                        text(&mut commands, r, line.clone(), theme::CAPTION, theme::TEXT_PRIMARY);
+                        text(
+                            &mut commands,
+                            r,
+                            line.clone(),
+                            theme::CAPTION,
+                            theme::TEXT_PRIMARY,
+                        );
                     }
                 }
                 None => text(
@@ -456,4 +549,3 @@ fn scroll_page(
         pos.y = (pos.y + dy).clamp(0.0, max);
     }
 }
-

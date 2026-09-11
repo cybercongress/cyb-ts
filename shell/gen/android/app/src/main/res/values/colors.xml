@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- One black, the same one every cyb surface uses. -->
+    <color name="icon_background">#FF000000</color>
+</resources>

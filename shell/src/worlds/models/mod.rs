@@ -15,7 +15,7 @@ use bevy::prelude::*;
 use prysm::theme;
 
 use super::WorldState;
-use crate::shell::chrome::{ContentRoot, CHROME_BOTTOM_H, CHROME_TOP_H};
+use crate::shell::chrome::{CHROME_BOTTOM_H, CHROME_TOP_H, ContentRoot};
 
 pub struct ModelsWorldPlugin;
 
@@ -128,7 +128,6 @@ impl Plugin for ModelsWorldPlugin {
         app.insert_resource(status)
             .init_resource::<FetchState>()
             .add_systems(OnEnter(WorldState::Models), build_page)
-            .add_systems(OnExit(WorldState::Models), destroy_page)
             .add_systems(Update, (poll_fetch, tick_fetch_progress))
             .add_systems(
                 Update,
@@ -169,6 +168,7 @@ fn build_page(mut commands: Commands, status: Res<MindStatus>, fetch: Res<FetchS
     let root = commands
         .spawn((
             ModelsRoot,
+            crate::worlds::WorldUi(WorldState::Models),
             ContentRoot,
             Node {
                 position_type: PositionType::Absolute,
@@ -201,22 +201,25 @@ fn build_page(mut commands: Commands, status: Res<MindStatus>, fetch: Res<FetchS
 
     commands.spawn((
         Text::new("models"),
-        TextFont { font_size: theme::H2, ..default() },
+        TextFont {
+            font_size: theme::H2,
+            ..default()
+        },
         TextColor(Color::srgb(0.7, 0.95, 0.8)),
         ChildOf(page),
     ));
 
     let status_line = match (&status.model, status.last_tok_per_s) {
-        (Some(m), Some(v)) => format!(
-            "mind: {}  /  last answer {v:.0} tok/s",
-            file_label(m)
-        ),
+        (Some(m), Some(v)) => format!("mind: {}  /  last answer {v:.0} tok/s", file_label(m)),
         (Some(m), None) => format!("mind: {}  /  wakes on the first question", file_label(m)),
         (None, _) => "no model chosen".into(),
     };
     commands.spawn((
         Text::new(status_line),
-        TextFont { font_size: theme::CAPTION, ..default() },
+        TextFont {
+            font_size: theme::CAPTION,
+            ..default()
+        },
         TextColor(theme::TEXT_DIM),
         ChildOf(page),
     ));
@@ -227,7 +230,10 @@ fn build_page(mut commands: Commands, status: Res<MindStatus>, fetch: Res<FetchS
     if list.is_empty() {
         commands.spawn((
             Text::new("no .model files in ~/llm - glia import builds them"),
-            TextFont { font_size: theme::BODY, ..default() },
+            TextFont {
+                font_size: theme::BODY,
+                ..default()
+            },
             TextColor(theme::TEXT_DIM),
             ChildOf(page),
         ));
@@ -246,14 +252,25 @@ fn build_page(mut commands: Commands, status: Res<MindStatus>, fetch: Res<FetchS
                     ..default()
                 },
                 BackgroundColor(theme::DARK_BASE),
-                BorderColor::all(if is_active { theme::ACID_GREEN } else { theme::BORDER }),
+                BorderColor::all(if is_active {
+                    theme::ACID_GREEN
+                } else {
+                    theme::BORDER
+                }),
             ))
             .insert(ChildOf(page))
             .id();
         commands.spawn((
             Text::new(file_label(&path)),
-            TextFont { font_size: theme::BODY, ..default() },
-            TextColor(if is_active { theme::ACID_GREEN } else { theme::TEXT_PRIMARY }),
+            TextFont {
+                font_size: theme::BODY,
+                ..default()
+            },
+            TextColor(if is_active {
+                theme::ACID_GREEN
+            } else {
+                theme::TEXT_PRIMARY
+            }),
             ChildOf(row),
         ));
         commands.spawn((
@@ -262,7 +279,10 @@ fn build_page(mut commands: Commands, status: Res<MindStatus>, fetch: Res<FetchS
             } else {
                 format!("{}  /  {}", human_size(size), speed_hint(size))
             }),
-            TextFont { font_size: theme::CAPTION, ..default() },
+            TextFont {
+                font_size: theme::CAPTION,
+                ..default()
+            },
             TextColor(theme::TEXT_DIM),
             ChildOf(row),
         ));
@@ -277,9 +297,15 @@ fn build_page(mut commands: Commands, status: Res<MindStatus>, fetch: Res<FetchS
     if !fetchable.is_empty() {
         commands.spawn((
             Text::new("available"),
-            TextFont { font_size: theme::CAPTION, ..default() },
+            TextFont {
+                font_size: theme::CAPTION,
+                ..default()
+            },
             TextColor(theme::TEXT_DIM),
-            Node { margin: UiRect::top(Val::Px(theme::G * 2.0)), ..default() },
+            Node {
+                margin: UiRect::top(Val::Px(theme::G * 2.0)),
+                ..default()
+            },
             ChildOf(page),
         ));
         for (i, entry) in fetchable {
@@ -307,8 +333,15 @@ fn build_page(mut commands: Commands, status: Res<MindStatus>, fetch: Res<FetchS
                 } else {
                     entry.label.to_string()
                 }),
-                TextFont { font_size: theme::BODY, ..default() },
-                TextColor(if fetching_this { theme::ACID_YELLOW } else { theme::TEXT_PRIMARY }),
+                TextFont {
+                    font_size: theme::BODY,
+                    ..default()
+                },
+                TextColor(if fetching_this {
+                    theme::ACID_YELLOW
+                } else {
+                    theme::TEXT_PRIMARY
+                }),
                 ChildOf(row),
             ));
             // The right column is the row's state: size when idle, live
@@ -319,17 +352,18 @@ fn build_page(mut commands: Commands, status: Res<MindStatus>, fetch: Res<FetchS
                 } else {
                     entry.download.to_string()
                 }),
-                TextFont { font_size: theme::CAPTION, ..default() },
-                TextColor(if fetching_this { theme::ACID_YELLOW } else { theme::TEXT_DIM }),
+                TextFont {
+                    font_size: theme::CAPTION,
+                    ..default()
+                },
+                TextColor(if fetching_this {
+                    theme::ACID_YELLOW
+                } else {
+                    theme::TEXT_DIM
+                }),
                 ChildOf(row),
             ));
         }
-    }
-}
-
-fn destroy_page(mut commands: Commands, q: Query<Entity, With<ModelsRoot>>) {
-    for e in &q {
-        commands.entity(e).despawn();
     }
 }
 
@@ -341,8 +375,8 @@ fn rebuild_on_change(
     fetch: Res<FetchState>,
     roots: Query<Entity, With<ModelsRoot>>,
 ) {
-    let moved = (status.is_changed() && !status.is_added())
-        || (fetch.is_changed() && !fetch.is_added());
+    let moved =
+        (status.is_changed() && !status.is_added()) || (fetch.is_changed() && !fetch.is_added());
     if !moved {
         return;
     }
@@ -448,7 +482,10 @@ fn poll_fetch(mut fetch: ResMut<FetchState>, mut notice: ResMut<super::Notice>) 
     let result = rx.lock().expect("fetch channel poisoned").try_recv();
     match result {
         Ok(Ok(path)) => {
-            notice.show(format!("{} is aboard - select it in models", file_label(&path)));
+            notice.show(format!(
+                "{} is aboard - select it in models",
+                file_label(&path)
+            ));
             clear_fetch(&mut fetch);
         }
         Ok(Err(e)) => {

@@ -1,18 +1,18 @@
-pub mod body;
-pub mod robot;
-pub mod snapshot;
-pub mod graph;
-pub mod sigma;
-pub mod com;
 pub mod attention;
+pub mod body;
+pub mod com;
 pub mod content;
+pub mod graph;
 pub mod identity;
-pub mod models;
-pub mod soma_bridge;
-pub mod viewer;
-pub mod vault;
 pub mod memory;
+pub mod models;
 pub mod oracle;
+pub mod robot;
+pub mod sigma;
+pub mod snapshot;
+pub mod soma_bridge;
+pub mod vault;
+pub mod viewer;
 
 use bevy::prelude::*;
 
@@ -155,7 +155,8 @@ impl SharedCell {
     }
 
     pub fn bump(&self) {
-        self.version.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        self.version
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
     }
 
     pub fn version(&self) -> u64 {
@@ -203,6 +204,29 @@ impl Plugin for WorldsPlugin {
             .init_resource::<ComInbox>()
             .init_resource::<Notice>()
             .insert_resource(identity::load_or_mint())
-            .insert_resource(SharedCell::open_default());
+            .insert_resource(SharedCell::open_default())
+            // Reap the previous world's UI only AFTER the next one exists.
+            // Despawning on OnExit left a black frame between worlds — a
+            // flash on Android where a frame is ~30ms, invisible on a 120Hz
+            // desktop. Com hides itself (taffy); vault despawns (secrets).
+            .add_systems(Update, reap_foreign_worlds);
+    }
+}
+
+/// Marker on a world's root so a later frame can drop it once another
+/// world has actually been drawn. Com and vault are not tagged.
+#[derive(Component)]
+pub struct WorldUi(pub WorldState);
+
+fn reap_foreign_worlds(
+    state: Res<State<WorldState>>,
+    q: Query<(Entity, &WorldUi)>,
+    mut commands: Commands,
+) {
+    let here = *state.get();
+    for (e, tag) in &q {
+        if tag.0 != here {
+            commands.entity(e).despawn();
+        }
     }
 }

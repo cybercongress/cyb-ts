@@ -1,25 +1,21 @@
 //! body — the machine itself, as a world.
 //!
 //! The main page of cyb: what this body is doing with its cores, its GPU,
-//! its memory and its wire, and what that work earns. Everything here is
-//! measured or managed for real — the telemetry is the OS's own counters
-//! ([`telemetry`]), the miner is a live erga child ([`miner`]), and the
-//! only declared (not measured) number on the page, the PUSSY rate, says
-//! so out loud.
+//! its memory and its wire, and what that work earns. Telemetry is the
+//! OS's own counters. Proving is zheng. The only declared (not measured)
+//! number on the page, the PUSSY rate, says so out loud.
 
 pub mod chainsync;
-pub mod telemetry;
-#[cfg(target_os = "macos")]
-pub mod miner;
 pub mod networks;
 pub mod prover;
 pub mod relay;
+pub mod telemetry;
 
 use bevy::prelude::*;
 use prysm::theme;
 
 use super::WorldState;
-use crate::shell::chrome::{ContentRoot, CHROME_BOTTOM_H, CHROME_TOP_H};
+use crate::shell::chrome::{CHROME_BOTTOM_H, CHROME_TOP_H, ContentRoot};
 
 pub struct BodyWorldPlugin;
 
@@ -28,12 +24,10 @@ pub struct BodyWorldPlugin;
 #[derive(Resource, Clone)]
 pub struct BodyLinkHub(pub networks::NetHub);
 
-/// Live handles to the samplers and the miner; created once at build.
+/// Live handles to the samplers; created once at build.
 #[derive(Resource)]
 struct BodyLink {
     telemetry: telemetry::Telemetry,
-    #[cfg(target_os = "macos")]
-    miner: miner::Miner,
     prover: prover::Prover,
     pub(crate) nets: networks::NetHub,
     relay: relay::Relay,
@@ -45,12 +39,6 @@ struct BodyLink {
 #[derive(Resource, Default)]
 struct BodyView {
     vitals: telemetry::Vitals,
-    #[cfg(target_os = "macos")]
-    miner: miner::MinerStat,
-    #[cfg(target_os = "macos")]
-    ours: bool,
-    #[cfg(target_os = "macos")]
-    intensity: String,
     prover: prover::ProverStat,
     prover_intensity: String,
     checkpoint_in: Option<u64>,
@@ -63,14 +51,6 @@ struct BodyView {
 
 #[derive(Component)]
 struct BodyRoot;
-
-/// The start/stop lever on the miner card.
-#[derive(Component)]
-struct MineButton;
-
-/// One of the duty-cycle levers: writes erga's intensity file.
-#[derive(Component)]
-struct IntensityButton(&'static str);
 
 /// The prove/stop lever on the zheng card.
 #[derive(Component)]
@@ -89,8 +69,6 @@ impl Plugin for BodyWorldPlugin {
         let shared = app.world().resource::<super::SharedCell>().clone();
         app.insert_resource(BodyLink {
             telemetry: telemetry::Telemetry::start(),
-            #[cfg(target_os = "macos")]
-            miner: miner::Miner::start(),
             prover: prover::Prover::start(),
             relay: relay::Relay::start(shared.clone(), nets.clone()),
             chainsync: chainsync::ChainSync::start(shared, nets.clone()),
@@ -99,21 +77,16 @@ impl Plugin for BodyWorldPlugin {
         .init_resource::<BodyView>()
         .init_resource::<ProofMeter>()
         .add_systems(OnEnter(WorldState::Body), build_page)
-        .add_systems(OnExit(WorldState::Body), destroy_page)
         .add_systems(
             Update,
             (
                 tick_view,
                 rebuild_on_change,
-                handle_mine_press,
-                handle_intensity_press,
                 handle_prove_press,
                 handle_prover_intensity_press,
             )
                 .run_if(in_state(WorldState::Body)),
         );
-        #[cfg(target_os = "macos")]
-        app.add_systems(Startup, resume_mining);
         app.add_systems(Startup, resume_proving);
         // Checkpoints tick in every world — proving does not stop when
         // the body page is closed, and neither does its meter.
@@ -121,28 +94,7 @@ impl Plugin for BodyWorldPlugin {
     }
 }
 
-/// The owner's standing order: `~/cyb/mining` holds "on" while mining is
-/// wanted. The body re-reads it at boot and resumes — a restart of cyb is
-/// not a decision to stop earning.
-fn mining_wanted_file() -> std::path::PathBuf {
-    let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
-    std::path::Path::new(&home).join("cyb").join("mining")
-}
-
-#[cfg(target_os = "macos")]
-fn resume_mining(link: Res<BodyLink>, mut notice: ResMut<super::Notice>) {
-    let wanted = std::fs::read_to_string(mining_wanted_file())
-        .map(|s| s.trim() == "on")
-        .unwrap_or(false);
-    if wanted && !link.miner.is_ours() {
-        match link.miner.mine() {
-            Ok(()) => notice.show("resuming the mine - the body remembers"),
-            Err(e) => notice.show(format!("miner: {e}")),
-        }
-    }
-}
-
-/// The prover's standing order, twin of `~/cyb/mining`.
+/// The prover's standing order.
 fn proving_wanted_file() -> std::path::PathBuf {
     let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
     std::path::Path::new(&home).join("cyb").join("proving")
@@ -208,12 +160,18 @@ fn cast_prove_start(
         let mut cell = shared.cell.lock().expect("shared cell poisoned");
         cell.cast_weighted(
             who.neuron,
-            [(super::content::particle_of("zheng"), super::content::particle_of("pussy"), 1)],
+            [(
+                super::content::particle_of("zheng"),
+                super::content::particle_of("pussy"),
+                1,
+            )],
         )
     };
     if cast.is_ok() {
         shared.bump();
-        inbox.0.push(super::ComSay::Note("proving began - cast to the chain".into()));
+        inbox.0.push(super::ComSay::Note(
+            "proving began - cast to the chain".into(),
+        ));
     }
 }
 
@@ -233,12 +191,7 @@ fn proof_checkpoint(
         return;
     }
     meter.wait = 0.0;
-    let lifetime = link
-        .prover
-        .stat
-        .lock()
-        .map(|s| s.lifetime)
-        .unwrap_or(0);
+    let lifetime = link.prover.stat.lock().map(|s| s.lifetime).unwrap_or(0);
     let delta = lifetime.saturating_sub(meter.last_count);
     if delta == 0 {
         return;
@@ -260,9 +213,9 @@ fn proof_checkpoint(
     match cast {
         Ok(_) => {
             shared.bump();
-            inbox
-                .0
-                .push(super::ComSay::Note(format!("proof checkpoint: {delta} tickets -> chain")));
+            inbox.0.push(super::ComSay::Note(format!(
+                "proof checkpoint: {delta} tickets -> chain"
+            )));
         }
         Err(e) => warn!("body: checkpoint cast failed: {e:?}"),
     }
@@ -284,7 +237,12 @@ fn tick_view(
     }
     *timer = 0.0;
     view.vitals = link.telemetry.snapshot();
-    view.prover = link.prover.stat.lock().map(|s| s.clone()).unwrap_or_default();
+    view.prover = link
+        .prover
+        .stat
+        .lock()
+        .map(|s| s.clone())
+        .unwrap_or_default();
     view.prover_intensity = prover::intensity();
     view.checkpoint_in = meter.armed.then(|| meter.next_in());
     if let Some(money) = money {
@@ -292,14 +250,14 @@ fn tick_view(
     }
     view.nets = link.nets.snapshot();
     view.relayed = link.relay.sent.load(std::sync::atomic::Ordering::Relaxed);
-    view.relay_pending = link.relay.pending.load(std::sync::atomic::Ordering::Relaxed);
-    view.absorbed = link.chainsync.absorbed.load(std::sync::atomic::Ordering::Relaxed);
-    #[cfg(target_os = "macos")]
-    {
-        view.miner = link.miner.stat.lock().map(|s| s.clone()).unwrap_or_default();
-        view.ours = link.miner.is_ours();
-        view.intensity = link.miner.intensity();
-    }
+    view.relay_pending = link
+        .relay
+        .pending
+        .load(std::sync::atomic::Ordering::Relaxed);
+    view.absorbed = link
+        .chainsync
+        .absorbed
+        .load(std::sync::atomic::Ordering::Relaxed);
 }
 
 fn rebuild_on_change(
@@ -315,12 +273,6 @@ fn rebuild_on_change(
         commands.entity(e).despawn();
     }
     build_page(commands, view.into(), link.into());
-}
-
-fn destroy_page(mut commands: Commands, q: Query<Entity, With<BodyRoot>>) {
-    for e in &q {
-        commands.entity(e).despawn();
-    }
 }
 
 /// A declared conversion rate from `~/cyb/rates.toml` (`key = value`).
@@ -402,6 +354,7 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
     let root = commands
         .spawn((
             BodyRoot,
+            crate::worlds::WorldUi(WorldState::Body),
             ContentRoot,
             Node {
                 position_type: PositionType::Absolute,
@@ -435,16 +388,31 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
     let text = |commands: &mut Commands, parent: Entity, s: String, size: f32, color: Color| {
         commands.spawn((
             Text::new(s),
-            TextFont { font_size: size, ..default() },
+            TextFont {
+                font_size: size,
+                ..default()
+            },
             TextColor(color),
             ChildOf(parent),
         ));
     };
 
-    text(&mut commands, page, "body".into(), theme::H2, theme::TEXT_PRIMARY);
+    text(
+        &mut commands,
+        page,
+        "body".into(),
+        theme::H2,
+        theme::TEXT_PRIMARY,
+    );
 
     // ── resources ───────────────────────────────────────────────────────
-    text(&mut commands, page, "resources".into(), theme::CAPTION, theme::TEXT_DIM);
+    text(
+        &mut commands,
+        page,
+        "resources".into(),
+        theme::CAPTION,
+        theme::TEXT_DIM,
+    );
 
     let v = &view.vitals;
     let watts = |mw: u32| {
@@ -455,7 +423,11 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
         }
     };
 
-    let cpu_task = if view.prover.running { "   zheng (proving)" } else { "" };
+    let cpu_task = if view.prover.running {
+        "   zheng (proving)"
+    } else {
+        ""
+    };
     text(
         &mut commands,
         page,
@@ -476,25 +448,24 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
             .map(|t| format!("{} {:.0}%", t.name, t.cpu_pct))
             .collect::<Vec<_>>()
             .join("   ");
-        text(&mut commands, page, format!("        {who}"), theme::CAPTION, theme::TEXT_DIM);
+        text(
+            &mut commands,
+            page,
+            format!("        {who}"),
+            theme::CAPTION,
+            theme::TEXT_DIM,
+        );
     }
 
     if v.gpu_pct >= 0.0 {
-        #[allow(unused_mut)]
-        let mut gpu_task = String::new();
-        #[cfg(target_os = "macos")]
-        if view.miner.running || view.miner.external {
-            gpu_task = "   erga (mining)".into();
-        }
         text(
             &mut commands,
             page,
             format!(
-                "gpu     {}  {:>3.0}%{}{}",
+                "gpu     {}  {:>3.0}%{}",
                 bar(v.gpu_pct / 100.0),
                 v.gpu_pct,
-                watts(v.gpu_mw),
-                gpu_task
+                watts(v.gpu_mw)
             ),
             theme::BODY,
             theme::TEXT_PRIMARY,
@@ -519,7 +490,11 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
     text(
         &mut commands,
         page,
-        format!("network  down {}   up {}", rate(v.net_rx_bps), rate(v.net_tx_bps)),
+        format!(
+            "network  down {}   up {}",
+            rate(v.net_rx_bps),
+            rate(v.net_tx_bps)
+        ),
         theme::BODY,
         theme::TEXT_PRIMARY,
     );
@@ -528,9 +503,15 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
     if !view.nets.is_empty() {
         commands.spawn((
             Text::new("networks"),
-            TextFont { font_size: theme::CAPTION, ..default() },
+            TextFont {
+                font_size: theme::CAPTION,
+                ..default()
+            },
             TextColor(theme::TEXT_DIM),
-            Node { margin: UiRect::top(Val::Px(theme::G * 2.0)), ..default() },
+            Node {
+                margin: UiRect::top(Val::Px(theme::G * 2.0)),
+                ..default()
+            },
             ChildOf(page),
         ));
         for n in &view.nets {
@@ -546,7 +527,10 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
                 };
                 // Watchdog: a probe older than three cadences is a stall,
                 // whatever the last step said.
-                let probe_age = n.last_sync.map(|t| t.elapsed().as_secs()).unwrap_or(u64::MAX);
+                let probe_age = n
+                    .last_sync
+                    .map(|t| t.elapsed().as_secs())
+                    .unwrap_or(u64::MAX);
                 let stalled = probe_age > 45;
                 let stale = if !n.ok {
                     format!("  ({})", n.last_step)
@@ -564,7 +548,11 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
                         human_size(n.rx),
                         human_size(n.tx),
                     ),
-                    if n.ok && !stalled { theme::TEXT_PRIMARY } else { theme::ACID_YELLOW },
+                    if n.ok && !stalled {
+                        theme::TEXT_PRIMARY
+                    } else {
+                        theme::ACID_YELLOW
+                    },
                 )
             } else {
                 (
@@ -592,21 +580,13 @@ fn build_page(mut commands: Commands, view: Res<BodyView>, _link: Res<BodyLink>)
     }
 
     // ── work: every way this body earns ─────────────────────────────────
-    #[allow(unused_mut)]
-    let mut pussy_day = 0.0f64;
-    #[cfg(target_os = "macos")]
-    {
-        pussy_day += build_miner_card(&mut commands, page, &view);
-    }
-    pussy_day += build_prover_card(&mut commands, page, &view);
+    let pussy_day = build_prover_card(&mut commands, page, &view);
 
     if pussy_day > 0.0 {
         text(
             &mut commands,
             page,
-            format!(
-                "total  {pussy_day:.0} PUSSY/day   -   rates declared in ~/cyb/rates.toml"
-            ),
+            format!("total  {pussy_day:.0} PUSSY/day   -   rates declared in ~/cyb/rates.toml"),
             theme::CAPTION,
             theme::TEXT_DIM,
         );
@@ -619,7 +599,10 @@ fn build_prover_card(commands: &mut Commands, page: Entity, view: &BodyView) -> 
     let text = |commands: &mut Commands, parent: Entity, s: String, size: f32, color: Color| {
         commands.spawn((
             Text::new(s),
-            TextFont { font_size: size, ..default() },
+            TextFont {
+                font_size: size,
+                ..default()
+            },
             TextColor(color),
             ChildOf(parent),
         ));
@@ -726,21 +709,43 @@ fn build_prover_card(commands: &mut Commands, page: Entity, view: &BodyView) -> 
                     ..default()
                 },
                 BackgroundColor(theme::DARK_BASE),
-                BorderColor::all(if active { theme::ACID_GREEN } else { theme::BORDER }),
+                BorderColor::all(if active {
+                    theme::ACID_GREEN
+                } else {
+                    theme::BORDER
+                }),
                 ChildOf(parent),
             ))
             .id();
         commands.spawn((
             Text::new(label),
-            TextFont { font_size: theme::CAPTION, ..default() },
-            TextColor(if active { theme::ACID_GREEN } else { theme::TEXT_PRIMARY }),
+            TextFont {
+                font_size: theme::CAPTION,
+                ..default()
+            },
+            TextColor(if active {
+                theme::ACID_GREEN
+            } else {
+                theme::TEXT_PRIMARY
+            }),
             ChildOf(b),
         ));
         b
     };
-    let b = lever(commands, levers, if p.running { "stop" } else { "prove" }.into(), p.running);
+    let b = lever(
+        commands,
+        levers,
+        if p.running { "stop" } else { "prove" }.into(),
+        p.running,
+    );
     commands.entity(b).insert(ProveButton);
-    text(commands, levers, "fleet".into(), theme::CAPTION, theme::TEXT_DIM);
+    text(
+        commands,
+        levers,
+        "fleet".into(),
+        theme::CAPTION,
+        theme::TEXT_DIM,
+    );
     for mode in ["max", "eco", "min"] {
         let b = lever(commands, levers, mode.into(), view.prover_intensity == mode);
         commands.entity(b).insert(ProverIntensityButton(mode));
@@ -791,193 +796,6 @@ fn build_prover_card(commands: &mut Commands, page: Entity, view: &BodyView) -> 
     if p.running { day_rate } else { 0.0 }
 }
 
-#[cfg(target_os = "macos")]
-fn build_miner_card(commands: &mut Commands, page: Entity, view: &BodyView) -> f64 {
-    let text = |commands: &mut Commands, parent: Entity, s: String, size: f32, color: Color| {
-        commands.spawn((
-            Text::new(s),
-            TextFont { font_size: size, ..default() },
-            TextColor(color),
-            ChildOf(parent),
-        ));
-    };
-
-    commands.spawn((
-        Text::new("work"),
-        TextFont { font_size: theme::CAPTION, ..default() },
-        TextColor(theme::TEXT_DIM),
-        Node { margin: UiRect::top(Val::Px(theme::G * 2.0)), ..default() },
-        ChildOf(page),
-    ));
-
-    let card = commands
-        .spawn((
-            Node {
-                width: Val::Percent(100.0),
-                flex_direction: FlexDirection::Column,
-                padding: UiRect::all(Val::Px(theme::G * 1.5)),
-                border: UiRect::all(Val::Px(1.0)),
-                row_gap: Val::Px(theme::G * 0.75),
-                ..default()
-            },
-            BackgroundColor(theme::DARK_BASE),
-            BorderColor::all(theme::BORDER),
-            ChildOf(page),
-        ))
-        .id();
-
-    let m = &view.miner;
-    let (state, color) = if m.running && view.ours {
-        (format!("mining - {:.2} MH/s", m.rate_mhs()), theme::ACID_GREEN)
-    } else if m.external {
-        ("running outside cyb (its own window)".to_string(), theme::ACID_YELLOW)
-    } else {
-        ("idle".to_string(), theme::TEXT_DIM)
-    };
-
-    let head = commands
-        .spawn((
-            Node {
-                width: Val::Percent(100.0),
-                justify_content: JustifyContent::SpaceBetween,
-                ..default()
-            },
-            ChildOf(card),
-        ))
-        .id();
-    text(commands, head, "erga - ERGO on the gpu".into(), theme::BODY, theme::TEXT_PRIMARY);
-    text(commands, head, state, theme::BODY, color);
-
-    if view.ours && m.running {
-        text(
-            commands,
-            card,
-            format!(
-                "accepted {}  rejected {}  height {}  {}",
-                m.accepted,
-                m.rejected,
-                m.height,
-                if m.device.is_empty() { m.status.clone() } else { m.device.clone() }
-            ),
-            theme::CAPTION,
-            theme::TEXT_DIM,
-        );
-        if !m.status.is_empty() && !m.device.is_empty() {
-            text(commands, card, m.status.clone(), theme::CAPTION, theme::TEXT_DIM);
-        }
-    }
-
-    // Levers row: start/stop + intensity.
-    let levers = commands
-        .spawn((
-            Node {
-                flex_direction: FlexDirection::Row,
-                column_gap: Val::Px(theme::G),
-                align_items: AlignItems::Center,
-                ..default()
-            },
-            ChildOf(card),
-        ))
-        .id();
-
-    let lever = |commands: &mut Commands,
-                 parent: Entity,
-                 label: String,
-                 active: bool|
-     -> Entity {
-        let b = commands
-            .spawn((
-                Button,
-                Node {
-                    padding: UiRect::axes(Val::Px(theme::G * 1.5), Val::Px(theme::G * 0.5)),
-                    border: UiRect::all(Val::Px(1.0)),
-                    ..default()
-                },
-                BackgroundColor(theme::DARK_BASE),
-                BorderColor::all(if active { theme::ACID_GREEN } else { theme::BORDER }),
-                ChildOf(parent),
-            ))
-            .id();
-        commands.spawn((
-            Text::new(label),
-            TextFont { font_size: theme::CAPTION, ..default() },
-            TextColor(if active { theme::ACID_GREEN } else { theme::TEXT_PRIMARY }),
-            ChildOf(b),
-        ));
-        b
-    };
-
-    let mine_label = if view.ours { "stop" } else { "mine" };
-    let b = lever(commands, levers, mine_label.into(), view.ours);
-    commands.entity(b).insert(MineButton);
-
-    text(commands, levers, "intensity".into(), theme::CAPTION, theme::TEXT_DIM);
-    for mode in ["max", "eco", "min"] {
-        let b = lever(commands, levers, mode.into(), view.intensity == mode);
-        commands.entity(b).insert(IntensityButton(mode));
-    }
-
-    // ── earnings ────────────────────────────────────────────────────────
-    let mut pussy_day = 0.0;
-    if let Some(erg_day) = m.erg_per_day() {
-        let pussy = erg_day * declared_rate("per_erg", 1_000_000.0);
-        pussy_day = pussy;
-        let usd = if m.price_usd > 0.0 {
-            format!("   (${:.2}/day)", erg_day * m.price_usd)
-        } else {
-            String::new()
-        };
-        text(
-            commands,
-            card,
-            format!("est {erg_day:.4} ERG/day  =  {pussy:.0} PUSSY/day{usd}"),
-            theme::BODY,
-            theme::ACID_GREEN,
-        );
-    } else if view.ours && m.running {
-        let why = if m.difficulty <= 0.0 {
-            "est: waiting for network difficulty..."
-        } else {
-            "est: waiting for the first measured rate..."
-        };
-        text(commands, card, why.into(), theme::CAPTION, theme::TEXT_DIM);
-    }
-    pussy_day
-}
-
-fn handle_mine_press(
-    mut interactions: Query<&Interaction, (Changed<Interaction>, With<MineButton>)>,
-    link: Res<BodyLink>,
-    mut notice: ResMut<super::Notice>,
-) {
-    for i in &mut interactions {
-        if *i != Interaction::Pressed {
-            continue;
-        }
-        #[cfg(target_os = "macos")]
-        {
-            if link.miner.is_ours() {
-                link.miner.stop();
-                let _ = std::fs::write(mining_wanted_file(), "off");
-                notice.show("miner stopped");
-            } else {
-                match link.miner.mine() {
-                    Ok(()) => {
-                        let _ = std::fs::write(mining_wanted_file(), "on");
-                        notice.show("erga is waking - epoch table first");
-                    }
-                    Err(e) => notice.show(format!("miner: {e}")),
-                }
-            }
-        }
-        #[cfg(not(target_os = "macos"))]
-        {
-            let _ = &link;
-            notice.show("this body carries no miner yet");
-        }
-    }
-}
-
 fn handle_prove_press(
     interactions: Query<&Interaction, (Changed<Interaction>, With<ProveButton>)>,
     link: Res<BodyLink>,
@@ -1016,26 +834,5 @@ fn handle_prover_intensity_press(
         }
         prover::set_intensity(b.0);
         notice.show(format!("prover fleet -> {} (live)", b.0));
-    }
-}
-
-fn handle_intensity_press(
-    mut interactions: Query<(&Interaction, &IntensityButton), Changed<Interaction>>,
-    link: Res<BodyLink>,
-    mut notice: ResMut<super::Notice>,
-) {
-    for (i, b) in &mut interactions {
-        if *i != Interaction::Pressed {
-            continue;
-        }
-        #[cfg(target_os = "macos")]
-        {
-            link.miner.set_intensity(b.0);
-            notice.show(format!("intensity -> {} (live, no restart)", b.0));
-        }
-        #[cfg(not(target_os = "macos"))]
-        {
-            let _ = (&link, &b);
-        }
     }
 }

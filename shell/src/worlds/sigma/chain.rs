@@ -45,30 +45,58 @@ impl ChainMoney {
         std::thread::Builder::new()
             .name("sigma-balance".into())
             .spawn(move || {
-                let agent = crate::worlds::body::networks::agent();
-                let out = agent
-                    .get(&format!("{url}/balance/{neuron_hex}"))
+                // Height from /status (always fast). Balance from /balance
+                // with a short timeout — that route hangs on some nodes.
+                let status = crate::worlds::body::networks::agent_quick()
+                    .get(&format!("{url}/status"))
                     .call()
                     .ok()
                     .and_then(|mut r| r.body_mut().read_to_string().ok());
+                let bal = crate::worlds::body::networks::agent_quick()
+                    .get(&format!("{url}/balance/{neuron_hex}"))
+                    .call()
+                    .ok()
+                    .and_then(|mut r| {
+                        if r.status().is_success() {
+                            r.body_mut().read_to_string().ok()
+                        } else {
+                            None
+                        }
+                    });
+                let field = |body: &str, key: &str| -> u64 {
+                    body.lines()
+                        .find(|l| l.trim_start().starts_with(key))
+                        .and_then(|l| l.split_once(':'))
+                        .and_then(|(_, v)| v.trim().parse().ok())
+                        .unwrap_or(0)
+                };
                 let mut s = slot.lock().expect("chain money");
                 s.busy = false;
                 s.version += 1;
-                match out {
+                if let Some(st) = &status {
+                    let h = field(st, "height:");
+                    if h > 0 {
+                        s.height = h;
+                    }
+                    s.error.clear();
+                }
+                match bal {
                     Some(body) => {
-                        let field = |key: &str| -> u64 {
-                            body.lines()
-                                .find(|l| l.trim_start().starts_with(key))
-                                .and_then(|l| l.split_once(':'))
-                                .and_then(|(_, v)| v.trim().parse().ok())
-                                .unwrap_or(0)
-                        };
-                        s.balance = field("balance");
-                        s.supply = field("supply");
-                        s.height = field("height");
+                        s.balance = field(&body, "balance:");
+                        s.supply = field(&body, "supply:");
+                        let h = field(&body, "height:");
+                        if h > 0 {
+                            s.height = h;
+                        }
                         s.error.clear();
                     }
-                    None => s.error = "chain unreachable".into(),
+                    None if status.is_none() => {
+                        s.error = "chain unreachable".into();
+                    }
+                    None => {
+                        // Chain is up; this neuron's balance just isn't served.
+                        s.error.clear();
+                    }
                 }
             })
             .expect("spawn sigma-balance");
@@ -87,43 +115,53 @@ impl ChainMoney {
         std::thread::Builder::new()
             .name("sigma-pay".into())
             .spawn(move || {
-                let agent = crate::worlds::body::networks::agent();
                 let body = serde_json::json!({
                     "neuron": neuron_hex,
                     "to": to,
                     "amount": amount,
                 });
-                let resp = agent
-                    .post(&format!("{url}/v1/pay"))
-                    .send_json(&body)
-                    .ok()
-                    .and_then(|mut r| r.body_mut().read_json::<serde_json::Value>().ok());
+                let agent = crate::worlds::body::networks::agent_raw();
+                let sent = agent.post(&format!("{url}/v1/pay")).send_json(&body);
                 {
                     let mut s = slot.lock().expect("chain money");
                     s.busy = false;
                     s.version += 1;
-                    match resp {
-                        Some(v) if v.get("ok").and_then(|x| x.as_bool()) == Some(true) => {
-                            let h = v.get("height").and_then(|x| x.as_u64()).unwrap_or(0);
-                            let root = v
-                                .get("root")
-                                .and_then(|x| x.as_str())
-                                .unwrap_or("")
-                                .chars()
-                                .take(8)
-                                .collect::<String>();
-                            s.receipt =
-                                format!("paid {amount} to {to} - final in block h={h} {root}..");
-                            s.error.clear();
+                    match sent {
+                        Ok(mut r) => {
+                            let status = r.status();
+                            let v: Option<serde_json::Value> =
+                                r.body_mut().read_json::<serde_json::Value>().ok();
+                            if status.is_success()
+                                && v.as_ref()
+                                    .and_then(|x| x.get("ok"))
+                                    .and_then(|x| x.as_bool())
+                                    == Some(true)
+                            {
+                                let v = v.unwrap();
+                                let h = v.get("height").and_then(|x| x.as_u64()).unwrap_or(0);
+                                let root = v
+                                    .get("root")
+                                    .and_then(|x| x.as_str())
+                                    .unwrap_or("")
+                                    .chars()
+                                    .take(8)
+                                    .collect::<String>();
+                                s.receipt = format!(
+                                    "paid {amount} to {to} - final in block h={h} {root}.."
+                                );
+                                s.error.clear();
+                            } else {
+                                s.error = v
+                                    .as_ref()
+                                    .and_then(|x| x.get("error"))
+                                    .and_then(|x| x.as_str())
+                                    .map(str::to_string)
+                                    .unwrap_or_else(|| format!("pay refused ({status})"));
+                            }
                         }
-                        Some(v) => {
-                            s.error = v
-                                .get("error")
-                                .and_then(|x| x.as_str())
-                                .unwrap_or("pay refused")
-                                .to_string();
+                        Err(e) => {
+                            s.error = crate::worlds::body::networks::short_http_err(&e.to_string());
                         }
-                        None => s.error = "chain unreachable".into(),
                     }
                 }
                 me.refresh(url, neuron_hex);

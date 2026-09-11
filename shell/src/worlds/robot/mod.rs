@@ -16,7 +16,7 @@ use prysm::{dispatch, theme};
 use tape::Chunk;
 
 use super::WorldState;
-use crate::shell::chrome::{CHROME_TOP_H, CHROME_BOTTOM_H};
+use crate::shell::chrome::{CHROME_BOTTOM_H, CHROME_TOP_H};
 
 const G: f32 = theme::G;
 
@@ -28,8 +28,7 @@ struct CellMarker;
 
 impl Plugin for RobotWorldPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(WorldState::Robot), setup_cell)
-            .add_systems(OnExit(WorldState::Robot), destroy_cell);
+        app.add_systems(OnEnter(WorldState::Robot), setup_cell);
     }
 }
 
@@ -59,7 +58,8 @@ impl rune_interp::Host for CellHost {
 /// an installed app (macOS bundle, Android APK) has no repo, and before this
 /// fallback Cmd+3 on any machine but the dev Mac rendered a load error. The
 /// radio-backed `name → hash` resolver (cells.md P4) replaces this table.
-const BUILTIN_CELLS: &[(&str, &str)] = &[("landing", include_str!("../../../../cells/landing.rune"))];
+const BUILTIN_CELLS: &[(&str, &str)] =
+    &[("landing", include_str!("../../../../cells/landing.rune"))];
 
 /// Resolve `cell://<name>` to its rune source.
 ///
@@ -118,6 +118,7 @@ fn setup_cell(mut commands: Commands) {
     let root = commands
         .spawn((
             CellMarker,
+            crate::worlds::WorldUi(WorldState::Robot),
             crate::shell::chrome::ContentRoot,
             Node {
                 position_type: PositionType::Absolute,
@@ -138,32 +139,49 @@ fn setup_cell(mut commands: Commands) {
     let line = |commands: &mut Commands, text: String, size: f32, color: Color| {
         commands.spawn((
             Text::new(text),
-            TextFont { font_size: size, ..default() },
+            TextFont {
+                font_size: size,
+                ..default()
+            },
             TextColor(color),
             ChildOf(root),
         ));
     };
 
-    line(&mut commands, format!("I am {}", being_name()), theme::H1, theme::TEXT_PRIMARY);
+    line(
+        &mut commands,
+        format!("I am {}", being_name()),
+        theme::H1,
+        theme::TEXT_PRIMARY,
+    );
     line(
         &mut commands,
         "A digital being that works for you".into(),
         theme::H3,
         theme::TEXT_PRIMARY,
     );
-    line(&mut commands, "Thinks how you think".into(), theme::H3, theme::TEXT_PRIMARY);
-    line(&mut commands, "Earns while you sleep".into(), theme::H3, theme::TEXT_PRIMARY);
+    line(
+        &mut commands,
+        "Thinks how you think".into(),
+        theme::H3,
+        theme::TEXT_PRIMARY,
+    );
+    line(
+        &mut commands,
+        "Earns while you sleep".into(),
+        theme::H3,
+        theme::TEXT_PRIMARY,
+    );
     line(
         &mut commands,
         "Remembers what you forget".into(),
         theme::H3,
         theme::TEXT_PRIMARY,
     );
-    line(&mut commands, "Yours forever".into(), theme::H3, theme::ACID_GREEN);
-}
-
-fn destroy_cell(mut commands: Commands, q: Query<Entity, With<CellMarker>>) {
-    for e in &q {
-        commands.entity(e).despawn();
-    }
+    line(
+        &mut commands,
+        "Yours forever".into(),
+        theme::H3,
+        theme::ACID_GREEN,
+    );
 }

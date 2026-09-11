@@ -42,9 +42,25 @@ const CALL_TIMEOUT: Duration = Duration::from_secs(10);
 /// The one HTTP agent every chain conversation goes through — with hard
 /// timeouts, because ureq's defaults have none at all.
 pub fn agent() -> ureq::Agent {
+    agent_with(CALL_TIMEOUT, true)
+}
+
+/// Read 4xx bodies instead of turning them into `Err`. Pay answers
+/// "insufficient funds" as HTTP 400; treating that as a transport
+/// failure made every send look like the chain was down.
+pub fn agent_raw() -> ureq::Agent {
+    agent_with(CALL_TIMEOUT, false)
+}
+
+pub fn agent_quick() -> ureq::Agent {
+    agent_with(Duration::from_secs(4), false)
+}
+
+fn agent_with(call: Duration, status_is_error: bool) -> ureq::Agent {
     ureq::Agent::config_builder()
         .timeout_connect(Some(CONNECT_TIMEOUT))
-        .timeout_global(Some(CALL_TIMEOUT))
+        .timeout_global(Some(call))
+        .http_status_as_error(status_is_error)
         .build()
         .new_agent()
 }
@@ -89,9 +105,12 @@ impl NetHub {
 
     /// The beacon: (name, height, root) of the first reachable network.
     pub fn beacon(&self) -> Option<(String, u64, String)> {
-        self.states.lock().ok()?.iter().find(|n| n.height > 0).map(|n| {
-            (n.name.clone(), n.height, n.root.clone())
-        })
+        self.states
+            .lock()
+            .ok()?
+            .iter()
+            .find(|n| n.height > 0)
+            .map(|n| (n.name.clone(), n.height, n.root.clone()))
     }
 
     /// Fresh chain state learned outside the probe loop (a relay POST
@@ -158,7 +177,11 @@ impl NetHub {
                         }
                     }
                     // Sleep in slices so retirement is prompt.
-                    let nap = if step.is_ok() { STEP_EVERY } else { RETRY_EVERY };
+                    let nap = if step.is_ok() {
+                        STEP_EVERY
+                    } else {
+                        RETRY_EVERY
+                    };
                     let slept = Instant::now();
                     while slept.elapsed() < nap {
                         if generation.load(std::sync::atomic::Ordering::Relaxed) != born {
@@ -189,7 +212,10 @@ impl NetHub {
                 st.name = name.clone();
                 if &st.url != url {
                     // A different endpoint is a different conversation.
-                    st = NetState { name: st.name.clone(), ..Default::default() };
+                    st = NetState {
+                        name: st.name.clone(),
+                        ..Default::default()
+                    };
                 }
                 st.url = url.clone();
                 v.push(st);
@@ -203,7 +229,9 @@ impl NetHub {
 
 fn config_path() -> std::path::PathBuf {
     let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
-    std::path::Path::new(&home).join("cyb").join("networks.toml")
+    std::path::Path::new(&home)
+        .join("cyb")
+        .join("networks.toml")
 }
 
 fn state_path() -> std::path::PathBuf {
@@ -266,7 +294,9 @@ fn save_config(nets: &[(String, String)]) -> Result<(), String> {
          # commander: net add <name> <url> / net set / net rm\n",
     );
     for (name, url) in nets {
-        text.push_str(&format!("\n[[network]]\nname = \"{name}\"\nurl = \"{url}\"\n"));
+        text.push_str(&format!(
+            "\n[[network]]\nname = \"{name}\"\nurl = \"{url}\"\n"
+        ));
     }
     std::fs::write(config_path(), text).map_err(|e| e.to_string())
 }
@@ -306,6 +336,10 @@ fn step_status_with(agent: &ureq::Agent, url: &str) -> Result<(u64, String, usiz
         .ok_or("no height in status")?;
     let root = field("bbg-root").unwrap_or_default();
     Ok((height, root, body.len()))
+}
+
+pub fn short_http_err(e: &str) -> String {
+    short_err(e)
 }
 
 fn short_err(e: &str) -> String {

@@ -1,5 +1,5 @@
 pub mod nushell_to_stream;
-use nushell_to_stream::{pipeline_to_chunks, StreamMsg};
+use nushell_to_stream::{StreamMsg, pipeline_to_chunks};
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -8,21 +8,21 @@ use bevy::ecs::system::SystemState;
 use bevy::input::mouse::MouseWheel;
 use bevy::prelude::*;
 
-use nu_cli::{gather_parent_env_vars, eval_source};
+use nu_cli::{eval_source, gather_parent_env_vars};
 use nu_cmd_lang::create_default_context;
 use nu_command::add_shell_command_context;
 use nu_engine::env::convert_env_values;
 use nu_parser::parse;
-use nu_protocol::engine::{EngineState, Redirection, Stack, StateWorkingSet};
 use nu_protocol::debugger::WithoutDebug;
+use nu_protocol::engine::{EngineState, Redirection, Stack, StateWorkingSet};
 use nu_protocol::{OutDest, PipelineData, Signals};
 use nu_std::load_standard_library;
 
-use tape::Chunk;
 use prysm::{StreamScrollback, dispatch, theme};
+use tape::Chunk;
 
 use super::{ComInbox, ComSay, Notice, Speaker, WorldState};
-use crate::shell::chrome::{ContentRoot, CHROME_TOP_H, CHROME_BOTTOM_H};
+use crate::shell::chrome::{CHROME_BOTTOM_H, CHROME_TOP_H, ContentRoot};
 
 const G: f32 = theme::G;
 
@@ -43,17 +43,17 @@ impl Plugin for ComWorldPlugin {
             .add_systems(Update, drain_com_inbox)
             // `CYB_RUN="..."` submits one line through the same path typing
             // does — commander, routing, echo, cast — for scripted runs.
-            .add_systems(PostStartup, |mut pending: ResMut<crate::worlds::PendingShellCmd>| {
-                if let Ok(cmd) = std::env::var("CYB_RUN") {
-                    if !cmd.trim().is_empty() {
-                        pending.0 = Some(cmd);
-                    }
-                }
-            })
             .add_systems(
-                Update,
-                terminal_update.run_if(in_state(WorldState::Com)),
-            );
+                PostStartup,
+                |mut pending: ResMut<crate::worlds::PendingShellCmd>| {
+                    if let Ok(cmd) = std::env::var("CYB_RUN") {
+                        if !cmd.trim().is_empty() {
+                            pending.0 = Some(cmd);
+                        }
+                    }
+                },
+            )
+            .add_systems(Update, terminal_update.run_if(in_state(WorldState::Com)));
     }
 }
 
@@ -116,9 +116,13 @@ fn init_nushell_engine() -> NuShellEngine {
         ];
         let mut paths: Vec<&str> = extra_paths.iter().map(|s| s.as_str()).collect();
         for p in current_path.split(':') {
-            if !paths.contains(&p) { paths.push(p); }
+            if !paths.contains(&p) {
+                paths.push(p);
+            }
         }
-        unsafe { std::env::set_var("PATH", paths.join(":")); }
+        unsafe {
+            std::env::set_var("PATH", paths.join(":"));
+        }
     }
 
     gather_parent_env_vars(&mut engine_state, &home);
@@ -129,10 +133,22 @@ fn init_nushell_engine() -> NuShellEngine {
 
     let mut stack = Stack::new();
 
-    eval_source(&mut engine_state, &mut stack,
-        NU_ENV_SOURCE.as_bytes(), "env.nu", PipelineData::empty(), false);
-    eval_source(&mut engine_state, &mut stack,
-        NU_CONFIG_SOURCE.as_bytes(), "config.nu", PipelineData::empty(), false);
+    eval_source(
+        &mut engine_state,
+        &mut stack,
+        NU_ENV_SOURCE.as_bytes(),
+        "env.nu",
+        PipelineData::empty(),
+        false,
+    );
+    eval_source(
+        &mut engine_state,
+        &mut stack,
+        NU_CONFIG_SOURCE.as_bytes(),
+        "config.nu",
+        PipelineData::empty(),
+        false,
+    );
 
     {
         let mut config: nu_protocol::Config = (*engine_state.get_config()).as_ref().clone();
@@ -145,7 +161,10 @@ fn init_nushell_engine() -> NuShellEngine {
     }
 
     info!("Nushell engine initialized");
-    NuShellEngine { engine_state, stack }
+    NuShellEngine {
+        engine_state,
+        stack,
+    }
 }
 
 fn wire_ctrlc_signal(engine: &mut NuShellEngine, flag: Arc<AtomicBool>) {
@@ -208,7 +227,12 @@ fn evaluate_and_capture(
         }
     };
 
-    pipeline_to_chunks(pipeline_data, &mut engine.engine_state, &mut engine.stack, tx);
+    pipeline_to_chunks(
+        pipeline_data,
+        &mut engine.engine_state,
+        &mut engine.stack,
+        tx,
+    );
     None
 }
 
@@ -246,11 +270,17 @@ fn dispatch_eval(state: &mut TerminalNonSendState, input: String) {
                 let _ = tx.send(StreamMsg::Done { error });
             }
             Err(panic) => {
-                let msg = if let Some(s) = panic.downcast_ref::<&str>() { s.to_string() }
-                    else if let Some(s) = panic.downcast_ref::<String>() { s.clone() }
-                    else { "unknown panic".to_string() };
+                let msg = if let Some(s) = panic.downcast_ref::<&str>() {
+                    s.to_string()
+                } else if let Some(s) = panic.downcast_ref::<String>() {
+                    s.clone()
+                } else {
+                    "unknown panic".to_string()
+                };
                 // Don't return engine on panic — it may be corrupt
-                let _ = tx.send(StreamMsg::Done { error: Some(format!("panic: {msg}")) });
+                let _ = tx.send(StreamMsg::Done {
+                    error: Some(format!("panic: {msg}")),
+                });
             }
         }
     });
@@ -313,10 +343,7 @@ impl rune_interp::Host for TerminalHost<'_> {
 /// performing `emit` acts live via `TerminalHost`. After evaluation, any chunks
 /// the result *itself* decodes to (the `col(text(..))` style) are rendered too.
 /// Returns `Some(msg)` on error.
-fn rune_eval_to_chunks(
-    expr: &str,
-    tx: &std::sync::mpsc::Sender<StreamMsg>,
-) -> Option<String> {
+fn rune_eval_to_chunks(expr: &str, tx: &std::sync::mpsc::Sender<StreamMsg>) -> Option<String> {
     let ast = match rune_parse::parse(expr) {
         Ok(a) => a,
         Err(e) => return Some(format!("rune parse error: {}", e.message)),
@@ -356,9 +383,13 @@ fn noun_text(n: &rune_ast::Noun) -> String {
 // ── poll_eval_results ─────────────────────────────────────────────────────────
 
 fn poll_eval_results(world: &mut World) {
-    let Some(state) = world.get_non_send_resource_mut::<TerminalNonSendState>() else { return };
+    let Some(state) = world.get_non_send_resource_mut::<TerminalNonSendState>() else {
+        return;
+    };
     let state = state.into_inner();
-    if !state.eval_in_progress { return; }
+    if !state.eval_in_progress {
+        return;
+    }
 
     // Drain all pending messages into local vecs
     let mut chunks: Vec<Chunk> = Vec::new();
@@ -429,7 +460,10 @@ fn poll_eval_results(world: &mut World) {
             warn!("Engine not returned from eval thread (panic?), reinitializing");
             init_nushell_engine()
         });
-        let state = world.get_non_send_resource_mut::<TerminalNonSendState>().unwrap().into_inner();
+        let state = world
+            .get_non_send_resource_mut::<TerminalNonSendState>()
+            .unwrap()
+            .into_inner();
         wire_ctrlc_signal(&mut engine, state.ctrlc_flag.clone());
         state.nu_engine = Some(engine);
         publish_prompt(world);
@@ -458,11 +492,16 @@ fn run_pending_command(world: &mut World) {
         let shared = world.resource::<crate::worlds::SharedCell>().clone();
         let said = match crate::worlds::snapshot::export(&shared) {
             Ok((path, signals, links)) => {
-                format!("snapshot: {} ({signals} signals, {links} links)", path.display())
+                format!(
+                    "snapshot: {} ({signals} signals, {links} links)",
+                    path.display()
+                )
             }
             Err(e) => format!("snapshot failed: {e}"),
         };
-        world.resource_mut::<crate::worlds::Notice>().show(said.clone());
+        world
+            .resource_mut::<crate::worlds::Notice>()
+            .show(said.clone());
         world
             .resource_mut::<crate::worlds::ComInbox>()
             .say(crate::worlds::Speaker::System, said);
@@ -484,13 +523,31 @@ fn run_pending_command(world: &mut World) {
             match std::fs::write(&path, name) {
                 Ok(()) => {
                     use crate::worlds::content;
+                    let who = world
+                        .resource::<crate::worlds::identity::Identity>()
+                        .clone();
+                    let utterance = format!("I am {name}");
+                    content::remember("robot");
                     content::remember("name");
                     content::remember(name);
+                    content::remember(&utterance);
+                    content::remember(&who.address);
                     let shared = world.resource::<crate::worlds::SharedCell>().clone();
-                    let neuron = world.resource::<crate::worlds::identity::Identity>().neuron;
                     let cast = {
                         let mut cell = shared.cell.lock().expect("shared cell poisoned");
-                        cell.cast(neuron, [(content::particle_of("name"), content::particle_of(name))])
+                        cell.cast(
+                            who.neuron,
+                            [
+                                (content::particle_of("robot"), content::particle_of(name)),
+                                (content::particle_of("name"), content::particle_of(name)),
+                                (
+                                    content::particle_of(&who.address),
+                                    content::particle_of(name),
+                                ),
+                                (content::particle_of(name), content::particle_of(&utterance)),
+                                (content::com_anchor(), content::particle_of(&utterance)),
+                            ],
+                        )
                     };
                     if cast.is_ok() {
                         shared.bump();
@@ -503,7 +560,9 @@ fn run_pending_command(world: &mut World) {
                 Err(e) => format!("name: {e}"),
             }
         };
-        world.resource_mut::<crate::worlds::Notice>().show(said.clone());
+        world
+            .resource_mut::<crate::worlds::Notice>()
+            .show(said.clone());
         world
             .resource_mut::<crate::worlds::ComInbox>()
             .say(crate::worlds::Speaker::System, said);
@@ -517,9 +576,16 @@ fn run_pending_command(world: &mut World) {
         let said = if words.len() != 2 {
             "pay <to> <amount>".to_string()
         } else if let Ok(amount) = words[1].parse::<u64>() {
-            let hub = world.resource::<crate::worlds::body::BodyLinkHub>().0.clone();
-            let money = world.resource::<crate::worlds::sigma::chain::ChainMoney>().clone();
-            let who = world.resource::<crate::worlds::identity::Identity>().clone();
+            let hub = world
+                .resource::<crate::worlds::body::BodyLinkHub>()
+                .0
+                .clone();
+            let money = world
+                .resource::<crate::worlds::sigma::chain::ChainMoney>()
+                .clone();
+            let who = world
+                .resource::<crate::worlds::identity::Identity>()
+                .clone();
             match crate::worlds::sigma::chain::chain_url(&hub) {
                 Some(url) => {
                     money.pay(
@@ -535,7 +601,9 @@ fn run_pending_command(world: &mut World) {
         } else {
             "pay: amount must be a number".to_string()
         };
-        world.resource_mut::<crate::worlds::Notice>().show(said.clone());
+        world
+            .resource_mut::<crate::worlds::Notice>()
+            .show(said.clone());
         world
             .resource_mut::<crate::worlds::ComInbox>()
             .say(crate::worlds::Speaker::System, said);
@@ -560,18 +628,27 @@ fn run_pending_command(world: &mut World) {
                 let mut cell = shared.cell.lock().expect("shared cell poisoned");
                 cell.cast_weighted(
                     neuron,
-                    [(content::particle_of(words[0]), content::particle_of(words[1]), amount)],
+                    [(
+                        content::particle_of(words[0]),
+                        content::particle_of(words[1]),
+                        amount,
+                    )],
                 )
             };
             match cast {
                 Ok(_) => {
                     shared.bump();
-                    format!("cast {} -> {} ({amount}) - the relay will block it", words[0], words[1])
+                    format!(
+                        "cast {} -> {} ({amount}) - the relay will block it",
+                        words[0], words[1]
+                    )
                 }
                 Err(e) => format!("cast failed: {e:?}"),
             }
         };
-        world.resource_mut::<crate::worlds::Notice>().show(said.clone());
+        world
+            .resource_mut::<crate::worlds::Notice>()
+            .show(said.clone());
         world
             .resource_mut::<crate::worlds::ComInbox>()
             .say(crate::worlds::Speaker::System, said);
@@ -580,13 +657,20 @@ fn run_pending_command(world: &mut World) {
 
     // `net ...` — the network configurator speaks through the commander.
     if cmd.trim() == "net" || cmd.trim().starts_with("net ") {
-        let rest = cmd.trim().strip_prefix("net").unwrap_or("").trim().to_string();
+        let rest = cmd
+            .trim()
+            .strip_prefix("net")
+            .unwrap_or("")
+            .trim()
+            .to_string();
         let hub = world
             .resource::<crate::worlds::body::BodyLinkHub>()
             .0
             .clone();
         let said = crate::worlds::body::networks::handle_command(&rest, &hub);
-        world.resource_mut::<crate::worlds::Notice>().show(said.clone());
+        world
+            .resource_mut::<crate::worlds::Notice>()
+            .show(said.clone());
         world
             .resource_mut::<crate::worlds::ComInbox>()
             .say(crate::worlds::Speaker::System, said);
@@ -605,7 +689,9 @@ fn run_pending_command(world: &mut World) {
     }
     if let Some(rest) = cmd.trim().strip_prefix("vault ") {
         let said = crate::worlds::vault::handle_command(rest);
-        world.resource_mut::<crate::worlds::Notice>().show(said.clone());
+        world
+            .resource_mut::<crate::worlds::Notice>()
+            .show(said.clone());
         world
             .resource_mut::<crate::worlds::ComInbox>()
             .say(crate::worlds::Speaker::System, said);
@@ -630,7 +716,9 @@ fn run_pending_command(world: &mut World) {
     }
 
     let (scrollback_entity, busy) = {
-        let Some(state) = world.get_non_send_resource::<TerminalNonSendState>() else { return };
+        let Some(state) = world.get_non_send_resource::<TerminalNonSendState>() else {
+            return;
+        };
         (state.scrollback_entity, state.eval_in_progress)
     };
     if busy {
@@ -639,14 +727,26 @@ fn run_pending_command(world: &mut World) {
     }
 
     let prompt = {
-        let state = world.get_non_send_resource::<TerminalNonSendState>().unwrap();
-        state.nu_engine.as_ref().map(prompt_text).unwrap_or_default()
+        let state = world
+            .get_non_send_resource::<TerminalNonSendState>()
+            .unwrap();
+        state
+            .nu_engine
+            .as_ref()
+            .map(prompt_text)
+            .unwrap_or_default()
     };
     world.spawn((
         Text::new(format!("{prompt}{cmd}")),
-        TextFont { font_size: theme::BODY, ..default() },
+        TextFont {
+            font_size: theme::BODY,
+            ..default()
+        },
         TextColor(theme::TEXT_DIM),
-        Node { margin: UiRect::vertical(Val::Px(2.0)), ..default() },
+        Node {
+            margin: UiRect::vertical(Val::Px(2.0)),
+            ..default()
+        },
         ChildOf(scrollback_entity),
     ));
     // The line of record: what was typed is a particle on your chain, hung
@@ -660,7 +760,10 @@ fn run_pending_command(world: &mut World) {
         let neuron = world.resource::<crate::worlds::identity::Identity>().neuron;
         let cast = {
             let mut cell = shared.cell.lock().expect("shared cell poisoned");
-            cell.cast(neuron, [(content::com_anchor(), content::particle_of(&cmd))])
+            cell.cast(
+                neuron,
+                [(content::com_anchor(), content::particle_of(&cmd))],
+            )
         };
         match cast {
             Ok(_) => shared.bump(),
@@ -668,7 +771,10 @@ fn run_pending_command(world: &mut World) {
         }
     }
 
-    let state = world.get_non_send_resource_mut::<TerminalNonSendState>().unwrap().into_inner();
+    let state = world
+        .get_non_send_resource_mut::<TerminalNonSendState>()
+        .unwrap()
+        .into_inner();
     state.last_cmd = cmd.clone();
     dispatch_eval(state, cmd);
 }
@@ -680,8 +786,12 @@ fn run_pending_command(world: &mut World) {
 /// events with no shape to it is what the sigma page had, and nobody reads it.
 fn drain_com_inbox(world: &mut World) {
     let lines = {
-        let Some(mut inbox) = world.get_resource_mut::<ComInbox>() else { return };
-        if inbox.0.is_empty() { return }
+        let Some(mut inbox) = world.get_resource_mut::<ComInbox>() else {
+            return;
+        };
+        if inbox.0.is_empty() {
+            return;
+        }
         std::mem::take(&mut inbox.0)
     };
 
@@ -696,9 +806,11 @@ fn drain_com_inbox(world: &mut World) {
     for say in lines {
         match say {
             ComSay::Line(who, text) => {
+                persist_log_line(world, &text);
                 spawn_said_row(world, scrollback, who, text);
             }
             ComSay::Note(text) => {
+                persist_log_line(world, &text);
                 spawn_note_row(world, scrollback, text);
             }
             // A streamed reply is one system row whose text grows as the
@@ -727,6 +839,7 @@ fn drain_com_inbox(world: &mut World) {
                 }
             }
             ComSay::StreamEnd(fin) => {
+                persist_log_line(world, &fin);
                 let row = world
                     .get_non_send_resource_mut::<TerminalNonSendState>()
                     .unwrap()
@@ -755,7 +868,9 @@ fn drain_com_inbox(world: &mut World) {
 /// a bare word the shell has never heard of — is somebody talking, and
 /// talking is soma's job.
 fn resolves_in_shell(engine_state: &EngineState, line: &str) -> bool {
-    let Some(head) = line.split_whitespace().next() else { return true };
+    let Some(head) = line.split_whitespace().next() else {
+        return true;
+    };
 
     // Expressions and syntax that only make sense in the shell.
     let first = head.chars().next().unwrap_or(' ');
@@ -764,7 +879,11 @@ fn resolves_in_shell(engine_state: &EngineState, line: &str) -> bool {
     }
     // Multi-word command heads (`str join`, `into int`) resolve as the first
     // two words; a declared name wins at any length.
-    let two: String = line.split_whitespace().take(2).collect::<Vec<_>>().join(" ");
+    let two: String = line
+        .split_whitespace()
+        .take(2)
+        .collect::<Vec<_>>()
+        .join(" ");
     if engine_state.find_decl(two.as_bytes(), &[]).is_some()
         || engine_state.find_decl(head.as_bytes(), &[]).is_some()
     {
@@ -785,7 +904,9 @@ fn resolves_in_shell(engine_state: &EngineState, line: &str) -> bool {
 /// com's prompt line wherever it is drawn.
 fn publish_prompt(world: &mut World) {
     let prompt = {
-        let Some(state) = world.get_non_send_resource::<TerminalNonSendState>() else { return };
+        let Some(state) = world.get_non_send_resource::<TerminalNonSendState>() else {
+            return;
+        };
         state.nu_engine.as_ref().map(prompt_text)
     };
     let Some(prompt) = prompt else { return };
@@ -814,24 +935,26 @@ fn setup_terminal(world: &mut World) {
     wire_ctrlc_signal(&mut nu_engine, ctrlc_flag.clone());
 
     // Create persistent entities (not children of root yet — will be attached below)
-    let scrollback_entity = world.spawn((
-        StreamScrollback::default(),
-        // Top-aligned and free to grow. Bottom-aligning it (flex-end plus a
-        // full-height minimum) pushed overflow off the top of the clip, where
-        // no scroll position can reach it — which is why long output only
-        // ever showed its first screen.
-        Node {
-            flex_direction: FlexDirection::Column,
-            width: Val::Percent(100.0),
-            // A flex child shrinks to its container by default, so the
-            // scrollback was squeezed to exactly the viewport: it never
-            // overflowed, max_scroll stayed zero, and the tail was
-            // unreachable. It must keep its content height.
-            flex_shrink: 0.0,
-            row_gap: Val::Px(1.0),
-            ..default()
-        },
-    )).id();
+    let scrollback_entity = world
+        .spawn((
+            StreamScrollback::default(),
+            // Top-aligned and free to grow. Bottom-aligning it (flex-end plus a
+            // full-height minimum) pushed overflow off the top of the clip, where
+            // no scroll position can reach it — which is why long output only
+            // ever showed its first screen.
+            Node {
+                flex_direction: FlexDirection::Column,
+                width: Val::Percent(100.0),
+                // A flex child shrinks to its container by default, so the
+                // scrollback was squeezed to exactly the viewport: it never
+                // overflowed, max_scroll stayed zero, and the tail was
+                // unreachable. It must keep its content height.
+                flex_shrink: 0.0,
+                row_gap: Val::Px(1.0),
+                ..default()
+            },
+        ))
+        .id();
     // Build the UI tree
     let (root_entity, scroll_area_entity) = spawn_terminal_ui(world, scrollback_entity);
     replay_from_graph(world, scrollback_entity);
@@ -858,58 +981,79 @@ fn setup_terminal(world: &mut World) {
 fn spawn_terminal_ui(world: &mut World, scrollback_entity: Entity) -> (Entity, Entity) {
     // Root container: the band between the chrome bars (ContentRoot keeps
     // top/bottom tracking the bars' true heights, safe areas included).
-    let root = world.spawn((
-        ContentRoot,
-        Node {
-            position_type: PositionType::Absolute,
-            top: Val::Px(CHROME_TOP_H),
-            bottom: Val::Px(CHROME_BOTTOM_H),
-            left: Val::Px(0.0),
-            right: Val::Px(0.0),
-            flex_direction: FlexDirection::Column,
-            // The root takes the whole viewport and the column inside it
-            // carries the measure, so a narrow screen keeps every pixel.
-            align_items: AlignItems::Center,
-            overflow: Overflow::clip_y(),
-            ..default()
-        },
-        BackgroundColor(theme::DARK_BASE),
-    )).id();
+    let root = world
+        .spawn((
+            ContentRoot,
+            Node {
+                position_type: PositionType::Absolute,
+                top: Val::Px(CHROME_TOP_H),
+                bottom: Val::Px(CHROME_BOTTOM_H),
+                left: Val::Px(0.0),
+                right: Val::Px(0.0),
+                flex_direction: FlexDirection::Column,
+                // The root takes the whole viewport and the column inside it
+                // carries the measure, so a narrow screen keeps every pixel.
+                align_items: AlignItems::Center,
+                overflow: Overflow::clip_y(),
+                ..default()
+            },
+            BackgroundColor(theme::DARK_BASE),
+        ))
+        .id();
 
     // Scrollback area (flex-grow, scrolled via ScrollPosition)
-    let scroll_area = world.spawn((
-        Node {
-            flex_grow: 1.0,
-            width: Val::Percent(100.0),
-            max_width: Val::Px(theme::MEASURE),
-            flex_direction: FlexDirection::Column,
-            // Scroll, not clip: bevy_ui ignores ScrollPosition unless an axis
-            // is actually declared scrollable, so a clipping node stays fixed
-            // at the top however the position is set.
-            overflow: Overflow::scroll_y(),
-            padding: UiRect::all(Val::Px(G)),
-            ..default()
-        },
-        ScrollPosition::default(),
-        ChildOf(root),
-    )).id();
+    let scroll_area = world
+        .spawn((
+            Node {
+                flex_grow: 1.0,
+                width: Val::Percent(100.0),
+                max_width: Val::Px(theme::MEASURE),
+                flex_direction: FlexDirection::Column,
+                // Scroll, not clip: bevy_ui ignores ScrollPosition unless an axis
+                // is actually declared scrollable, so a clipping node stays fixed
+                // at the top however the position is set.
+                overflow: Overflow::scroll_y(),
+                padding: UiRect::all(Val::Px(G)),
+                ..default()
+            },
+            ScrollPosition::default(),
+            ChildOf(root),
+        ))
+        .id();
 
     // Attach scrollback entity into scroll area
-    world.entity_mut(scrollback_entity).insert(ChildOf(scroll_area));
+    world
+        .entity_mut(scrollback_entity)
+        .insert(ChildOf(scroll_area));
 
     (root, scroll_area)
 }
 
-/// Restarting cyb must not cost the record — and the record is the
-/// cybergraph, not a journal beside it. The local neuron's signal chain
-/// already holds, in order, everything this cyb did: commands cast off com's
-/// anchor, soma exchanges cast as question → answer. Walking the chain and
-/// looking the particles up in the content store *is* the history. One
-/// truth; com renders it.
-///
-/// Only the most recent signals are replayed — the chain is the archive,
-/// the screen is the recent past.
-const REPLAY_SIGNALS: usize = 300;
+/// Every line that lands in the log is a particle on the chain. The
+/// screen is the chain, not a window onto a recent slice of it.
+
+fn persist_log_line(world: &mut World, text: &str) {
+    if text.is_empty() {
+        return;
+    }
+    crate::worlds::content::remember(text);
+    let shared = world.resource::<crate::worlds::SharedCell>().clone();
+    let neuron = world.resource::<crate::worlds::identity::Identity>().neuron;
+    let cast = {
+        let mut cell = shared.cell.lock().expect("shared cell poisoned");
+        cell.cast(
+            neuron,
+            [(
+                crate::worlds::content::com_anchor(),
+                crate::worlds::content::particle_of(text),
+            )],
+        )
+    };
+    match cast {
+        Ok(_) => shared.bump(),
+        Err(e) => warn!("com: log persist failed: {e:?}"),
+    }
+}
 
 fn replay_from_graph(world: &mut World, scrollback: Entity) {
     use crate::worlds::content;
@@ -940,16 +1084,20 @@ fn replay_from_graph(world: &mut World, scrollback: Entity) {
             }
         }
         // The worlds' own particles, for recognising attention casts.
-        let world_particles: std::collections::HashMap<[u8; 32], &'static str> =
-            [WorldState::Graph, WorldState::Com, WorldState::Robot, WorldState::Sigma, WorldState::Models]
-                .into_iter()
-                .map(|w| {
-                    let name = crate::worlds::attention::world_name(w);
-                    (content::particle_of(name), name)
-                })
-                .collect();
-        let skip = signals.len().saturating_sub(REPLAY_SIGNALS);
-        for sig in signals.into_iter().skip(skip) {
+        let world_particles: std::collections::HashMap<[u8; 32], &'static str> = [
+            WorldState::Graph,
+            WorldState::Com,
+            WorldState::Robot,
+            WorldState::Sigma,
+            WorldState::Models,
+        ]
+        .into_iter()
+        .map(|w| {
+            let name = crate::worlds::attention::world_name(w);
+            (content::particle_of(name), name)
+        })
+        .collect();
+        for sig in signals.into_iter() {
             let links = &sig.links;
             // A command: one link off com's anchor.
             if links.len() == 1 && links[0].from == com_anchor {
@@ -990,9 +1138,15 @@ fn replay_from_graph(world: &mut World, scrollback: Entity) {
             Row::Cmd(text) => {
                 world.spawn((
                     Text::new(format!("> {text}")),
-                    TextFont { font_size: theme::BODY, ..default() },
+                    TextFont {
+                        font_size: theme::BODY,
+                        ..default()
+                    },
                     TextColor(theme::TEXT_DIM),
-                    Node { margin: UiRect::vertical(Val::Px(2.0)), ..default() },
+                    Node {
+                        margin: UiRect::vertical(Val::Px(2.0)),
+                        ..default()
+                    },
                     ChildOf(scrollback),
                 ));
             }
@@ -1021,13 +1175,21 @@ fn replay_from_graph(world: &mut World, scrollback: Entity) {
 /// A quiet, dim, full-width line: session facts that are part of the record
 /// without being part of the conversation.
 fn spawn_note_row(world: &mut World, scrollback: Entity, text: String) -> Entity {
-    world.spawn((
-        Text::new(text),
-        TextFont { font_size: theme::CAPTION, ..default() },
-        TextColor(theme::TEXT_DIM),
-        Node { margin: UiRect::vertical(Val::Px(2.0)), ..default() },
-        ChildOf(scrollback),
-    )).id()
+    world
+        .spawn((
+            Text::new(text),
+            TextFont {
+                font_size: theme::CAPTION,
+                ..default()
+            },
+            TextColor(theme::TEXT_DIM),
+            Node {
+                margin: UiRect::vertical(Val::Px(2.0)),
+                ..default()
+            },
+            ChildOf(scrollback),
+        ))
+        .id()
 }
 
 /// One attributed row in the record: yours on the left, the machine's on the
@@ -1035,24 +1197,31 @@ fn spawn_note_row(world: &mut World, scrollback: Entity, text: String) -> Entity
 /// replayed ones alike.
 fn spawn_said_row(world: &mut World, scrollback: Entity, who: Speaker, text: String) -> Entity {
     let (justify, colour) = match who {
-        Speaker::User   => (JustifyContent::FlexStart, theme::TEXT_PRIMARY),
-        Speaker::System => (JustifyContent::FlexEnd,   theme::ACID_GREEN),
+        Speaker::User => (JustifyContent::FlexStart, theme::TEXT_PRIMARY),
+        Speaker::System => (JustifyContent::FlexEnd, theme::ACID_GREEN),
     };
-    let row = world.spawn((
-        Node {
-            width: Val::Percent(100.0),
-            justify_content: justify,
-            margin: UiRect::vertical(Val::Px(2.0)),
-            ..default()
-        },
-        ChildOf(scrollback),
-    )).id();
-    world.spawn((
-        Text::new(text),
-        TextFont { font_size: theme::BODY, ..default() },
-        TextColor(colour),
-        ChildOf(row),
-    )).id()
+    let row = world
+        .spawn((
+            Node {
+                width: Val::Percent(100.0),
+                justify_content: justify,
+                margin: UiRect::vertical(Val::Px(2.0)),
+                ..default()
+            },
+            ChildOf(scrollback),
+        ))
+        .id();
+    world
+        .spawn((
+            Text::new(text),
+            TextFont {
+                font_size: theme::BODY,
+                ..default()
+            },
+            TextColor(colour),
+            ChildOf(row),
+        ))
+        .id()
 }
 
 // ── Scroll ────────────────────────────────────────────────────────────────────
@@ -1062,12 +1231,17 @@ fn process_scroll(world: &mut World) {
     // MouseWheel at all, which is why com could not be scrolled by hand.
     let wheel: f32 = {
         let mut cursor = {
-            let Some(state_ref) = world.get_non_send_resource::<TerminalNonSendState>() else { return };
+            let Some(state_ref) = world.get_non_send_resource::<TerminalNonSendState>() else {
+                return;
+            };
             state_ref.wheel_cursor.clone()
         };
         let messages = world.resource::<bevy::ecs::message::Messages<MouseWheel>>();
         let dy: f32 = cursor.read(messages).map(|e| -e.y).sum();
-        let state = world.get_non_send_resource_mut::<TerminalNonSendState>().unwrap().into_inner();
+        let state = world
+            .get_non_send_resource_mut::<TerminalNonSendState>()
+            .unwrap()
+            .into_inner();
         state.wheel_cursor = cursor;
         dy * 40.0
     };
@@ -1077,11 +1251,17 @@ fn process_scroll(world: &mut World) {
     let drag: f32 = {
         let touches = world.resource::<bevy::input::touch::Touches>();
         let live: Vec<&bevy::input::touch::Touch> = touches.iter().collect();
-        if live.len() == 1 { -live[0].delta().y } else { 0.0 }
+        if live.len() == 1 {
+            -live[0].delta().y
+        } else {
+            0.0
+        }
     };
 
     let delta_y = wheel + drag;
-    if delta_y == 0.0 { return; }
+    if delta_y == 0.0 {
+        return;
+    }
 
     // Heights in the same units the scroll position is written in.
     //
@@ -1094,7 +1274,10 @@ fn process_scroll(world: &mut World) {
     let (scrollback_h, area_h) = scroll_extent(world);
 
     let max_scroll = (scrollback_h - area_h).max(0.0);
-    let state = world.get_non_send_resource_mut::<TerminalNonSendState>().unwrap().into_inner();
+    let state = world
+        .get_non_send_resource_mut::<TerminalNonSendState>()
+        .unwrap()
+        .into_inner();
     state.scroll_offset = (state.scroll_offset + delta_y).clamp(0.0, max_scroll);
     // Reaching the end re-arms the follow; leaving it hands control back.
     state.stick_to_bottom = state.scroll_offset >= max_scroll - 1.0;
@@ -1117,8 +1300,14 @@ fn scroll_extent(world: &mut World) -> (f32, f32) {
 
 fn apply_scroll_offset(world: &mut World) {
     let (offset, stick, scroll_area_entity) = {
-        let state = world.get_non_send_resource::<TerminalNonSendState>().unwrap();
-        (state.scroll_offset, state.stick_to_bottom, state.scroll_area_entity)
+        let state = world
+            .get_non_send_resource::<TerminalNonSendState>()
+            .unwrap();
+        (
+            state.scroll_offset,
+            state.stick_to_bottom,
+            state.scroll_area_entity,
+        )
     };
     let (sb_h, sa_h) = scroll_extent(world);
     let max_scroll = (sb_h - sa_h).max(0.0);
@@ -1129,12 +1318,21 @@ fn apply_scroll_offset(world: &mut World) {
         static LAST: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
         let c = sb_h as u32;
         if LAST.swap(c, std::sync::atomic::Ordering::Relaxed) != c {
-            debug!("com: content {sb_h:.0} view {sa_h:.0} max_scroll {max_scroll:.0} stick {stick}");
+            debug!(
+                "com: content {sb_h:.0} view {sa_h:.0} max_scroll {max_scroll:.0} stick {stick}"
+            );
         }
     }
-    let target = if stick { max_scroll } else { offset.clamp(0.0, max_scroll) };
+    let target = if stick {
+        max_scroll
+    } else {
+        offset.clamp(0.0, max_scroll)
+    };
     {
-        let state = world.get_non_send_resource_mut::<TerminalNonSendState>().unwrap().into_inner();
+        let state = world
+            .get_non_send_resource_mut::<TerminalNonSendState>()
+            .unwrap()
+            .into_inner();
         state.scroll_offset = target;
     }
     if let Some(mut sp) = world.get_mut::<ScrollPosition>(scroll_area_entity) {
@@ -1145,7 +1343,10 @@ fn apply_scroll_offset(world: &mut World) {
 // ── Update ────────────────────────────────────────────────────────────────────
 
 fn terminal_update(world: &mut World) {
-    if world.get_non_send_resource::<TerminalNonSendState>().is_none() {
+    if world
+        .get_non_send_resource::<TerminalNonSendState>()
+        .is_none()
+    {
         setup_terminal(world);
         return;
     }
@@ -1168,7 +1369,9 @@ fn terminal_update(world: &mut World) {
 /// Hiding costs nothing (`Display::None` is skipped by layout) and keeps every
 /// entity, and its taffy node, valid.
 fn destroy_terminal(world: &mut World) {
-    let Some(state) = world.get_non_send_resource::<TerminalNonSendState>() else { return };
+    let Some(state) = world.get_non_send_resource::<TerminalNonSendState>() else {
+        return;
+    };
     let root_entity = state.root_entity;
     set_terminal_visible(world, root_entity, false);
     info!("Com paused (state persisted)");
@@ -1176,6 +1379,10 @@ fn destroy_terminal(world: &mut World) {
 
 fn set_terminal_visible(world: &mut World, root: Entity, visible: bool) {
     if let Some(mut node) = world.get_mut::<Node>(root) {
-        node.display = if visible { Display::Flex } else { Display::None };
+        node.display = if visible {
+            Display::Flex
+        } else {
+            Display::None
+        };
     }
 }

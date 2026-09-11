@@ -11,8 +11,8 @@ use mir::bevy::resources::WarpTarget;
 use prysm::theme;
 
 use super::graph::BrainIndex;
-use super::{content, WorldState};
-use crate::shell::chrome::{ContentRoot, CHROME_BOTTOM_H, CHROME_TOP_H};
+use super::{WorldState, content};
+use crate::shell::chrome::{CHROME_BOTTOM_H, CHROME_TOP_H, ContentRoot};
 
 pub struct MemoryWorldPlugin;
 
@@ -32,11 +32,9 @@ struct OpenRow {
 impl Plugin for MemoryWorldPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(WorldState::Memory), enter)
-            .add_systems(OnExit(WorldState::Memory), despawn_page)
             .add_systems(
                 Update,
-                (refresh_on_index, handle_open, scroll_page)
-                    .run_if(in_state(WorldState::Memory)),
+                (refresh_on_index, handle_open, scroll_page).run_if(in_state(WorldState::Memory)),
             );
     }
 }
@@ -62,12 +60,6 @@ fn refresh_on_index(
         commands.entity(e).despawn();
     }
     build_page(commands, index);
-}
-
-fn despawn_page(mut commands: Commands, roots: Query<Entity, With<MemoryRoot>>) {
-    for e in &roots {
-        commands.entity(e).despawn();
-    }
 }
 
 /// One ranked row: hash, label, focus, byte size, and when it was last
@@ -105,7 +97,11 @@ fn ranked_rows(index: &BrainIndex) -> Vec<Row> {
             }
         })
         .collect();
-    rows.sort_by(|a, b| b.focus.partial_cmp(&a.focus).unwrap_or(std::cmp::Ordering::Equal));
+    rows.sort_by(|a, b| {
+        b.focus
+            .partial_cmp(&a.focus)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     rows
 }
 
@@ -136,6 +132,7 @@ fn build_page(mut commands: Commands, index: Option<Res<BrainIndex>>) {
     let root = commands
         .spawn((
             MemoryRoot,
+            crate::worlds::WorldUi(WorldState::Memory),
             ContentRoot,
             Node {
                 position_type: PositionType::Absolute,
@@ -173,13 +170,22 @@ fn build_page(mut commands: Commands, index: Option<Res<BrainIndex>>) {
     let text = |commands: &mut Commands, parent: Entity, s: String, size: f32, color: Color| {
         commands.spawn((
             Text::new(s),
-            TextFont { font_size: size, ..default() },
+            TextFont {
+                font_size: size,
+                ..default()
+            },
             TextColor(color),
             ChildOf(parent),
         ));
     };
 
-    text(&mut commands, page, "memory".into(), theme::H2, theme::TEXT_PRIMARY);
+    text(
+        &mut commands,
+        page,
+        "memory".into(),
+        theme::H2,
+        theme::TEXT_PRIMARY,
+    );
 
     let Some(index) = index else {
         text(
@@ -215,7 +221,10 @@ fn build_page(mut commands: Commands, index: Option<Res<BrainIndex>>) {
     for row in &rows {
         let r = commands
             .spawn((
-                OpenRow { idx: row.idx, hash: row.hash },
+                OpenRow {
+                    idx: row.idx,
+                    hash: row.hash,
+                },
                 Button,
                 Node {
                     width: Val::Percent(100.0),
@@ -248,7 +257,13 @@ fn build_page(mut commands: Commands, index: Option<Res<BrainIndex>>) {
             label.push_str("..");
         }
         text(&mut commands, left, label, theme::BODY, theme::TEXT_PRIMARY);
-        text(&mut commands, left, format!("focus {:.3}", row.focus), theme::CAPTION, theme::TEXT_DIM);
+        text(
+            &mut commands,
+            left,
+            format!("focus {:.3}", row.focus),
+            theme::CAPTION,
+            theme::TEXT_DIM,
+        );
 
         let right = commands
             .spawn((
@@ -261,8 +276,20 @@ fn build_page(mut commands: Commands, index: Option<Res<BrainIndex>>) {
                 ChildOf(r),
             ))
             .id();
-        text(&mut commands, right, size_text(row.size), theme::CAPTION, theme::TEXT_DIM);
-        text(&mut commands, right, date_text(row.created), theme::CAPTION, theme::TEXT_DIM);
+        text(
+            &mut commands,
+            right,
+            size_text(row.size),
+            theme::CAPTION,
+            theme::TEXT_DIM,
+        );
+        text(
+            &mut commands,
+            right,
+            date_text(row.created),
+            theme::CAPTION,
+            theme::TEXT_DIM,
+        );
     }
 }
 

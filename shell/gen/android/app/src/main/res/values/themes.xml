@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- GameActivity descends from AppCompatActivity and insists on an
+         AppCompat theme. One black, same as every other cyb surface. -->
+    <style name="Theme.Cyb" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:windowFullscreen">false</item>
+    </style>
+</resources>

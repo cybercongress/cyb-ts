@@ -47,9 +47,10 @@ impl Plugin for GpuBridgePlugin {
             use bevy::render::batching::gpu_preprocessing::{
                 GpuPreprocessingMode, GpuPreprocessingSupport,
             };
-            app.sub_app_mut(RenderApp).insert_resource(GpuPreprocessingSupport {
-                max_supported_mode: GpuPreprocessingMode::None,
-            });
+            app.sub_app_mut(RenderApp)
+                .insert_resource(GpuPreprocessingSupport {
+                    max_supported_mode: GpuPreprocessingMode::None,
+                });
         }
     }
 }
@@ -88,9 +89,9 @@ pub fn build_app() -> App {
                     return;
                 };
                 for ext in WANTED {
-                    let supported = props.iter().any(|p| {
-                        p.extension_name_as_c_str().is_ok_and(|n| n == *ext)
-                    });
+                    let supported = props
+                        .iter()
+                        .any(|p| p.extension_name_as_c_str().is_ok_and(|n| n == *ext));
                     if supported && !args.extensions.contains(ext) {
                         args.extensions.push(ext);
                     }
@@ -105,9 +106,20 @@ pub fn build_app() -> App {
         primary_window: Some(Window {
             title: "cyb".into(),
             resolution: (1280u32, 800u32).into(),
-            // Uncapped: mailbox where the platform has it, immediate else.
-            // The graph is the frame cost and it pays per pixel, not per hz.
-            present_mode: bevy::window::PresentMode::AutoNoVsync,
+            // Desktop: uncapped, the graph is the frame cost.
+            // Android: fifo. AutoNoVsync on PowerVR presents a cleared
+            // swapchain between world trees — the nav flicker desktop
+            // never showed because vsync kept the previous frame.
+            present_mode: {
+                #[cfg(target_os = "android")]
+                {
+                    bevy::window::PresentMode::AutoVsync
+                }
+                #[cfg(not(target_os = "android"))]
+                {
+                    bevy::window::PresentMode::AutoNoVsync
+                }
+            },
             ..default()
         }),
         ..default()
@@ -123,12 +135,14 @@ pub fn build_app() -> App {
     }
 
     app.add_plugins(
-        DefaultPlugins.set(window_plugin).set(bevy::render::RenderPlugin {
-            render_creation: bevy::render::settings::RenderCreation::Automatic(
-                bevy::render::settings::WgpuSettings { ..default() },
-            ),
-            ..default()
-        }),
+        DefaultPlugins
+            .set(window_plugin)
+            .set(bevy::render::RenderPlugin {
+                render_creation: bevy::render::settings::RenderCreation::Automatic(
+                    bevy::render::settings::WgpuSettings { ..default() },
+                ),
+                ..default()
+            }),
     )
     .insert_resource(ClearColor(bevy::color::Color::BLACK))
     .add_plugins(GpuBridgePlugin)
@@ -158,7 +172,10 @@ pub fn build_app() -> App {
     // screen. The app's framebuffer shows the app alone, which is the point.
     #[cfg(not(target_os = "android"))]
     if let Ok(path) = std::env::var("CYB_SHOT") {
-        let at: f32 = std::env::var("CYB_SHOT_AT").ok().and_then(|s| s.parse().ok()).unwrap_or(8.0);
+        let at: f32 = std::env::var("CYB_SHOT_AT")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(8.0);
         app.add_systems(
             bevy::prelude::Update,
             move |mut commands: bevy::prelude::Commands,
@@ -168,8 +185,10 @@ pub fn build_app() -> App {
                     return;
                 }
                 *done = true;
-                use bevy::render::view::screenshot::{save_to_disk, Screenshot};
-                commands.spawn(Screenshot::primary_window()).observe(save_to_disk(path.clone()));
+                use bevy::render::view::screenshot::{Screenshot, save_to_disk};
+                commands
+                    .spawn(Screenshot::primary_window())
+                    .observe(save_to_disk(path.clone()));
                 bevy::log::info!("shot: saving to {path}");
             },
         );

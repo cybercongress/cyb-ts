@@ -22,5 +22,6 @@ coverage
 
 # Misc
 *.xml
+!shell/gen/android/**/*.xml
 *.iml
 storybook-static

@@ -19,7 +19,7 @@ use bevy::prelude::*;
 use prysm::theme;
 
 use super::WorldState;
-use crate::shell::chrome::{ContentRoot, CHROME_BOTTOM_H, CHROME_TOP_H};
+use crate::shell::chrome::{CHROME_BOTTOM_H, CHROME_TOP_H, ContentRoot};
 
 pub struct VaultWorldPlugin;
 
@@ -42,7 +42,7 @@ struct VaultRoot;
 #[derive(Component)]
 struct CopyRow(usize);
 
-/// Hold to read; release to forget.
+/// Tap to read; tap again to hide.
 #[derive(Component)]
 struct RevealChip(usize);
 
@@ -209,13 +209,22 @@ fn build_page(commands: &mut Commands, view: &VaultView) {
     let text = |commands: &mut Commands, parent: Entity, s: String, size: f32, color: Color| {
         commands.spawn((
             Text::new(s),
-            TextFont { font_size: size, ..default() },
+            TextFont {
+                font_size: size,
+                ..default()
+            },
             TextColor(color),
             ChildOf(parent),
         ));
     };
 
-    text(commands, page, "vault".into(), theme::H2, theme::TEXT_PRIMARY);
+    text(
+        commands,
+        page,
+        "vault".into(),
+        theme::H2,
+        theme::TEXT_PRIMARY,
+    );
 
     if let Some(err) = &view.error {
         text(commands, page, err.clone(), theme::BODY, theme::ACID_RED);
@@ -225,8 +234,7 @@ fn build_page(commands: &mut Commands, view: &VaultView) {
     text(
         commands,
         page,
-        "sealed under your mnemonic - tap a row to copy (clears in 30s), hold show to read"
-            .into(),
+        "tap a name to copy (clears in 30s). tap show to read, tap again to hide".into(),
         theme::CAPTION,
         theme::TEXT_DIM,
     );
@@ -248,8 +256,6 @@ fn build_page(commands: &mut Commands, view: &VaultView) {
     for (i, entry) in view.entries.iter().enumerate() {
         let row = commands
             .spawn((
-                CopyRow(i),
-                Button,
                 Node {
                     width: Val::Percent(100.0),
                     justify_content: JustifyContent::SpaceBetween,
@@ -267,10 +273,13 @@ fn build_page(commands: &mut Commands, view: &VaultView) {
 
         let left = commands
             .spawn((
+                CopyRow(i),
+                Button,
                 Node {
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
                     column_gap: Val::Px(theme::G * 1.5),
+                    flex_grow: 1.0,
                     ..default()
                 },
                 ChildOf(row),
@@ -282,7 +291,11 @@ fn build_page(commands: &mut Commands, view: &VaultView) {
             left,
             entry.name.clone(),
             theme::BODY,
-            if is_identity { theme::ACID_GREEN } else { theme::TEXT_PRIMARY },
+            if is_identity {
+                theme::ACID_GREEN
+            } else {
+                theme::TEXT_PRIMARY
+            },
         );
         text(
             commands,
@@ -312,7 +325,13 @@ fn build_page(commands: &mut Commands, view: &VaultView) {
             match store::totp(&entry.value, unix) {
                 Some((code, left_s)) => {
                     text(commands, right, code, theme::H3, theme::ACID_GREEN);
-                    text(commands, right, format!("{left_s}s"), theme::CAPTION, theme::TEXT_DIM);
+                    text(
+                        commands,
+                        right,
+                        format!("{left_s}s"),
+                        theme::CAPTION,
+                        theme::TEXT_DIM,
+                    );
                 }
                 None => text(
                     commands,
@@ -323,9 +342,21 @@ fn build_page(commands: &mut Commands, view: &VaultView) {
                 ),
             }
         } else if view.revealed == Some(i) {
-            text(commands, right, entry.value.clone(), theme::BODY, theme::ACID_YELLOW);
+            text(
+                commands,
+                right,
+                entry.value.clone(),
+                theme::BODY,
+                theme::ACID_YELLOW,
+            );
         } else {
-            text(commands, right, mask(&entry.value), theme::BODY, theme::TEXT_DIM);
+            text(
+                commands,
+                right,
+                mask(&entry.value),
+                theme::BODY,
+                theme::TEXT_DIM,
+            );
         }
 
         let chip = commands
@@ -342,7 +373,13 @@ fn build_page(commands: &mut Commands, view: &VaultView) {
                 ChildOf(right),
             ))
             .id();
-        text(commands, chip, "show".into(), theme::CAPTION, theme::TEXT_DIM);
+        text(
+            commands,
+            chip,
+            "show".into(),
+            theme::CAPTION,
+            theme::TEXT_DIM,
+        );
     }
 }
 
@@ -361,7 +398,9 @@ fn handle_copy(
         if *i != Interaction::Pressed {
             continue;
         }
-        let Some(entry) = view.entries.get(row.0) else { continue };
+        let Some(entry) = view.entries.get(row.0) else {
+            continue;
+        };
         let payload = if entry.kind == "otp" {
             match store::totp(&entry.value, store::now()) {
                 Some((code, _)) => code,
@@ -395,21 +434,22 @@ fn forget_clipboard(mut view: ResMut<VaultView>) {
     }
 }
 
-/// `show` is a dead-man's switch: the secret is visible exactly while the
-/// finger is down on it.
+/// Tap show to read; tap again to hide. Hold-to-reveal dies on a tap:
+/// Pressed and Released fire in the same gesture, so the words vanished
+/// before anyone could read them.
 fn handle_reveal(
     interactions: Query<(&Interaction, &RevealChip), Changed<Interaction>>,
     mut view: ResMut<VaultView>,
 ) {
     for (i, chip) in &interactions {
-        match *i {
-            Interaction::Pressed => view.revealed = Some(chip.0),
-            _ => {
-                if view.revealed == Some(chip.0) {
-                    view.revealed = None;
-                }
-            }
+        if *i != Interaction::Pressed {
+            continue;
         }
+        view.revealed = if view.revealed == Some(chip.0) {
+            None
+        } else {
+            Some(chip.0)
+        };
     }
 }
 
@@ -423,14 +463,14 @@ pub fn handle_command(rest: &str) -> String {
     if let Some(spec) = rest.strip_prefix("add ") {
         let mut it = spec.splitn(3, char::is_whitespace);
         let (Some(name), Some(kind), Some(value)) = (it.next(), it.next(), it.next()) else {
-            return "vault add <name> <kind> <secret>   kinds: password key seed otp custom"
-                .into();
+            return "vault add <name> <kind> <secret>   kinds: password key seed otp custom".into();
         };
         if !store::KINDS.contains(&kind) {
             return format!("vault: unknown kind {kind} - use password key seed otp custom");
         }
         if name == "identity" {
-            return "vault: identity is the built-in root entry - it lives in ~/cyb/mnemonic".into();
+            return "vault: identity is the built-in root entry - it lives in ~/cyb/mnemonic"
+                .into();
         }
         let Some(key) = store::key() else {
             return "vault: no identity aboard (~/cyb/mnemonic missing)".into();
@@ -497,7 +537,10 @@ mod tests {
     fn unknown_kind_is_refused() {
         let said = handle_command("add x pin 1234");
         assert!(said.contains("unknown kind"), "{said}");
-        assert!(!said.contains("1234"), "secret leaked into the reply: {said}");
+        assert!(
+            !said.contains("1234"),
+            "secret leaked into the reply: {said}"
+        );
     }
 
     #[test]
