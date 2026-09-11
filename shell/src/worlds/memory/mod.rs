@@ -58,9 +58,26 @@ fn refresh_on_index(
     mut commands: Commands,
     index: Option<Res<BrainIndex>>,
     roots: Query<Entity, With<MemoryRoot>>,
+    mut last: Local<Option<(usize, Option<[u8; 32]>, Option<[u8; 32]>)>>,
 ) {
     let Some(ref idx) = index else { return };
-    if !idx.is_changed() {
+    // Focus floats change every tri-kernel run; tearing the list down
+    // for that is the flash when you surf memory ↔ brain. Rebuild only
+    // when the set of particles actually moved.
+    let fp = (
+        idx.hashes.len(),
+        idx.hashes.first().copied(),
+        idx.hashes.last().copied(),
+    );
+    if Some(fp) == *last && !roots.is_empty() {
+        return;
+    }
+    if !idx.is_changed() && !roots.is_empty() {
+        *last = Some(fp);
+        return;
+    }
+    *last = Some(fp);
+    if roots.is_empty() {
         return;
     }
     for e in &roots {

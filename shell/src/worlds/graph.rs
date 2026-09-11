@@ -39,7 +39,13 @@ fn insert_graph_config(
     shared: Res<SharedCell>,
     mut index: ResMut<BrainIndex>,
     mut stats: ResMut<BrainStats>,
+    mut seen: Local<Option<u64>>,
 ) {
+    let ver = shared.version.load(std::sync::atomic::Ordering::Relaxed);
+    if Some(ver) == *seen {
+        return;
+    }
+    *seen = Some(ver);
     let axons = shared.cell.lock().expect("shared cell poisoned").axons();
     let mut values: Option<std::sync::Arc<mir::epoch::GraphValues>> = None;
     *stats = BrainStats::default();
@@ -469,19 +475,34 @@ fn place_labels(
     }
 
     // Move the labels that exist; note which particles still need one.
+    // Round to a pixel and skip the write when nothing moved — assigning
+    // Node every frame dirties Bevy UI layout and the whole chrome jerks
+    // while you pan.
     for (_, label, mut node, mut text, mut vis) in &mut existing {
         match spots.remove(&label.0) {
             Some(Some((sx, sy))) => {
-                node.left = Val::Px(sx + 8.0);
-                node.top = Val::Px(sy + 6.0);
-                *vis = Visibility::Visible;
+                let left = Val::Px((sx + 8.0).round());
+                let top = Val::Px((sy + 6.0).round());
+                if node.left != left {
+                    node.left = left;
+                }
+                if node.top != top {
+                    node.top = top;
+                }
+                if *vis != Visibility::Visible {
+                    *vis = Visibility::Visible;
+                }
                 if let Some(Some(want)) = index.labels.get(label.0) {
                     if text.0 != *want {
                         text.0 = want.clone();
                     }
                 }
             }
-            _ => *vis = Visibility::Hidden,
+            _ => {
+                if *vis != Visibility::Hidden {
+                    *vis = Visibility::Hidden;
+                }
+            }
         }
     }
 
